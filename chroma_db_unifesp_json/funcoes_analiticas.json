@@ -1,0 +1,105 @@
+{
+  "disciplina": {
+    "codigo": "3584",
+    "nome": "Funções Analíticas",
+    "nome_ingles": "Analytic Functions",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Anual",
+    "termo": 4,
+    "turno": "I",
+    "pre_requisitos": [
+      {
+        "codigo": "5359",
+        "nome": "Cálculo em Várias Variáveis"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 62,
+      "pratica": 10,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Números complexos",
+        "Funções complexas",
+        "Derivação complexa",
+        "Séries de potências",
+        "Integração complexa",
+        "Aplicações"
+      ],
+      "descricao_completa": "Números complexos. Funções complexas. Derivação complexa. Séries de potências. Integração complexa. Aplicações."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["ALCIDES, L. N."],
+          "titulo": "Funções de uma variável complexa",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2008
+        },
+        {
+          "autores": ["OLIVEIRA, E. C.", "RODRIGUES Jr, W. A."],
+          "titulo": "Funções analíticas com aplicações",
+          "edicao": "1ª ed.",
+          "local": "São Paulo",
+          "editora": "Livraria da Física",
+          "ano": 2006
+        },
+        {
+          "autores": ["SOARES, M. G."],
+          "titulo": "Cálculo em uma variável complexa",
+          "edicao": "5ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2009
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["AHLFORS, L. V."],
+          "titulo": "Complex analysis: an introduction to the theory of one complex variable",
+          "edicao": "3ª ed.",
+          "local": "New York",
+          "editora": "McGraw-Hill",
+          "ano": 1979
+        },
+        {
+          "autores": ["ÁVILA, G."],
+          "titulo": "Variáveis complexas e aplicações",
+          "edicao": "3ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2008
+        },
+        {
+          "autores": ["BROWN, J. W.", "CHURCHILL, R. V."],
+          "titulo": "Complex variables and applications",
+          "edicao": "1ª ed.",
+          "local": "Boston",
+          "editora": "McGrawHill",
+          "ano": 2009
+        },
+        {
+          "autores": ["CONWAY, J. B."],
+          "titulo": "Functions of one complex variable I",
+          "edicao": "2ª ed.",
+          "local": "New York",
+          "editora": "Springer Verlag",
+          "ano": 1978
+        },
+        {
+          "autores": ["CONWAY, J. B."],
+          "titulo": "Functions of one complex variable II",
+          "local": "New York",
+          "editora": "Springer Verlag",
+          "ano": 1995
+        }
+      ]
+    }
+  }
+}

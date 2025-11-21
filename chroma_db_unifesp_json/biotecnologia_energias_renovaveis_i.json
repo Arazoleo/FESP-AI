@@ -1,0 +1,96 @@
+{
+  "disciplina": {
+    "codigo": "6088",
+    "nome": "Biotecnologia de Energias Renováveis I",
+    "nome_ingles": "Biotechnology for Renewable Energy I",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Biotecnologia"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": "Integral",
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 12
+    },
+    "ementa": {
+      "topicos": [
+        "Histórico da energia no Brasil e no mundo",
+        "Biomassa",
+        "Processos de produção do Bioetanol",
+        "Engenharia bioquímica do bioetanol",
+        "Substratos lignocelulósicos",
+        "Biocombustíveis de segunda geração",
+        "Aspectos econômicos e ambientais da produção de bioetanol",
+        "Combustível fóssil x biocombustível",
+        "Novas matrizes energéticas renováveis",
+        "Desafios para a agricultura e desenvolvimento sustentável"
+      ],
+      "descricao_completa": "Histórico da energia no Brasil e no mundo. Biomassa. Processos de produção do Bioetanol. Engenharia bioquímica do bioetanol. Substratos lignocelulósicos. Biocombustíveis de segunda geração. Aspectos econômicos e ambientais da produção de bioetanol. Combustível fóssil x biocombustível. Novas matrizes energéticas renováveis. Desafios para a agricultura e desenvolvimento sustentável."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["HINRICHS, R. A.", "KLEINBACH, M.", "REIS, L. B."],
+          "titulo": "Energia e meio ambiente",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2012
+        },
+        {
+          "autores": ["SCHMIDEL, W.", "LIMA, U.A.", "AQUARONE, E.", "BORZANI, W."],
+          "titulo": "Biotecnologia industrial. vol 2: Engenharia Bioquímica",
+          "editora": "Edgard Blucher",
+          "ano": 2000
+        },
+        {
+          "autores": ["GOLDEMBERG, J.", "LUCON, O."],
+          "titulo": "Energia, meio ambiente e desenvolvimento",
+          "edicao": "3ª ed. rev. e ampl.",
+          "local": "São Paulo",
+          "editora": "EDUSP",
+          "ano": 2008
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["FERREIRA, H. S."],
+          "titulo": "Biocombustíveis: fonte de energia sustentável",
+          "local": "São Paulo",
+          "editora": "Saraiva",
+          "ano": 2010
+        },
+        {
+          "autores": ["KLASS, D. L."],
+          "titulo": "Biomass for renewable energy, fuels and chemicals",
+          "local": "Oxford",
+          "editora": "Academic Press",
+          "ano": 1998
+        },
+        {
+          "autores": ["DRAPCHO, C.", "WALKER, T.", "NGHIEM, J."],
+          "titulo": "Biofuels Engineering: Process Technology",
+          "edicao": "1ª ed.",
+          "editora": "McGraw-Hill",
+          "ano": 2008
+        },
+        {
+          "autores": ["GUPTA, R. B."],
+          "titulo": "Gasoline, Diesel, and Ethanol Biofuels from Grasses and Plants",
+          "editora": "Cambridge University Press",
+          "ano": 2010
+        },
+        {
+          "autores": ["MOUSDALE, D. M."],
+          "titulo": "Biofuels: Biotechnology, Chemistry, and Sustainable Development",
+          "editora": "CRC Press",
+          "ano": 2008
+        }
+      ]
+    }
+  }
+}

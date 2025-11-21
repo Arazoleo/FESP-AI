@@ -1,0 +1,109 @@
+{
+  "disciplina": {
+    "codigo": "5918",
+    "nome": "Análise Real II",
+    "nome_ingles": "Real Analysis II",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "5773",
+        "nome": "Análise Real I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Conjuntos",
+        "Cardinalidade",
+        "Reta real e completude",
+        "Sequências e séries",
+        "Convergência e limites",
+        "Topologia da reta",
+        "Continuidade de funções",
+        "Diferenciação"
+      ],
+      "descricao_completa": "Conjuntos. Cardinalidade. Reta real e completude. Sequências e séries. Convergência e limites. Topologia da reta. Continuidade de funções. Diferenciação."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["FIGUEIREDO, D. G."],
+          "titulo": "Análise I",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2008
+        },
+        {
+          "autores": ["LIMA, E. L."],
+          "titulo": "Análise real",
+          "volume": "1",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2009
+        },
+        {
+          "autores": ["LIMA, E. L."],
+          "titulo": "Curso de análise",
+          "volume": "1",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2009
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BARTLE, R. G."],
+          "titulo": "Introduction to real analysis",
+          "edicao": "4ª ed.",
+          "local": "New York",
+          "editora": "John Wiley & Sons",
+          "ano": 2011
+        },
+        {
+          "autores": ["LAY, S. R."],
+          "titulo": "Analysis with an introduction to proof",
+          "edicao": "4ª ed.",
+          "local": "New Jersey",
+          "editora": "Prentice Hall",
+          "ano": 2005
+        },
+        {
+          "autores": ["LIMA, E. L."],
+          "titulo": "Análise real",
+          "volume": "2",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2010
+        },
+        {
+          "autores": ["ROYDEN, H. L."],
+          "titulo": "Real analysis",
+          "edicao": "2ª ed.",
+          "local": "New Jersey",
+          "editora": "Pearson",
+          "ano": 1988
+        },
+        {
+          "autores": ["RUDIN, W."],
+          "titulo": "Principles of mathematical analysis",
+          "edicao": "3ª ed.",
+          "local": "New York",
+          "editora": "McGraw-Hill",
+          "ano": 1979
+        }
+      ]
+    }
+  }
+}

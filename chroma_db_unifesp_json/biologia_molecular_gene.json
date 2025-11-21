@@ -1,0 +1,101 @@
+{
+  "disciplina": {
+    "codigo": "5843",
+    "nome": "Biologia Molecular do Gene",
+    "nome_ingles": "Gene Molecular Biology",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia", "Bacharelado em Biotecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "5703",
+        "nome": "Fundamentos de Biologia Moderna"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 52,
+      "pratica": 0,
+      "extensao": 20
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução à Genética Molecular",
+        "Estrutura e Compactação do DNA",
+        "Genomas",
+        "Replicação",
+        "Transcrição",
+        "Tradução",
+        "Regulação da Expressão Gênica",
+        "Tecnologia do DNA Recombinante",
+        "Epigenética e RNAi",
+        "Integração das competências e conhecimentos da UC em ações extensionistas"
+      ],
+      "descricao_completa": "Introdução à Genética Molecular. Estrutura e Compactação do DNA. Genomas. Replicação. Transcrição. Tradução. Regulação da Expressão Gênica. Tecnologia do DNA Recombinante. Epigenética e RNAi. Integração das competências e conhecimentos da UC em ações extensionistas."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["ALBERTS, A.", "BRAY, D.", "JOHNSON, A.", "LEWIS, J.", "RAFF, M.", "ROBERTS, K.", "WALTER, P."],
+          "titulo": "Fundamentos da Biologia Celular",
+          "edicao": "4ª ed.",
+          "editora": "Artmed",
+          "ano": null
+        },
+        {
+          "autores": ["LODISH, H. e cols."],
+          "titulo": "Biologia Celular e Molecular",
+          "edicao": "5ª ed.",
+          "editora": "Artmed",
+          "ano": 2005
+        },
+        {
+          "autores": ["COOPER"],
+          "titulo": "A Célula – Uma Abordagem Molecular",
+          "edicao": "3ª ed.",
+          "editora": "Artmed",
+          "ano": 2007
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["WALTER, Peter et al."],
+          "titulo": "Molecular biology of the cell",
+          "edicao": "5ª ed.",
+          "ano": 2010
+        },
+        {
+          "autores": ["KARP, Gerald"],
+          "titulo": "Cell and molecular biology: concepts and experiments",
+          "edicao": "5ª ed.",
+          "ano": 2008
+        },
+        {
+          "autores": ["SCHRÖDINGER, Erwin", "ASSIS, Jesus P. (Trad.)", "ASSIS, Vera Y. K. P. (Trad.)"],
+          "titulo": "O que é vida?",
+          "editora": "UNESP",
+          "ano": 1977
+        },
+        {
+          "autores": ["BERG, J. M.", "TYMOCZKO, J.L", "STRYER, L."],
+          "titulo": "Bioquímica",
+          "edicao": "5ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Guanabara Koogan",
+          "ano": 2004
+        },
+        {
+          "autores": ["ALBERTS, Bruce et al."],
+          "titulo": "Biologia molecular da célula",
+          "edicao": "6ª ed.",
+          "editora": "Artmed",
+          "ano": 2017
+        }
+      ]
+    }
+  }
+}

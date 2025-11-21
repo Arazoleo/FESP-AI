@@ -1,0 +1,110 @@
+{
+  "disciplina": {
+    "codigo": "4328",
+    "nome": "Séries e Equações Diferenciais Ordinárias",
+    "nome_ingles": "Series and Ordinary Differential Equations",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 2,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "5702",
+        "nome": "Cálculo em Uma Variável"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 62,
+      "pratica": 10,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Sequências e séries numéricas",
+        "Séries de Fourier",
+        "Equações diferenciais ordinárias"
+      ],
+      "descricao_completa": "Sequências e séries numéricas. Séries de Fourier. Equações diferenciais ordinárias."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["BOYCE, W. E.", "DIPRIMA, R. C."],
+          "titulo": "Equações diferenciais elementares e problemas de valores de contorno",
+          "edicao": "8a ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2006
+        },
+        {
+          "autores": ["GUIDORIZZI, H. L."],
+          "titulo": "Um curso de cálculo",
+          "volume": "v. 4",
+          "edicao": "5a Ed.",
+          "local": "Rio De Janeiro",
+          "editora": "LTC",
+          "ano": 2007
+        },
+        {
+          "autores": ["STEWART, J."],
+          "titulo": "Cálculo",
+          "volume": "v.2",
+          "edicao": "6a ed.",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2009
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["FIGUEIREDO, D. G.", "NEVES, A. F."],
+          "titulo": "Equações diferenciais aplicadas",
+          "edicao": "3a ed.",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2010
+        },
+        {
+          "autores": ["LEITHOLD, L."],
+          "titulo": "O cálculo com geometria analítica",
+          "volume": "v.2",
+          "edicao": "3aed.",
+          "local": "São Paulo",
+          "editora": "Harbra",
+          "ano": 1994
+        },
+        {
+          "autores": ["THOMAS, G. B."],
+          "titulo": "Cálculo",
+          "volume": "v. 2",
+          "edicao": "12a ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2013
+        },
+        {
+          "autores": ["ZILL, D. G.", "CULLEN M. R."],
+          "titulo": "Equações diferenciais",
+          "volume": "v. 1",
+          "edicao": "3aed.",
+          "local": "São Paulo",
+          "editora": "Makron",
+          "ano": 2001
+        },
+        {
+          "autores": ["ZILL, D. G.", "CULLEN M. R."],
+          "titulo": "Equações diferenciais",
+          "volume": "v. 2",
+          "edicao": "3aed.",
+          "local": "São Paulo",
+          "editora": "Makron",
+          "ano": 2001
+        }
+      ]
+    }
+  }
+}

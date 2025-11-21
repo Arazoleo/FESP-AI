@@ -1,0 +1,112 @@
+{
+  "disciplina": {
+    "codigo": "5902",
+    "nome": "Circuitos Elétricos I",
+    "nome_ingles": "Electrical Circuits I",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 4,
+    "turno": "Integral",
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Elementos de circuitos",
+        "Fontes independentes e dependentes",
+        "Interconexões de fontes",
+        "Leis de Kirchhoff",
+        "Análise de circuitos resistivos",
+        "Método das tensões de nó",
+        "Método das correntes de malha",
+        "Transformações de fontes",
+        "Equivalente de Thévenin e Norton",
+        "Superposição",
+        "Comportamento, análise e aplicação de Capacitores e Indutores",
+        "Resposta de natural e forçada de circuitos de primeira ordem (RC e RL)",
+        "Análise de regime permanente senoidal"
+      ],
+      "descricao_completa": "Apresentação dos elementos de circuitos, métodos de equivalência, técnicas de análise, análise fasorial, conceitos de impedância, indutância e capacitância."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["NILSSON, James W.", "RIEDEL, Susan A.", "MARQUES, Arlete Simille", "ARAÚJO, Antônio Emílio Angueth de", "LOPES, Ivan José da Silva"],
+          "titulo": "Circuitos elétricos",
+          "edicao": "8 ed.",
+          "local": "São Paulo",
+          "editora": "Pearson Prentice Hall",
+          "ano": 2009,
+          "paginas": 574,
+          "isbn": "978-85-7605-159-6"
+        },
+        {
+          "autores": ["JOHNSON, David E.", "HILBURN, John L.", "JOHNSON, Johnny R."],
+          "titulo": "Fundamentos de análise de circuitos elétricos",
+          "local": "Rio de Janeiro",
+          "editora": "LTC Editora",
+          "ano": 2012,
+          "paginas": 539,
+          "isbn": "978-85-216-1238-4"
+        },
+        {
+          "autores": ["ORSINI, L.q", "CONSONNI, Denise"],
+          "titulo": "Curso de circuitos elétricos",
+          "edicao": "2.ed.",
+          "local": "São Paulo",
+          "editora": "Blucher",
+          "ano": 2002,
+          "paginas": 286,
+          "isbn": "978-85-212-0308-7"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["Charles Alexander", "Matthew N. O. Sadiku"],
+          "titulo": "Fundamentos de Circuitos Elétricos",
+          "edicao": "5ª Edição",
+          "editora": "McGraw Hill",
+          "ano": 2013
+        },
+        {
+          "autores": ["Boylestad, Robert L."],
+          "titulo": "Introdução à Análise de Circuitos",
+          "edicao": "10ª Edição",
+          "editora": "Prentice Hall",
+          "ano": 2004
+        },
+        {
+          "autores": ["William H Hayt Junior"],
+          "titulo": "Analise de circuitos em engenharia",
+          "edicao": "7ª Edição",
+          "editora": "McGraw Hill",
+          "ano": 2008
+        },
+        {
+          "autores": ["Malley, J. O"],
+          "titulo": "Análise de circuitos",
+          "edicao": "2ª Edição",
+          "editora": "Pearson Education",
+          "ano": 1994
+        },
+        {
+          "autores": ["ABDO, Romeu", "BATES, David J.", "MALVINO, Albert"],
+          "titulo": "Eletrônica",
+          "edicao": "7.ed.",
+          "local": "São Paulo",
+          "editora": "McGraw-Hill",
+          "ano": 2007,
+          "paginas": 672,
+          "isbn": "978-85-7726-022-5"
+        }
+      ]
+    }
+  }
+}

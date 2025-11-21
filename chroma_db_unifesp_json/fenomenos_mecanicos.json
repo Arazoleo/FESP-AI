@@ -1,0 +1,63 @@
+{
+  "disciplina": {
+    "codigo": "4369",
+    "nome": "Fenômenos mecânicos",
+    "nome_ingles": "Phenomena mechanics",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Anual",
+    "termo": 2,
+    "turno": "Integral",
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Sistemas de unidades",
+        "Cinemática",
+        "Dinâmica de uma partícula",
+        "Trabalho e energia",
+        "Dinâmica de um sistema de partículas",
+        "Dinâmica de um corpo rígido",
+        "Gravitação"
+      ],
+      "descricao_completa": "Sistemas de unidades. Cinemática. Dinâmica de uma partícula. Trabalho e energia. Dinâmica de um sistema de partículas. Dinâmica de um corpo rígido. Gravitação."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["Nussenzveig, H. M."],
+          "titulo": "Curso de Física Básica",
+          "volume": "Vol. 1",
+          "editora": "Edgard Blücher"
+        },
+        {
+          "autores": ["Tipler, P. A.", "Mosca, G."],
+          "titulo": "Física para Cientistas e Engenheiros",
+          "volume": "Vol. 1",
+          "editora": "LTC Editora"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["Alonso, M.", "Finn, E. J."],
+          "titulo": "Física Um Curso Universitário",
+          "volume": "Vol. 1",
+          "editora": "Edgard Blücher"
+        },
+        {
+          "autores": ["Richard Feynman"],
+          "titulo": "Lectures on Physics",
+          "volume": "v.1",
+          "editora": "Addison Wesley"
+        }
+      ]
+    }
+  }
+}

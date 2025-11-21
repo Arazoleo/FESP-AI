@@ -1,0 +1,100 @@
+{
+  "disciplina": {
+    "codigo": "5124",
+    "nome": "Anatomia",
+    "nome_ingles": "Anatomy",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 2,
+    "turno": "Integral",
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 10,
+      "pratica": 22,
+      "extensao": 4
+    },
+    "ementa": {
+      "topicos": [
+        "Organização e funcionamento do corpo humano",
+        "Integração dos domínios cognitivos, afetivos e psicomotor",
+        "Atividades de extensão associadas aos conceitos teóricos e práticos",
+        "Visitas técnicas"
+      ],
+      "descricao_completa": "Este curso visa apresentar ao aluno o corpo humano, sua organização e funcionamento. A disciplina foi estruturada para ser um guia do discente com informações objetivas, atualizadas e concisas, contribuindo para a integração dos domínios cognitivos, afetivos e psicomotor do aluno. Serão desenvolvidas atividades de extensão associadas aos conceitos teóricos e práticos previstos neste curso. Poderão ser realizadas visitas técnicas, de acordo com a disponibilidade."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["VAN DE GRAAFF, KM."],
+          "titulo": "Anatomia Humana",
+          "edicao": "6ª ed.",
+          "local": "São Paulo",
+          "editora": "Manole",
+          "ano": 2003
+        },
+        {
+          "autores": ["MACHADO, A."],
+          "titulo": "Neuroanatomia Funcional",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Atheneu",
+          "ano": 2001
+        },
+        {
+          "autores": ["DÂNGELO, JG", "FATTINI, CA"],
+          "titulo": "Anatomia Humana Sistêmica e Segmentar",
+          "edicao": "3ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Atheneu",
+          "ano": 2001
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["VOGL, AW", "DRAKE, RL", "MITCHELL, AWM"],
+          "titulo": "Gray's Anatomia para estudantes",
+          "edicao": "2ª ed.",
+          "local": "São Paulo",
+          "editora": "Elsevier",
+          "ano": 2010
+        },
+        {
+          "autores": ["NETTER, FH"],
+          "titulo": "Netter Atlas de Anatomia Humana",
+          "edicao": "5ª ed.",
+          "local": "São Paulo",
+          "editora": "Elsevier",
+          "ano": 2011
+        },
+        {
+          "autores": ["PAULSEN, F", "WASCHKE, J"],
+          "titulo": "Sobotta: Atlas de Anatomia Humana",
+          "edicao": "23ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Guanabara Koogan",
+          "ano": 2013
+        },
+        {
+          "autores": ["TORTORA, GJ", "DERRICKSON, B"],
+          "titulo": "Corpo Humano: fundamentos da anatomia e fisiologia",
+          "edicao": "8ª ed.",
+          "local": "Porto Alegre",
+          "editora": "Artmed Editora",
+          "ano": 2012
+        },
+        {
+          "autores": ["TREPEL, M"],
+          "titulo": "Neuroanatomia Estrutura e Função",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Revinter",
+          "ano": 2005
+        }
+      ]
+    }
+  }
+}

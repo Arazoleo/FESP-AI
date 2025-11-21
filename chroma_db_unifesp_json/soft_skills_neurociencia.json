@@ -1,0 +1,147 @@
+{
+  "disciplina": {
+    "codigo": null,
+    "nome": "Soft Skills Baseada em Neurociência",
+    "nome_ingles": null,
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica", "Engenharia de Materiais", "ICT", "Biotecnologia", "Ciências da Computação"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": null,
+        "nome": "Neurociência Aplicada ao Cotidiano"
+      }
+    ],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 18,
+      "pratica": 18,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Contexto atual: mundo VUCA e BANI",
+        "Fundamentos da neurociência para desenvolvimento de soft skills",
+        "Competências sócio emocionais exigidas na atualidade",
+        "Soft skills: características pessoais/individuais",
+        "Soft Skills: habilidades interpessoais",
+        "Neurociência da tomada de decisão/habilidades cognitivas",
+        "Inteligência Emocional",
+        "Estratégias de regulação emocional",
+        "Competências de um líder"
+      ],
+      "descricao_completa": "O curso é teórico prático de aplicação de conhecimentos da neurociência para o desenvolvimento de competências exigidas no mercado de trabalho, como: trabalho em equipe, comunicação efetiva, inteligência emocional, resolução de conflitos. Serão colocadas em práticas estratégias de gestão e regulação para o desenvolvimento e acompanhamento de projetos individuais de aprimoramento de habilidades socioemocionais (soft skills)."
+    },
+    "objetivos": {
+      "gerais": "Proporcionar ao aluno conhecimentos científicos de neurociência e estratégias para o desenvolvimento prático de competências exigidas no mercado de trabalho.",
+      "especificos": [
+        "Proporcionar ao aluno o melhor entendimento das demandas atuais do mercado de trabalho, bem como as necessidades para o desenvolvimento das soft skills",
+        "Autoavaliação para elaboração de ações para desenvolvimento individual com projetos de curto prazo",
+        "Acompanhamento deste desenvolvimento na prática",
+        "Aumento de repertório de estratégias de regulação emocional, resolução de conflitos, comunicação efetiva e boa liderança"
+      ]
+    },
+    "metodologia": "Aulas expositivas, Dinâmicas em sala de aula, desenvolvimento de projetos dentro da temática com ferramentas de gestão.",
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["COSENZA, R. M."],
+          "titulo": "Fundamentos de Neuroanatomia",
+          "local": "Rio de Janeiro",
+          "editora": "Guanabara Koogan",
+          "ano": 2013
+        },
+        {
+          "autores": ["BEAR, M. F.", "CONNORS, B. W.", "PARADISO, M. A."],
+          "titulo": "Neurociências: desvendando o sistema nervoso",
+          "local": "Porto Alegre",
+          "editora": "Artmed",
+          "ano": 2006
+        },
+        {
+          "autores": ["DWECK, C. S."],
+          "titulo": "Mindset: a nova psicologia do sucesso",
+          "local": "Rio de Janeiro",
+          "editora": "Objetiva",
+          "ano": 2017
+        },
+        {
+          "autores": ["GOLEMAN, D."],
+          "titulo": "Inteligência Emocional",
+          "edicao": "82ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Objetiva",
+          "ano": 1995
+        },
+        {
+          "autores": ["KAHNEMAN, D."],
+          "titulo": "Rápido e devagar: duas formas de pensar",
+          "local": "São Paulo",
+          "editora": "Objetiva",
+          "ano": 2012
+        },
+        {
+          "autores": ["KANDEL, E. R.", "SCHWARTZ, J. H.", "JESSELL, T. M."],
+          "titulo": "Principles of Neural Science",
+          "local": "New York",
+          "editora": "McGraw-Hill",
+          "ano": 2000
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["RELVAS, M.P."],
+          "titulo": "Fundamentos biológicos da educação: despertando inteligências e afetividade no processo de aprendizagem",
+          "edicao": "4ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Wak Editora",
+          "ano": 2009
+        },
+        {
+          "autores": ["DRAGANSKI, B.", "GASER, C.", "BUSCH, V.", "SCHUIERER, G.", "BOGDAHN, U.", "MAY, A."],
+          "titulo": "Neuroplasticity: changes in grey matter induced by training",
+          "revista": "Nature",
+          "volume": 427,
+          "numero": 6972,
+          "paginas": "311-312",
+          "ano": 2004,
+          "doi": "10.1038/427311a",
+          "pmid": "14737157"
+        },
+        {
+          "autores": ["PENHAKI, Juliana de Rezende"],
+          "titulo": "Soft Skills na Indústria 4.0",
+          "tipo": "Dissertação (Mestrado em Tecnologia e Sociedade)",
+          "instituicao": "Universidade Tecnológica Federal do Paraná",
+          "local": "Curitiba",
+          "ano": 2019,
+          "paginas": 115
+        },
+        {
+          "autores": ["YOUSSEF, Y.", "KÖSTER, L.", "HÄTTICH, A."],
+          "titulo": "Soft Skills und Kompetenzen in der Weiterbildung sowie in der persönlichen Entwicklung: Wofür wir sie brauchen",
+          "titulo_traduzido": "Soft skills and competences in continuing education and personal development: What we need them for",
+          "revista": "Unfallchirurgie (Heidelb)",
+          "volume": 126,
+          "numero": 4,
+          "paginas": "257-261",
+          "ano": 2023,
+          "doi": "10.1007/s00113-022-01269-7",
+          "pmid": "36534364"
+        },
+        {
+          "autores": ["MOLEK-WINIARSKA, D.", "KAWKA, T."],
+          "titulo": "Reducing Work-Related Stress Through Soft-Skills Training Intervention in the Mining Industry",
+          "revista": "Hum Factors",
+          "ano": 2022,
+          "doi": "10.1177/00187208221139020",
+          "pmid": "36373772"
+        }
+      ]
+    }
+  }
+}

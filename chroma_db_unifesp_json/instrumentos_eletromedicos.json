@@ -1,0 +1,168 @@
+{
+  "disciplina": {
+    "codigo": "8217",
+    "nome": "Instrumentos Eletromédicos",
+    "nome_ingles": "Medical Devices",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Anual",
+    "termo": 7,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": "5903",
+        "nome": "Circuitos Elétricos II"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 56,
+      "pratica": 4,
+      "extensao": 12
+    },
+    "extensao": {
+      "programas": [
+        {
+          "codigo": "16244",
+          "nome": "Mao3D O programa de próteses por impressão 3D que reúne tecnologia, inovação e inclusão social",
+          "ano": 2019
+        },
+        {
+          "codigo": "17318",
+          "nome": "Programa de Extensão e Pesquisa do ICT (PEPICT): Educação, Cultura e Popularização da Ciência",
+          "ano": 2020
+        },
+        {
+          "codigo": "17321",
+          "nome": "Programa de Extensão e Pesquisa do ICT (PEPICT): Inovação Tecnológica e Industrialização Sustentável",
+          "ano": 2020
+        },
+        {
+          "codigo": "17787",
+          "nome": "Programa de Extensão e Pesquisa do ICT (PEPICT): Saúde e Bem-estar",
+          "ano": 2020
+        },
+        {
+          "codigo": "17319",
+          "nome": "Programa de Extensão e Pesquisa do ICT (PEPICT): Sociedade Sustentável e Meio Ambiente",
+          "ano": 2020
+        }
+      ]
+    },
+    "ementa": {
+      "topicos": [
+        "Instrumentos de monitoramento e intervenção em Cardiologia",
+        "Monitor de pressão sanguínea e débito cardíaco",
+        "Marca-passo",
+        "Desfibrilador externo e implantável",
+        "Válvulas cardíacas",
+        "Cateteres e Stents",
+        "Instrumentos de monitoramento e intervenção em Pneumologia",
+        "Monitor de respiração e ventilador mecânico",
+        "Instrumentos de monitoramento e intervenção em Endocrinologia",
+        "Monitor de glicose e insulina (pâncreas artificial)",
+        "Instrumentos de monitoramento e intervenção em Nefrologia",
+        "Sistema de hemodiálise",
+        "Instrumentos de monitoramento durante anestesia",
+        "Instrumentos de monitoramento em UTI",
+        "Sistemas de infusão",
+        "Dispositivos de monitoramento óptico não invasivo",
+        "Instrumentos de estimulação",
+        "Neuroestimuladores",
+        "Implante coclear",
+        "Estimulador elétrico funcional",
+        "Instrumentos eletrocirúrgicos",
+        "Instrumentos biomédicos para medidas laboratoriais"
+      ],
+      "descricao_completa": "Abordar a importância clínica, arquitetura e características técnicas dos seguintes instrumentos biomédicos de monitoramento e intervenção: monitor de pressão sanguínea e débito cardíaco, marca-passo, desfibrilador externo e implantável, válvulas cardíacas, cateteres e stents, monitor de respiração e ventilador mecânico, monitor de glicose e insulina (pâncreas artificial), sistema de hemodiálise, monitoramento ótico não invasivo, sistema de infusão, neuroestimuladores, implante coclear, estimulador elétrico funcional, instrumentos eletrocirúrgicos, sistemas de monitoramento durante anestesia e em Unidades de Tratamento Intensivo (UTI), instrumentos biomédicos para medidas laboratoriais. Trabalhos práticos promovendo interfaceamento clínico e de mercado na área. Serão desenvolvidas atividades de extensão associadas aos conceitos teóricos e práticos previstos neste curso. Poderão ser realizadas visitas técnicas a centros clínicos, hospitais e feiras, de acordo com a disponibilidade."
+    },
+    "objetivos": {
+      "gerais": [
+        "Fornecer ao aluno o contexto de aplicabilidade de instrumentos biomédicos que visam monitorar funções fisiológicas e auxiliar no diagnóstico e tratamento de pacientes",
+        "Fornecer ao aluno conhecimento sobre a arquitetura dos equipamentos e suas particularidades no contexto da engenharia biomédica"
+      ],
+      "especificos": [
+        "Introduzir ao aluno uma visão ampla sobre a aplicabilidade dos principais instrumentos biomédicos de monitoramento e intervenção, abordando aspectos históricos, importância clínica e conceitos fisiológicos envolvidos",
+        "Projetar com os alunos cada instrumento estudado, construindo o diagrama de blocos a partir da problemática clínica envolvida, grandezas medidas, sistemas elétricos, mecânicos, eletrônicos e digitais necessários para sua implementação",
+        "Fornecer ao aluno o conhecimento das normas e características técnicas mais importantes de cada equipamento na validação e na utilização clínica",
+        "Proporcionar ao aluno a experiência de contato com o ambiente clínico e mercadológico atual/regional na área de instrumentação biomédica promovendo o interfaceamento com a área da saúde, imprescindível para o Engenheiro Biomédico"
+      ]
+    },
+    "metodologia": "Aulas expositivas, seminários e visitas técnicas.",
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["BRONZINO, Joseph D. (Ed.)"],
+          "titulo": "Medical devices and systems",
+          "edicao": "3ª ed.",
+          "local": "Boca Raton (USA)",
+          "editora": "CRC Press",
+          "ano": 2006
+        },
+        {
+          "autores": ["WEBSTER, John G. (Ed.)"],
+          "titulo": "Medical instrumentation: application and design",
+          "edicao": "4ª ed.",
+          "local": "Hoboken, NJ",
+          "editora": "John Wiley & Sons",
+          "ano": 2009
+        },
+        {
+          "autores": ["FRIES, Richard C."],
+          "titulo": "Reliable design of medical devices",
+          "edicao": "3ª ed.",
+          "local": "Boca Raton, Flórida",
+          "editora": "CRC Press",
+          "ano": 2013
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["PEREZ, R."],
+          "titulo": "Design of Medical Electronic Devices",
+          "local": "New York",
+          "editora": "Academic Press",
+          "ano": 2002
+        },
+        {
+          "autores": ["BAURA, G."],
+          "titulo": "Medical Device Technologies",
+          "local": "Oxford",
+          "editora": "Academic Press of Elsevier",
+          "ano": 2012
+        },
+        {
+          "autores": ["KUTZ, M."],
+          "titulo": "Standard Handbook of Biomedical Engineering & Design",
+          "local": "New York",
+          "editora": "McGraw-Hill",
+          "ano": 2003
+        },
+        {
+          "autores": ["GORE, M.G."],
+          "titulo": "Spectrophotometry and Spectrofluorimetry: A Practical Approach",
+          "editora": "Oxford University Press",
+          "ano": 2000,
+          "paginas": 368
+        },
+        {
+          "autores": ["ENDERLE, J.D.", "BLANCHARD, S.M.", "BRONZINO, J.D."],
+          "titulo": "Introduction to Biomedical Engineering",
+          "edicao": "2ª ed.",
+          "local": "San Diego",
+          "editora": "Elsevier Academic Press",
+          "ano": 2005
+        },
+        {
+          "autores": ["TOGAWA, T.", "TAMURA, T."],
+          "titulo": "Biomedical Transducers and Instruments",
+          "local": "New York",
+          "editora": "CRC Press",
+          "ano": 1997
+        }
+      ]
+    }
+  }
+}

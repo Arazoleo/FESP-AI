@@ -1,0 +1,146 @@
+{
+  "disciplina": {
+    "codigo": "5762",
+    "nome": "Engenharia Bioquímica 1",
+    "nome_ingles": "Biochemical Engineering 1",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Biotecnologia", "Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": "5119",
+        "nome": "Fundamentos de Engenharia Bioquímica"
+      },
+      {
+        "codigo": "5120",
+        "nome": "Microbiologia Geral"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 68,
+      "pratica": 0,
+      "extensao": 4
+    },
+    "ementa": {
+      "topicos": [
+        "Conceitos teóricos de processos biotecnológicos industriais",
+        "Células e meios de interesse industrial",
+        "Cinética enzimática",
+        "Estequiometria e cinética de bioprocesso",
+        "Análise de bioprocesso",
+        "Projeto de biorreatores",
+        "Upstream process",
+        "Atividade extensionista"
+      ],
+      "descricao_completa": "A disciplina apresenta os conceitos teóricos envolvidos na pesquisa, desenvolvimento e otimização de processos biotecnológicos de interesse industrial. As ferramentas discutidas nesta disciplina - células e meios de interesse industrial, cinética enzimática, estequiometria e cinética de bioprocesso, análise de bioprocesso e projeto de biorreatores - devem possibilitar a compreensão dos fenômenos biológicos e o controle das reações bioquímicas nesse tipo de processo. Esses conhecimentos definem a base para desenvolver a etapa de síntese de bioprodutos (upstream process). A disciplina proporá ação de caráter extensionista mediante uma atividade prática que envolverá pesquisa e discussão dos conhecimentos apresentados na disciplina no intuito de atender metas de melhorias das capacidades tecnológicas e busca por alternativas sustentáveis para a bioindústria."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["Schmidell W (Ed.)"],
+          "titulo": "Biotecnologia Industrial - Vol.2: Engenharia Bioquímica",
+          "edicao": "2a edição",
+          "editora": "Editora Blucher",
+          "ano": 2021,
+          "paginas": 628,
+          "isbn": "6555060182"
+        },
+        {
+          "autores": ["Altherthum F (Ed)"],
+          "titulo": "Biotecnologia Industrial - Vol.1: Fundamentos",
+          "edicao": "2a edição",
+          "editora": "Editora Blucher",
+          "ano": 2020,
+          "paginas": 462,
+          "isbn": "8521218982"
+        },
+        {
+          "autores": ["Moraes AM", "Augusto EFP", "Castilho LR (Eds)"],
+          "titulo": "Tecnologia de Cultivo de Células Animais - de Biofármacos à Terapia Gênica",
+          "editora": "Roca",
+          "ano": 2008,
+          "paginas": 528
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["Schmidell W (Ed.)"],
+          "titulo": "Biotecnologia Industrial - Vol.2: Engenharia Bioquímica",
+          "edicao": "2ª edição",
+          "editora": "Editora Blucher",
+          "ano": 2021,
+          "isbn": "9786555060195",
+          "formato": "recurso online"
+        },
+        {
+          "autores": ["Altherthum F (Ed)"],
+          "titulo": "Biotecnologia Industrial - Vol.1: Fundamentos",
+          "edicao": "2ª edição",
+          "editora": "Editora Blucher",
+          "ano": 2020,
+          "isbn": "9788521218975",
+          "formato": "recurso online"
+        },
+        {
+          "autores": ["Stanbury PF", "Whitaker A", "Hall SJ"],
+          "titulo": "Principles of Fermentation Technology",
+          "edicao": "3rd Edition",
+          "editora": "Butterworth-Heinemann",
+          "ano": 2017,
+          "paginas": 824
+        },
+        {
+          "autores": ["Ratledge C", "Kristiansen B (Eds)"],
+          "titulo": "Basic Biotechnology",
+          "edicao": "3rd Edition",
+          "editora": "Cambridge University Press",
+          "ano": 2006,
+          "paginas": 666,
+          "isbn": "9780521549585"
+        },
+        {
+          "autores": ["Shuler ML", "Kargi F"],
+          "titulo": "Bioprocess engineering: basic concepts",
+          "edicao": "2nd Edition",
+          "local": "Upper Saddle River",
+          "editora": "Prentice Hall",
+          "ano": 2002,
+          "paginas": 553,
+          "isbn": "0130819085"
+        },
+        {
+          "autores": ["Doran PM"],
+          "titulo": "Bioprocess engineering principles",
+          "local": "London",
+          "editora": "Academic",
+          "ano": 1995,
+          "paginas": 439,
+          "isbn": "9780122208560"
+        },
+        {
+          "autores": ["Nelson DL", "Cox MM"],
+          "titulo": "Princípios de bioquímica de Lehninger",
+          "edicao": "5. ed.",
+          "local": "Porto Alegre",
+          "editora": "Artmed",
+          "ano": 2011,
+          "paginas": 1273,
+          "isbn": "978-85-7378-166-3"
+        },
+        {
+          "autores": ["Madigan MT et al."],
+          "titulo": "Microbiologia de Brock",
+          "editora": "Grupo A",
+          "ano": 2016,
+          "isbn": "9788582712986",
+          "formato": "recurso online"
+        }
+      ]
+    }
+  }
+}

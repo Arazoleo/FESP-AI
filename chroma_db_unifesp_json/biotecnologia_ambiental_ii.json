@@ -1,0 +1,143 @@
+{
+  "disciplina": {
+    "codigo": "5865",
+    "nome": "Biotecnologia Ambiental II",
+    "nome_ingles": "Environmental Biotechnology II",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Biotecnologia"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": "5857",
+        "nome": "Biotecnologia Ambiental I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 12
+    },
+    "ementa": {
+      "topicos": [
+        "Parâmetros químicos e biológicos",
+        "Métodos de tratamento e purificação de água",
+        "Filtração",
+        "Métodos químicos e físico-químicos",
+        "Tecnologia de tratamento de efluentes",
+        "Aplicação de métodos biológicos no tratamento de efluentes industriais",
+        "Saneamento básico"
+      ],
+      "descricao_completa": "Parâmetros químicos e biológicos. Métodos de tratamento e purificação de água. Filtração. Métodos químicos e físico-químicos. Tecnologia de tratamento de efluentes. Aplicação de métodos biológicos no tratamento de efluentes industriais. Saneamento básico."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["EVANS, G. M.", "FURLONG, J. C."],
+          "titulo": "Environmental Biotechnology: Theory and Application",
+          "local": "England",
+          "editora": "John Wiley & Sons",
+          "ano": 2003
+        },
+        {
+          "autores": ["BURTON, F. L.", "TCHOBANOGLOUS, G.", "METCALF & EDDY, Inc.", "STENSEL, H. D."],
+          "titulo": "Wastewater Engineering",
+          "local": "Grã-Bretanha",
+          "editora": "McGraw-Hill College",
+          "ano": 2013
+        },
+        {
+          "autores": ["VALLERO, D. A."],
+          "titulo": "Environmental Biotechnology: A Biosystems Approach",
+          "editora": "Elsevier, Academic Press",
+          "ano": 2010
+        },
+        {
+          "autores": ["MILLER JR., G. T."],
+          "titulo": "Ciência ambiental",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2007
+        },
+        {
+          "autores": ["ASHBY, M.F."],
+          "titulo": "Materials and the environment",
+          "edicao": "1ª ed.",
+          "editora": "Butterworth-Heinemann",
+          "ano": 2009
+        },
+        {
+          "autores": ["PACHECO, E.B.A.V.", "MANO, E.B.", "BONELLI, C."],
+          "titulo": "Meio Ambiente, Poluição e Reciclagem",
+          "edicao": "2ª ed.",
+          "editora": "Edgard Blucher",
+          "ano": 2010
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BAIRD, C.", "CANN, M."],
+          "titulo": "Environmental chemistry",
+          "edicao": "4ª ed.",
+          "local": "New York",
+          "editora": "Freeman",
+          "ano": 2008
+        },
+        {
+          "autores": ["STANLEY, E. M."],
+          "titulo": "Química ambiental",
+          "edicao": "9ª ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2015
+        },
+        {
+          "autores": ["ZANIN, M.", "MANCINI, S. D."],
+          "titulo": "Resíduos plásticos e reciclagem: aspectos gerais e tecnologia",
+          "local": "São Carlos",
+          "editora": "EdUFSCar",
+          "ano": 2009
+        },
+        {
+          "autores": ["BLANC, C."],
+          "titulo": "Aquecimento global & crise ambiental",
+          "local": "São Paulo",
+          "editora": "Editora Gaia",
+          "ano": 2012
+        },
+        {
+          "autores": ["BRAGA, B. et al."],
+          "titulo": "Introdução à Engenharia Ambiental",
+          "local": "São Paulo",
+          "editora": "Pearson Prentice Hall",
+          "ano": 2005
+        },
+        {
+          "autores": ["CALIJURI, M. do C.", "CUNHA, D.G.F.C. (Orgs.)"],
+          "titulo": "Engenharia Ambiental: Conceitos, Tecnologia e Gestão",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2013
+        },
+        {
+          "autores": ["SÁNCHEZ, L.E."],
+          "titulo": "Avaliação de impacto ambiental: conceitos e métodos",
+          "local": "São Paulo",
+          "editora": "Oficina de textos",
+          "ano": 2013
+        },
+        {
+          "autores": ["GONÇALES, C. W. P."],
+          "titulo": "O Desafio Ambiental",
+          "local": "Rio de Janeiro",
+          "editora": "Record",
+          "ano": 2004
+        }
+      ]
+    }
+  }
+}

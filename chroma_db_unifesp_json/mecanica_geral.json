@@ -1,0 +1,124 @@
+{
+  "disciplina": {
+    "codigo": "4770",
+    "nome": "Mecânica Geral",
+    "nome_ingles": "General Mechanics",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 4,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "4369",
+        "nome": "Fenômenos Mecânicos"
+      },
+      {
+        "codigo": "2650",
+        "nome": "Geometria Analítica"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Sistemas de forças bi e tridimensionais",
+        "Componentes retangulares",
+        "Momento e Momento de um Binário",
+        "Resultantes de um sistema de forças",
+        "Equilíbrio de um ponto material e de corpos rígidos",
+        "Isolamento do sistema mecânico e Diagrama do corpo livre",
+        "Condições de equilíbrio",
+        "Centros de gravidade e centróide",
+        "Centro de massa e centro de gravidade",
+        "Centróides de linhas, áreas e volumes",
+        "Corpos compostos",
+        "Análise de estruturas",
+        "Treliças planas",
+        "Estruturas e máquinas",
+        "Forças internas",
+        "Forças internas em elementos estruturais",
+        "Diagramas de força de cisalhamento e de momento fletor",
+        "Momento de inércia",
+        "Definição de momentos de inércia para área",
+        "Teorema dos eixos paralelos para uma área",
+        "Momento de áreas compostas"
+      ],
+      "descricao_completa": "Sistemas de forças bi e tridimensionais. Componentes retangulares. Momento e Momento de um Binário. Resultantes de um sistema de forças. Equilíbrio de um ponto material e de corpos rígidos. Isolamento do sistema mecânico e Diagrama do corpo livre. Condições de equilíbrio. Centros de gravidade e centróide. Centro de massa e centro de gravidade. Centróides de linhas, áreas e volumes. Corpos compostos. Análise de estruturas. Treliças planas. Estruturas e máquinas. Forças internas. Forças internas em elementos estruturais. Diagramas de força de cisalhamento e de momento fletor. Momento de inércia. Definição de momentos de inércia para área. Teorema dos eixos paralelos para uma área. Momento de áreas compostas."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["HIBBELER, Russell Charles"],
+          "titulo": "Estática: mecânica para engenharia",
+          "editora": "Pearsondo Brasil",
+          "edicao": "12a Edição",
+          "ano": 2011,
+          "formato": "Livro"
+        },
+        {
+          "autores": ["HIBBELER, Russell Charles"],
+          "titulo": "Estática: mecânica para engenharia",
+          "editora": "Pearsondo Brasil",
+          "edicao": "14a Edição",
+          "ano": 2017,
+          "formato": "Ebook"
+        },
+        {
+          "autores": ["BEER, Ferdinand P.", "JOHNSTON, E. Russell", "MAZUREK, David F."],
+          "titulo": "Mecânica Vetorial para Engenheiros-: Vol 1 Estática",
+          "editora": "McGraw Hill Brasil",
+          "edicao": "11a Edição",
+          "ano": 2019,
+          "formato": "Ebook"
+        },
+        {
+          "autores": ["MERIAM, James L.", "KRAIGE, L. Glenn"],
+          "titulo": "Mecânica para engenharia: Vol 1 Estática",
+          "editora": "LTC",
+          "edicao": "7a Edição",
+          "ano": 2015,
+          "formato": "Ebook"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["ALMEIDA, Márcio Tadeu de", "LABEGALINI, P. R.", "OLIVEIRA, Wlamir Carlos de"],
+          "titulo": "Mecânica Geral: Estática",
+          "editora": "Interciência",
+          "ano": 2019
+        },
+        {
+          "autores": ["NELSON, E. W.", "BEST, C. L.", "MCLEAN, W. G.", "POTTER, M. C."],
+          "titulo": "Engenharia Mecânica: Estática",
+          "editora": "Bookman",
+          "ano": 2013
+        },
+        {
+          "autores": ["PLESHA, Michael E.", "GRAY, Gary L.", "COSTANZO, Francesco"],
+          "titulo": "Mecânica para engenharia: estática",
+          "editora": "AMGH Editora",
+          "ano": 2014
+        },
+        {
+          "autores": ["BOOTHROYD, Geoffrey", "POLI, Corrado"],
+          "titulo": "Applied Engineering Mechanics: Statics and Dynamics",
+          "editora": "Routledge",
+          "ano": 2018
+        },
+        {
+          "autores": ["RAO, C. LAKSHAMANA et al."],
+          "titulo": "Engineering Mechanics: Statics and Dynamics",
+          "editora": "PHI Learning Pvt. Ltd.",
+          "ano": 2003
+        }
+      ]
+    }
+  }
+}
