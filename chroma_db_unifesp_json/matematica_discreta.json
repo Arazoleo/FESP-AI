@@ -1,0 +1,99 @@
+{
+  "disciplina": {
+    "codigo": "2201",
+    "nome": "Matemática Discreta",
+    "nome_ingles": "Discrete Mathematics",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 2,
+    "turno": null,
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Técnicas de demonstração",
+        "Demonstrações com inteiros",
+        "Demonstrações com conjuntos",
+        "Princípios de contagem",
+        "Aplicações"
+      ],
+      "descricao_completa": "Técnicas de demonstração. Demonstrações com inteiros. Demonstrações com conjuntos. Princípios de contagem. Aplicações."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["ALENCAR FILHO, E."],
+          "titulo": "Iniciação a lógica matemática",
+          "edicao": "21. ed.",
+          "local": "São Paulo",
+          "editora": "Nobel",
+          "ano": 2008
+        },
+        {
+          "autores": ["ROSEN, K. H."],
+          "titulo": "Matemática discreta e suas aplicações",
+          "edicao": "6. ed.",
+          "local": "São Paulo",
+          "editora": "McGraw-Hill",
+          "ano": 2009
+        },
+        {
+          "autores": ["SCHEINERMAN, E. R."],
+          "titulo": "Matemática discreta: uma introdução",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2011
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["LOVÁZ, L.", "PELIKÁN, J.", "VESZTERGOMBI, K."],
+          "titulo": "Matemática discreta: elementar e além",
+          "local": "Rio de Janeiro",
+          "editora": "SBM",
+          "ano": 2003
+        },
+        {
+          "autores": ["GERSTING, J."],
+          "titulo": "Fundamentos matemáticos para a ciência da computação: um tratamento moderno de matemática discreta",
+          "edicao": "5. ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2008
+        },
+        {
+          "autores": ["LIPSCHUTZ, S.", "LIPSON, M."],
+          "titulo": "Teoria e problemas de matemática discreta",
+          "edicao": "2. ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2006
+        },
+        {
+          "autores": ["MENEZES, P. B."],
+          "titulo": "Matemática discreta para computação e informática",
+          "edicao": "2. ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2005
+        },
+        {
+          "autores": ["VELLEMAN, D. J."],
+          "titulo": "How to prove it: a structured approach",
+          "edicao": "2. ed.",
+          "local": "New York",
+          "editora": "Cambridge University Press",
+          "ano": 2006
+        }
+      ]
+    }
+  }
+}

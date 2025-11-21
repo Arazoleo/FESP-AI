@@ -1,0 +1,95 @@
+{
+  "disciplina": {
+    "codigo": "2672",
+    "nome": "Ciência, Tecnologia e Sociedade",
+    "nome_ingles": "Science, Technology and Society",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 1,
+    "turno": null,
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 36,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Advento do campo da CTS (Ciência, Tecnologia e Sociedade)",
+        "Conceituação e definição a respeito do que é técnica e tecnologia",
+        "Ciência, tecnologia e inovação",
+        "Política científica e tecnológica",
+        "Valores e ética na prática científica",
+        "Controvérsias científicas"
+      ],
+      "descricao_completa": "Advento do campo da CTS (Ciência, Tecnologia e Sociedade). Conceituação e definição a respeito do que é técnica e tecnologia. Ciência, tecnologia e inovação. Política científica e tecnológica. Valores e ética na prática científica. Controvérsias científicas."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["ARANHA, Maria Lúcia de A.", "MARTINS, Maria Helena P."],
+          "titulo": "Filosofando: Introdução à filosofia",
+          "local": "São Paulo",
+          "editora": "Moderna",
+          "ano": 2009
+        },
+        {
+          "autores": ["DAGNINO, Renato"],
+          "titulo": "Neutralidade da ciência e determinismo tecnológico: um debate sobre a tecnociência",
+          "local": "Campinas",
+          "editora": "UNICAMP",
+          "ano": 2008
+        },
+        {
+          "autores": ["CUPANI, Alberto"],
+          "titulo": "Filosofia da Tecnologia: um convite",
+          "local": "Florianópolis",
+          "editora": "Ed. UFSC",
+          "ano": 2011
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["LATOUR, Bruno"],
+          "titulo": "Ciência Em Ação: Como Seguir Cientistas e Engenheiros Mundo Afora",
+          "local": "São Paulo",
+          "editora": "Ed. Unesp",
+          "ano": 2001
+        },
+        {
+          "autores": ["BOURDIEU, Pierre"],
+          "titulo": "Os usos sociais da ciência: por uma sociologia clínica do campo científico",
+          "local": "São Paulo",
+          "editora": "Ed. Unesp",
+          "ano": 2004
+        },
+        {
+          "autores": ["KUHN, Thomas S."],
+          "titulo": "A estrutura das revoluções científicas",
+          "local": "São Paulo",
+          "editora": "Perspectiva",
+          "ano": 2006
+        },
+        {
+          "autores": ["LACEY, Hugh"],
+          "titulo": "Valores e atividade científica",
+          "local": "São Paulo",
+          "editora": "Editora 34",
+          "ano": 2008
+        },
+        {
+          "autores": ["BOURDIEU, Pierre"],
+          "titulo": "O poder simbólico",
+          "edicao": "14ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Bertrand Brasil",
+          "ano": 2010
+        }
+      ]
+    }
+  }
+}

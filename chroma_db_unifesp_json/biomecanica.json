@@ -1,0 +1,101 @@
+{
+  "disciplina": {
+    "codigo": "5776",
+    "nome": "Biomecânica",
+    "nome_ingles": "Biomechanics",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": "5398",
+        "nome": "Sistemas Mecânicos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 36,
+      "pratica": 16,
+      "extensao": 20
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução à Biomecânica",
+        "Fundamentos de Biomecânica – Conceito, Análise e Aplicação de Força e Momento",
+        "Comportamento e Propriedades Mecânicas de tecidos e sistemas biológicos",
+        "Análise e redução de sistemas biológicos a elementos mecânicos",
+        "Atividades de extensão associadas aos conceitos teóricos e práticos",
+        "Visitas técnicas"
+      ],
+      "descricao_completa": "Introdução à Biomecânica. Fundamentos de Biomecânica – Conceito, Análise e Aplicação de Força e Momento. Comportamento e Propriedades Mecânicas de tecidos e sistemas biológicos. Análise e redução de sistemas biológicos a elementos mecânicos. Serão desenvolvidas atividades de extensão associadas aos conceitos teóricos e práticos previstos neste curso. Poderão ser realizadas visitas técnicas, de acordo com a disponibilidade."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["HAMILL, J.", "KNUDZEN, K."],
+          "titulo": "Bases biomecânicas do movimento humano",
+          "local": "São Paulo",
+          "editora": "Manole",
+          "ano": 2016
+        },
+        {
+          "autores": ["ETHIER, R.", "SIMMONS, C.A."],
+          "titulo": "Introductory Biomechanics: From Cells to Organisms",
+          "editora": "Cambridge University Press",
+          "ano": 2007
+        },
+        {
+          "autores": ["ZATSIORSKY, Vladimir M."],
+          "titulo": "Kinetics of human motion",
+          "local": "Champaign, IL",
+          "editora": "Human Kinetics",
+          "ano": 2002
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["HALL, S.J."],
+          "titulo": "Basic biomechanics",
+          "edicao": "5ª ed.",
+          "local": "New York",
+          "editora": "McGraw-Hill",
+          "ano": 2006
+        },
+        {
+          "autores": ["YAMAGUCHI, G.T."],
+          "titulo": "Dynamic modeling of musculoskeletal motion: a vectorized approach for biomedical analysis in three dimensions",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2001
+        },
+        {
+          "autores": ["NIGG, B.M.", "HERZOG, W. (eds.)"],
+          "titulo": "Biomechanics of the musculo-skeletal system",
+          "edicao": "3ª ed.",
+          "local": "Chichester, West Sussex",
+          "editora": "John Wiley & Sons",
+          "ano": 2009
+        },
+        {
+          "autores": ["ZATSIORSKY, Vladimir M."],
+          "titulo": "Kinematics of human motion",
+          "local": "Champaign, IL",
+          "editora": "Human Kinetics",
+          "ano": 1998
+        },
+        {
+          "autores": ["WINTER, David A."],
+          "titulo": "Biomechanics and motor control of human movement",
+          "edicao": "4ª ed.",
+          "local": "Hoboken, EUA",
+          "editora": "Wiley",
+          "ano": 2009
+        }
+      ]
+    }
+  }
+}

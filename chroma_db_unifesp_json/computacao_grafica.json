@@ -1,0 +1,114 @@
+{
+  "disciplina": {
+    "codigo": "3051",
+    "nome": "Computação Gráfica",
+    "nome_ingles": "Computer Graphics",
+    "campus": "São José dos Campos",
+    "curso": ["Ciência da Computação", "Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": "2832",
+        "nome": "Algoritmo e Estrutura de Dados I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 36,
+      "pratica": 36,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Transformações geométricas bi e tridimensionais",
+        "Primitivas gráficas de saída",
+        "Visualização tridimensional",
+        "Representação de Objetos Tridimensionais",
+        "Modelos de iluminação",
+        "Animação"
+      ],
+      "descricao_completa": "Transformações geométricas bi e tridimensionais; Primitivas gráficas de saída; Visualização tridimensional; Representação de Objetos Tridimensionais; Modelos de iluminação; Animação."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["HEARN, Donald", "BAKER, M. Pauline"],
+          "titulo": "Computer graphics with OpenGL",
+          "edicao": "3ª ed.",
+          "local": "Upper Saddle River, NJ",
+          "editora": "Pearson Prentice-Hall",
+          "ano": 2004
+        },
+        {
+          "autores": ["FOLEY, James D", "DAM, Andries van", "FEINER, Steven K", "HUGHES, John F."],
+          "titulo": "Computer graphics: principles and practice",
+          "edicao": "2ª ed.",
+          "local": "Boston",
+          "editora": "Addison-Wesley",
+          "ano": 1996
+        },
+        {
+          "autores": ["AZEVEDO, Eduardo", "CONCI, Aura"],
+          "titulo": "Computação gráfica vol.1: geração de imagens",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2003
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["HAEMEL, Nicholas", "LIPCHAK, Benjamin", "WRIGHT JR., Richard S."],
+          "titulo": "OpenGL superbible: comprehensive tutorial and reference",
+          "edicao": "4ª ed.",
+          "local": "Upper Saddle River, NJ",
+          "editora": "Addison-Wesley",
+          "ano": 2007
+        },
+        {
+          "autores": ["WATT, Alan"],
+          "titulo": "3D computer graphics",
+          "edicao": "3ª ed.",
+          "local": "USA",
+          "editora": "Pearson",
+          "ano": 2000
+        },
+        {
+          "autores": ["HILL, F.S.", "KELLEY, Stephen M."],
+          "titulo": "Computer graphics using openGL",
+          "edicao": "3ª ed.",
+          "local": "Upper Saddle River, NJ",
+          "editora": "Pearson Prentice Hall",
+          "ano": 2006
+        },
+        {
+          "autores": ["LENGYEL, Eric"],
+          "titulo": "Mathematics for 3D game programming and computer graphics",
+          "edicao": "2ª ed.",
+          "local": "USA",
+          "editora": "Charles River Media",
+          "ano": 2004
+        },
+        {
+          "autores": ["AMMERAAL, Leen", "ZHANG, Kang"],
+          "titulo": "Computer graphics for Java programmers",
+          "edicao": "2ª ed.",
+          "local": "Chichester (GBR)",
+          "editora": "John Wiley & Sons",
+          "ano": 2007
+        },
+        {
+          "autores": ["SHREINER, Dave"],
+          "titulo": "OpenGL programming guide: the official guide to learning openGL, versions 3.0 and 3.1",
+          "edicao": "7ª ed.",
+          "local": "Boston",
+          "editora": "Addison-Wesley",
+          "ano": 2009
+        }
+      ]
+    }
+  }
+}

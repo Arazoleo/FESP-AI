@@ -1,0 +1,101 @@
+{
+  "disciplina": {
+    "codigo": "2650",
+    "nome": "Geometria Analítica",
+    "nome_ingles": "Analytical Geometry",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 2,
+    "turno": null,
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 64,
+      "pratica": 8,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Sistemas lineares",
+        "Vetores, operações",
+        "Dependência e independência linear, bases, sistemas de coordenadas",
+        "Distância, norma e ângulo",
+        "Produtos escalar, vetorial e misto",
+        "Retas no plano e no espaço",
+        "Planos",
+        "Posições relativas, interseções, distâncias e ângulos",
+        "Círculo e esfera",
+        "Coordenadas polares, cilíndricas e esféricas",
+        "Cônicas e quádricas, classificação"
+      ],
+      "descricao_completa": "Sistemas lineares. Vetores, operações. Dependência e independência linear, bases, sistemas de coordenadas. Distância, norma e ângulo. Produtos escalar, vetorial e misto. Retas no plano e no espaço. Planos. Posições relativas, interseções, distâncias e ângulos. Círculo e esfera. Coordenadas polares, cilíndricas e esféricas. Cônicas e quádricas, classificação."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["CAMARGO, I.", "BOULOS, P."],
+          "titulo": "Geometria analítica: um Tratamento Vetorial",
+          "edicao": "3a ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2005
+        },
+        {
+          "autores": ["SANTOS, R. J."],
+          "titulo": "Matrizes, vetores e geometria analítica",
+          "local": "Belo Horizonte",
+          "editora": "Imprensa Universitária da UFMG",
+          "ano": 2012
+        },
+        {
+          "autores": ["WINTERLE, P."],
+          "titulo": "Vetores e geometria analítica",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2000
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["CALLIOLI, C. A.", "CAROLI, A.", "FEITOSA, M. O."],
+          "titulo": "Matrizes, vetores e geometria analítica: teoria e exercícios",
+          "local": "São Paulo",
+          "editora": "Noel",
+          "ano": 1984
+        },
+        {
+          "autores": ["LEHMANN, C. H."],
+          "titulo": "Geometria Analítica",
+          "editora": "Editora Globo",
+          "ano": 1995
+        },
+        {
+          "autores": ["LIMA, E. L."],
+          "titulo": "Álgebra linear",
+          "edicao": "8a ed.",
+          "local": "Rio de Janeiro",
+          "editora": "SBM-IMPA",
+          "ano": 2011
+        },
+        {
+          "autores": ["MACHADO, A. S."],
+          "titulo": "Álgebra linear e geometria analítica",
+          "edicao": "2a ed.",
+          "local": "São Paulo",
+          "editora": "Atual",
+          "ano": 1982
+        },
+        {
+          "autores": ["SANTOS, R. J."],
+          "titulo": "Um curso de geometria analítica e álgebra linear",
+          "local": "Belo Horizonte",
+          "editora": "Imprensa Universitária da UFMG",
+          "ano": 2010
+        }
+      ]
+    }
+  }
+}

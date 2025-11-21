@@ -1,0 +1,109 @@
+{
+  "disciplina": {
+    "codigo": "4403",
+    "nome": "Física Moderna",
+    "nome_ingles": "Modern Physics",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "4369",
+        "nome": "Fenômenos Mecânicos"
+      },
+      {
+        "codigo": "4748",
+        "nome": "Fenômenos Eletromagnéticos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Interação de luz e matéria",
+        "Radiação de corpo negro",
+        "Efeito Fotoelétrico",
+        "Raios-X e Efeito Compton",
+        "O Modelo de Bohr e o átomo de Hidrogênio",
+        "Espectros de linha",
+        "Dualidade partícula-onda e Postulado de deBroglie",
+        "Interferência e difração de ondas",
+        "Princípio da incerteza",
+        "Quantização do momento angular e quantização da energia",
+        "Função de onda e Teoria de Schrödinger da Mecânica Quântica",
+        "Oscilador harmônico quantizado: moléculas e sólidos",
+        "Estrutura atômica: números quânticos, efeito Zeeman e spin",
+        "Aplicações da Mecânica Quântica I: Caracterização de materiais",
+        "Aplicações da Mecânica Quântica II: Técnicas de diagnóstico e terapias biomédicas"
+      ],
+      "descricao_completa": "Interação de luz e matéria. Radiação de corpo negro. Efeito Fotoelétrico. Raios-X e Efeito Compton. O Modelo de Bohr e o átomo de Hidrogênio. Espectros de linha. Dualidade partícula-onda e Postulado de deBroglie. Interferência e difração de ondas. Princípio da incerteza. Quantização do momento angular e quantização da energia. Função de onda e Teoria de Schrödinger da Mecânica Quântica. Oscilador harmônico quantizado: moléculas e sólidos. Estrutura atômica: números quânticos, efeito Zeeman e spin. Aplicações da Mecânica Quântica I: Caracterização de materiais. Aplicações da Mecânica Quântica II: Técnicas de diagnóstico e terapias biomédicas."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["LLEWELLYN, Ralph A.", "TIPLER, Paul A."],
+          "titulo": "Física Moderna",
+          "editora": "LTC",
+          "ano": 2006,
+          "nota": "Livro e 6a Edição 2014 (Ebook)"
+        },
+        {
+          "autores": ["EISBERG, R.", "RESNICK, R."],
+          "titulo": "Física Quântica: Átomos, Moléculas, Sólidos, Núcleos e Partículas",
+          "editora": "Editora Campus",
+          "ano": 1979,
+          "formato": "Livro"
+        },
+        {
+          "autores": ["KNIGHT, Randall D."],
+          "titulo": "Física: Uma Abordagem Estratégica: Volume 4 - Relatividade Física Quântica",
+          "edicao": "2a Edição",
+          "editora": "Bookman",
+          "ano": 2009,
+          "formato": "Ebook"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["SERWAY, Raymond A.", "JOHN JR, W."],
+          "titulo": "Princípios e Física - Óptica e Física Moderna - Volume 4",
+          "editora": "Cengage Learning Edições Ltda.",
+          "ano": 2010
+        },
+        {
+          "autores": ["NUSSENZVEIG, Herch Moysés"],
+          "titulo": "Curso de Física Básica: Ótica, Relatividade, Física Quântica (vol. 4)",
+          "editora": "Editora Blucher",
+          "ano": 2014
+        },
+        {
+          "autores": ["HOBBIE, Russell K.", "ROTH, Bradley J."],
+          "titulo": "Intermediate physics for medicine and biology",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2007
+        },
+        {
+          "autores": ["CARUSO, Francisco", "OGURI, Vitor"],
+          "titulo": "Física Moderna: origens clássicas e fundamentos quânticos",
+          "editora": "LTC",
+          "ano": 2016
+        },
+        {
+          "autores": ["BAUER, Wolfgang", "WESTFALL, Gary D.", "DIAS, Helio"],
+          "titulo": "Física para Universitários - Óptica e Física Moderna",
+          "editora": "AMGH Editora",
+          "ano": 2012
+        }
+      ]
+    }
+  }
+}

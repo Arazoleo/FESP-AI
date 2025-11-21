@@ -1,0 +1,107 @@
+{
+  "disciplina": {
+    "codigo": "6094",
+    "nome": "Equações Diferenciais Ordinárias",
+    "nome_ingles": "Ordinary Differential Equations",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "2475",
+        "nome": "Álgebra Linear"
+      },
+      {
+        "codigo": "4328",
+        "nome": "Séries e Equações Diferenciais Ordinárias"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Conceitos preliminares",
+        "Sistemas de Equações lineares de primeira ordem",
+        "Equações não-lineares",
+        "Estabilidade",
+        "Transformada de Laplace",
+        "Modelagem e aplicações"
+      ],
+      "descricao_completa": "Conceitos preliminares. Sistemas de Equações lineares de primeira ordem. Equações não-lineares. Estabilidade. Transformada de Laplace. Modelagem e aplicações."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["BOYCE, W. E.", "DIPRIMA, R. C."],
+          "titulo": "Equações diferenciais elementares e problemas de valores de contorno",
+          "edicao": "8ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2006
+        },
+        {
+          "autores": ["FIGUEIREDO, D. G.", "NEVES, A. F."],
+          "titulo": "Equações diferenciais aplicadas",
+          "edicao": "3ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2010
+        },
+        {
+          "autores": ["SIMMONS, G. F.", "KRANTZ, S. G.", "CASTRO, H. M. A."],
+          "titulo": "Equações diferenciais: teoria, técnica e prática",
+          "local": "São Paulo",
+          "editora": "Mc-Graw Hill",
+          "ano": 2008
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BAUER, F.", "NOHEL, J. A."],
+          "titulo": "The qualitative theory of ordinary differential equations: an introduction",
+          "local": "New York",
+          "editora": "Dover Publications",
+          "ano": 1989
+        },
+        {
+          "autores": ["DOERING, C. I.", "LOPES, A. O."],
+          "titulo": "Equações diferenciais ordinárias",
+          "edicao": "4ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2008
+        },
+        {
+          "autores": ["HIRSCH, M. W.", "SAMALE, S.", "DEVANEY, R. L."],
+          "titulo": "Differential equations, dynamical systems and an introduction to chaos",
+          "local": "London",
+          "editora": "Elsevier",
+          "ano": 2003
+        },
+        {
+          "autores": ["NAGLE, R. K.", "SAFF, E. B.", "SNIDER, D. A."],
+          "titulo": "Equações diferenciais",
+          "edicao": "8ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2012
+        },
+        {
+          "autores": ["ZILL, D. G."],
+          "titulo": "Equações diferenciais com aplicações em modelagem",
+          "local": "São Paulo",
+          "editora": "Thomson",
+          "ano": 2003
+        }
+      ]
+    }
+  }
+}

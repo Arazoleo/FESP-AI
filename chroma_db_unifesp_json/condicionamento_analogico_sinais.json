@@ -1,0 +1,123 @@
+{
+  "disciplina": {
+    "codigo": null,
+    "nome": "Condicionamento Analógico de Sinais",
+    "nome_ingles": "Analog Signal Conditioning",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 8,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": null,
+        "nome": "Laboratório de Circuitos Elétricos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 36,
+      "pratica": 36,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Aplicações de Amplificadores Operacionais",
+        "Circuitos lineares/não lineares",
+        "Comparadores de tensão",
+        "Retificadores de precisão",
+        "Chaves analógicas",
+        "Circuitos sample-and-hold",
+        "Filtros",
+        "Projetos para geração de sinais e temporizadores",
+        "Referências de tensão e reguladores",
+        "Projetos com amplificadores não lineares"
+      ],
+      "descricao_completa": "Projetos envolvendo: Circuitos lineares; Filtros; Circuitos Operacionais de Potência e Controle; Circuitos não lineares; Geradores de Sinais; Referências de Tensão e Reguladores; Amplificadores não lineares."
+    },
+    "objetivos": {
+      "gerais": "Fornecer conceitos avançados eletrônica analógica em um contexto prático implementando projetos envolvendo os principais elementos eletrônicos, como eles se relacionam e podem ser utilizados no condicionamento analógico de sinais biomédicos. Propiciar ao discente o aprofundamento dos conceitos teóricos de dispositivos eletrônicos modernos e suas combinações, permitindo ao discente compreender e projetar circuito de condicionamento de sinais complexos com aplicabilidade na engenharia biomédica.",
+      "especificos": [
+        "Abordar conceitos práticos de componentes eletrônicos modernos e suas aplicações típicas",
+        "Projetar circuitos analógicos de condicionamento de sinais biomédicos"
+      ]
+    },
+    "metodologia": "Aulas expositivas (lousa e projeção), práticas de laboratório.",
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["SEDRA, A. S.", "SMITH, K."],
+          "titulo": "Microeletrônica",
+          "edicao": "5ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2007,
+          "paginas": 848
+        },
+        {
+          "autores": ["BOYLESTAD, R. L."],
+          "titulo": "Dispositivos eletrônicos: teoria e circuitos",
+          "edicao": "11ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2013,
+          "paginas": 766
+        },
+        {
+          "autores": ["MALVINO, A.", "BATES, D. J."],
+          "titulo": "Eletrônica: diodos, transistores e amplificadores",
+          "edicao": "7ª ed.",
+          "local": "Porto Alegre",
+          "editora": "McGraw-Hill",
+          "ano": 2011,
+          "paginas": 429
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["FRANCO, S."],
+          "titulo": "Design with Operational Amplifiers and Analog Integrated Circuits",
+          "edicao": "4ª ed.",
+          "editora": "McGraw-Hill Education",
+          "ano": 2014
+        },
+        {
+          "autores": ["ABDO, R.", "BATES, D. J.", "MALVINO, A."],
+          "titulo": "Eletrônica: volume 1",
+          "local": "São Paulo",
+          "editora": "McGraw-Hill",
+          "ano": 2007,
+          "paginas": 672
+        },
+        {
+          "autores": ["BATES, D. J.", "MALVINO, A."],
+          "titulo": "Eletrônica: volume 2",
+          "local": "São Paulo",
+          "editora": "McGraw-Hill",
+          "ano": 2007,
+          "paginas": 556
+        },
+        {
+          "autores": ["WAKERLY, John F."],
+          "titulo": "Digital design: principles and practices",
+          "edicao": "4ª ed.",
+          "local": "Upper Saddle River (USA)",
+          "editora": "Pearson",
+          "ano": 2006,
+          "paginas": 895
+        },
+        {
+          "autores": ["TOCCI, Ronald J", "WIDMER, Neal S", "MOSS, Gregory L."],
+          "titulo": "Sistemas digitais: princípios e aplicações",
+          "edicao": "11ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2011,
+          "paginas": 817
+        }
+      ]
+    }
+  }
+}

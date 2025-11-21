@@ -1,0 +1,115 @@
+{
+  "disciplina": {
+    "codigo": "5867",
+    "nome": "Biotecnologia Vegetal",
+    "nome_ingles": "Plant Biotechnology",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Biotecnologia", "Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": "5859",
+        "nome": "Botânica e Fisiologia Vegetal"
+      },
+      {
+        "codigo": "5843",
+        "nome": "Biologia Molecular do Gene"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Conceitos básicos de biotecnologia vegetal",
+        "Histórico da biotecnologia vegetal: melhoramento clássico versus manipulação genética",
+        "Micropropagação de plantas: cultura de células, produção de protoplastos e biofábricas",
+        "Germinação e conservação de sementes",
+        "Bancos de germoplasma e sua importância para a diversidade",
+        "Obtenção de Plantas transgênicas e diferentes métodos de Transformação visando a obtenção de plantas com interesse biotecnológico",
+        "Técnicas de edição de genoma"
+      ],
+      "descricao_completa": "Conceitos básicos de biotecnologia vegetal. Histórico da biotecnologia vegetal: melhoramento clássico versus manipulação genética. Micropropagação de plantas: cultura de células, produção de protoplastos e biofábricas. Germinação e conservação de sementes. Bancos de germoplasma e sua importância para a diversidade. Obtenção de Plantas transgênicas e diferentes métodos de Transformação visando a obtenção de plantas com interesse biotecnológico. Técnicas de edição de genoma."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["KERBAUY, G.B."],
+          "titulo": "Fisiologia vegetal",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Guanabara Koogan",
+          "ano": 2008
+        },
+        {
+          "autores": ["GREEN, Michael R. et al."],
+          "titulo": "Molecular Cloning: A Laboratory Manual",
+          "edicao": "4ª ed.",
+          "editora": "Cold Spring Harbor Laboratory Press",
+          "ano": 2012
+        },
+        {
+          "autores": ["CUTLER, David F", "BOTHA, T", "STEVENSON, Dennis Wm", "MORAES, Marcelo Gravina de", "SANTOS, Rinaldo Pires dos"],
+          "titulo": "Anatomia vegetal: uma abordagem aplicada",
+          "local": "Porto Alegre",
+          "editora": "Artmed",
+          "ano": 2011
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["GROTEWOLD, Erich", "CHAPPELL, Joseph", "KELLOGG, Elizabeth A."],
+          "titulo": "Plant Genes, Genomes and Genetics",
+          "ano": 2016
+        },
+        {
+          "autores": ["BUCHANAN", "GRUISSEM"],
+          "titulo": "Biochemistry and Molecular Biology of Plants",
+          "edicao": "2ª ed.",
+          "ano": 2014
+        },
+        {
+          "autores": ["RAVEN, PH", "EVERT, RF", "EICHHORN, S."],
+          "titulo": "Biology of Plants",
+          "edicao": "8ª ed.",
+          "editora": "Freeman",
+          "ano": 2012
+        },
+        {
+          "autores": ["SMITH, JE"],
+          "titulo": "Biotechnology",
+          "edicao": "5ª ed.",
+          "editora": "Cambridge",
+          "ano": 2009
+        },
+        {
+          "autores": ["TAIZ, Li et al."],
+          "titulo": "FISIOLOGIA e desenvolvimento vegetal",
+          "edicao": "6ª ed.",
+          "local": "Porto Alegre",
+          "editora": "ArtMed",
+          "ano": 2017
+        },
+        {
+          "autores": ["PIERIK, R.L.M."],
+          "titulo": "In vitro Culture of Higher Plants",
+          "editora": "Martinus Nijhoff Publishers, Dordrecht",
+          "ano": 1987
+        },
+        {
+          "autores": ["REINERT, J.", "YEOMAN, M.M."],
+          "titulo": "Plant Cell and Tissue Culture. A laboratory Manual",
+          "editora": "Springer Verlag, Berlin",
+          "ano": 1982
+        }
+      ]
+    }
+  }
+}

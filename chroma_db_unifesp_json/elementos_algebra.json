@@ -1,0 +1,99 @@
+{
+  "disciplina": {
+    "codigo": "6062",
+    "nome": "Elementos de Álgebra",
+    "nome_ingles": "Elements of Algebra",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": null,
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Conceitos básicos da Teoria de Grupos",
+        "Anéis",
+        "Corpos"
+      ],
+      "descricao_completa": "Conceitos básicos da Teoria de Grupos, Anéis e Corpos."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["FRALEIGH, J. B."],
+          "titulo": "A first course in abstract algebra",
+          "edicao": "7ª ed.",
+          "local": "Boston",
+          "editora": "Pearson",
+          "ano": 2002
+        },
+        {
+          "autores": ["GARCIA, A.", "LEQUIAN, Y."],
+          "titulo": "Elementos de álgebra",
+          "edicao": "5ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "SBM-IMPA",
+          "ano": 2008
+        },
+        {
+          "autores": ["GONÇALVES, A."],
+          "titulo": "Introdução à álgebra",
+          "edicao": "5ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "SBM-IMPA",
+          "ano": 2011
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["CLARK, A."],
+          "titulo": "Elements of abstract algebra",
+          "edicao": "2ª ed.",
+          "local": "New York",
+          "editora": "Dover Publications",
+          "ano": 1984
+        },
+        {
+          "autores": ["DESDKINS, W. E."],
+          "titulo": "Abstract algebra",
+          "edicao": "2ª ed.",
+          "local": "New York",
+          "editora": "Dover Publications",
+          "ano": 1995
+        },
+        {
+          "autores": ["MILIES, F. C. P.", "COELHO, S. P."],
+          "titulo": "Números: uma introdução à Matemática",
+          "edicao": "3ª ed.",
+          "local": "São Paulo",
+          "editora": "EDUSP",
+          "ano": 2006
+        },
+        {
+          "autores": ["ROTMAN, J. J."],
+          "titulo": "An introduction to theory of groups",
+          "edicao": "4ª ed.",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 1994
+        },
+        {
+          "autores": ["WARNER, S."],
+          "titulo": "Modern algebra",
+          "edicao": "1ª ed.",
+          "local": "New York",
+          "editora": "Dover Publications",
+          "ano": 1990
+        }
+      ]
+    }
+  }
+}

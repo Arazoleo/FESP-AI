@@ -1,0 +1,119 @@
+{
+  "disciplina": {
+    "codigo": "5739",
+    "nome": "Biologia do Desenvolvimento",
+    "nome_ingles": "Developmental Biology",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia", "Bacharelado em Biotecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "5843",
+        "nome": "Biologia Molecular do Gene"
+      }
+    ],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 28,
+      "pratica": 0,
+      "extensao": 8
+    },
+    "ementa": {
+      "topicos": [
+        "Aspectos históricos da biologia do desenvolvimento",
+        "Princípios da Biologia do Desenvolvimento: tradição anatômica, ciclo de vida, princípios da experimentação, genética, expressão gênica e comunicação celular",
+        "Desenvolvimento embrionário inicial: gametogênese e fertilização em diferentes espécies; desenvolvimento de eixos",
+        "Desenvolvimento embrionário tardio: gastrulação, neurulação, determinação sexual",
+        "Metamorfose, regeneração e envelhecimento: contribuições da biologia do desenvolvimento para a ciência moderna",
+        "Integração das competências e conhecimentos da UC em ações extensionistas"
+      ],
+      "descricao_completa": "Aspectos históricos da biologia do desenvolvimento; Princípios da Biologia do Desenvolvimento: tradição anatômica, ciclo de vida, princípios da experimentação, genética, expressão gênica e comunicação celular. Desenvolvimento embrionário inicial: gametogênese e fertilização em diferentes espécies; desenvolvimento de eixos. Desenvolvimento embrionário tardio: gastrulação, neurulação, determinação sexual. Metamorfose, regeneração e envelhecimento: contribuições da biologia do desenvolvimento para a ciência moderna. Integração das competências e conhecimentos da UC em ações extensionistas."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["GILBERT, S."],
+          "titulo": "Developmental Biology",
+          "edicao": "8ª ed.",
+          "editora": "Sounders",
+          "ano": 2006
+        },
+        {
+          "autores": ["MOORE", "PERSAUD"],
+          "titulo": "Embriologia Básica",
+          "edicao": "8ª ed.",
+          "editora": "Elsevier",
+          "ano": 2013
+        },
+        {
+          "autores": ["VAN DE GRAAFF, Kent M."],
+          "titulo": "Anatomia Humana",
+          "edicao": "6ª ed.",
+          "editora": "Manole",
+          "ano": 2003
+        },
+        {
+          "autores": ["SILVERTHORN, Dee Unglaub"],
+          "titulo": "Fisiologia Humana, Uma abordagem integrada",
+          "edicao": "5ª ed.",
+          "editora": "Artmed",
+          "ano": 2010
+        },
+        {
+          "autores": ["ROSS, Michael H.", "PAWLINA, Wojciech"],
+          "titulo": "Histologia Texto e Atlas",
+          "edicao": "5ª ed.",
+          "editora": "Guanabara-Koogan",
+          "ano": 2008
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["DRAKE, Richard L. et al."],
+          "titulo": "Gray's Anatomia para estudantes",
+          "edicao": "2ª ed.",
+          "editora": "Elsevier",
+          "ano": 2010
+        },
+        {
+          "autores": ["SILVERTHORN, Dee Unglaub"],
+          "titulo": "Fisiologia Humana, Uma abordagem integrada",
+          "edicao": "5ª ed.",
+          "editora": "Artmed",
+          "ano": 2010
+        },
+        {
+          "autores": ["DRAKE, Richard L. et al."],
+          "titulo": "Gray's Anatomia para estudantes",
+          "edicao": "2ª ed.",
+          "editora": "Elsevier",
+          "ano": 2010
+        },
+        {
+          "autores": ["ROSS, Michael H.", "PAWLINA, Wojciech"],
+          "titulo": "Histologia Texto e Atlas",
+          "edicao": "5ª ed.",
+          "editora": "Guanabara-Koogan",
+          "ano": 2008
+        },
+        {
+          "autores": ["ALBERTS, A.", "BRAY, D.", "JOHNSON, A", "LEWIS, J.", "RAFF, M.", "ROBERTS, K", "WALTER, P."],
+          "titulo": "Fundamentos da Biologia Celular",
+          "editora": "Artmed",
+          "ano": 1999
+        },
+        {
+          "autores": ["LODISH, H. e cols."],
+          "titulo": "Biologia Celular e Molecular",
+          "edicao": "5ª ed.",
+          "editora": "Artmed",
+          "ano": 2005
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "disciplina": {
+    "codigo": "2831",
+    "nome": "Banco de Dados",
+    "nome_ingles": "Database Systems",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Engenharia de Computação",
+      "Ciência da Computação",
+      "Bacharelado Interdisciplinar em Ciência e Tecnologia"
+    ],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": "2832",
+        "nome": "Algoritmos e Estruturas de Dados I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 36,
+      "pratica": 20,
+      "extensao": 16
+    },
+    "ementa": {
+      "topicos": [
+        "Conceitos básicos de banco de dados",
+        "Modelos de dados e linguagens",
+        "Projeto de bancos de dados",
+        "Novas tecnologias e aplicações de banco de dados"
+      ],
+      "descricao_completa": "Conceitos básicos de banco de dados. Modelos de dados e linguagens. Projeto de bancos de dados. Novas tecnologias e aplicações de banco de dados."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["SILBERSCHATZ, Abraham", "KORTH, Henry F.", "SUDARSHAN, S."],
+          "titulo": "Sistema de banco de dados",
+          "edicao": "6. ed.",
+          "local": "São Paulo",
+          "editora": "Elsevier",
+          "ano": 2012,
+          "paginas": 861,
+          "isbn": "9788535245356"
+        },
+        {
+          "autores": ["HEUSER, Carlos Alberto"],
+          "titulo": "Projeto de banco de dados",
+          "edicao": "6.ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2009,
+          "paginas": 282,
+          "isbn": "9788577803828"
+        },
+        {
+          "autores": ["ELMASRI, Ramez", "NAVATHE, Shamkant B."],
+          "titulo": "Sistemas de banco de dados",
+          "edicao": "4.ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2005,
+          "isbn": "9788588639171"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["DATE, C. J.", "VIEIRA, Daniel (trad.)", "LIFSCHITZ, Sergio (rev.)"],
+          "titulo": "Introdução a sistemas de bancos de dados",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2003,
+          "paginas": 870,
+          "isbn": "9788535212730"
+        },
+        {
+          "autores": ["RAMAKRISHNAN, Raghu"],
+          "titulo": "Sistemas de gerenciamento de banco de dados",
+          "local": "Porto Alegre",
+          "editora": "AMGH",
+          "ano": 2008,
+          "formato": "recurso online",
+          "isbn": "9788563308771"
+        },
+        {
+          "autores": ["GARCIA-MOLINA, Hector", "ULLMAN, Jeffrey D.", "WIDOM, Jennifer"],
+          "titulo": "Database systems: the complete book",
+          "edicao": "2nd.ed.",
+          "local": "Upper Saddle River, NJ",
+          "editora": "Pearson",
+          "ano": 2009,
+          "paginas": 1203,
+          "isbn": "9780131873254"
+        },
+        {
+          "autores": ["MACHADO, Felipe Nery Rodrigues"],
+          "titulo": "Banco de dados : projeto e implementação",
+          "edicao": "4",
+          "local": "São Paulo",
+          "editora": "Erica",
+          "ano": 2020,
+          "formato": "recurso online",
+          "isbn": "9788536532707"
+        },
+        {
+          "autores": ["CARDOSO, Vírginia M."],
+          "titulo": "Linguagem sql : fundamentos e práticas",
+          "local": "São Paulo",
+          "editora": "Saraiva",
+          "ano": 2009,
+          "formato": "recurso online",
+          "isbn": "9788502200463"
+        }
+      ]
+    }
+  }
+}

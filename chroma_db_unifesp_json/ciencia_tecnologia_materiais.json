@@ -1,0 +1,100 @@
+{
+  "disciplina": {
+    "codigo": "4764",
+    "nome": "Ciência e Tecnologia dos Materiais",
+    "nome_ingles": "Materials Science and Technology",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Materiais", "Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": null,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": null,
+        "nome": "Química Geral"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Materiais para Engenharia",
+        "Estrutura Atômica e Ligações Químicas",
+        "Estrutura de Sólidos Cristalinos",
+        "Imperfeições em Sólidos",
+        "Difusão",
+        "Diagrama de Fases",
+        "Propriedades Mecânicas",
+        "Propriedades Térmicas",
+        "Propriedades Elétricas",
+        "Propriedades Magnéticas",
+        "Propriedades Óticas"
+      ],
+      "descricao_completa": "Materiais para Engenharia. Estrutura Atômica e Ligações Químicas. Estrutura de Sólidos Cristalinos. Imperfeições em Sólidos. Difusão. Diagrama de Fases. Propriedades Mecânicas. Propriedades Térmicas. Propriedades Elétricas. Propriedades Magnéticas. Propriedades Óticas."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["CALLISTER JR., W. D."],
+          "titulo": "Ciência e Engenharia de Materiais: Uma Introdução",
+          "edicao": "7ª ed.",
+          "editora": "LTC – Livros Técnicos e Científicos Editora S.A.",
+          "ano": 2008
+        },
+        {
+          "autores": ["SHACKELFORD, J. F."],
+          "titulo": "Ciência dos Materiais",
+          "edicao": "6ª ed.",
+          "editora": "Prentice Hall Brasil",
+          "ano": 2008
+        },
+        {
+          "autores": ["ASKELAND, D. R.", "PHULÉ, P. P."],
+          "titulo": "Ciência e Engenharia dos Materiais",
+          "edicao": "1ª ed.",
+          "editora": "Cengage Learning",
+          "ano": 2008
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["VAN VLACK, L. H."],
+          "titulo": "Princípios de Ciência dos Materiais",
+          "editora": "Blucher",
+          "ano": 1970
+        },
+        {
+          "autores": ["PADILHA, A. F."],
+          "titulo": "Materiais de Engenharia: Microestrutura e Propriedades",
+          "edicao": "2ª ed.",
+          "editora": "Hemus",
+          "ano": 2007
+        },
+        {
+          "autores": ["ASHBY, M. F.", "JONES, D. R. H."],
+          "titulo": "Engenharia de Materiais: Uma Introdução a Propriedades Aplicações e Design",
+          "volume": "1",
+          "ano": 2007
+        },
+        {
+          "autores": ["MITCHELL, B. S."],
+          "titulo": "A Introduction to materials engineering and science for chemical and materials engineers",
+          "ano": 2004
+        },
+        {
+          "autores": ["SMITH, W. F.", "HASHEMI, J."],
+          "titulo": "Foundations of materials science and engineering",
+          "edicao": "5ª ed.",
+          "editora": "McGraw-Hill",
+          "ano": 2010
+        }
+      ]
+    }
+  }
+}

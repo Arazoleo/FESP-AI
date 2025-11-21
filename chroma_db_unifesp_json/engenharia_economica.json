@@ -1,0 +1,88 @@
+{
+  "disciplina": {
+    "codigo": "6941",
+    "nome": "Tópicos Especiais em Ciência e Engenharia de Materiais III – Engenharia Econômica",
+    "nome_ingles": "Special Topics in Materials Science and Engineering III",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Materiais"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": "Integral",
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 36,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Generalidades da Engenharia Econômica e Fundamentos de matemática financeira; juros simples e compostos; valor futuro de um pagamento simples; fluxo de caixa; relações de equivalência; taxa efetiva, nominal e equivalente",
+        "Custos e elaboração de custos de um produto",
+        "Depreciação; ativo imobilizado; métodos de cálculo de depreciação",
+        "Financiamentos; sistemas de amortização de dívidas",
+        "Análise de alternativas de investimento; generalidades; taxas mínimas de atratividade; critérios econômicos de decisão; circunstâncias específicas",
+        "Análise de viabilidade econômica de um projeto industrial; análise de sensibilidade; estudo de casos",
+        "Empreendedorismo na Engenharia de Materiais; generalidades; perfil do empreendedor; plano de negócios; rede de negócios; assessoria"
+      ],
+      "descricao_completa": "Fundamentos de matemática financeira. Custos. Depreciação. Financiamentos. Análise de alternativas de investimento. Análise de viabilidade econômica de um projeto industrial. Fundamentos de empreendedorismo na Engenharia de Materiais."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["RYBA, A.", "LENZI, E. K.", "LENZI, M. K."],
+          "titulo": "Elementos de Engenharia Econômica",
+          "editora": "Editora Intersaberes",
+          "ano": 2016
+        },
+        {
+          "autores": ["MARONI NETO, R."],
+          "titulo": "Análise de investimentos econômicos e financeiros",
+          "editora": "Editora Freitas Bastos",
+          "ano": 2023
+        },
+        {
+          "autores": ["NEWNAN, Donald G.", "LAVELLE, Jerome P."],
+          "titulo": "Fundamentos de Engenharia Econômica",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2016
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["KASSAI, J. R.", "KASSAI, S.", "SANTOS A.", "ASSAF NETO, A."],
+          "titulo": "Retorno de investimento",
+          "edicao": "2ª ed.",
+          "editora": "Editora Atlas",
+          "ano": 2000
+        },
+        {
+          "autores": ["DORNELAS, J. C. A."],
+          "titulo": "Empreendedorismo: transformando ideias em negócios",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2001
+        },
+        {
+          "autores": ["SAMANEZ, C. P."],
+          "titulo": "Matemática Financeira: Aplicações à Análise de Investimentos",
+          "edicao": "3ª ed.",
+          "local": "São Paulo",
+          "editora": "Prentice Hall",
+          "ano": 2002
+        },
+        {
+          "autores": ["CASAROTO FILHO, N.", "KOPITIKE, B. H."],
+          "titulo": "Análise de investimentos: Matemática Financeira, Engenharia Econômica, Tomada de Decisão, Estratégia Empresarial",
+          "edicao": "10ª ed.",
+          "local": "São Paulo",
+          "editora": "Atlas",
+          "ano": 2007
+        }
+      ]
+    }
+  }
+}

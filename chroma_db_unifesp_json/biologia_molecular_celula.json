@@ -1,0 +1,98 @@
+{
+  "disciplina": {
+    "codigo": "5741",
+    "nome": "Biologia Molecular da Célula",
+    "nome_ingles": "Molecular Biology of the Cell",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Biotecnologia", "Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "5703",
+        "nome": "Fundamentos de Biologia Moderna"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Controle da expressão gênica",
+        "Estrutura membranal e transporte membranal",
+        "Compartimentos intercelulares e direcionamento de proteínas",
+        "Mecanismos de comunicação celular",
+        "Câncer",
+        "Ciclo celular e apoptose",
+        "Citoesqueleto e matriz celular",
+        "Desenvolvimento",
+        "Imunologia"
+      ],
+      "descricao_completa": "1. Controle da expressão gênica. 2. Estrutura membranal e transporte membranal. 3. Compartimentos intercelulares e direcionamento de proteínas. 4. Mecanismos de comunicação celular. 5. Câncer. 6. Ciclo celular e apoptose. 7. Citoesqueleto e matriz celular. 8. Desenvolvimento. 9. Imunologia."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["ALBERTS, A.", "BRAY, D.", "JOHNSON, A", "LEWIS, J.", "RAFF, M.", "ROBERTS, K", "WALTER, P."],
+          "titulo": "Fundamentos da Biologia Celular",
+          "editora": "Artmed",
+          "ano": 1999
+        },
+        {
+          "autores": ["LODISH, H. e cols."],
+          "titulo": "Biologia Celular e Molecular",
+          "edicao": "5ª ed.",
+          "editora": "Artmed",
+          "ano": 2005
+        },
+        {
+          "autores": ["COOPER"],
+          "titulo": "A Célula – Uma Abordagem Molecular",
+          "edicao": "3ª ed.",
+          "editora": "Artmed",
+          "ano": 2007
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["ALBERTS, Bruce et al."],
+          "titulo": "Biologia molecular da célula",
+          "edicao": "5ª ed.",
+          "editora": "Artmed",
+          "ano": 2010
+        },
+        {
+          "autores": ["WATSON, James D", "BERRY, Andrew", "MALFERRARI, Carlos Afonso"],
+          "titulo": "DNA: o segredo da vida",
+          "local": "São Paulo",
+          "editora": "Companhia das Letras",
+          "ano": 2005
+        },
+        {
+          "autores": ["WALTER, Peter et al."],
+          "titulo": "Molecular biology of the cell",
+          "edicao": "5ª ed.",
+          "ano": 2010
+        },
+        {
+          "autores": ["KARP, Gerald"],
+          "titulo": "Cell and molecular biology: concepts and experiments",
+          "edicao": "5ª ed.",
+          "ano": 2008
+        },
+        {
+          "autores": ["SCHRÖDINGER, Erwin", "ASSIS, Jesus P. (Trad.)", "ASSIS, Vera Y. K. P. (Trad.)"],
+          "titulo": "O que é vida?: o aspecto físico da célula viva seguido de Mente e matéria e Fragmentos autobiográficos",
+          "editora": "UNESP",
+          "ano": 1977
+        }
+      ]
+    }
+  }
+}

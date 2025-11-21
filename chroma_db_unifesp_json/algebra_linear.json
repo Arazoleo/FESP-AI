@@ -1,0 +1,107 @@
+{
+  "disciplina": {
+    "codigo": "2475",
+    "nome": "Álgebra Linear",
+    "nome_ingles": "Linear Algebra",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "2650",
+        "nome": "Geometria Analítica"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 62,
+      "pratica": 10,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Espaços vetoriais",
+        "Transformações lineares",
+        "Operadores lineares",
+        "Funcionais lineares",
+        "Autovalores e Autovetores",
+        "Diagonalização",
+        "Produto interno"
+      ],
+      "descricao_completa": "Espaços vetoriais. Transformações lineares. Operadores lineares. Funcionais lineares. Autovalores e Autovetores. Diagonalização. Produto interno."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["BOLDRINI, J. L.", "COSTA, S. I. R.", "FIGUEIREDO, V. L.", "WETZLER, H. G."],
+          "titulo": "Álgebra linear",
+          "edicao": "3ª ed.",
+          "local": "São Paulo",
+          "editora": "Harbra",
+          "ano": 1986
+        },
+        {
+          "autores": ["CALLIOLI, C.", "DOMINGUES, H. H.", "COSTA, R. C. F."],
+          "titulo": "Álgebra linear e aplicações",
+          "edicao": "6ª ed.",
+          "local": "São Paulo",
+          "editora": "Atual",
+          "ano": 1990
+        },
+        {
+          "autores": ["LIMA, E. L."],
+          "titulo": "Álgebra linear",
+          "edicao": "8ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "SBM-IMPA",
+          "ano": 2011
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BUENO, H. P."],
+          "titulo": "Álgebra linear: um segundo curso",
+          "edicao": "1ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "SBM-IMPA",
+          "ano": 2006
+        },
+        {
+          "autores": ["COELHO, F. U.", "LOURENÇO, M. L."],
+          "titulo": "Um curso de álgebra linear",
+          "edicao": "2ª ed.",
+          "local": "São Paulo",
+          "editora": "EDUSP",
+          "ano": 2007
+        },
+        {
+          "autores": ["HOFFMAN, K.", "KUNZE, R."],
+          "titulo": "Linear algebra",
+          "edicao": "2ª ed.",
+          "editora": "Prentice Hall",
+          "ano": 1971
+        },
+        {
+          "autores": ["NICHOLSON, K."],
+          "titulo": "Álgebra linear",
+          "edicao": "2ª ed.",
+          "local": "São Paulo",
+          "editora": "McGraw Hill Brasil",
+          "ano": 2006
+        },
+        {
+          "autores": ["POOLE, D."],
+          "titulo": "Álgebra linear",
+          "edicao": "1ª ed.",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2003
+        }
+      ]
+    }
+  }
+}

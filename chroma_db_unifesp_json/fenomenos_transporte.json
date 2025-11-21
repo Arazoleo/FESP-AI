@@ -1,0 +1,102 @@
+{
+  "disciplina": {
+    "codigo": "5136",
+    "nome": "Fenômenos de Transporte",
+    "nome_ingles": "Transport Phenomena",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Materiais"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "4328",
+        "nome": "Séries e Equações Diferenciais Ordinárias"
+      },
+      {
+        "codigo": "4770",
+        "nome": "Mecânica Geral"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Conceitos fundamentais",
+        "Equações gerais da cinemática e dinâmica dos fluidos",
+        "Equações básicas de transferência de calor"
+      ],
+      "descricao_completa": "Conceitos fundamentais. Equações gerais da cinemática e dinâmica dos fluidos. Equações básicas de transferência de calor."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["Incropera, F. P.", "DeWitt, D. P."],
+          "titulo": "Fundamentos de Transferência de Calor e Massa",
+          "edicao": "5ª Ed.",
+          "editora": "Editora LTC",
+          "ano": 2013
+        },
+        {
+          "autores": ["Welty, J. R.", "Wilson, R. E.", "Wicks, C. C."],
+          "titulo": "Fundamentals of Momentum, Heat, and Mass Transfer",
+          "edicao": "5a Ed.",
+          "editora": "John Wiley & Sons",
+          "ano": 2008
+        },
+        {
+          "autores": ["Fox, R. W.", "McDonald, A. T."],
+          "titulo": "Introdução à Mecânica dos Fluidos",
+          "edicao": "7a Ed.",
+          "editora": "LTC",
+          "ano": 2010
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["White, Frank M."],
+          "titulo": "Mecânica dos fluidos",
+          "local": "Porto Alegre",
+          "editora": "AMGH",
+          "ano": 2011
+        },
+        {
+          "autores": ["Potter, M. C. et al."],
+          "titulo": "Mecânica dos fluidos",
+          "edicao": "3ª. ed.",
+          "editora": "Thomson",
+          "ano": 2009
+        },
+        {
+          "autores": ["Roma, W. N. L."],
+          "titulo": "Fenômenos de Transporte para Engenharia",
+          "edicao": "2a. ed.",
+          "local": "São Carlos",
+          "editora": "Rima Editora",
+          "ano": 2006,
+          "volume": 700,
+          "paginas": 288
+        },
+        {
+          "autores": ["Munson, B.R. et al."],
+          "titulo": "Fundamentos da mecânica dos fluidos",
+          "edicao": "4. ed.",
+          "editora": "Editora Edgard Blücher",
+          "ano": 2004
+        },
+        {
+          "autores": ["Potter, M.C", "Scott, E.P."],
+          "titulo": "Ciências térmicas: termodinâmica, mecânica dos fluídos e transmissão de calor",
+          "editora": "Thomson",
+          "ano": 2007
+        }
+      ]
+    }
+  }
+}

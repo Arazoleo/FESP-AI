@@ -1,0 +1,111 @@
+{
+  "disciplina": {
+    "codigo": "4545",
+    "nome": "Equações Diferenciais Parciais",
+    "nome_ingles": "Partial Differential Equations",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": null,
+    "pre_requisitos": [
+      {
+        "codigo": "4328",
+        "nome": "Séries e Equações Diferenciais Ordinárias"
+      },
+      {
+        "codigo": "5359",
+        "nome": "Cálculo em Várias Variáveis"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 64,
+      "pratica": 0,
+      "extensao": 8
+    },
+    "ementa": {
+      "topicos": [
+        "Definições básicas",
+        "Equações de primeira ordem",
+        "Equações semi-lineares de segunda ordem",
+        "Equação de onda",
+        "Separação de variáveis e séries de Fourier",
+        "Transformada de Fourier",
+        "A equação de Laplace",
+        "A equação de calor"
+      ],
+      "descricao_completa": "Definições básicas. Equações de primeira ordem. Equações semi-lineares de segunda ordem. Equação de onda. Separação de variáveis e séries de Fourier. Transformada de Fourier. A equação de Laplace. A equação de calor."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["FIGUEIREDO, D. G."],
+          "titulo": "Análise de Fourier e equações diferenciais parciais",
+          "edicao": "4ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2009
+        },
+        {
+          "autores": ["IÓRIO, R.", "IÓRIO, V. M."],
+          "titulo": "Equações diferenciais parciais: uma introdução",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2010
+        },
+        {
+          "autores": ["IÓRIO, V. M."],
+          "titulo": "EDP: um curso de graduação",
+          "edicao": "3ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "IMPA",
+          "ano": 2010
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BREZIS, Haim"],
+          "titulo": "Functional analysis, Sobolev spaces and partial differential equations",
+          "local": "New Jersey, USA",
+          "editora": "Springer",
+          "ano": 2011
+        },
+        {
+          "autores": ["FRIEDMAN, A."],
+          "titulo": "Partial differential equations of parabolic type",
+          "edicao": "1ª ed.",
+          "local": "New York",
+          "editora": "Dover Publications",
+          "ano": 2008
+        },
+        {
+          "autores": ["O'NEIL, P. V."],
+          "titulo": "Beginning partial differential equations",
+          "edicao": "2ª ed.",
+          "local": "New York",
+          "editora": "John Wiley & Sons",
+          "ano": 2008
+        },
+        {
+          "autores": ["ZACHMANOGLOU, E. C.", "THOE, D. W."],
+          "titulo": "Introduction to partial differential equations with applications",
+          "edicao": "1ª ed.",
+          "local": "New York",
+          "editora": "Dover Publications",
+          "ano": 1986
+        },
+        {
+          "autores": ["WEINBERGER, H. F."],
+          "titulo": "A first course in partial differential equations with complex variables and transform methods",
+          "local": "New York",
+          "editora": "Dover Publications",
+          "ano": 1995
+        }
+      ]
+    }
+  }
+}

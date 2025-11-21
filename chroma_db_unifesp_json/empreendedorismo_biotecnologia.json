@@ -1,0 +1,143 @@
+{
+  "disciplina": {
+    "codigo": "5849",
+    "nome": "Empreendedorismo em Biotecnologia",
+    "nome_ingles": "Biochemistry II",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Biotecnologia", "Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": null,
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 36,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução à conceitos de administração de empresas",
+        "Bases para o delineamento de novos negócios em Biotecnologia",
+        "Estudos de viabilidade técnica e financeira",
+        "Técnicas de valoração e desenvolvimento planos de negócios em Biotecnologia",
+        "Interação universidade/institutos/empresas",
+        "Abordagem de gestão estratégica de tecnologia e inovação",
+        "Propriedade intelectual"
+      ],
+      "descricao_completa": "Introdução à conceitos de administração de empresas. Bases para o delineamento de novos negócios em Biotecnologia. Estudos de viabilidade técnica e financeira, técnicas de valoração e desenvolvimento planos de negócios em Biotecnologia. Interação universidade/institutos/empresas. Abordagem de gestão estratégica de tecnologia e inovação. Propriedade intelectual."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["KOLLER, Tim", "GOEDHART, Marc", "WESSELS, David", "BENRUD, Erik"],
+          "titulo": "Valuation workbook: step-by-step exercises and tests to help you master valuation",
+          "edicao": "5 ed.",
+          "local": "Hoboken, New Jersey",
+          "editora": "John Wiley & Sons",
+          "ano": 2011,
+          "paginas": 241,
+          "isbn": "978-0-470-42464-3"
+        },
+        {
+          "autores": ["PHILIPPI JÚNIOR, Arlindo", "SILVA NETO, Antônio José da (Ed.)"],
+          "titulo": "Interdisciplinaridade em ciência, tecnologia & inovação",
+          "local": "Barueri",
+          "editora": "Manole",
+          "ano": 2011,
+          "paginas": 998,
+          "isbn": "978-85-204-3056-0"
+        },
+        {
+          "autores": ["MOWERY, David C.", "ROSENBERG, Nathan"],
+          "titulo": "Trajetórias da inovação: a mudança tecnológica nos Estados Unidos da América no século XX",
+          "local": "Campinas",
+          "editora": "Unicamp",
+          "ano": 2005,
+          "paginas": 230,
+          "isbn": "85-268-0700-5"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BAYE, Michael R."],
+          "titulo": "Economia de empresas e estratégias de negócios",
+          "edicao": "6.ed.",
+          "local": "Porto Alegre",
+          "editora": "AMGH",
+          "ano": 2010,
+          "isbn": "9788563308146"
+        },
+        {
+          "autores": ["FIANI, Ronaldo"],
+          "titulo": "Teoria dos jogos: com aplicações em economia, administração e ciências sociais",
+          "edicao": "3.ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2009,
+          "paginas": 394,
+          "isbn": "978-85-352-3539-5"
+        },
+        {
+          "autores": ["BIAGIO, Luiz Arnaldo", "BATOCCHIO, Antonio"],
+          "titulo": "Plano de negócios: estratégias para micro e pequenas empresas",
+          "ano": 2005,
+          "paginas": 365,
+          "isbn": "978-85-204-1681-5"
+        },
+        {
+          "autores": ["CHIAVENATO, Idalberto"],
+          "titulo": "Introdução à teoria geral da administração",
+          "edicao": "8. ed rev. atual.",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2011,
+          "paginas": 608,
+          "isbn": "9788535246711"
+        },
+        {
+          "autores": ["DAMODARAN, Aswath"],
+          "titulo": "Gestão estratégica do risco: uma referência para a tomada de riscos empresariais",
+          "titulo_original": "Strategic risk taking: a framework for risk management",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2009,
+          "paginas": 384,
+          "isbn": "9788577803996"
+        },
+        {
+          "autores": ["TIDD, Joe", "BESSANT, John", "PAVITT, Keith"],
+          "titulo": "Gestão da inovação",
+          "edicao": "3. ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2008,
+          "paginas": 600,
+          "isbn": "978-85-7780-202-9"
+        },
+        {
+          "autores": ["DAMODARAN, Aswath"],
+          "titulo": "Avaliação de empresas",
+          "edicao": "2 ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2007,
+          "paginas": 464,
+          "isbn": "978-85-7605-105-3"
+        },
+        {
+          "autores": ["MAXIMIANO, Antonio C. A."],
+          "titulo": "Administração de projetos: como transformar idéias em resultados",
+          "edicao": "3.ed.",
+          "local": "São Paulo",
+          "editora": "Atlas",
+          "ano": 2009,
+          "paginas": 347,
+          "isbn": "978-85-224-5004-6"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "disciplina": {
+    "codigo": "2833",
+    "nome": "Algoritmos e Estruturas de Dados II",
+    "nome_ingles": "Algorithms and Data Structures II",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Engenharia de Computação",
+      "Ciência da Computação",
+      "Bacharelado Interdisciplinar em Ciência e Tecnologia"
+    ],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": "Integral",
+    "pre_requisitos": [
+      {
+        "codigo": "2832",
+        "nome": "Algoritmos e Estruturas de Dados I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 46,
+      "pratica": 26,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Métodos de ordenação interna: quadrático, n log n, linear e outros",
+        "Métodos de pesquisa interna: sequencial, busca binária, árvores de pesquisa",
+        "Balanceamento de árvores",
+        "Algoritmos em grafos (busca em largura, profundidade e menor caminho)",
+        "Tabelas de espalhamento (Hash)",
+        "Memória externa: modelos, ordenação e pesquisa"
+      ],
+      "descricao_completa": "Métodos de ordenação interna: quadrático, n log n, linear e outros. Métodos de pesquisa interna: sequencial, busca binária, árvores de pesquisa. Balanceamento de árvores. Algoritmos em grafos (busca em largura, profundidade e menor caminho). Tabelas de espalhamento (Hash). Memória externa: modelos, ordenação e pesquisa."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["CORMEN, Thomas H.", "SOUZA, Vanderberg D.", "STEIN, Clifford", "RIVEST, Ronald L.", "LEISERSON, Charles E."],
+          "titulo": "Algoritmos: teoria e prática",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2002,
+          "paginas": 916,
+          "isbn": "9788535209266"
+        },
+        {
+          "autores": ["ZIVIANI, Nivio"],
+          "titulo": "Projeto de algoritmos: com implementações em PASCAL e C",
+          "edicao": "3 ed. rev. e ampl.",
+          "local": "São Paulo",
+          "editora": "Heinle Cengage Learning",
+          "ano": 2011,
+          "paginas": 639,
+          "isbn": "9788522110506"
+        },
+        {
+          "autores": ["KNUTH, Donald E."],
+          "titulo": "The art of computer programming vol. 1: fundamental algorithms",
+          "edicao": "3 ed.",
+          "local": "Upper Saddle River, NJ",
+          "editora": "Addison-Wesley",
+          "ano": 1997,
+          "paginas": 650,
+          "isbn": "9780201896831"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["ZIVIANI, Nivio"],
+          "titulo": "Projeto de algoritmos : com implementações em JAVA e C++",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2012,
+          "formato": "recurso online",
+          "isbn": "9788522108213"
+        },
+        {
+          "autores": ["SEDGEWICK, Robert"],
+          "titulo": "Algorithms in C: part 5 - graph algorithms",
+          "local": "New Jersey",
+          "editora": "Addison-Wesley",
+          "ano": 2007,
+          "paginas": 482,
+          "isbn": "9780201316636"
+        },
+        {
+          "autores": ["SKIENA, Steven S."],
+          "titulo": "The algorithm design manual",
+          "edicao": "2nd.ed.",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2008,
+          "paginas": 730,
+          "isbn": "9781848000698"
+        },
+        {
+          "autores": ["TENENBAUM, Aaron M.", "MAYER, Roberto C.", "SOUZA, Teresa C.F.", "AUGENSTEIN, Moshe J.", "LANGSAM, Yedidyah"],
+          "titulo": "Estruturas de dados usando C",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2008,
+          "paginas": 884,
+          "isbn": "9788534603485"
+        },
+        {
+          "autores": ["GOODRICH, Michael T."],
+          "titulo": "Estruturas de dados & algoritmos em Java",
+          "edicao": "5",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2013,
+          "formato": "recurso online",
+          "isbn": "9788582600191"
+        },
+        {
+          "autores": ["SHEN, Alexander"],
+          "titulo": "Algorithms and programming: problems and solutions",
+          "edicao": "2nd. ed.",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2010,
+          "paginas": 272,
+          "colecao": "Springer Undergraduate Texts in Mathematics and Technology",
+          "isbn": "9781441917478"
+        }
+      ]
+    }
+  }
+}
