@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 1,
     "turno": null,
+    "docentes": ["Erwin Doescher", "Cláudia Santos", "Karen Paulino", "Alfredo Vitorino", "Vanessa Paschoa", "Daniela Oliveira", "Luís Felipe Bueno", "Ângelo Bianchi", "Tiago Macedo"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 108,

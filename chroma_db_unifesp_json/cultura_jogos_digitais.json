@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": null,
     "turno": null,
+    "docentes": ["Vanessa Pereira"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 36,

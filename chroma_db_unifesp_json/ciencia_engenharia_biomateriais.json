@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 5,
     "turno": null,
+    "docentes": ["Eliandra Trichês"],
     "pre_requisitos": [
       {
         "codigo": "4764",

@@ -8,8 +8,9 @@
     "tipo": "Fixa",
     "formato": "Disciplina",
     "oferta": "Semestral",
-    "termo": 1,
+    "termo": 2,
     "turno": null,
+    "docentes": ["Walter Lima", "Vanessa Pereira"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 36,

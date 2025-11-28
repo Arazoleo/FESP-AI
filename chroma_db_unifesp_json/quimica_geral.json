@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 1,
     "turno": null,
+    "docentes": ["Dayane Tada", "Elias Santos", "Marli Moraes", "Raquel Domingues", "Hugo Braga"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

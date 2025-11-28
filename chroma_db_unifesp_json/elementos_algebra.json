@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 6,
     "turno": null,
+    "docentes": ["Ângelo Bianchi", "Thiago Castilho"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 4,
     "turno": null,
+    "docentes": ["Nirton Vieira", "Eduardo Antonelli", "Thaciana Malaspina", "Rossano Lang"],
     "pre_requisitos": [
       {
         "codigo": "4538",

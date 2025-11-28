@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": null,
+    "docentes": ["Manuel Lente", "Thaciana Malaspina", "Eduardo Antonelli"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

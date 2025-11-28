@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 5,
     "turno": "Integral",
+    "docentes": ["Adenauer Casali", "Henrique Paiva", "Fábio Aoki"],
     "pre_requisitos": [
       {
         "codigo": "4328",

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 5,
     "turno": null,
+    "docentes": ["Marina Dias"],
     "pre_requisitos": [
       {
         "codigo": "4328",

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 4,
     "turno": null,
+    "docentes": ["Kelly Sakamoto", "Eudes Fileti"],
     "pre_requisitos": [
       {
         "codigo": "4369",

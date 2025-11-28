@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 9,
     "turno": "Integral",
+    "docentes": ["Roberson Saraiva"],
     "pre_requisitos": [
       {
         "codigo": null,

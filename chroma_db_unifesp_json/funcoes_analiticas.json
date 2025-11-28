@@ -10,6 +10,7 @@
     "oferta": "Anual",
     "termo": 4,
     "turno": "I",
+    "docentes": ["Thiago Castilho", "Leandro Batista"],
     "pre_requisitos": [
       {
         "codigo": "5359",

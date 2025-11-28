@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 4,
     "turno": null,
+    "docentes": ["Manuel Lente", "Kelly Sakamoto", "Nirton Vieira", "Rossano Lang"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

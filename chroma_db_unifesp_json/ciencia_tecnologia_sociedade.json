@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 1,
     "turno": null,
+    "docentes": ["Walter Lima", "Vanessa Pereira"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 36,

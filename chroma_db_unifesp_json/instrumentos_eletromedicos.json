@@ -10,6 +10,7 @@
     "oferta": "Anual",
     "termo": 7,
     "turno": "Integral",
+    "docentes": ["Karina Casali"],
     "pre_requisitos": [
       {
         "codigo": "5903",

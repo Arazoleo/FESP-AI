@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 5,
     "turno": "Integral",
+    "docentes": ["Elisabeth Augusto"],
     "pre_requisitos": [
       {
         "codigo": "5119",

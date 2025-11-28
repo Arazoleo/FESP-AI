@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": null,
+    "docentes": ["Renato Martins", "Ângelo Bianchi", "Robson da Silva", "Tiago Macedo", "Horácio Hideki", "Ana Moreira"],
     "pre_requisitos": [
       {
         "codigo": "2650",
