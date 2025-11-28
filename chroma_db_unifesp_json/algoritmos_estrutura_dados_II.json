@@ -14,6 +14,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": "Integral",
+    "docentes": ["Luís Pereira", "Álvaro Fazenda", "Reginaldo Kuroshu"],
     "pre_requisitos": [
       {
         "codigo": "2832",

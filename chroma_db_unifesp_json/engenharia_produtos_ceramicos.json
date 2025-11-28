@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 9,
     "turno": null,
+    "docentes": ["Ana Paula Albers"],
     "pre_requisitos": [
       {
         "codigo": "5873",

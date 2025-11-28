@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 5,
     "turno": "Integral",
+    "docentes": ["Leonardo Wendler"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 36,

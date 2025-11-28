@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 4,
     "turno": "Integral",
+    "docentes": ["Thaína Tosta", "Fábio Cappabianco", "Denise Stringhini"],
     "pre_requisitos": [
       {
         "codigo": "9394",

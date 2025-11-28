@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 8,
     "turno": null,
+    "docentes": ["Lilia Guerrini"],
     "pre_requisitos": [
       {
         "codigo": "5144",

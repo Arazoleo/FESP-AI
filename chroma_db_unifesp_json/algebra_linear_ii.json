@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 4,
     "turno": null,
+    "docentes": ["Robson da Silva", "Thiago Castilho", "Tiago Macedo", "Ângelo Bianchi"],
     "pre_requisitos": [
       {
         "codigo": "2475",

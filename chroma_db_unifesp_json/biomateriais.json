@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 7,
     "turno": "Integral",
+    "docentes": ["Edson Fernandes"],
     "pre_requisitos": [
       {
         "codigo": "5704",

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 2,
     "turno": null,
+    "docentes": ["Renato Martins", "Erwin Doescher", "Tiago Macedo", "Grasiele Jorge", "Pedro Kaufmann", "Robson da Silva", "Leandro Batista"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

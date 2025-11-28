@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": null,
+    "docentes": ["Luciane Capelo"],
     "pre_requisitos": [
       {
         "codigo": "5843",

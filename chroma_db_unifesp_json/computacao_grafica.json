@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 6,
     "turno": "Integral",
+    "docentes": ["Ana Luísa Lemos"],
     "pre_requisitos": [
       {
         "codigo": "2832",

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 5,
     "turno": null,
+    "docentes": ["Cláudia Santos", "Leandro Batista", "Vanessa Paschoa"],
     "pre_requisitos": [
       {
         "codigo": "5702",

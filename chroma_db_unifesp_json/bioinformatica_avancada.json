@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 6,
     "turno": null,
+    "docentes": ["Reginaldo Kuroshu"],
     "pre_requisitos": [
       {
         "codigo": "5372",

@@ -15,6 +15,7 @@
     "oferta": "Semestral",
     "termo": null,
     "turno": null,
+    "docentes": ["Juliana Scriptore", "Renato Sato"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 36,

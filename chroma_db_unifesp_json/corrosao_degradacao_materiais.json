@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 9,
     "turno": null,
+    "docentes": ["Maraísa Gonçalves"],
     "pre_requisitos": [
       {
         "codigo": "5142",

@@ -14,6 +14,7 @@
     "oferta": "Semestral",
     "termo": 1,
     "turno": "Integral",
+    "docentes": ["Lilian Berton", "Arlindo da Conceição", "Rodrigo Contreras", "Ana Luísa Lemos", "Marcos Quiles", "Bruno Kimura", "Ezequiel Zorzal", "Márcio Basgalupp", "Daniela Musa", "Otávio Lemos"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 8,
     "turno": "Integral",
+    "docentes": ["Matheus Moraes"],
     "pre_requisitos": [
       {
         "codigo": "5132",

@@ -8,8 +8,9 @@
     "tipo": "Fixa",
     "formato": "Disciplina",
     "oferta": "Semestral",
-    "termo": null,
+    "termo": 4,
     "turno": null,
+    "docentes": ["Gisele de Lima", "Leonardo Wendler"],
     "pre_requisitos": [
       {
         "codigo": null,

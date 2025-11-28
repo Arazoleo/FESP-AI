@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 4,
     "turno": "Integral",
+    "docentes": ["Roberson Saraiva", "Edson Fernandes"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 6,
     "turno": "Integral",
+    "docentes": ["Michael Brito"],
     "pre_requisitos": [
       {
         "codigo": "5859",

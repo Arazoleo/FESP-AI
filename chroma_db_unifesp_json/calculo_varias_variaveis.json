@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": null,
+    "docentes": ["Marcelo Gama", "Thadeu Senne", "Daniela Oliveira", "Leandro Batista", "Ana Moreira", "Robson da Silva", "Erwin Doescher"],
     "pre_requisitos": [
       {
         "codigo": "5702",

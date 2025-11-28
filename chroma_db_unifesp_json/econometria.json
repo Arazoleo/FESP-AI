@@ -18,6 +18,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": null,
+    "docentes": ["Juliana Scriptore"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

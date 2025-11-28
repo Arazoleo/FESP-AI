@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 2,
     "turno": null,
+    "docentes": ["Cláudia Santos", "Daniela Oliveira", "Karen Paulino", "Marcelo Gama"],
     "pre_requisitos": [
       {
         "codigo": "5702",

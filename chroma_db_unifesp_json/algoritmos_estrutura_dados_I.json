@@ -14,6 +14,7 @@
     "oferta": "Semestral",
     "termo": 2,
     "turno": "Integral",
+    "docentes": ["Didier Vega", "Arlindo da Conceição", "Álvaro Fazenda", "Luís Pereira", "Regina Coelho"],
     "pre_requisitos": [
       {
         "codigo": "9394",

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 2,
     "turno": null,
+    "docentes": ["Thiago Castilho", "Ângelo Bianchi", "Vanessa Paschoa", "Ana Moreira", "Marcelo Gama", "Luzia Oliveira"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 5,
     "turno": null,
+    "docentes": ["Tiago Macedo", "Luís Felipe Bueno", "Vanessa Paschoa", "Thadeu Senne"],
     "pre_requisitos": [
       {
         "codigo": "2828",

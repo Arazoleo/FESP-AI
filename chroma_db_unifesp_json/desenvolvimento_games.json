@@ -10,6 +10,7 @@
     "oferta": null,
     "termo": null,
     "turno": null,
+    "docentes": ["Vanessa Pereira", "Fábio Cappabianco"],
     "pre_requisitos": [
       {
         "codigo": null,

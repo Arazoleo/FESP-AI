@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 2,
     "turno": "Integral",
+    "docentes": ["Thadeu Senne", "Tiago Macedo", "Luiz Felipe", "Erwin Doescher", "Luiz Leduíno"],
     "pre_requisitos": [
       {
         "codigo": "5702",

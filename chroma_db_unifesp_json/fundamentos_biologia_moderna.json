@@ -13,6 +13,7 @@
     "oferta": "Semestral",
     "termo": 1,
     "turno": null,
+    "docentes": ["Cláudia Campos", "Michael Brito", "Luciane Capelo", "André Zelanis"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

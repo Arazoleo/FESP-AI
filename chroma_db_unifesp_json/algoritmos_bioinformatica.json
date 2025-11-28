@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": "Integral",
+    "docentes": ["Cláudio Shida", "Thiago Martini"],
     "pre_requisitos": [
       {
         "codigo": "9394",

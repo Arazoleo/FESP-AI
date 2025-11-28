@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 9,
     "turno": "Integral e Noturno",
+    "docentes": ["Thaína Tosta", "Daniela Musa"],
     "pre_requisitos": [
       {
         "codigo": "6100",

@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 7,
     "turno": "Integral",
+    "docentes": ["Fábio Aoki", "Maria Elizete Kunkel"],
     "pre_requisitos": [
       {
         "codigo": "5398",

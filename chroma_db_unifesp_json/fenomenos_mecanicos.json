@@ -10,6 +10,7 @@
     "oferta": "Anual",
     "termo": 2,
     "turno": "Integral",
+    "docentes": ["Ana Maria Slapnik", "Thaciana Malaspina"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

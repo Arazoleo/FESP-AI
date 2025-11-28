@@ -10,6 +10,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": null,
+    "docentes": ["Ana Maria Slapnik", "Eduardo Antonelli", "Thaciana Malaspina", "Rossano Lang"],
     "pre_requisitos": [
       {
         "codigo": "4369",
