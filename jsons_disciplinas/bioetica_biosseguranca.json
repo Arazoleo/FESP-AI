@@ -1,0 +1,81 @@
+{
+  "disciplina": {
+    "codigo": "5384",
+    "nome": "Bioética e Biossegurança",
+    "nome_ingles": "Bioethics and Biosafety",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia", "Bacharelado em Biotecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": null,
+    "docentes": ["Luciane Capelo"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 0,
+      "pratica": 0,
+      "extensao": 36
+    },
+    "ementa": {
+      "topicos": [
+        "Origens dos critérios éticos e da moral",
+        "Ética médica",
+        "Direitos humanos",
+        "Eugênica",
+        "Diversidade e Racismo",
+        "Conceitos de etnia",
+        "A origem e herança africana do ser humano",
+        "Biossegurança no contexto da atividade e tecnologias humanas e dos eventos naturais",
+        "Análise de risco",
+        "Legislação correspondente",
+        "Repercussão na sociedade das questões relativas à ética e segurança",
+        "Integração das competências e conhecimentos da UC em ações extensionistas"
+      ],
+      "descricao_completa": "Origens dos critérios éticos e da moral. Ética médica. Direitos humanos. Eugênica. Diversidade e Racismo. Conceitos de etnia. A origem e herança africana do ser humano. Biossegurança no contexto da atividade e tecnologias humanas e dos eventos naturais. Análise de risco. Legislação correspondente. Repercussão na sociedade das questões relativas à ética e segurança. Integração das competências e conhecimentos da UC em ações extensionistas."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["ROPEIK, David"],
+          "titulo": "How risky is it, really?",
+          "editora": "McGrawHill",
+          "ano": 2010
+        },
+        {
+          "autores": ["ADAMS, John"],
+          "titulo": "Risco",
+          "editora": "Editora Senac",
+          "ano": 1995
+        },
+        {
+          "autores": ["HIRATA, Mario H.", "HIRATA, Rosario D.C.", "MANCINI FO, Jorge"],
+          "titulo": "Manual de Biossegurança",
+          "editora": "Manole",
+          "ano": 2012
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["WALTER, Peter et al."],
+          "titulo": "Molecular biology of the cell",
+          "edicao": "5ª ed.",
+          "ano": 2010
+        },
+        {
+          "autores": ["KARP, Gerald"],
+          "titulo": "Cell and molecular biology: concepts and experiments",
+          "edicao": "5ª ed.",
+          "ano": 2008
+        },
+        {
+          "autores": ["SCHRÖDINGER, Erwin", "ASSIS, Jesus P. (Trad.)", "ASSIS, Vera Y. K. P. (Trad.)"],
+          "titulo": "O que é vida?",
+          "editora": "UNESP",
+          "ano": 1977
+        }
+      ]
+    }
+  }
+}

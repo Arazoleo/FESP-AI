@@ -1,0 +1,123 @@
+{
+  "disciplina": {
+    "codigo": "9394",
+    "nome": "Lógica de Programação",
+    "nome_ingles": "Algorithms",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Engenharia de Computação",
+      "Ciência da Computação",
+      "Bacharelado Interdisciplinar em Ciência e Tecnologia"
+    ],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 1,
+    "turno": "Integral",
+    "docentes": ["Lilian Berton", "Arlindo da Conceição", "Rodrigo Contreras", "Ana Luísa Lemos", "Marcos Quiles", "Bruno Kimura", "Ezequiel Zorzal", "Márcio Basgalupp", "Daniela Musa", "Otávio Lemos"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 42,
+      "pratica": 30,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução à computação",
+        "Noções de lógica",
+        "Conceitos e representação de algoritmos",
+        "Constantes e variáveis",
+        "Estruturas de controle",
+        "Vetores",
+        "Matrizes",
+        "Registros",
+        "Procedimentos, Funções com passagem de parâmetros por valor e referência",
+        "Recursividade",
+        "Introdução à linguagem de programação"
+      ],
+      "descricao_completa": "Introdução à computação; Noções de lógica; Conceitos e representação de algoritmos; Constantes e variáveis; Estruturas de controle; Vetores; Matrizes; Registros; Procedimentos, Funções com passagem de parâmetros por valor e referência; Recursividade; Introdução à linguagem de programação."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["FORBELLONE, André L.V.", "EBERSPACHE, Henri F."],
+          "titulo": "Lógica de programação: a construção de algoritmos e estruturas de dados",
+          "edicao": "3.ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2005,
+          "paginas": 218,
+          "isbn": "9788576050247"
+        },
+        {
+          "autores": ["FEOFILOFF, Paulo"],
+          "titulo": "Algoritmos em linguagem C",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2009,
+          "paginas": 208,
+          "isbn": "9788535232493"
+        },
+        {
+          "autores": ["MOKARZEL, Fábio", "SOMA, Nei"],
+          "titulo": "Introdução à ciência da computação",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2008,
+          "paginas": 429,
+          "isbn": "9788535218794"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["MIZRAHI, Victorine Viviane"],
+          "titulo": "Treinamento em Linguagem C",
+          "edicao": "2ª edição",
+          "editora": "Editora Pearson",
+          "ano": 2008,
+          "paginas": 434,
+          "formato": "recurso online",
+          "isbn": "9788576051916"
+        },
+        {
+          "autores": ["DEITEL, Paul J.", "DEITEL, Harvey M."],
+          "titulo": "C: como programar",
+          "edicao": "6th ed.",
+          "local": "São Paulo",
+          "editora": "Pearson Prentice Hall",
+          "ano": 2011,
+          "paginas": 818,
+          "isbn": "9788576059349"
+        },
+        {
+          "autores": ["KERNIGHAN, Brian W.", "VIEIRA, Daniel", "RITCHIE, Dennis M."],
+          "titulo": "C: a linguagem de programação padrão ANSI",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 1989,
+          "isbn": "9788570015860"
+        },
+        {
+          "autores": ["FARRER, Harry", "MAIA, Miriam L.", "SANTOS, Marco A.", "MATOS, Helton F.", "FARIA, Eduardo Chaves", "BECKER, Christiano Gonçalves"],
+          "titulo": "Algoritmos estruturados",
+          "edicao": "3.ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 1999,
+          "paginas": 284,
+          "isbn": "9788521611806"
+        },
+        {
+          "autores": ["HOROWITZ, Ellis", "SAHNI, Sartaj", "RAJASEKARAN, Sanguthevar"],
+          "titulo": "Computer algorithmics/C++",
+          "local": "New York",
+          "editora": "Computer Science",
+          "ano": 1997,
+          "paginas": 769,
+          "isbn": "9780716783152"
+        }
+      ]
+    }
+  }
+}

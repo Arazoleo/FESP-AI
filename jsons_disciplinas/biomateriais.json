@@ -1,0 +1,100 @@
+{
+  "disciplina": {
+    "codigo": "5170",
+    "nome": "Biomateriais",
+    "nome_ingles": "Biomaterials",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": "Integral",
+    "docentes": ["Edson Fernandes"],
+    "pre_requisitos": [
+      {
+        "codigo": "5704",
+        "nome": "Química Geral"
+      }
+    ],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 32,
+      "pratica": 0,
+      "extensao": 4
+    },
+    "ementa": {
+      "topicos": [
+        "Definições de biomateriais",
+        "Biocompatibilidade",
+        "Bioatividade",
+        "Reabsorção",
+        "Osteointegração e osteocondução",
+        "Principais biomateriais cerâmicos, poliméricos, metálicos e compósitos",
+        "Contexto atual de pesquisa e mercado",
+        "Atividades de extensão associadas aos conceitos teóricos e práticos",
+        "Visitas técnicas"
+      ],
+      "descricao_completa": "Definições de biomateriais. Biocompatibilidade. Bioatividade. Reabsorção. Osteointegração e osteocondução. Principais biomateriais cerâmicos, poliméricos, metálicos e compósitos. Contexto atual de pesquisa e mercado. Serão desenvolvidas atividades de extensão associadas aos conceitos teóricos e práticos previstos neste curso. Poderão ser realizadas visitas técnicas, de acordo com a disponibilidade."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["ORÉFICE, R.L.", "PEREIRA, M. M.", "MANSUR, H. S."],
+          "titulo": "Biomateriais: Fundamentos e Aplicações",
+          "local": "Rio de Janeiro",
+          "editora": "Cultura Médica",
+          "ano": 2005
+        },
+        {
+          "autores": ["RATNER, B. D.", "HOFFMAN, A. S.", "SCHOEN, F. J.", "LEMONS, J. E."],
+          "titulo": "Biomaterials Science, Second Edition: An Introduction to Materials in Medicine",
+          "edicao": "2ª ed.",
+          "editora": "Elsevier",
+          "ano": 2004
+        },
+        {
+          "autores": ["PARK, Joon B", "BRONZINO, Joseph D."],
+          "titulo": "Biomaterials: principles and applications",
+          "local": "Boca Raton",
+          "editora": "CRC",
+          "ano": 2002
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["HENCH, Larry L", "WILSON, June"],
+          "titulo": "An introduction to bioceramics",
+          "ano": 1993
+        },
+        {
+          "autores": ["CALLISTER JR., William D."],
+          "titulo": "Ciência e engenharia de materiais: uma introdução",
+          "edicao": "7ª ed.",
+          "ano": 2008
+        },
+        {
+          "autores": ["VAN VLACK, Lawrence Hall"],
+          "titulo": "Princípios de ciência e tecnologia dos materiais",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2003
+        },
+        {
+          "autores": ["GARCIA, Amauri", "SPIM, Jaime A", "SANTOS, Carlos A."],
+          "titulo": "Ensaios dos materiais",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2008
+        },
+        {
+          "autores": ["FAHLMAN, Bradley D."],
+          "titulo": "Materials chemistry",
+          "local": "Netherlands",
+          "editora": "Springer",
+          "ano": 2008
+        }
+      ]
+    }
+  }
+}

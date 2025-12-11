@@ -1,0 +1,130 @@
+{
+  "disciplina": {
+    "codigo": null,
+    "nome": "Neurociência Aplicada ao Cotidiano",
+    "nome_ingles": "Neuroscience Applied to Everyday Life",
+    "campus": "São José dos Campos",
+    "curso": ["BCT", "Engenharia Biomédica"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": "Integral",
+    "docentes": [""],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 18,
+      "pratica": 18,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Conceitos e fundamentos da Neurociência",
+        "Neuroplasticidade: a base de tudo",
+        "Tipos de mentalidade e suas implicações",
+        "Aprendizagem e memória",
+        "Estratégias da neurociência para aumentar o bem estar",
+        "Neurociência e tecnologias",
+        "Emoções e regulação emocional",
+        "Inteligência emocional e soft skills que o mercado espera"
+      ],
+      "descricao_completa": "O curso é teórico-prático, baseado em aspectos da neurociência para aplicação no dia a dia como: melhora da aprendizagem, técnicas para melhorar estudo, memória e atenção. Estratégias da neurociência para melhorar o bem estar. Neurociência da Inteligência emocional. Integrando todos os conhecimentos para âmbito social e de mercado de trabalho."
+    },
+    "objetivos": {
+      "gerais": "Proporcionar ao aluno conhecimentos científicos de neurociência, transformados em estratégias práticas para aplicar no dia a dia e melhorar os níveis de aprendizagem, regulação emocional, para o desenvolvimento de características socio-emocionais (soft skills) que são valorizadas pelo ambiente de trabalho.",
+      "especificos": [
+        "Proporcionar ao aluno conhecimento do funcionamento do cérebro, especialmente sobre o processo de aprendizagem, regulações emocionais e percepções de bem estar e felicidade",
+        "Discutir tipos de mentalidades e suas implicações no dia a dia",
+        "Com base em todos os dados científicos, discutir e desenvolver estratégias para o autodesenvolvimento no âmbito pessoal e profissional"
+      ]
+    },
+    "metodologia": "Aulas expositivas, Dinâmicas em sala de aula.",
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["KANDEL, E. R.", "SCHWARTZ, J. H.", "JESSELL, T. M."],
+          "titulo": "Principles of Neural Science",
+          "local": "New York",
+          "editora": "McGraw-Hill",
+          "ano": 2000
+        },
+        {
+          "autores": ["COSENZA, R. M."],
+          "titulo": "Fundamentos de Neuroanatomia",
+          "local": "Rio de Janeiro",
+          "editora": "Guanabara Koogan",
+          "ano": 2013
+        },
+        {
+          "autores": ["BEAR, M. F.", "CONNORS, B. W.", "PARADISO, M. A."],
+          "titulo": "Neurociências: desvendando o sistema nervoso",
+          "local": "Porto Alegre",
+          "editora": "Artmed",
+          "ano": 2006
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["DWECK, C. S."],
+          "titulo": "Mindset: a nova psicologia do sucesso",
+          "local": "Rio de Janeiro",
+          "editora": "Objetiva",
+          "ano": 2017
+        },
+        {
+          "autores": ["GOLEMAN, D."],
+          "titulo": "Inteligência Emocional",
+          "edicao": "82ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Objetiva",
+          "ano": 1995
+        },
+        {
+          "autores": ["OAKLEY, B."],
+          "titulo": "Aprendendo a Aprender. Como Ter Sucesso em Matemática, Ciências e Qualquer Outra Matéria",
+          "local": "Ponta Grossa",
+          "editora": "Ed. Athena",
+          "ano": 2017
+        },
+        {
+          "autores": ["FIRMINO, L.C.S.", "BRAZ, M.N.S."],
+          "titulo": "Neurociência: Uma Revisão Bibliográfica de como o Cérebro Aprende",
+          "revista": "Id on Line Rev. Mult. Psic.",
+          "volume": 14,
+          "numero": 53,
+          "paginas": "999-1009",
+          "ano": 2020,
+          "issn": "1981-1179"
+        },
+        {
+          "autores": ["MEDEIROS, Mário", "BEZERRA, Edileuza de Lima"],
+          "titulo": "Contribuições das Neurociências à Compreensão da Aprendizagem Significativa",
+          "revista": "Revista Diálogos",
+          "numero": 10,
+          "paginas": "180-197",
+          "ano": 2013
+        },
+        {
+          "autores": ["RELVAS, M.P."],
+          "titulo": "Fundamentos biológicos da educação: despertando inteligências e afetividade no processo de aprendizagem",
+          "edicao": "4ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Wak Editora",
+          "ano": 2009
+        },
+        {
+          "autores": ["DRAGANSKI, B.", "GASER, C.", "BUSCH, V.", "SCHUIERER, G.", "BOGDAHN, U.", "MAY, A."],
+          "titulo": "Neuroplasticity: changes in grey matter induced by training",
+          "revista": "Nature",
+          "volume": 427,
+          "numero": 6972,
+          "paginas": "311-312",
+          "ano": 2004,
+          "doi": "10.1038/427311a",
+          "pmid": "14737157"
+        }
+      ]
+    }
+  }
+}

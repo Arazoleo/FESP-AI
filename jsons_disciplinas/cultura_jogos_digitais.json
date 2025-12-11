@@ -1,0 +1,89 @@
+{
+  "disciplina": {
+    "codigo": "6076",
+    "nome": "Cultura dos Jogos Digitais",
+    "nome_ingles": "Culture of Videogames",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": null,
+    "turno": null,
+    "docentes": ["Vanessa Pereira"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 18,
+      "pratica": 18,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Análise da dimensão social dos jogos digitais",
+        "Tipos de jogos e plataformas e a adesão de jogadores",
+        "História dos games",
+        "Indústria dos jogos eletrônicos",
+        "Filosofia do entretenimento",
+        "Jogos digitais e educação",
+        "Aspectos do game: narrativa, interface, jogabilidade, personagens"
+      ],
+      "descricao_completa": "Análise da dimensão social dos jogos digitais: os tipos de jogos e plataformas e a adesão de jogadores. História dos games. Indústria dos jogos eletrônicos. Filosofia do entretenimento. Jogos digitais e educação. Aspectos do game: narrativa, interface, jogabilidade, personagens."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["HUIZINGA, Joan"],
+          "titulo": "Homo Ludens",
+          "local": "São Paulo",
+          "editora": "Perspectiva",
+          "ano": 2005
+        },
+        {
+          "autores": ["JONES, Gerard"],
+          "titulo": "Brincando de Matar Monstros",
+          "local": "São Paulo",
+          "editora": "Conrad",
+          "ano": 2004
+        },
+        {
+          "autores": ["NOVAK, Jeannie"],
+          "titulo": "Desenvolvimento de games",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2010
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["FRANCHINI, A. S.", "SEGANFREDO, C."],
+          "titulo": "As Melhores Histórias da Mitologia Nórdica",
+          "local": "Porto Alegre",
+          "editora": "Artes e Ofícios",
+          "ano": 2004
+        },
+        {
+          "autores": ["SCHUYTEMA, Paul"],
+          "titulo": "Design de games",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2008
+        },
+        {
+          "autores": ["ROGERS, Scott"],
+          "titulo": "Level Up: um guia para o design de grandes jogos",
+          "local": "São Paulo",
+          "editora": "Blucher",
+          "ano": 2012
+        },
+        {
+          "autores": ["PRENSKY, Marc"],
+          "titulo": "Aprendizagem baseada em jogos digitais",
+          "local": "São Paulo",
+          "editora": "Editora SENAC",
+          "ano": 2012
+        }
+      ]
+    }
+  }
+}

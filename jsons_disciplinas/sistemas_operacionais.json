@@ -1,0 +1,127 @@
+{
+  "disciplina": {
+    "codigo": "2612",
+    "nome": "Sistemas Operacionais",
+    "nome_ingles": "Operating Systems",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Engenharia de Computação",
+      "Ciência da Computação",
+      "Bacharelado Interdisciplinar em Ciência e Tecnologia"
+    ],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": "Integral",
+    "docentes": ["Joahannes Costa", "Thaína Tosta", "Ezequiel Zorzal", "Bruno Kimura"],
+    "pre_requisitos": [
+      {
+        "codigo": "2832",
+        "nome": "Algoritmos e Estruturas de Dados I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 54,
+      "pratica": 18,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Conceitos básicos de sistemas operacionais: processos, organizações de sistemas operacionais, chamadas de sistema",
+        "Gerência do processador: estados de processo, escalonamento",
+        "Entrada e saída: dispositivos e controladores, software de E/S, interrupções, dependência e independência",
+        "Gerência de memória: partições fixas e variáveis, paginação, segmentação, memória virtual",
+        "Gerência de arquivos"
+      ],
+      "descricao_completa": "Conceitos básicos de sistemas operacionais: processos, organizações de sistemas operacionais, chamadas de sistema. Gerência do processador: estados de processo, escalonamento. Entrada e saída: dispositivos e controladores, software de E/S, interrupções, dependência e independência. Gerência de memória: partições fixas e variáveis, paginação, segmentação, memória virtual. Gerência de arquivos."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["TANENBAUM, Andrew S."],
+          "titulo": "Sistemas operacionais modernos",
+          "edicao": "2.ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2006,
+          "paginas": 693,
+          "isbn": "9798587918573"
+        },
+        {
+          "autores": ["TORTELLO, João Eduardo N.", "WOODHULL, Albert S.", "TANENBAUM, Andrew S."],
+          "titulo": "Sistemas operacionais: projeto e implementação",
+          "edicao": "3.ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2008,
+          "paginas": 990,
+          "isbn": "9788577800575"
+        },
+        {
+          "autores": ["SILBERSCHATZ, Abraham", "GALVIN, Peter Baer", "GAGNE, Greg", "SILVA, Aldir J. C. C.", "LINS, Elisabete R."],
+          "titulo": "Fundamentos de sistemas operacionais",
+          "edicao": "8.ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2010,
+          "paginas": 515,
+          "isbn": "9788521617471"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["TANENBAUM, Andrew S."],
+          "titulo": "Sistemas Operacionais Modernos",
+          "edicao": "3ª edição",
+          "editora": "Editora Pearson",
+          "ano": 2009,
+          "paginas": 674,
+          "formato": "recurso online",
+          "isbn": "9788576052371"
+        },
+        {
+          "autores": ["SILBERSCHATZ, Abraham"],
+          "titulo": "Fundamentos de sistemas operacionais",
+          "edicao": "9",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2015,
+          "formato": "recurso online",
+          "isbn": "978-85-216-3001-2"
+        },
+        {
+          "autores": ["TOSCANI, Simão Sirineo", "CARISSIMI, Alexandre da Silva", "OLIVEIRA, Rômulo S. de"],
+          "titulo": "Sistemas operacionais",
+          "edicao": "4.ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2010,
+          "paginas": 374,
+          "isbn": "978-85-7780-521-1"
+        },
+        {
+          "autores": ["LOVE, Robert"],
+          "titulo": "Linux Kernel development",
+          "edicao": "3rd.ed.",
+          "local": "Indianapolis, Ind",
+          "editora": "Novell Press",
+          "ano": 2010,
+          "paginas": 440,
+          "isbn": "9780672329463"
+        },
+        {
+          "autores": ["STALLINGS, William"],
+          "titulo": "Operating systems: internal and design principles",
+          "edicao": "6th.ed.",
+          "local": "Upper Saddle River, NJ",
+          "editora": "Pearson",
+          "ano": 2009,
+          "paginas": 822,
+          "isbn": "9780136006329"
+        }
+      ]
+    }
+  }
+}

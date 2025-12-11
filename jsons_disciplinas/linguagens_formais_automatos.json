@@ -1,0 +1,121 @@
+{
+  "disciplina": {
+    "codigo": "2616",
+    "nome": "Linguagens Formais e Autômatos",
+    "nome_ingles": "Formal Languages and Automata",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Engenharia de Computação",
+      "Ciência da Computação",
+      "Bacharelado Interdisciplinar em Ciência e Tecnologia"
+    ],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": "Integral",
+    "docentes": ["Luís Pereira", "Antônio Chaves"],
+    "pre_requisitos": [
+      {
+        "codigo": "2201",
+        "nome": "Matemática Discreta"
+      },
+      {
+        "codigo": "9394",
+        "nome": "Lógica de Programação"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Linguagens Regulares: Autômatos finitos determinísticos e não-determinísticos",
+        "Expressões regulares",
+        "Linguagens Livres de Contexto: Gramáticas Livres de Contexto",
+        "Autômatos de pilha",
+        "Linguagens Sensíveis ao Contexto e Linguagens Recursivamente Enumeráveis: Máquinas de Turing",
+        "Tese de Church-Turing",
+        "Indecibilidade: Máquinas de Turing Universais"
+      ],
+      "descricao_completa": "Linguagens Regulares: Autômatos finitos determinísticos e não-determinísticos. Expressões regulares. Linguagens Livres de Contexto: Gramáticas Livres de Contexto. Autômatos de pilha. Linguagens Sensíveis ao Contexto e Linguagens Recursivamente Enumeráveis: Máquinas de Turing. Tese de Church-Turing. Indecibilidade: Máquinas de Turing Universais."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["HOPCROFT, John E.", "MOTWANI, Rajeev", "ULLMAN, Jeffrey D."],
+          "titulo": "Introdução à teoria de autômatos, linguagens e computação",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2002,
+          "paginas": 560,
+          "isbn": "9788535210729"
+        },
+        {
+          "autores": ["MENEZES, Paulo Blauth"],
+          "titulo": "Linguagens formais e autômatos",
+          "edicao": "6.ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2011,
+          "paginas": 256,
+          "colecao": "Série livros didáticos informática UFRGS ; 3",
+          "isbn": "9788577802661"
+        },
+        {
+          "autores": ["RAMOS, Marcus V. M.", "VEGA, Ítalo S.", "JOSÉ NETO, João"],
+          "titulo": "Linguagens formais: teoria, modelagem e implementação",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2009,
+          "paginas": 639,
+          "isbn": "9788577804535"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["ULLMAN, Jeffrey D.", "MOTWANI, Rajeev", "HOPCROFT, John E."],
+          "titulo": "Introduction to automata theory, languages, and computation",
+          "edicao": "3rd ed.",
+          "local": "Boston",
+          "editora": "Pearson",
+          "ano": 2006,
+          "paginas": 535,
+          "isbn": "9780321455369"
+        },
+        {
+          "autores": ["LEWIS, Harry R.", "PAPADIMITRIOU, Christos H."],
+          "titulo": "Elementos de teoria da computação",
+          "edicao": "2 ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2004,
+          "paginas": 344,
+          "isbn": "9788573075342"
+        },
+        {
+          "autores": ["LOUDEN, Kenneth C.", "SILVA, Flávio S.c."],
+          "titulo": "Compiladores: princípios e práticas",
+          "local": "São Paulo",
+          "editora": "Thomson",
+          "ano": 2004,
+          "paginas": 569,
+          "isbn": "9788522104222"
+        },
+        {
+          "autores": ["AHO, Alfred V.", "ULLMAN, Jeffrey D.", "SETHI, Ravi", "LAM, Monica S."],
+          "titulo": "Compiladores: princípios, técnicas e ferramentas",
+          "edicao": "2 ed.",
+          "local": "São Paulo",
+          "editora": "Person Addison Wesley",
+          "ano": 2007,
+          "paginas": 634,
+          "isbn": "9788588639249"
+        }
+      ]
+    }
+  }
+}
