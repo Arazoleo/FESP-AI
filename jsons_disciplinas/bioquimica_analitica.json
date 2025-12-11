@@ -1,0 +1,106 @@
+{
+  "disciplina": {
+    "codigo": "4760",
+    "nome": "Bioquímica Analítica",
+    "nome_ingles": "Analytical Biochemistry",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Biotecnologia", "Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": null,
+    "docentes": ["Kátia da Conceição"],
+    "pre_requisitos": [
+      {
+        "codigo": "5842",
+        "nome": "Bioquímica I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 64,
+      "pratica": 0,
+      "extensao": 8
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução aos métodos analíticos",
+        "Validação de métodos analíticos",
+        "Cromatografia",
+        "Eletroforese",
+        "Espectroscopia",
+        "Espectrometria de massas",
+        "Radioisótopos",
+        "RMN",
+        "Métodos Imunológicos",
+        "Enzimas",
+        "Testes Genéticos",
+        "Métodos de Sequenciamento",
+        "PCR e métodos derivados",
+        "Microarranjos",
+        "Biossegurança e aspectos éticos"
+      ],
+      "descricao_completa": "Introdução aos métodos analíticos. Validação de métodos analíticos. Cromatografia. Eletroforese. Espectroscopia. Espectrometria de massas. Radioisótopos. RMN. Métodos Imunológicos. Enzimas. Testes Genéticos. Métodos de Sequenciamento. PCR e métodos derivados. Microarranjos. Biossegurança e aspectos éticos."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["HOLME, D.", "PECK, H."],
+          "titulo": "Analytical Biochemistry",
+          "editora": "Addison Wesley",
+          "ano": 1998
+        },
+        {
+          "autores": ["BURTIS, C.", "ASHWOOD, E.", "BURNS, D."],
+          "titulo": "Tietz Textbook of Clinical Chemistry and Molecular Diagnostics",
+          "edicao": "4ª ed.",
+          "editora": "Elsevier Saunders",
+          "ano": 2006
+        },
+        {
+          "autores": ["PATRINOS, G.", "ANSORGE, W. (Eds.)"],
+          "titulo": "Molecular Diagnostics",
+          "edicao": "2ª ed.",
+          "editora": "Elsevier",
+          "ano": 2010
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["NELSON, D.L.", "COX, M.M."],
+          "titulo": "Princípios de Bioquímica de Lehninger",
+          "edicao": "7ª ed.",
+          "editora": "Artmed",
+          "ano": 2019
+        },
+        {
+          "autores": ["ROBYT, J.F.", "WHITE, B.J."],
+          "titulo": "Biochemical Techniques: Theory and Practice",
+          "editora": "Waveland Press",
+          "ano": 1990
+        },
+        {
+          "autores": ["BOYER, R.F."],
+          "titulo": "Modern Experimental Biochemistry",
+          "edicao": "3ª ed.",
+          "editora": "Prentice Hall",
+          "ano": 2000
+        },
+        {
+          "autores": ["COMPRY-NARDY, M."],
+          "titulo": "Práticas de laboratório em Bioquímica e Biofísica. Uma visão integrada",
+          "edicao": "1ª ed.",
+          "editora": "Lab (Grupo Gen)",
+          "ano": 2009
+        },
+        {
+          "autores": ["CASS, Quezia"],
+          "titulo": "Cromatografia Líquida",
+          "edicao": "1ª ed.",
+          "ano": 2015
+        }
+      ]
+    }
+  }
+}

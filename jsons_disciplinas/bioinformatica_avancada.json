@@ -1,0 +1,99 @@
+{
+  "disciplina": {
+    "codigo": "5856",
+    "nome": "Bioinformática Avançada",
+    "nome_ingles": "Advanced Bioinformatics",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Biotecnologia", "Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": null,
+    "docentes": ["Reginaldo Kuroshu"],
+    "pre_requisitos": [
+      {
+        "codigo": "5372",
+        "nome": "Introdução à Bioinformática"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução à linguagem Python e ao uso de bibliotecas de BioPython",
+        "Métodos de Alinhamento de Sequências simples (Needleman-Wunsch, Smith-Waterman, BLAST)",
+        "Métodos de alinhamentos múltiplos",
+        "Modelos de Markov escondidos",
+        "Análise de Clusters",
+        "Análise de Componentes Principais",
+        "Métodos de sequenciamento, montagem e análise de genomas"
+      ],
+      "descricao_completa": "Introdução à linguagem Python e ao uso de bibliotecas de BioPython. Métodos de Alinhamento de Sequências simples (Needleman-Wunsch, Smith-Waterman, BLAST). Métodos de alinhamentos múltiplos. Modelos de Markov escondidos. Análise de Clusters. Análise de Componentes Principais. Métodos de sequenciamento, montagem e análise de genomas."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["KINSER, J.M."],
+          "titulo": "Python for Bioinformatics",
+          "editora": "Jones & Barltett",
+          "ano": 2008
+        },
+        {
+          "autores": ["MOUNT, D.W."],
+          "titulo": "Bioinformatics",
+          "edicao": "2ª ed.",
+          "editora": "CSHL Press",
+          "ano": 2004
+        },
+        {
+          "autores": ["LESK, A.M."],
+          "titulo": "Introdução à Bioinformática",
+          "edicao": "2ª ed.",
+          "editora": "Artmed",
+          "ano": 2005
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["GRAUR, D.", "LI, W.H."],
+          "titulo": "Fundamentals of Molecular Evolution",
+          "edicao": "2ª ed.",
+          "editora": "Sinauer",
+          "ano": 2000
+        },
+        {
+          "autores": ["JONES, N. C.", "PEVZNER, P. A."],
+          "titulo": "An Introduction to Bioinformatics Algorithms",
+          "edicao": "1ª ed.",
+          "editora": "The MIT Press",
+          "ano": 2004
+        },
+        {
+          "autores": ["GUSFIELD, D."],
+          "titulo": "Algorithms on Strings, Trees and Sequences: Computer Science and Computational Biology",
+          "local": "Cambridge, UK",
+          "editora": "Cambridge University Press",
+          "ano": 1997
+        },
+        {
+          "autores": ["WATERMAN, M."],
+          "titulo": "Introduction to Computational Biology: Maps, Sequences, and Genomes",
+          "local": "Boca Raton, FL",
+          "editora": "CRC Press",
+          "ano": 1995
+        },
+        {
+          "autores": ["DURBIN, R.", "EDDY, S. R.", "KROGH, A.", "MITCHISON, G."],
+          "titulo": "Biological Sequence Analysis: Probabilistic Models of Proteins and Nucleic Acids",
+          "editora": "Cambridge University Press",
+          "ano": 1998
+        }
+      ]
+    }
+  }
+}

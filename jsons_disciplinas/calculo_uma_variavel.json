@@ -1,0 +1,109 @@
+{
+  "disciplina": {
+    "codigo": "5702",
+    "nome": "Cálculo em Uma Variável",
+    "nome_ingles": "Calculus in One Variable",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 1,
+    "turno": null,
+    "docentes": ["Erwin Doescher", "Cláudia Santos", "Karen Paulino", "Alfredo Vitorino", "Vanessa Paschoa", "Daniela Oliveira", "Luís Felipe Bueno", "Ângelo Bianchi", "Tiago Macedo"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 108,
+      "teorica": 72,
+      "pratica": 36,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Funções reais de uma variável",
+        "Limite e continuidade",
+        "Derivação",
+        "Integração",
+        "Aplicações"
+      ],
+      "descricao_completa": "Funções reais de uma variável. Limite e continuidade. Derivação. Integração. Aplicações."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["GUIDORIZZI, H. L."],
+          "titulo": "Um curso de cálculo",
+          "volume": "v. 1",
+          "edicao": "5. Ed.",
+          "local": "Rio De Janeiro",
+          "editora": "LTC",
+          "ano": 2007
+        },
+        {
+          "autores": ["LEITHOLD, L."],
+          "titulo": "O cálculo com geometria analítica",
+          "volume": "v. 1",
+          "edicao": "3. ed.",
+          "local": "São Paulo",
+          "editora": "Harbra",
+          "ano": 1990
+        },
+        {
+          "autores": ["STEWART, J."],
+          "titulo": "Cálculo",
+          "volume": "v.1",
+          "edicao": "6ª ed.",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2009
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["FLEMMING, D. M.", "GONÇALVES, M. B."],
+          "titulo": "Cálculo A: funções, limite, derivação e integração",
+          "edicao": "6ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2006
+        },
+        {
+          "autores": ["GUIDORIZZI, H. L."],
+          "titulo": "Um curso de cálculo",
+          "volume": "v. 2",
+          "edicao": "5. Ed.",
+          "local": "Rio De Janeiro",
+          "editora": "LTC",
+          "ano": 2007
+        },
+        {
+          "autores": ["LARSON, R.", "EDWARDS, B.", "HOSTETLER, R. P."],
+          "titulo": "Cálculo",
+          "volume": "v. 1",
+          "edicao": "8. ed.",
+          "local": "São Paulo",
+          "editora": "Mc Graw-Hill",
+          "ano": 2006
+        },
+        {
+          "autores": ["SIMMONS, G. F."],
+          "titulo": "Cálculo com geometria analítica",
+          "volume": "v. 1",
+          "edicao": "1. ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2008
+        },
+        {
+          "autores": ["THOMAS, G. B."],
+          "titulo": "Cálculo",
+          "volume": "v. 1",
+          "edicao": "12. ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2013
+        }
+      ]
+    }
+  }
+}

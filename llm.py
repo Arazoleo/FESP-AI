@@ -7,6 +7,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 import os
 import json
+import shutil
 from pathlib import Path
 from typing import List
 
@@ -28,6 +29,139 @@ class RAGUnifespJSON:
         self.persist_directory = persist_directory
         self.db = None
         self.retriever = None
+    
+    def reiniciar_banco_vetorial(self, confirmar=True):
+        """
+        Remove o banco vetorial existente para recriá-lo do zero
+        ÚTIL quando você alterou a estrutura dos JSONs ou adicionou novos campos
+        
+        Args:
+            confirmar: Se True, pede confirmação antes de deletar
+        
+        Returns:
+            bool: True se deletado, False se cancelado
+        """
+        if not os.path.exists(self.persist_directory):
+            print(f"ℹ️  Banco vetorial não existe em: {self.persist_directory}")
+            print(f"   Você pode criar um novo normalmente.")
+            return False
+        
+        print("\n" + "="*80)
+        print("⚠️  REINICIAR BANCO VETORIAL")
+        print("="*80)
+        print(f"\n📂 Localização: {self.persist_directory}")
+        
+        # Calcular tamanho
+        total_size = sum(
+            os.path.getsize(os.path.join(dirpath, filename))
+            for dirpath, _, filenames in os.walk(self.persist_directory)
+            for filename in filenames
+        )
+        size_mb = total_size / (1024**2)
+        print(f"💾 Tamanho: {size_mb:.2f} MB")
+        
+        if confirmar:
+            print(f"\n⚠️  ATENÇÃO: Esta ação vai DELETAR permanentemente o banco vetorial!")
+            print(f"   Motivos comuns:")
+            print(f"   • Você adicionou novos campos nos JSONs")
+            print(f"   • Você alterou a estrutura dos dados")
+            print(f"   • Você quer reprocessar tudo do zero")
+            resposta = input(f"\n   Confirma a exclusão? (sim/não): ").strip().lower()
+            
+            if resposta not in ['sim', 's', 'yes', 'y']:
+                print("\n🚫 Operação cancelada. Banco vetorial mantido.")
+                return False
+        
+        try:
+            shutil.rmtree(self.persist_directory)
+            print(f"\n✅ Banco vetorial deletado com sucesso!")
+            print(f"\n💡 Próximo passo: Execute o método para recriar:")
+            print(f"   documentos = rag.carregar_jsons_diretorio('./seu_diretorio')")
+            print(f"   splits = rag.processar_documentos(documentos)")
+            print(f"   rag.criar_banco_vetorial(splits)")
+            return True
+        except Exception as e:
+            print(f"\n❌ Erro ao deletar banco vetorial: {e}")
+            return False
+    
+    def recriar_banco_completo(self, diretorio_jsons, confirmar=True):
+        """
+        Deleta o banco antigo e recria automaticamente do zero
+        PERFEITO para quando você alterou os JSONs e precisa reindexar tudo
+        
+        Args:
+            diretorio_jsons: Caminho do diretório com os arquivos JSON
+            confirmar: Se True, pede confirmação antes de deletar o banco antigo
+        
+        Returns:
+            bool: True se bem-sucedido, False se houve erro
+        """
+        print("\n" + "="*80)
+        print("🔄 RECRIAR BANCO VETORIAL COMPLETO")
+        print("="*80 + "\n")
+        
+        # Verificar se diretório de JSONs existe
+        if not os.path.exists(diretorio_jsons):
+            print(f"❌ ERRO: Diretório não encontrado: {diretorio_jsons}")
+            return False
+        
+        arquivos = list(Path(diretorio_jsons).glob("*.json"))
+        if not arquivos:
+            print(f"❌ ERRO: Nenhum arquivo JSON encontrado em: {diretorio_jsons}")
+            return False
+        
+        print(f"📁 Diretório de JSONs: {diretorio_jsons}")
+        print(f"📄 Arquivos JSON encontrados: {len(arquivos)}")
+        
+        # Passo 1: Deletar banco antigo
+        if os.path.exists(self.persist_directory):
+            print(f"\n🗑️  PASSO 1: Deletando banco vetorial antigo...")
+            if not self.reiniciar_banco_vetorial(confirmar=confirmar):
+                return False
+        else:
+            print(f"\nℹ️  PASSO 1: Nenhum banco antigo encontrado (OK)")
+        
+        # Passo 2: Carregar JSONs
+        print(f"\n📚 PASSO 2: Carregando arquivos JSON...")
+        try:
+            documentos = self.carregar_jsons_diretorio(diretorio_jsons)
+            if not documentos:
+                print(f"❌ ERRO: Nenhum documento foi carregado!")
+                return False
+        except Exception as e:
+            print(f"❌ ERRO ao carregar JSONs: {e}")
+            return False
+        
+        # Passo 3: Processar documentos
+        print(f"\n✂️  PASSO 3: Processando documentos em chunks...")
+        try:
+            splits = self.processar_documentos(documentos, chunk_size=1000, chunk_overlap=200)
+        except Exception as e:
+            print(f"❌ ERRO ao processar documentos: {e}")
+            return False
+        
+        # Passo 4: Criar banco vetorial
+        print(f"\n🔧 PASSO 4: Criando novo banco vetorial...")
+        try:
+            self.criar_banco_vetorial(splits, persistir=True)
+        except Exception as e:
+            print(f"❌ ERRO ao criar banco vetorial: {e}")
+            return False
+        
+        # Sucesso!
+        print(f"\n" + "="*80)
+        print(f"✅ BANCO VETORIAL RECRIADO COM SUCESSO!")
+        print(f"="*80)
+        print(f"\n📊 Resumo:")
+        print(f"   • Arquivos JSON: {len(arquivos)}")
+        print(f"   • Documentos originais: {len(documentos)}")
+        print(f"   • Chunks indexados: {len(splits)}")
+        print(f"   • Localização: {self.persist_directory}")
+        print(f"\n💡 Agora você pode usar:")
+        print(f"   rag.configurar_chain()")
+        print(f"   rag.consultar('sua pergunta')")
+        
+        return True
         
     def carregar_json_disciplina(self, caminho_json):
         """
@@ -46,6 +180,9 @@ class RAGUnifespJSON:
         documentos = []
         
         # 1. Documento com informações gerais
+        docentes = disciplina.get('docentes', [])
+        docentes_str = ', '.join(docentes) if docentes else 'N/A'
+        
         info_geral = f"""
 Disciplina: {disciplina['nome']}
 Nome em Inglês: {disciplina.get('nome_ingles', 'N/A')}
@@ -53,9 +190,11 @@ Código: {disciplina.get('codigo', 'N/A')}
 Campus: {disciplina.get('campus', 'N/A')}
 Curso(s): {', '.join(disciplina.get('curso', []))}
 Tipo: {disciplina.get('tipo', 'N/A')}
+Formato: {disciplina.get('formato', 'N/A')}
 Termo: {disciplina.get('termo', 'N/A')}
 Turno: {disciplina.get('turno', 'N/A')}
 Oferta: {disciplina.get('oferta', 'N/A')}
+Docentes: {docentes_str}
 """
         documentos.append(Document(
             page_content=info_geral.strip(),
@@ -164,6 +303,23 @@ Tópicos principais:
                     'disciplina': disciplina['nome'],
                     'codigo': disciplina.get('codigo', 'N/A'),
                     'tipo_conteudo': 'bibliografia_complementar',
+                    'source': caminho_json
+                }
+            ))
+        
+        # 7. Documento específico para docentes (facilita buscas por professor)
+        docentes = disciplina.get('docentes', [])
+        if docentes:
+            docentes_doc = f"Disciplina: {disciplina['nome']}\nCódigo: {disciplina.get('codigo', 'N/A')}\n\nDocentes que ministram esta disciplina:\n"
+            for i, docente in enumerate(docentes, 1):
+                docentes_doc += f"{i}. {docente}\n"
+            
+            documentos.append(Document(
+                page_content=docentes_doc.strip(),
+                metadata={
+                    'disciplina': disciplina['nome'],
+                    'codigo': disciplina.get('codigo', 'N/A'),
+                    'tipo_conteudo': 'docentes',
                     'source': caminho_json
                 }
             ))
@@ -406,10 +562,9 @@ def exemplo_1_criar_novo_banco():
     rag = RAGUnifespJSON()
     
     # Carregar todos os JSONs do diretório
-    documentos = rag.carregar_jsons_diretorio("./chroma_db_unifesp_json")
+    documentos = rag.carregar_jsons_diretorio("./jsons_disciplinas")
     
     # Processar e criar banco vetorial
-    # Para JSONs estruturados, chunks maiores (1000) funcionam melhor
     splits = rag.processar_documentos(documentos, chunk_size=1000, chunk_overlap=200)
     rag.criar_banco_vetorial(splits, persistir=True)
     
@@ -435,7 +590,7 @@ def exemplo_2_usar_banco_existente():
     """Exemplo: Usar banco vetorial já criado"""
     rag = RAGUnifespJSON()
     
-    # Carregar banco existente (muito mais rápido!)
+    # Carregar banco existente
     rag.carregar_banco_existente()
     
     # Listar disciplinas disponíveis
@@ -448,48 +603,21 @@ def exemplo_2_usar_banco_existente():
     
     # Configurar chain
     rag.configurar_chain()
-    
-    # Fazer consultas
-    print("="*80)
-    print("💬 CONSULTAS INTERATIVAS")
-    print("="*80 + "\n")
-    
-    perguntas = [
-        "Em qual termo é oferecida a disciplina de Banco de Dados?",
-        "Quais livros estão na bibliografia básica de Cálculo Numérico?",
-        "Qual a diferença de carga horária entre teoria e prática em Circuitos Digitais?"
-    ]
-    
-    for pergunta in perguntas:
-        resposta = rag.consultar(pergunta)
-        print(f"💬 {resposta}")
-        print("\n" + "-"*80 + "\n")
 
-def exemplo_3_busca_avancada():
-    """Exemplo: Buscas específicas por tipo de conteúdo"""
+def exemplo_reiniciar_banco():
+    """Exemplo: Reiniciar banco quando você alterou os JSONs"""
     rag = RAGUnifespJSON()
-    rag.carregar_banco_existente()
     
-    print("\n🔍 BUSCA AVANÇADA\n")
+    # OPÇÃO 1: Apenas deletar o banco (você recria manualmente depois)
+    # rag.reiniciar_banco_vetorial()
     
-    # Buscar apenas informações sobre ementa
-    print("📋 Buscando ementas sobre 'programação':")
-    resultados = rag.buscar_por_tipo_conteudo("ementa", k=3)
-    for doc in resultados:
-        print(f"\n  • {doc.metadata['disciplina']}:")
-        print(f"    {doc.page_content[:200]}...")
+    # OPÇÃO 2: Deletar E recriar automaticamente (RECOMENDADO!)
+    rag.recriar_banco_completo(diretorio_jsons="./jsons_disciplinas")
     
-    print("\n" + "-"*80)
-    
-    # Buscar bibliografia de uma disciplina específica
-    print("\n📚 Bibliografia de Algoritmos e Estruturas de Dados I:")
-    resultados = rag.buscar_por_tipo_conteudo(
-        "bibliografia_basica", 
-        disciplina="Algoritmos e Estruturas de Dados I",
-        k=2
-    )
-    if resultados:
-        print(resultados[0].page_content)
+    # Agora pode usar normalmente
+    rag.configurar_chain()
+    resposta = rag.consultar("Teste com os novos campos")
+    print(resposta)
 
 def exemplo_4_modo_interativo():
     """Exemplo: Modo interativo para fazer perguntas"""
@@ -501,7 +629,8 @@ def exemplo_4_modo_interativo():
     print("🎓 MODO INTERATIVO - Sistema RAG Unifesp ICT")
     print("="*80)
     print("\nDigite suas perguntas sobre as disciplinas.")
-    print("Digite 'sair' para encerrar, 'disciplinas' para listar todas.\n")
+    print("Digite 'sair' para encerrar, 'disciplinas' para listar todas.")
+    print("Digite 'reiniciar' para recriar o banco vetorial.\n")
     
     while True:
         pergunta = input("❓ Você: ").strip()
@@ -516,6 +645,19 @@ def exemplo_4_modo_interativo():
             for i, disc in enumerate(disciplinas, 1):
                 print(f"  {i}. {disc}")
             print()
+            continue
+        
+        if pergunta.lower() == 'reiniciar':
+            print("\n🔄 Você quer reiniciar o banco vetorial.")
+            diretorio = input("Digite o diretório dos JSONs [./jsons_disciplinas]: ").strip()
+            if not diretorio:
+                diretorio = "./jsons_disciplinas"
+            
+            if rag.recriar_banco_completo(diretorio):
+                rag.configurar_chain()
+                print("\n✅ Banco reiniciado! Continue fazendo perguntas.\n")
+            else:
+                print("\n❌ Falha ao reiniciar. Continuando com banco atual.\n")
             continue
         
         if not pergunta:
@@ -537,10 +679,10 @@ if __name__ == "__main__":
     # 2. CONSULTAS NORMAIS: Usar banco já criado
     # exemplo_2_usar_banco_existente()
     
-    # 3. BUSCA AVANÇADA: Filtros específicos
-    # exemplo_3_busca_avancada()
+    # 3. REINICIAR: Quando você alterou os JSONs (NOVO!)
+    # exemplo_reiniciar_banco()
     
-    # 4. MODO INTERATIVO: Perguntas em tempo real
+    # 4. MODO INTERATIVO: Perguntas em tempo real (com opção de reiniciar)
     exemplo_4_modo_interativo()
     
     print("""
@@ -548,64 +690,31 @@ if __name__ == "__main__":
     
     ══════════════════════════════════════════════════════════════
     
+    🔄 REINICIAR BANCO (QUANDO VOCÊ ALTEROU OS JSONs):
+    
+    rag = RAGUnifespJSON()
+    
+    # Deletar E recriar automaticamente
+    rag.recriar_banco_completo(diretorio_jsons="./jsons_disciplinas")
+    
+    # Ou apenas deletar (você recria depois)
+    rag.reiniciar_banco_vetorial()
+    
+    ══════════════════════════════════════════════════════════════
+    
     📋 GUIA DE USO:
     
     1️⃣  PRIMEIRA VEZ - Criar o banco vetorial:
-       - Coloque todos os JSONs das disciplinas em uma pasta
-       - Execute: exemplo_1_criar_novo_banco()
-       - Aguarde a indexação (rápido com JSONs!)
+       exemplo_1_criar_novo_banco()
     
     2️⃣  USO NORMAL - Consultas rápidas:
-       - Execute: exemplo_2_usar_banco_existente()
-       - O banco carrega em segundos!
+       exemplo_2_usar_banco_existente()
     
-    3️⃣  BUSCA AVANÇADA - Filtros por tipo de conteúdo:
-       - Execute: exemplo_3_busca_avancada()
-       - Tipos: ementa, bibliografia_basica, carga_horaria, etc.
+    3️⃣  REINICIAR - Alterou os JSONs? (NOVO!)
+       exemplo_reiniciar_banco()
     
-    4️⃣  MODO INTERATIVO - Chat em tempo real:
-       - Execute: exemplo_4_modo_interativo()
-       - Faça perguntas livremente!
+    4️⃣  MODO INTERATIVO - Chat com opção de reiniciar:
+       exemplo_4_modo_interativo()
     
     ══════════════════════════════════════════════════════════════
-    
-    ✨ VANTAGENS DOS JSONs vs PDFs:
-    - ✅ Dados estruturados e organizados
-    - ✅ Busca por tipo de conteúdo (ementa, bibliografia, etc)
-    - ✅ Metadata rica (código, disciplina, tipo)
-    - ✅ Chunks mais inteligentes e contextualizados
-    - ✅ Respostas mais precisas e completas
-    - ✅ Processamento mais rápido
-    
-    ══════════════════════════════════════════════════════════════
-    
-    💡 TIPOS DE CONTEÚDO DISPONÍVEIS:
-    - informacoes_gerais: Nome, código, campus, curso, termo
-    - carga_horaria: Horas teóricas, práticas e de extensão
-    - pre_requisitos: Disciplinas obrigatórias anteriores
-    - ementa: Descrição completa e tópicos
-    - bibliografia_basica: Livros principais
-    - bibliografia_complementar: Leituras adicionais
-    
-    ══════════════════════════════════════════════════════════════
-    
-    ❓ EXEMPLOS DE PERGUNTAS:
-    - "Qual a carga horária total de [disciplina]?"
-    - "Quais são os pré-requisitos de [disciplina]?"
-    - "Me fale sobre a ementa de [disciplina]"
-    - "Quais livros da bibliografia básica de [disciplina]?"
-    - "Em que termo é oferecida [disciplina]?"
-    - "Quantas horas práticas tem [disciplina]?"
-    - "Compare a carga horária de [disciplina1] e [disciplina2]"
-    - "Quais disciplinas não têm pré-requisitos?"
-    
-    ══════════════════════════════════════════════════════════════
-    
-    🔧 CONFIGURAÇÃO:
-    - Modelo LLM: llama3.2 (pode trocar)
-    - Embeddings: nomic-embed-text
-    - Chunk size: 1000 (ótimo para JSONs estruturados)
-    - Top K: 6 documentos mais relevantes
-    - Persistência: ./chroma_db_unifesp_json
-    
     """)

@@ -1,0 +1,111 @@
+{
+  "disciplina": {
+    "codigo": "2828",
+    "nome": "Cálculo Numérico",
+    "nome_ingles": "Numerical Calculus",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 2,
+    "turno": "Integral",
+    "docentes": ["Thadeu Senne", "Tiago Macedo", "Luiz Felipe", "Erwin Doescher", "Luiz Leduíno"],
+    "pre_requisitos": [
+      {
+        "codigo": "5702",
+        "nome": "Cálculo em Uma Variável"
+      },
+      {
+        "codigo": "2650",
+        "nome": "Geometria Analítica"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 58,
+      "pratica": 14,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Erros",
+        "Zeros de funções reais",
+        "Resolução de sistemas lineares e não lineares",
+        "Interpolação",
+        "Ajuste de curvas",
+        "Integração numérica",
+        "Solução numérica de equações diferenciais ordinárias"
+      ],
+      "descricao_completa": "Erros. Zeros de funções reais. Resolução de sistemas lineares e não lineares. Interpolação. Ajuste de curvas. Integração numérica. Solução numérica de equações diferenciais ordinárias."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["BURDEN, R. L.", "FAIRES, J. D."],
+          "titulo": "Análise numérica",
+          "edicao": "8a ed.",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2008
+        },
+        {
+          "autores": ["FRANCO, N. B."],
+          "titulo": "Cálculo numérico",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2006
+        },
+        {
+          "autores": ["RUGGIERO, M. A. G.", "LOPES, V. L. R."],
+          "titulo": "Cálculo numérico – aspectos teóricos e computacionais",
+          "edicao": "2a ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2008
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["ARENALES, S.", "DAREZZO, A."],
+          "titulo": "Cálculo numérico: aprendizagem com apoio de software",
+          "local": "São Paulo",
+          "editora": "Thomson",
+          "ano": 2008
+        },
+        {
+          "autores": ["CHAPRA, S. C.", "CANALE, R. P."],
+          "titulo": "Métodos numéricos para engenharia",
+          "edicao": "5a ed.",
+          "local": "São Paulo",
+          "editora": "McGraw-Hill",
+          "ano": 2008
+        },
+        {
+          "autores": ["CUNHA, M. C. C."],
+          "titulo": "Métodos numéricos",
+          "edicao": "2a ed.",
+          "local": "Campinas",
+          "editora": "Editora UNICAMP",
+          "ano": 2000
+        },
+        {
+          "autores": ["PRESS, W.", "FLANNERY, B. P.", "TEUKOLSKY, S. A.", "VETTERLING, W. T."],
+          "titulo": "Numerical recipies: the art of scientific computing",
+          "edicao": "3a ed.",
+          "local": "New York",
+          "editora": "Cambridge University Press",
+          "ano": 2007
+        },
+        {
+          "autores": ["QUARTERONI, A.", "SACCO, R.", "SALERI, F."],
+          "titulo": "Numerical mathematics",
+          "edicao": "2a ed.",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2007
+        }
+      ]
+    }
+  }
+}

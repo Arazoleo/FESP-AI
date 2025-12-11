@@ -1,0 +1,155 @@
+{
+  "disciplina": {
+    "codigo": null,
+    "nome": "Engenharia de Software",
+    "nome_ingles": "Software Engineering",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Engenharia de Computação",
+      "Ciência da Computação",
+      "Bacharelado Interdisciplinar em Ciência e Tecnologia"
+    ],
+    "tipo": null,
+    "formato": "Disciplina",
+    "oferta": null,
+    "termo": null,
+    "turno": null,
+    "docentes": ["Fábio Silveira"],
+    "pre_requisitos": [
+      {
+        "codigo": null,
+        "nome": "Programação Orientada a Objetos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 36,
+      "pratica": 36,
+      "extensao": 0
+    },
+    "objetivos": {
+      "geral": "O objetivo desta disciplina é apresentar aos alunos uma visão geral sobre a Engenharia de Software, bem como capacitá-los na escolha ou definição de processos de software para o planejamento, condução e gerenciamento de projetos de software.",
+      "especificos": [
+        "Apresentar aos alunos os principais conceitos que embasam a Engenharia de Software",
+        "Apresentar aos alunos as principais fases e atividades do processo de desenvolvimento de software",
+        "Introduzir os alunos ao uso das boas práticas de desenvolvimento de software",
+        "Capacitar os alunos a pensar no processo de desenvolvimento de software como um processo de engenharia",
+        "Capacitar os alunos na escolha de modelos de processos de software",
+        "Instrumentalizar os alunos para o uso das técnicas e métodos consolidados de planejamento, análise, projeto, implementação, testes e evolução de software"
+      ]
+    },
+    "ementa": {
+      "topicos": [
+        "Visão geral sobre a Engenharia de Software",
+        "Processos de desenvolvimento de software",
+        "Práticas de desenvolvimento de software",
+        "Modelos de processo",
+        "Engenharia de requisitos",
+        "Planejamento e gerenciamento de projetos",
+        "Especificação de software",
+        "Projeto de software",
+        "Metodologias de desenvolvimento de software",
+        "Verificação, Validação e Teste de Software",
+        "Evolução de software",
+        "Gerenciamento de configuração de software",
+        "Ferramentas CASE"
+      ],
+      "descricao_completa": "Visão geral sobre a Engenharia de Software; Processos de desenvolvimento de software; Práticas de desenvolvimento de software; Modelos de processo; Engenharia de requisitos; Planejamento e gerenciamento de projetos; Especificação de software; Projeto de software; Metodologias de desenvolvimento de software; Verificação, Validação e Teste de Software; Evolução de software; Gerenciamento de configuração de software; Ferramentas CASE."
+    },
+    "conteudo_programatico": [
+      "Histórico e evolução da Engenharia de Software",
+      "Conceitos e premissas da Engenharia de Software",
+      "Processos de software: conceitos, artefatos, atividades, fases e etapas",
+      "Modelos de processos: clássico, baseado em prototipação, baseado em verificações (Modelo em V), iterativo e incremental, espiral (framework de processos)",
+      "Métodos ágeis: Programação Extrema e SCRUM",
+      "Engenharia de Requisitos: elicitação, análise, especificação e modelagem, validação e gerenciamento",
+      "Planejamento: definição de cronograma e estimativas de prazos e custos",
+      "Projeto de software: arquitetural, de dados, procedural e interface com o usuário",
+      "Projeto de software de tempo-real",
+      "Implementação: padronização de código, boas práticas de codificação",
+      "Testes: estruturais e funcionais",
+      "Evolução: manutenção de software corretiva, adaptativa e evolutiva",
+      "Modelos de maturidade e capacidade de software"
+    ],
+    "metodologia": "O curso será baseado em aulas expositivas com auxílio do quadro e projetor multimídia. A participação dos alunos em sala de aula será estimulada através de perguntas e sessões de exercícios. Para fixação dos tópicos estudados, os alunos receberão, ao longo do curso, listas de exercícios para entrega em sala de aula. Por fim, destacam-se as aulas práticas nos laboratórios de informática para fixação dos conteúdos através de do uso de ambientes de desenvolvimento de software. Análise de estudos de caso e desenvolvimento prático de projetos de software.",
+    "recursos_instrucionais": "Quadro branco, projetor multimídia e laboratório de informática.",
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["Sommerville, I."],
+          "titulo": "Software Engineering",
+          "edicao": "9th edition",
+          "editora": "Addison-Wesley",
+          "ano": 2011,
+          "isbn": "978-0137035151"
+        },
+        {
+          "autores": ["Pressman, R."],
+          "titulo": "Software Engineering: A Practitioner's Approach",
+          "edicao": "7th edition",
+          "editora": "McGraw Hill",
+          "ano": 2009,
+          "isbn": "978-0073375977"
+        },
+        {
+          "autores": ["Beck, Ken"],
+          "titulo": "Programação extrema (XP) explicada: acolha as mudanças",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2004,
+          "paginas": 182,
+          "isbn": "978-85-363-0387-1"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["PFLEEGER, S. L."],
+          "titulo": "Engenharia de Software: Teoria e Prática",
+          "edicao": "2a edição",
+          "editora": "Prentice Hall Brasil",
+          "ano": 2004,
+          "isbn": "9788587918314"
+        },
+        {
+          "autores": ["Jacobson, Ivar", "Raumbaugh, James", "Booch, Grady"],
+          "titulo": "UML: the unified software development process",
+          "local": "Indianápolis",
+          "editora": "Addison-Wesley",
+          "ano": 1998,
+          "paginas": 463,
+          "isbn": "978-0-201-57169-1"
+        },
+        {
+          "autores": ["Bass, Len", "Clemens, Paul", "Kazman, Rick"],
+          "titulo": "Software architecture in practice",
+          "edicao": "2nd. ed.",
+          "local": "Boston",
+          "editora": "Addison-Wesley",
+          "ano": 2003,
+          "paginas": 528,
+          "serie": "SEI series in software engineering",
+          "isbn": "978-0-321-15495-8"
+        },
+        {
+          "autores": ["FOWLER, Martin"],
+          "titulo": "Refactoring",
+          "local": "Massachusetts",
+          "editora": "Addison-Wesley",
+          "ano": 1999,
+          "paginas": 431,
+          "isbn": "978-0-201-48567-7"
+        },
+        {
+          "autores": ["Schäuffele, Jörg", "Zurawka, Thomas"],
+          "titulo": "Automotive software engineering: principles, processes, methods, and tools",
+          "tradutor": "Roger Carey",
+          "local": "Warrendale (USA)",
+          "editora": "SAE International",
+          "ano": 2005,
+          "paginas": 385,
+          "isbn": "9780768014905"
+        }
+      ]
+    }
+  }
+}

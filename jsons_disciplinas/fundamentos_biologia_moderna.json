@@ -1,0 +1,103 @@
+{
+  "disciplina": {
+    "codigo": "5703",
+    "nome": "Fundamentos de Biologia Moderna",
+    "nome_ingles": "The Bases of Modern Biology",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Bacharelado em Biotecnologia",
+      "Bacharelado em Ciência e Tecnologia"
+    ],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 1,
+    "turno": null,
+    "docentes": ["Cláudia Campos", "Michael Brito", "Luciane Capelo", "André Zelanis"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução à Biologia",
+        "Bases químicas",
+        "Introdução à bioquímica",
+        "Estrutura e função das principais moléculas biológicas",
+        "Metabolismo",
+        "Estrutura da célula procariota e eucariota",
+        "Processo de replicação do DNA",
+        "Processo de transcrição do RNA",
+        "Processo de tradução de proteínas",
+        "Introdução à fisiologia"
+      ],
+      "descricao_completa": "Introdução à Biologia. Bases químicas. Introdução à bioquímica. Estrutura e função das principais moléculas biológicas. Metabolismo. Estrutura da célula procariota e eucariota. Processo de replicação do DNA. Processo de transcrição do RNA. Processo de tradução de proteínas. Introdução à fisiologia."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["ALBERTS, Bruce et al."],
+          "titulo": "Fundamentos da biologia celular",
+          "edicao": "2.ed.",
+          "local": "Porto Alegre",
+          "editora": "ARTMED",
+          "ano": 2006
+        },
+        {
+          "autores": ["Stryer, L.", "Tymoczko, J. L.", "Berg, J. M."],
+          "titulo": "Bioquímica",
+          "edicao": "5a ed.",
+          "editora": "Guanabara-Koogan",
+          "ano": 2004
+        },
+        {
+          "autores": ["Silverthorn, Deen Unglaub"],
+          "titulo": "Fisiologia Humana – Uma Abordagem Integrada",
+          "edicao": "5a ed.",
+          "editora": "Artmed",
+          "ano": 2010
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["NELSON, David L.", "COX, Michael M."],
+          "titulo": "Lehninger princípios de bioquímica",
+          "edicao": "5.ed.",
+          "local": "Porto Alegre",
+          "editora": "Artmed",
+          "ano": 2011
+        },
+        {
+          "autores": ["HARVEY LODISH ET AL."],
+          "titulo": "Biologia Celular e Molecular",
+          "editora": "Artmed",
+          "ano": 2007
+        },
+        {
+          "autores": ["Guyton, A C.", "Hall, E. J."],
+          "titulo": "Tratado de Fisiologia Médica",
+          "edicao": "11a ed.",
+          "editora": "Elsevier",
+          "ano": 2011
+        },
+        {
+          "autores": ["Constanzo L."],
+          "titulo": "Fisiologia",
+          "edicao": "3a ed.",
+          "editora": "Elsevier",
+          "ano": 2007
+        },
+        {
+          "autores": ["KOEPPEN, B.M.", "STANTON, B.A."],
+          "titulo": "Berne & Levy: Fisiologia",
+          "edicao": "6ª.ed.",
+          "editora": "Elsevier",
+          "ano": 2009
+        }
+      ]
+    }
+  }
+}

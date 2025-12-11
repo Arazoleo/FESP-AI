@@ -1,0 +1,108 @@
+{
+  "disciplina": {
+    "codigo": "4538",
+    "nome": "Fenômenos Mecânicos Experimental",
+    "nome_ingles": "Experimental Mechanics Phenomena",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": null,
+    "docentes": ["Ana Maria Slapnik", "Eduardo Antonelli", "Thaciana Malaspina", "Rossano Lang"],
+    "pre_requisitos": [
+      {
+        "codigo": "4369",
+        "nome": "Fenômenos Mecânicos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 0,
+      "pratica": 36,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Medições, erros e incertezas",
+        "Construção de gráficos e tratamento de dados",
+        "Relatório científico",
+        "Instrumentos de medida: réguas, paquímetro, micrômetro",
+        "Leis do movimento",
+        "Estática",
+        "Leis de Newton e aplicações",
+        "Conservação da energia"
+      ],
+      "descricao_completa": "Medições, erros e incertezas; Construção de gráficos e tratamento de dados; Relatório científico; Instrumentos de medida: réguas, paquímetro, micrômetro; Leis do movimento; Estática; Leis de Newton e aplicações; Conservação da energia."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["TIPLER, Paul Allen", "MOSCA, Gene"],
+          "titulo": "Física para cientistas e engenheiros. Vol. 1: Mecânica, Oscilações e Ondas, Termodinâmica",
+          "edicao": "6a Edição",
+          "editora": "Grupo Gen-LTC",
+          "ano": 2009,
+          "formato": "Livro e Ebook"
+        },
+        {
+          "autores": ["KNIGHT, Randall D."],
+          "titulo": "Física: Uma Abordagem Estratégica: Volume 1 - Mecânica Newtoniana, Gravitação, Oscilações e Ondas",
+          "edicao": "2a Edição",
+          "editora": "Bookman",
+          "ano": 2009,
+          "formato": "Ebook"
+        },
+        {
+          "autores": ["HALLIDAY, David", "RESNICK, Robert", "WALKER, Jearl"],
+          "titulo": "Fundamentos de Física, volume 1: Mecânica",
+          "edicao": "8a Edição",
+          "editora": "LTC",
+          "ano": 2009,
+          "formato": "Livro"
+        },
+        {
+          "autores": ["VUOLO, José Henrique"],
+          "titulo": "Fundamentos da Teoria dos Erros",
+          "edicao": "2a Edição",
+          "local": "São Paulo (SP)",
+          "editora": "E. Blucher",
+          "ano": 1996,
+          "formato": "Livro"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["YOUNG, Hugh D.", "FREEDMAN, Roger A."],
+          "titulo": "Física I, Sears e Zemansky: Mecânica",
+          "ano": 2014
+        },
+        {
+          "autores": ["SERWAY, Raymond A.", "JOHN JR, W."],
+          "titulo": "Princípios e Física – Mecânica Clássica e Relatividade - Volume",
+          "editora": "Cengage Learning Edições Ltda.",
+          "ano": 2010
+        },
+        {
+          "autores": ["NUSSENZVEIG, Herch Moysés"],
+          "titulo": "Curso de Física Básica: Mecânica",
+          "editora": "Editora Blucher",
+          "ano": 2018
+        },
+        {
+          "autores": ["CAMPOS, Agostinho Aurélio Garcia", "ALVES, Elmo Salomão", "SPEZIALI, Nivaldo Lúcio"],
+          "titulo": "Física experimental Básica na Universidade",
+          "editora": "Editora UFMG",
+          "ano": 2008
+        },
+        {
+          "autores": ["HELENE, Otaviano AM", "VANIN, Vito R."],
+          "titulo": "Tratamento Estatístico de Dados em Física Experimental",
+          "editora": "Editora Blucher",
+          "ano": 1991
+        }
+      ]
+    }
+  }
+}

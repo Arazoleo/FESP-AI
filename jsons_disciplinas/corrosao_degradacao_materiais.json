@@ -1,0 +1,116 @@
+{
+  "disciplina": {
+    "codigo": "5881",
+    "nome": "Corrosão e Degradação de Materiais",
+    "nome_ingles": "Corrosion and Degradation of Materials",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Materiais"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 9,
+    "turno": null,
+    "docentes": ["Maraísa Gonçalves"],
+    "pre_requisitos": [
+      {
+        "codigo": "5142",
+        "nome": "Materiais Cerâmicos"
+      },
+      {
+        "codigo": "5143",
+        "nome": "Materiais Metálicos"
+      },
+      {
+        "codigo": "5144",
+        "nome": "Materiais Poliméricos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 64,
+      "pratica": 0,
+      "extensao": 8
+    },
+    "ementa": {
+      "topicos": [
+        "Corrosão e sua importância econômica e social",
+        "Corrosão de metais e suas ligas",
+        "Degradação em alta temperatura",
+        "Degradação de polímeros e cerâmicos",
+        "Proteção contra a corrosão",
+        "Atividades de extensão",
+        "Visitas técnicas"
+      ],
+      "descricao_completa": "Corrosão e sua importância econômica e social. Corrosão de metais e suas ligas. Degradação em alta temperatura. Degradação de polímeros e cerâmicos. Proteção contra a corrosão. Atividades de extensão que articulem, simultaneamente, teoria, prática e seu contexto de aplicação, necessárias para o desenvolvimento das competências, estabelecidas no perfil do egresso. Poderão ser realizadas visitas técnicas, de acordo com a disponibilidade."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["GENTIL, Vicente"],
+          "titulo": "Corrosão",
+          "edicao": "6 ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Gen",
+          "ano": 2011
+        },
+        {
+          "autores": ["RAMANATHAN, Lalgudi V."],
+          "titulo": "Corrosão e seu controle",
+          "local": "São Paulo",
+          "editora": "Hemus",
+          "ano": 1997
+        },
+        {
+          "autores": ["GEMELLI, Enori"],
+          "titulo": "Corrosão de materiais metálicos e sua caracterização",
+          "local": "Rio de Janeiro",
+          "editora": "LTC - Livros Técnicos e Científicos",
+          "ano": 2001
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["JAMBO, Hermano Cezar Medaber", "FÓFANO, Sócrates"],
+          "titulo": "Corrosão: fundamentos, monitoração e controle",
+          "local": "Rio de Janeiro",
+          "editora": "Ciência Moderna",
+          "ano": 2008
+        },
+        {
+          "autores": ["BATCHELOR, Andrew William", "LAM, Loh Nee", "CHANDRASEKARAN, Margam"],
+          "titulo": "Materials degradation and its control by surface engineering",
+          "local": "London",
+          "editora": "Imperial College",
+          "ano": 1999
+        },
+        {
+          "autores": ["GERSTEN, Joel I.", "SMITH, Frederick W."],
+          "titulo": "The physics and chemistry of materials",
+          "local": "Hoboken (USA)",
+          "editora": "John Wiley & Sons",
+          "ano": 2001
+        },
+        {
+          "autores": ["SHACKELFORD, James F."],
+          "titulo": "Ciência dos materiais",
+          "edicao": "6.ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2008
+        },
+        {
+          "autores": ["CALLISTER JR., William D."],
+          "titulo": "Ciência e engenharia de materiais: uma introdução",
+          "edicao": "7.ed.",
+          "ano": 2008
+        },
+        {
+          "autores": ["VIDELA, Hector A."],
+          "titulo": "Biocorrosão, biofouling e biodeterioração de materiais",
+          "editora": "Editora Blucher",
+          "isbn": "9788521216506"
+        }
+      ]
+    }
+  }
+}
