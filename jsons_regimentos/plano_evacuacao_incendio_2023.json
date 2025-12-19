@@ -1,0 +1,473 @@
+{
+  "documento": {
+    "tipo": "Plano Base de Evacuacao em caso de Incendio",
+    "instituicao": "Universidade Federal de Sao Paulo (UNIFESP)",
+    "campus": "Sao Jose dos Campos",
+    "unidade": "Parque Tecnologico",
+    "instituto": "ICT - Instituto de Ciencia e Tecnologia",
+    "ano": 2023,
+    "total_paginas": 20,
+    "responsavel_tecnico": {
+      "nome": "Shirley Santos Cunha",
+      "cargo": "Tecnica em Seguranca do Trabalho",
+      "rf": "0119452-4/0001"
+    }
+  },
+
+  "objetivo": {
+    "principal": "Preparacao e organizacao dos meios existentes para garantir a salvaguarda dos ocupantes em caso de ocorrencia de incendio",
+    "secundario": "Abandono da edificacao de forma mais rapida possivel contemplando todos os setores e salas de aulas"
+  },
+
+  "descricao_edificacao": {
+    "identificacao": {
+      "nome": "Unidade Parque Tecnologico do Campus Sao Jose dos Campos",
+      "endereco": "Avenida Cesare Mansueto Giulio Lattes, n 1201",
+      "bairro": "Eugenio de Mello",
+      "cidade": "Sao Jose dos Campos",
+      "telefone": "+55(12) 3924-9553"
+    },
+    "localizacao": "Urbana",
+    "vizinhanca": "Industrias e centros universitarios",
+    "ajuda_externa": {
+      "corpo_bombeiros": {
+        "localizacao": "Posto de Bombeiros da zona leste",
+        "distancia": "5,8 Km",
+        "telefone": "193"
+      },
+      "samu": {
+        "telefone": "192"
+      }
+    },
+    "estrutura_fisica": {
+      "tipo_construcao": "Concreto armado, alvenaria e MDF",
+      "area_construida": "21.000 m2",
+      "pavimentos": "Terreo e 4 pavimentos",
+      "total_andares": 5
+    },
+    "ocupacao": {
+      "tipo": "E1 - Escola Universidade",
+      "ambientes": [
+        "Salas de aulas",
+        "Salas administrativas",
+        "Laboratorios",
+        "Auditorio",
+        "Cantina",
+        "Restaurante universitario"
+      ]
+    },
+    "populacao": {
+      "fixa": {
+        "colaboradores_proprios": 32,
+        "colaboradores_contratados": 14,
+        "total": 46,
+        "areas_contratados": ["limpeza", "manutencao", "motorista", "seguranca"]
+      },
+      "flutuante": {
+        "media": 1681,
+        "composicao": ["alunos", "docentes", "tecnico-administrativos em educacao"]
+      }
+    },
+    "horario_funcionamento": {
+      "dias": "Segunda-feira a sexta-feira",
+      "modalidades": ["presencial", "hibrido"],
+      "atividades_especiais": "Esporadicas aos sabados",
+      "horario_variavel": "07h as 23h (conforme o setor)"
+    },
+    "distribuicao_setores": {
+      "terreo": {
+        "areas": [
+          "Biblioteca",
+          "Salas administrativas",
+          "Secretaria de Pos-graduacao",
+          "Secretaria de extensao e cultura",
+          "Salas de projetos academicos",
+          "Salas de docentes",
+          "Laboratorios",
+          "Banheiros",
+          "Salas de ar-condicionado TI"
+        ],
+        "area_externa": [
+          "Almoxarifado de terceiros",
+          "Banheiros",
+          "Central CFTV",
+          "Salas"
+        ]
+      },
+      "primeiro_pavimento": [
+        "Refeitorio",
+        "Cozinha",
+        "Cantina",
+        "Secretaria academica",
+        "Banheiros",
+        "Salas de docentes"
+      ],
+      "segundo_pavimento": [
+        "Salas de ensino",
+        "Laboratorios",
+        "Banheiros",
+        "Salas de ar-condicionado TI"
+      ],
+      "terceiro_pavimento": [
+        "Salas de ensino",
+        "Laboratorios",
+        "Reagentario provisorio",
+        "Banheiros",
+        "Salas ar-condicionado TI"
+      ],
+      "quarto_pavimento": [
+        "Auditorio",
+        "Copa",
+        "Salas administrativas",
+        "Laboratorios",
+        "Salas de ensino",
+        "Banheiros",
+        "Salas ar-condicionado TI"
+      ]
+    }
+  },
+
+  "riscos_especificos": [
+    {
+      "tipo": "Laboratorios quimicos",
+      "localizacao": "3o pavimento",
+      "atividades": ["manipulacao de produtos quimicos", "armazenamento de produtos quimicos"],
+      "riscos": ["explosao", "incendio"]
+    },
+    {
+      "tipo": "Reagentario provisorio",
+      "localizacao": "3o pavimento",
+      "atividades": ["armazenamento de produtos quimicos"],
+      "riscos": ["explosao", "incendio"]
+    },
+    {
+      "tipo": "Central de GLP",
+      "localizacao": "Lado externo",
+      "riscos": ["vazamento", "explosao", "incendio"]
+    },
+    {
+      "tipo": "Cabine primaria",
+      "localizacao": "Lado externo",
+      "riscos": ["risco eletrico", "incendio"]
+    }
+  ],
+
+  "ponto_encontro": {
+    "localizacao": "Portaria n 02",
+    "instrucoes": "Todos os ocupantes deverao permanecer ate o final da definicao da emergencia"
+  },
+
+  "recursos_humanos": {
+    "brigada_incendio": {
+      "total_membros": 27
+    }
+  },
+
+  "recursos_materiais": {
+    "extintores": {
+      "po_quimico_seco_4kg": 26,
+      "gas_carbonico_6kg": 24,
+      "agua_10l": 35,
+      "total": 85
+    },
+    "hidrantes": 30,
+    "iluminacao_emergencia": {
+      "tipo": "Bloco autonomo",
+      "autonomia": "10 horas"
+    },
+    "gerador": {
+      "tipo": "Automatico diesel",
+      "localizacao": "Lado externo",
+      "autonomia": "08 horas",
+      "alimentacao": "Todo sistema eletrico da edificacao"
+    },
+    "sinalizacao": "Placas fotoluminescentes",
+    "sistema_alarme": {
+      "tipo": "Enderecavel",
+      "central_localizacao": "Sala de CFTV (Circuito Fechado de Televisao) lado externo"
+    },
+    "saidas_emergencia": [
+      "Hall de entrada",
+      "Escadas de emergencia principais (proximas aos banheiros)",
+      "Escadas de emergencia secundarias panoramicas"
+    ]
+  },
+
+  "procedimentos_emergencia": {
+    "alerta": {
+      "deteccao": "Central de monitoramento detecta o incendio",
+      "acionamento_brigadistas": ["VoIP", "radio", "pessoalmente"],
+      "ponto_encontro_brigada": "Brigadistas comparecem rapidamente ao Ponto de Encontro da Brigada",
+      "alarme_sonoro": {
+        "acionamento": "Automatico ou manual por botoeira",
+        "localizacao_botoeiras": "Proximo aos hidrantes internos e externos"
+      },
+      "acionamento_alternativo": {
+        "condicao": "Sistema sonoro nao disponivel",
+        "metodo": "Orientacao por membros da brigada",
+        "frase": "EMERGENCIA EVACUACAO!"
+      }
+    },
+
+    "analise_situacao": {
+      "responsaveis": "Brigadistas de plantao",
+      "local_reuniao": "Ponto de Encontro da brigada pre-estabelecido",
+      "verificacoes": [
+        "Possibilidade de combate ao principio de incendio",
+        "Necessidade de evacuacao (geral ou parcial)",
+        "Acionamento de auxilio externo (Corpo de Bombeiros 193 e/ou SAMU 192)"
+      ]
+    },
+
+    "abandono_area": {
+      "determinacao": "Direcao da instituicao ou coordenacao da brigada",
+      "ausencia_direcao": "Lider determina abandono parcial ou total",
+      "casos_abandono": ["Incendio", "Acidentes que oferecam inseguranca aos usuarios"],
+      "ordem_evacuacao": "Ocupantes do andar sinistrado saem primeiro",
+      "forma": "Em fila e sem tumulto"
+    },
+
+    "pcd_pmr": {
+      "siglas": {
+        "pcd": "Pessoas com Deficiencia",
+        "pmr": "Pessoas com Mobilidade Reduzida"
+      },
+      "auxilio": "Brigadista e/ou voluntario acompanha ate local seguro",
+      "tecnicas_transporte": ["no colo", "costas", "cadeirinha", "maca"],
+      "situacao_impossibilidade": {
+        "local": "Caixa de escada enclausurada",
+        "acao": "PcD/PMR aguarda resgate",
+        "comunicacao": "Corpo de Bombeiros deve ser imediatamente avisado sobre localizacao"
+      }
+    },
+
+    "apoio_externo": {
+      "corpo_bombeiros": {
+        "telefone": "193",
+        "informacoes_fornecer": [
+          "Nome e numero de telefone utilizado",
+          "Endereco: Avenida Cesare Mansueto Giulio Lattes, n 1201 - Eugenio de Mello - Sao Jose dos Campos",
+          "Pontos de referencia: Frente a faculdade FATEC",
+          "Caracteristicas do incendio",
+          "Quantidade e estado das eventuais vitimas"
+        ],
+        "orientacao_chegada": "Mesmo brigadista que acionou deve orientar sobre condicoes e acessos"
+      },
+      "samu": {
+        "telefone": "192",
+        "quando_acionar": "Necessario para primeiros socorros"
+      }
+    },
+
+    "primeiros_socorros": "Devem ser prestados as eventuais vitimas quando possivel",
+
+    "corte_energia": {
+      "quando": "Caso necessario",
+      "tipo": "Parcial ou total",
+      "responsavel": "Equipe de manutencao ou pessoa com conhecimento",
+      "coordenacao": "A disposicao do lider da brigada"
+    },
+
+    "procedimento_sala_aula": {
+      "docente_responsabilidades": [
+        "Instruir alunos sobre procedimentos corretos",
+        "Nomear aluno para Chefe de Fila",
+        "Dar ordem para saida evitando aglomeracoes",
+        "Ser ultimo a sair certificando-se que ninguem permaneceu",
+        "Responsavel pela turma desde saida ate abandono total",
+        "Manter controle no Ponto de Encontro",
+        "Proceder conferencia dos alunos"
+      ],
+      "chefe_fila": {
+        "aluno_nomeado": "Preferencialmente carteira mais proxima da porta",
+        "responsabilidade": "Sair primeiro conduzindo colegas em fila"
+      },
+      "alunos_procedimentos": [
+        "Formar fila proximo a porta de saida",
+        "PcD/PMD acompanhado por brigadista ou voluntario",
+        "Deixar material em sala (nao voltar para pega-los)",
+        "Marcha em passo rapido sem atropelos"
+      ],
+      "aluno_auxiliar_pcd": "Juntar-se imediatamente a turma no ponto de encontro"
+    },
+
+    "demais_ocupantes": {
+      "procedimento": [
+        "Organizar-se em filas ao sinal sonoro ou orientacao de brigadista",
+        "Dirigir-se a porta de emergencia",
+        "Iniciar descida ate a saida",
+        "Deslocar-se ate Ponto de Encontro"
+      ],
+      "verificacao_brigadistas": "Antes do abandono definitivo, verificar ocupantes retardatarios e fechar portas/janelas"
+    },
+
+    "brigadista_docente": {
+      "prioridade": "Garantia da integridade fisica dos alunos da turma pela qual esta responsavel",
+      "sequencia": [
+        "Proceder retirada da turma conforme item 15",
+        "Conferir alunos no Ponto de Encontro",
+        "Repassar informacao a equipe do ponto de encontro",
+        "Somente apos alunos em seguranca, atuar como brigadista"
+      ]
+    },
+
+    "rotas_fuga": {
+      "definicao": "Trajeto em passo rapido do local ate o ponto de encontro",
+      "documentacao": "Anexos I ao V do documento"
+    },
+
+    "isolamento_area": "Area sinistrada deve ser isolada fisicamente para garantir trabalhos de emergencia e evitar pessoas nao autorizadas",
+
+    "confinamento_incendio": "Incendio deve ser confinado para evitar propagacao e consequencias",
+
+    "combate_incendio": "Brigadistas devem iniciar combate atuando no principio de incendio",
+
+    "investigacao": {
+      "quando": "Apos controle total da emergencia e volta a normalidade",
+      "responsavel": "Coordenador da brigada",
+      "produto": "Relatorio por escrito sobre o sinistro e acoes de controle",
+      "finalidade": "Providencias e/ou investigacao"
+    }
+  },
+
+  "simulados": {
+    "periodicidade": "A cada 12 meses",
+    "participacao": "Toda a populacao",
+    "reuniao_pos_simulado": {
+      "participantes": "Brigada de incendio",
+      "tipo": "Extraordinaria",
+      "objetivo": "Avaliacao e correcao das falhas ocorridas"
+    }
+  },
+
+  "notas_importantes": [
+    "Evacuacao vertical: NAO utilizar elevadores",
+    "Local com fumaca: arrastar-se para evitar asfixia",
+    "Obstrucao de saidas principais: usar saidas secundarias",
+    "Pavimentos superiores sem saida: dirigir-se para local mais afastado do foco, fazer notar presenca para resgate",
+    "Suspeita de principio de incendio: sempre investigar, nunca subestimar"
+  ],
+
+  "anexos": {
+    "anexo_i": {
+      "tipo": "Rota de Fuga - Terreo",
+      "descricao": "Planta baixa com indicacao de rotas de evacuacao do pavimento terreo",
+      "pagina": 14
+    },
+    "anexo_ii": {
+      "tipo": "Rota de Fuga - 1o Pavimento",
+      "descricao": "Planta baixa com indicacao de rotas de evacuacao do primeiro pavimento",
+      "pagina": 15
+    },
+    "anexo_iii": {
+      "tipo": "Rota de Fuga - 2o Pavimento",
+      "descricao": "Planta baixa com indicacao de rotas de evacuacao do segundo pavimento",
+      "pagina": 16
+    },
+    "anexo_iv": {
+      "tipo": "Rota de Fuga - 3o Pavimento",
+      "descricao": "Planta baixa com indicacao de rotas de evacuacao do terceiro pavimento",
+      "pagina": 17
+    },
+    "anexo_v": {
+      "tipo": "Rota de Fuga - 4o Pavimento",
+      "descricao": "Planta baixa com indicacao de rotas de evacuacao do quarto pavimento",
+      "pagina": 18
+    }
+  },
+
+  "referencias_bibliograficas": [
+    {
+      "tipo": "Norma ABNT",
+      "numero": "NBR 15219",
+      "titulo": "Plano de Emergencia Contra Incendio - Requisitos"
+    },
+    {
+      "tipo": "Norma ABNT",
+      "numero": "NBR 14276",
+      "titulo": "Brigada de Incendio - Requisitos"
+    },
+    {
+      "fonte": "Corpo de Bombeiro do Estado de Sao Paulo",
+      "documento": "Abandono de Edificacoes"
+    }
+  ],
+
+  "glossario": {
+    "siglas": {
+      "ICT": "Instituto de Ciencia e Tecnologia",
+      "TST": "Tecnico em Seguranca do Trabalho",
+      "UNIFESP": "Universidade Federal de Sao Paulo",
+      "PcD": "Pessoas com Deficiencia",
+      "PMR": "Pessoas com Mobilidade Reduzida",
+      "GLP": "Gas Liquefeito de Petroleo",
+      "CFTV": "Circuito Fechado de Televisao",
+      "TI": "Tecnologia da Informacao",
+      "SAMU": "Servico de Atendimento Movel de Urgencia",
+      "VoIP": "Voice over Internet Protocol",
+      "ABNT": "Associacao Brasileira de Normas Tecnicas",
+      "NBR": "Norma Brasileira",
+      "FATEC": "Faculdade de Tecnologia"
+    }
+  },
+
+  "contatos_emergencia": {
+    "corpo_bombeiros": "193",
+    "samu": "192",
+    "telefone_campus": "+55(12) 3924-9553"
+  },
+
+  "perguntas_frequentes": [
+    {
+      "pergunta": "Qual o ponto de encontro em caso de evacuacao?",
+      "resposta": "Portaria n 02, onde todos os ocupantes deverao permanecer ate o final da definicao da emergencia.",
+      "secao": "Ponto de encontro"
+    },
+    {
+      "pergunta": "Quantos brigadistas ha no campus?",
+      "resposta": "A brigada de incendio possui 27 membros.",
+      "secao": "Recursos Humanos"
+    },
+    {
+      "pergunta": "Qual a distancia do Corpo de Bombeiros?",
+      "resposta": "O Posto de Bombeiros da zona leste fica a 5,8 Km do campus.",
+      "secao": "Descricao da edificacao"
+    },
+    {
+      "pergunta": "Pode usar elevador durante evacuacao?",
+      "resposta": "NAO. Para a evacuacao vertical nao sera permitido a utilizacao de elevadores.",
+      "secao": "Notas importantes"
+    },
+    {
+      "pergunta": "Como proceder se houver pessoa com deficiencia?",
+      "resposta": "A pessoa deve ser acompanhada por brigadista ou voluntario ate local seguro. Se nao for possivel transportar, deve ser direcionada para caixa de escada enclausurada e o Corpo de Bombeiros avisado imediatamente.",
+      "secao": "Abandono de area de PcD e PMR"
+    },
+    {
+      "pergunta": "Qual a periodicidade dos simulados?",
+      "resposta": "Devem ser realizados exercicios simulados de abandono de area a cada 12 meses com participacao de toda a populacao.",
+      "secao": "Simulados"
+    },
+    {
+      "pergunta": "Quantos extintores existem no campus?",
+      "resposta": "Existem 85 extintores no total: 26 de po quimico seco 4kg, 24 de gas carbonico 6kg e 35 de agua 10L.",
+      "secao": "Recursos Materiais"
+    },
+    {
+      "pergunta": "Qual o telefone do Corpo de Bombeiros?",
+      "resposta": "193",
+      "secao": "Contatos de emergencia"
+    },
+    {
+      "pergunta": "O que fazer em caso de fumaca?",
+      "resposta": "Arrastar-se para evitar asfixia.",
+      "secao": "Notas importantes"
+    },
+    {
+      "pergunta": "Qual a responsabilidade do docente em caso de evacuacao?",
+      "resposta": "O docente deve instruir alunos, nomear um Chefe de Fila, dar ordem de saida, ser o ultimo a sair, manter controle no Ponto de Encontro e conferir os alunos.",
+      "secao": "Procedimento em sala de aula"
+    }
+  ]
+}
+
