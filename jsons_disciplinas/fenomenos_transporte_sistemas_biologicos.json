@@ -1,0 +1,86 @@
+{
+  "disciplina": {
+    "codigo": null,
+    "nome": "Fenômenos de Transporte Aplicados a Sistemas Biológicos",
+    "nome_ingles": "Transport Phenomena in Biological Systems",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": "Integral",
+    "docentes": ["Federico Aletti"],
+    "pre_requisitos": [
+      {
+        "codigo": null,
+        "nome": "Fenômenos do Contínuo"
+      },
+      {
+        "codigo": null,
+        "nome": "Fisiologia Humana I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Fundamentos de fluidodinâmica e transporte",
+        "Sistemas abertos, fechados e isolados",
+        "Fronteiras adiabáticas e diatérmicas",
+        "Convecção",
+        "Equações de conservação da massa e do momento linear",
+        "Lei de Newton da viscosidade",
+        "Lei de Navier-Stokes",
+        "Propriedades reológicas do sangue e dos fluidos biológicos",
+        "Lei de Hagen-Poiseuille",
+        "Características do fluxo sanguíneo na microcirculação",
+        "Propriedades das membranas",
+        "Modelos de membranas e filme sutil",
+        "Mecanismos de transporte de substância e de volume",
+        "Difusão: leis de Fick",
+        "Solubilidade dos gases",
+        "Transporte na circulação sanguínea",
+        "Hemodiálise",
+        "Circulação e oxigenação extracorpórea do sangue",
+        "Placenta humana"
+      ],
+      "descricao_completa": "Oferecer ao aluno fundamentos do conhecimento na área dos fenômenos de transporte em sistema biológicos (convecção, difusão, pressão osmótica e oncótica, propriedades fundamentais de fluidos e membranas biológicas, transporte de calor e energia, regulação do volume, medidas de pressão e fluxo na circulação, microcirculação, etc.)"
+    },
+    "objetivos": {
+      "gerais": "Introdução ao transporte em sistemas biológicos.",
+      "especificos": [
+        "Propiciar ao aluno conhecimentos fundamentais do transporte aplicado especificamente a sistemas biológicos",
+        "Domínio dos princípios da física e da termodinâmica que determinam o funcionamento do sistema cardiovascular e de outros sistemas biológicos",
+        "Compreensão de sistemas artificiais utilizados para suporte a vida em patologias graves que comportam disfunções severas de órgãos e sistemas vitais"
+      ]
+    },
+    "metodologia": "A UC será ministrada com aulas expositivas.",
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["HOBBIE, R. K.", "ROTH, B. J."],
+          "titulo": "Intermediate Physics for Medicine and Biology",
+          "edicao": "5ª ed.",
+          "ano": 2015
+        },
+        {
+          "autores": ["Docente"],
+          "titulo": "Material próprio",
+          "tipo": "Material didático"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["Diversos"],
+          "titulo": "Artigos da literatura",
+          "tipo": "Artigos científicos"
+        }
+      ]
+    }
+  }
+}

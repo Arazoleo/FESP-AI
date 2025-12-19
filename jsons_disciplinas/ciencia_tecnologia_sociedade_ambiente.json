@@ -1,0 +1,94 @@
+{
+  "disciplina": {
+    "codigo": "5870",
+    "nome": "Ciência, Tecnologia, Sociedade e Ambiente",
+    "nome_ingles": "Science, Technology, Society and Environment",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 2,
+    "turno": null,
+    "docentes": ["Walter Lima", "Vanessa Pereira"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 36,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Advento do campo de CTS",
+        "Política de Ciência e Tecnologia",
+        "Mudança tecnológica e inovação (o papel da pesquisa e desenvolvimento, relação entre mercado e universidade)",
+        "A produção e difusão de novas tecnologias e suas considerações econômicas, culturais, políticas e éticas",
+        "Tecnologia e a questão ambiental (tecnologias alternativas, educação ambiental)"
+      ],
+      "descricao_completa": "Advento do campo de CTS. Política de Ciência e Tecnologia. Mudança tecnológica e inovação (o papel da pesquisa e desenvolvimento, relação entre mercado e universidade). A produção e difusão de novas tecnologias e suas considerações econômicas, culturais, políticas e éticas. Tecnologia e a questão ambiental (tecnologias alternativas, educação ambiental)."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["TRIGUEIRO, Michelangelo"],
+          "titulo": "Sociologia da Tecnologia: bioprospecção e legitimação",
+          "local": "São Paulo",
+          "editora": "Centauro",
+          "ano": 2009
+        },
+        {
+          "autores": ["HOFFMANN, Wanda Aparecida Machado"],
+          "titulo": "Ciência, tecnologia e sociedade: desafios da construção do conhecimento",
+          "local": "São Carlos",
+          "editora": "EDUFSCar",
+          "ano": 2011
+        },
+        {
+          "autores": ["MOWERY, David D.", "ROSENBERG, Nathan"],
+          "titulo": "Trajetórias da Inovação",
+          "local": "Campinas",
+          "editora": "Editora Unicamp",
+          "ano": 2005
+        },
+        {
+          "autores": ["CASTELLS, Manuel"],
+          "titulo": "A sociedade em rede",
+          "local": "São Paulo",
+          "editora": "Paz e Terra",
+          "ano": 1999
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["ROSENBERG, Nathan"],
+          "titulo": "Por dentro da Caixa-Preta: Tecnologia e Economia",
+          "local": "Campinas",
+          "editora": "Editora Unicamp",
+          "ano": 2006
+        },
+        {
+          "autores": ["FIGUEIREDO, Vilma"],
+          "titulo": "Produção Social da Tecnologia - Sociologia e Ciência Política - Temas Básicos",
+          "local": "São Paulo",
+          "editora": "EPU",
+          "ano": 1989
+        },
+        {
+          "autores": ["MILLER JR., G. Tyler"],
+          "titulo": "Ciência ambiental",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2007
+        },
+        {
+          "autores": ["HINRICHS, Roger A", "KLEINBACH, Merlin", "REIS, Lineu Belico dos"],
+          "titulo": "Energia e meio ambiente",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2012
+        }
+      ]
+    }
+  }
+}

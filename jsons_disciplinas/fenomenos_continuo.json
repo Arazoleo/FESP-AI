@@ -1,0 +1,101 @@
+{
+  "disciplina": {
+    "codigo": "4348",
+    "nome": "Fenômenos do Contínuo",
+    "nome_ingles": "Continuum Phenomena",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": null,
+    "docentes": ["Manuel Lente", "Thaciana Malaspina", "Eduardo Antonelli"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Hidrostática e hidrodinâmica",
+        "Oscilações",
+        "Ondulatória",
+        "Termodinâmica",
+        "Teoria cinética dos Gases",
+        "Mecânica estatística"
+      ],
+      "descricao_completa": "Hidrostática e hidrodinâmica. Oscilações. Ondulatória. Termodinâmica. Teoria cinética dos Gases. Mecânica estatística."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["YOUNG, Hugh D.", "FREEDMAN, Roger A."],
+          "titulo": "Física de Sears & Zemansky: Volume II: Termodinâmica e Ondas",
+          "editora": "Pearson",
+          "edicao": "12a Edição",
+          "ano": 2008,
+          "formato": "Livro e Ebook"
+        },
+        {
+          "autores": ["KNIGHT, Randall D."],
+          "titulo": "Física: Uma Abordagem Estratégica: Volume 2 - Termodinâmica Óptica",
+          "editora": "Bookman",
+          "edicao": "2a Edição",
+          "ano": 2009,
+          "formato": "Ebook"
+        },
+        {
+          "autores": ["HALLIDAY, David", "RESNICK, Robert", "WALKER, Jearl"],
+          "titulo": "Fundamentos de Física, volume 2: Gravitação, Ondas e Termodinâmica",
+          "editora": "LTC",
+          "edicao": "8a Edição",
+          "ano": 2009,
+          "formato": "Livro"
+        },
+        {
+          "autores": ["TIPLER, Paul Allen", "MOSCA, Gene"],
+          "titulo": "Física para cientistas e engenheiros. Vol. 1: Mecânica, Oscilações e Ondas, Termodinâmica",
+          "editora": "Grupo Gen-LTC",
+          "edicao": "6a Edição",
+          "ano": 2009,
+          "formato": "Livro e Ebook"
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BAUER, Wolfgang", "WESTFALL, Gary D.", "DIAS, Helio"],
+          "titulo": "Física para Universitários - Relatividade, Oscilações, Ondas e Calor",
+          "editora": "AMGH Editora",
+          "ano": 2012
+        },
+        {
+          "autores": ["SERWAY, Raymond A.", "JOHN JR, W."],
+          "titulo": "Princípios e Física – Oscilações, Ondas e Termodinâmica - Volume 2",
+          "editora": "Cengage Learning Edições Ltda.",
+          "ano": 2010
+        },
+        {
+          "autores": ["NUSSENZVEIG, Herch Moysés"],
+          "titulo": "Curso de Física Básica: fluidos, oscilações e ondas, calor (vol 2)",
+          "editora": "Editora Blucher",
+          "ano": 2018
+        },
+        {
+          "autores": ["FEYNMAN, Richard P.", "LEIGHTON, Robert B.", "SANDS, Matthew"],
+          "titulo": "The Feynman lectures on physics, Vol. I: The new millennium edition: mainly mechanics, radiation, and heat",
+          "editora": "Basic books",
+          "ano": 2011
+        },
+        {
+          "autores": ["CHAVES, Alaor"],
+          "titulo": "Física Básica: gravitação, fluidos, ondas, termodinâmica",
+          "editora": "LTC",
+          "ano": 2007
+        }
+      ]
+    }
+  }
+}

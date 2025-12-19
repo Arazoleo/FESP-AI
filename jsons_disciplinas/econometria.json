@@ -1,0 +1,103 @@
+{
+  "disciplina": {
+    "codigo": "5408",
+    "nome": "Econometria",
+    "nome_ingles": "Econometrics",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Bacharelado Interdisciplinar em Ciência e Tecnologia",
+      "Ciência da Computação",
+      "Matemática Computacional",
+      "Biotecnologia",
+      "Engenharia Biomédica",
+      "Engenharia de Computação",
+      "Engenharia de Materiais"
+    ],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": null,
+    "docentes": ["Juliana Scriptore"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 30,
+      "pratica": 42,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Modelos Lineares",
+        "Teoria da Distribuição Assimptótica",
+        "Modelos de Regressão Genérica",
+        "Problema com Dados"
+      ],
+      "descricao_completa": "1. Modelos Lineares; 2. Teoria da Distribuição Assimptótica; 3. Modelos de Regressão Genérica; 4. Problema com Dados."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["WOOLDRIDGE, Jeffrey M."],
+          "titulo": "Introdução à econometria: uma abordagem moderna",
+          "local": "São Paulo",
+          "editora": "Heinle Cengage Learning",
+          "ano": 2010
+        },
+        {
+          "autores": ["CASELLA, George", "BERGER, Roger L."],
+          "titulo": "Inferência estatística",
+          "local": "São Paulo",
+          "editora": "Heinle Cengage Learning",
+          "ano": 2010
+        },
+        {
+          "autores": ["GUJARATI, Damodar N.", "PORTER, Dawn C."],
+          "titulo": "Econometria básica",
+          "edicao": "5th.ed.",
+          "local": "Porto Alegre",
+          "editora": "AMGH Editora",
+          "ano": 2011
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["HAIASHI, Fumio"],
+          "titulo": "Econometrics",
+          "local": "Princeton, N.J.",
+          "editora": "Princeton University Press",
+          "ano": 2000
+        },
+        {
+          "autores": ["GREENE, William H."],
+          "titulo": "Econometric analysis",
+          "edicao": "7th.ed.",
+          "local": "Upper Saddle River, NJ",
+          "editora": "Pearson Prentice Hall",
+          "ano": 2012
+        },
+        {
+          "autores": ["KENNEDY, Peter"],
+          "titulo": "Manual de econometria",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2009
+        },
+        {
+          "autores": ["KLEIBER, Christian", "ZEILEIS, Achim"],
+          "titulo": "Applied econometrics with R",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2008
+        },
+        {
+          "autores": ["Ruud, Paul A."],
+          "titulo": "An introduction to classical econometric theory",
+          "local": "New York",
+          "editora": "Oxford University Press",
+          "ano": 2000
+        }
+      ]
+    }
+  }
+}

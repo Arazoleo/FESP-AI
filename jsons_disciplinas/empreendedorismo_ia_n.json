@@ -1,0 +1,136 @@
+{
+  "disciplina": {
+    "codigo": "7671",
+    "nome": "Empreendedorismo",
+    "nome_ingles": "Entrepreneurship",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Eletiva",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": "IA/N",
+    "docentes": "Iraci João",
+    "email_docente": "Iraci.joao@unifesp.br",
+    "ano_letivo": 2023,
+    "idioma": "Português",
+    "ambiente_virtual": ["Classroom"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 20,
+      "pratica": 16,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Caracterização do empreendedorismo e diferentes perspectivas",
+        "O empreendedor: perfil e competências",
+        "As opções do empreendedor: tipos de empresas",
+        "Da bancada ao mercado: desenvolvimento do plano de negócios"
+      ],
+      "descricao_completa": "Caracterização do empreendedorismo e diferentes perspectivas. O empreendedor: perfil e competências. As opções do empreendedor: tipos de empresas. Da bancada ao mercado: desenvolvimento do plano de negócios."
+    },
+    "conteudo_programatico": [
+      "1. Conceitos iniciais – panorama do empreendedorismo no Brasil, empreendedorismo, intraempreendedorismo e empreendedorismo social.",
+      "2. Perfil empreendedor: Motivação, competências e habilidades do empreendedor.",
+      "3. Levantamento do perfil empreendedor: Análise das potencialidades empreendedoras entre os alunos.",
+      "4. Tipos de organização e o ambiente de inovação.",
+      "5. Identificação de novas oportunidades de negócios e desenvolvimento de um plano de negócios."
+    ],
+    "objetivos": {
+      "gerais": [
+        "Apresentar o empreendedorismo como alternativa ao conceito de empregabilidade."
+      ],
+      "especificos": [
+        "Compreender o conceito de empreendedorismo e o seu papel no crescimento econômico e social.",
+        "Tratar do perfil, das motivações e as competências específicas do empreendedor.",
+        "Trabalhar o desenvolvimento do plano de negócios"
+      ]
+    },
+    "metodologia": "O conteúdo programático será trabalhado por meio de um laboratório de empreendedorismo onde os discentes deverão desenvolver a criação de uma empresa e a partir de uma introdução teórica, definir o modelo de negócios, criar produtos e/ou serviços inovadores e elaborar um plano de negócios. Por meio de pitchs e seminários serão trabalhadas as habilidades de comunicação e vendas dos discentes. A partir da análise de caso de empreendedores de sucesso serão trabalhadas as características empreendedoras.",
+    "avaliacao": {
+      "formula": "N1 + N2 + N3",
+      "componentes": [
+        {
+          "nome": "N1",
+          "peso": 4.5,
+          "descricao": "Entregas parciais e final de um plano de negócio. É essencial que este contenha: Sumário Executivo, Descrição da empresa, setor, produto/serviço, Mercado e Análise de investimento."
+        },
+        {
+          "nome": "N2",
+          "peso": 3.0,
+          "descricao": "Seminário sobre características empreendedoras (Atividade desenvolvida por no máximo 3 alunos)."
+        },
+        {
+          "nome": "N3",
+          "peso": 2.5,
+          "descricao": "Empreender Day. Consiste em uma atividade prática onde os alunos irão comercializar produtos/serviços das empresas fundadas por eles."
+        }
+      ]
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["DORNELAS, José Carlos Assis", "TIMMONS, Jeffry A.", "SPINELLI, Stephen"],
+          "titulo": "Criação de novos negócios: empreendedorismo para o século 21",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2010
+        },
+        {
+          "autores": ["HISRICH, R.D.", "PETERS, M.P.", "SHEPHERD, D.A."],
+          "titulo": "Empreendedorismo",
+          "edicao": "9 ed.",
+          "local": "Porto Alegre",
+          "editora": "AMGH",
+          "ano": 2014
+        },
+        {
+          "autores": ["MAXIMIANO, Antonio Cesar Amaru"],
+          "titulo": "Teoria geral da administração: da revolução urbana à revolução digital",
+          "edicao": "6.ed.rev.",
+          "local": "São Paulo",
+          "editora": "Atlas",
+          "ano": 2011
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BIAGIO, Luiz Arnaldo", "BATOCCHIO, Antonio"],
+          "titulo": "Plano de negócios: estratégias para micro e pequenas empresas",
+          "ano": 2005
+        },
+        {
+          "autores": ["DORNELAS, J. C. A."],
+          "titulo": "Empreendedorismo: transformando ideias em negócios",
+          "edicao": "3. ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2008
+        },
+        {
+          "autores": ["FERRARI, Roberto"],
+          "titulo": "Empreendedorismo para computação: criando negócios de tecnologia",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2009
+        },
+        {
+          "autores": ["LONGENECKER, Justin Gooderl", "MOORE, Carlos W.", "PETTY, J.William", "PALICH, Leslie E."],
+          "titulo": "Administração de pequenas empresas",
+          "local": "São Paulo",
+          "editora": "Thomson Learning",
+          "ano": 2007
+        },
+        {
+          "autores": ["PORTER, Michael Eugene"],
+          "titulo": "Competição",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2009
+        }
+      ]
+    }
+  }
+}

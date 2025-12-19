@@ -1,0 +1,96 @@
+{
+  "disciplina": {
+    "codigo": "5386",
+    "nome": "Controle de Sistemas Dinâmicos",
+    "nome_ingles": "Dynamic Systems and Control",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica", "Engenharia de Computação"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": "Integral",
+    "docentes": ["Sérgio Ronaldo"],
+    "pre_requisitos": [
+      {
+        "codigo": "5903",
+        "nome": "Circuitos Elétricos II"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 36,
+      "pratica": 36,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Modelagem matemática de sistemas dinâmicos contínuos",
+        "Caracterização de sistemas lineares",
+        "Solução de equações diferenciais",
+        "Resposta em frequência",
+        "Sistemas de controle com realimentação",
+        "Critérios de estabilidade",
+        "Critérios de desempenho",
+        "Controladores PID atraso e avanço",
+        "Projeto de controle via lugar das raízes e via resposta em frequência"
+      ],
+      "descricao_completa": "Modelagem matemática de sistemas dinâmicos contínuos; caracterização de sistemas lineares; solução de equações diferenciais; resposta em frequência; sistemas de controle com realimentação; critérios de estabilidade; critérios de desempenho; controladores PID atraso e avanço; projeto de controle via lugar das raízes e via resposta em frequência."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["OGATA, K."],
+          "titulo": "Engenharia de controle moderno",
+          "edicao": "5ª ed.",
+          "editora": "Pearson/Prentice Hall",
+          "ano": 2011
+        },
+        {
+          "autores": ["NISE, N. S."],
+          "titulo": "Engenharia de Sistemas de Controle",
+          "edicao": "6ª ed.",
+          "editora": "LTC",
+          "ano": 2012
+        },
+        {
+          "autores": ["MAYA, P.", "LEONARDI, F."],
+          "titulo": "Controle Essencial",
+          "edicao": "2ª ed.",
+          "editora": "Pearson",
+          "ano": 2014
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["GEROMEL, J. C.", "KOROGUI, R. H."],
+          "titulo": "Controle Linear de Sistemas Dinâmicos: Teoria, Ensaios Práticos e Exercícios",
+          "editora": "Edgard Blucher Ltda",
+          "ano": 2011
+        },
+        {
+          "autores": ["GOLNARAGUI, F.", "KUO, B. C."],
+          "titulo": "Automatic control systems",
+          "edicao": "9ª ed.",
+          "local": "Danvers(USA)",
+          "editora": "John Wiley & Sons",
+          "ano": 2010
+        },
+        {
+          "autores": ["DORF, R. C.", "BISHOP, R. H."],
+          "titulo": "Modern control systems",
+          "edicao": "11ª ed.",
+          "editora": "Prentice Hall",
+          "ano": 2003
+        },
+        {
+          "autores": ["MARTINS DE CARVALHO, J. L."],
+          "titulo": "Sistema de controle automático",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2000
+        }
+      ]
+    }
+  }
+}

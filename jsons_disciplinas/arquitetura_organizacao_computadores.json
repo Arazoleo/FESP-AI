@@ -1,0 +1,124 @@
+{
+  "disciplina": {
+    "codigo": "3519",
+    "nome": "Arquitetura e Organização de Computadores",
+    "nome_ingles": "Computer Architecture and Organization",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Computação", "Ciência da Computação", "Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 4,
+    "turno": "Integral",
+    "docentes": ["Thaína Tosta", "Fábio Cappabianco", "Denise Stringhini"],
+    "pre_requisitos": [
+      {
+        "codigo": "9394",
+        "nome": "Lógica de Programação"
+      },
+      {
+        "codigo": "3518",
+        "nome": "Circuitos Digitais"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 52,
+      "pratica": 20,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Organização de computadores: processador, memória, entrada/saída",
+        "Sistema de memória",
+        "Componentes da Unidade Central de Processamento (UCP): a unidade lógica e aritmética (ULA) e a unidade de controle",
+        "Conjunto de Instruções",
+        "Modos de Endereçamento",
+        "Arquitetura RISC e CISC",
+        "Noções de Linguagem de Máquina",
+        "Memória Cache",
+        "Pipeline",
+        "Arquiteturas Superescalares",
+        "Sistema Multiprocessado",
+        "Memória Virtual",
+        "Mecanismos de Entrada/Saída"
+      ],
+      "descricao_completa": "Organização de computadores: processador, memória, entrada/saída. Sistema de memória. Componentes da Unidade Central de Processamento (UCP): a unidade lógica e aritmética (ULA) e a unidade de controle. Conjunto de Instruções. Modos de Endereçamento. Arquitetura RISC e CISC. Noções de Linguagem de Máquina. Memória Cache. Pipeline. Arquiteturas Superescalares. Sistema Multiprocessado. Memória Virtual. Mecanismos de Entrada/Saída."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["PATTERSON, David A", "HENNESSY, John L."],
+          "titulo": "Organização e projeto de computadores: a interface hardware / software",
+          "edicao": "3ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2005
+        },
+        {
+          "autores": ["WEBER, Raul Fernando"],
+          "titulo": "Fundamentos de arquitetura de computadores",
+          "edicao": "3ª ed.",
+          "local": "São Paulo",
+          "editora": "Bookman",
+          "ano": 2008
+        },
+        {
+          "autores": ["TANENBAUM, Andrew S."],
+          "titulo": "Organização estruturada de computadores",
+          "edicao": "5ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2007
+        },
+        {
+          "autores": ["STALLINGS, William"],
+          "titulo": "Arquitetura e organização de computadores",
+          "edicao": "8ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson Education",
+          "ano": 2010
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["HENNESSY, John L."],
+          "titulo": "Arquitetura de computadores: uma abordagem quantitativa",
+          "local": "Rio de Janeiro",
+          "editora": "GEN LTC",
+          "ano": 2019
+        },
+        {
+          "autores": ["DE ROSE, César A.f."],
+          "titulo": "Arquiteturas paralelas",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2008
+        },
+        {
+          "autores": ["MANO, M. Morris", "KIME, Charles R."],
+          "titulo": "Logic and computer design fundamentals",
+          "edicao": "4ª ed.",
+          "local": "Upper Saddle River, NJ",
+          "editora": "Pearson",
+          "ano": 2008
+        },
+        {
+          "autores": ["D'AMORE, Roberto"],
+          "titulo": "VHDL: descrição e síntese de circuitos digitais",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2012
+        },
+        {
+          "autores": ["PAIXÃO, Renato Rodrigues"],
+          "titulo": "Arquitetura de computadores: PCs",
+          "local": "São Paulo",
+          "editora": "Erica",
+          "ano": 2014
+        }
+      ]
+    }
+  }
+}
