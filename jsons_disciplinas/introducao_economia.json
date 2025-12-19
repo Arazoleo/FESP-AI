@@ -1,0 +1,99 @@
+{
+  "disciplina": {
+    "codigo": null,
+    "nome": "Introdução à Economia",
+    "nome_ingles": "Principles of Economics",
+    "campus": "São José dos Campos",
+    "curso": [
+      "Bacharelado Interdisciplinar em Ciência e Tecnologia",
+      "Engenharia Biomédica",
+      "Engenharia de Computação",
+      "Engenharia de Materiais"
+    ],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": null,
+    "turno": null,
+    "docentes": ["Juliana Scriptore", "Renato Sato"],
+    "pre_requisitos": [],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 36,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução à Economia",
+        "Fundamentos da Microeconomia",
+        "Perspectivas e objetivos da Macroeconomia",
+        "Crescimento econômico"
+      ],
+      "descricao_completa": "Introdução à Economia. Fundamentos da Microeconomia. Perspectivas e objetivos da Macroeconomia. Crescimento econômico"
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["Mankiw, N. Gregory"],
+          "titulo": "Introdução a Economia",
+          "editora": "Cengage Learning",
+          "ano": 2013
+        },
+        {
+          "autores": ["Krugman, Paul"],
+          "titulo": "Introdução a Economia",
+          "editora": "Campus",
+          "ano": 2014
+        },
+        {
+          "autores": ["Giambiagi, Fabio", "Villela, André", "Castro, Lavínia Barros", "Hermann, Jennifer (Org.)"],
+          "titulo": "Economia brasileira contemporânea: [1945-2010]",
+          "edicao": "2 ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2011
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["Hubbard, R. Glenn", "O'brien, Antony Patrick"],
+          "titulo": "Introdução à economia",
+          "edicao": "2. ed.",
+          "local": "São Paulo",
+          "editora": "Bookman",
+          "ano": 2010
+        },
+        {
+          "autores": ["Frieden, Jeffry A.", "Mannheimer, Vivian", "Ituassu, Arthur"],
+          "titulo": "Capitalismo global: história econômica e política do século XX",
+          "local": "Rio de Janeiro",
+          "editora": "Zahar",
+          "ano": 2008
+        },
+        {
+          "autores": ["Diva B. Pinho", "Marco Antônio S. Vasconcelos", "Equipe de professores da USP"],
+          "titulo": "Manual de Economia",
+          "edicao": "6ª edição",
+          "local": "São Paulo",
+          "editora": "Editora Saraiva",
+          "ano": 2011
+        },
+        {
+          "autores": ["Vasconcellos, Marco Antônio S."],
+          "titulo": "Economia: micro e macro: teoria e exercícios",
+          "local": "São Paulo",
+          "editora": "Editora Atlas",
+          "ano": 2006
+        },
+        {
+          "autores": ["Rossetti, José Paschoal"],
+          "titulo": "Introdução à Economia",
+          "local": "São Paulo",
+          "editora": "Editora Atlas",
+          "ano": 2016
+        }
+      ]
+    }
+  }
+}

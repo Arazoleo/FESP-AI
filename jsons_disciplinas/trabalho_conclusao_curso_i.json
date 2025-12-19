@@ -1,0 +1,104 @@
+{
+  "disciplina": {
+    "codigo": "9804",
+    "nome": "Trabalho de Conclusão de Curso I",
+    "nome_ingles": "Degree Final Project I",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Computação"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 9,
+    "turno": "Integral e Noturno",
+    "docentes": ["Thaína Tosta", "Daniela Musa"],
+    "pre_requisitos": [
+      {
+        "codigo": "6100",
+        "nome": "Projeto em Engenharia de Computação"
+      }
+    ],
+    "carga_horaria": {
+      "total": 36,
+      "teorica": 18,
+      "pratica": 18,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução. Estilos de Pesquisa",
+        "Ciência e métodos de pesquisa",
+        "Preparação de um trabalho científico ou tecnológico: tema, problema, objetivos gerais e específicos, e motivação",
+        "Metodologia e desenvolvimento",
+        "Análise crítica de trabalhos científicos (da preparação ao seu desenvolvimento)",
+        "Pesquisa bibliográfica, trabalhos correlatos e revisão bibliográfica",
+        "Resultados esperados e técnicas para validação de resultados",
+        "Escrita de projeto científico ou tecnológico",
+        "Escrita de projeto científico ou tecnológico (ABNT e outras normas)",
+        "Técnicas para elaboração de apresentações e seminários",
+        "Ética e Plágio"
+      ],
+      "descricao_completa": "Conceitos e técnicas para a preparação de projetos científicos e tecnológicos na área de computação: introdução, objetivos, metodologia, justificativa, resultados esperados, estado da arte, desenvolvimento, experimentos, conclusões. Tratamento e interpretação de dados experimentais e comparações de resultados. Conceitos e técnicas para proceder à revisão bibliográfica. Elaboração de apresentações e seminários. Características de oratória. Desenvolvimento de trabalho em equipe. Ética."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["WAZLAWICK, Raul S."],
+          "titulo": "Metodologia de pesquisa para ciência da computação",
+          "local": "São Paulo",
+          "editora": "Campus",
+          "ano": 2008
+        },
+        {
+          "autores": ["HERNÁNDEZ SAMPIERI, Roberto", "FERANÁNDEZ COLLADO, Carlos", "BAPTISTA LUCIO, Pilar"],
+          "titulo": "Metodologia de pesquisa",
+          "edicao": "5ª ed.",
+          "local": "Porto Alegre",
+          "editora": "McGraw-Hill",
+          "ano": 2013
+        },
+        {
+          "autores": ["FACHIN, Odilia"],
+          "titulo": "Fundamentos de metodologia",
+          "edicao": "5ª ed.",
+          "local": "São Paulo",
+          "editora": "Saraiva",
+          "ano": 2006
+        },
+        {
+          "autores": ["TOMASI, Carolina", "MEDEIROS, João Bosco"],
+          "titulo": "Comunicação científica: normas técnicas para redação científica",
+          "local": "São Paulo",
+          "editora": "Atlas",
+          "ano": 2008
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["MARTINS JUNIOR, Joaquim"],
+          "titulo": "Como escrever trabalhos de conclusão de curso",
+          "edicao": "9ª ed.",
+          "editora": "Editora Vozes",
+          "ano": 2015
+        },
+        {
+          "autores": ["PÁDUA, Elisabete Matallo Marchesini de"],
+          "titulo": "Metodologia da pesquisa: Abordagem teórico-prática",
+          "editora": "Papirus Editora",
+          "ano": 2019
+        },
+        {
+          "autores": ["POLITO, Rachel"],
+          "titulo": "Superdicas para um trabalho de conclusão de curso nota 10",
+          "ano": 2008
+        },
+        {
+          "autores": ["CASTRO, Cláudio de Moura"],
+          "titulo": "Como redigir e apresentar um trabalho científico",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2011
+        }
+      ]
+    }
+  }
+}

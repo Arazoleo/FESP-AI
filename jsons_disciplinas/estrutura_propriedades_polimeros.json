@@ -1,0 +1,98 @@
+{
+  "disciplina": {
+    "codigo": "5871",
+    "nome": "Estrutura e Propriedades de Polímeros",
+    "nome_ingles": "Structure and Properties of Polymers",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Materiais"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 8,
+    "turno": null,
+    "docentes": ["Lilia Guerrini"],
+    "pre_requisitos": [
+      {
+        "codigo": "5144",
+        "nome": "Materiais Poliméricos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 64,
+      "pratica": 0,
+      "extensao": 8
+    },
+    "ementa": {
+      "topicos": [
+        "Peso molecular, distribuição de peso molecular e sua relação com as propriedades dos polímeros",
+        "Grau de cristalinidade, cinética de cristalização dos polímeros",
+        "Temperaturas de transição e a estrutura química dos polímeros",
+        "Orientação molecular e cristalina",
+        "Viscoelasticidade dos polímeros no estado sólido",
+        "Elasticidade das borrachas",
+        "Atividades de extensão",
+        "Visitas técnicas"
+      ],
+      "descricao_completa": "Peso molecular, distribuição de peso molecular e sua relação com as propriedades dos polímeros. Grau de cristalinidade, cinética de cristalização dos polímeros. Temperaturas de transição e a estrutura química dos polímeros. Orientação molecular e cristalina. Viscoelasticidade dos polímeros no estado sólido. Elasticidade das borrachas. Atividades de extensão que articulem, simultaneamente, teoria, prática e seu contexto de aplicação, necessárias para o desenvolvimento das competências, estabelecidas no perfil do egresso. Poderão ser realizadas visitas técnicas, de acordo com a disponibilidade."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["Sperling, L. H."],
+          "titulo": "Introduction to Physical Polymer Science",
+          "edicao": "fourth ed.",
+          "editora": "John Wiley & Sons",
+          "ano": 2005
+        },
+        {
+          "autores": ["Canevarolo Jr., S. V."],
+          "titulo": "Ciência dos polímeros",
+          "edicao": "2a ed.",
+          "local": "São Paulo",
+          "editora": "Artliber",
+          "ano": 2002
+        },
+        {
+          "autores": ["Billmeyer, F. W. Jr."],
+          "titulo": "Textbook of Polymer Science",
+          "edicao": "3rd edition",
+          "editora": "John Wiley and Sons",
+          "ano": 1984
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["Ackcelrud, L."],
+          "titulo": "Fundamentos da Ciência dos Polímeros",
+          "editora": "Manole",
+          "ano": 2006
+        },
+        {
+          "autores": ["Fried, J. R."],
+          "titulo": "Polymer Science & Technology",
+          "editora": "Pearson Education",
+          "ano": 2003
+        },
+        {
+          "autores": ["Ebewele, R. O."],
+          "titulo": "Polymer Science and Technology",
+          "editora": "CRC",
+          "ano": 2000
+        },
+        {
+          "autores": ["Ravve, A."],
+          "titulo": "Principles of polymer chemistry",
+          "editora": "Kluwer Academic",
+          "ano": 2000
+        },
+        {
+          "autores": ["Canevarolo Jr., Sebastião V."],
+          "titulo": "Técnicas de caracterização de polímeros",
+          "editora": "Artliber",
+          "ano": 2003
+        }
+      ]
+    }
+  }
+}

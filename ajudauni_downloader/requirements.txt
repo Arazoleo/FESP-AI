@@ -1,0 +1,9 @@
+# Dependências para download_planos_ensino_final.py (Recomendado)
+selenium>=4.0.0
+requests>=2.25.0
+
+# Dependências para download_planos_ensino_v2.py (Alternativa)
+beautifulsoup4>=4.9.0
+
+# Opcional: barra de progresso
+tqdm>=4.60.0

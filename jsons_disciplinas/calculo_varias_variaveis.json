@@ -1,0 +1,117 @@
+{
+  "disciplina": {
+    "codigo": "5359",
+    "nome": "Cálculo em Várias Variáveis",
+    "nome_ingles": "Calculus in Several Variables",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 3,
+    "turno": null,
+    "docentes": ["Marcelo Gama", "Thadeu Senne", "Daniela Oliveira", "Leandro Batista", "Ana Moreira", "Robson da Silva", "Erwin Doescher"],
+    "pre_requisitos": [
+      {
+        "codigo": "5702",
+        "nome": "Cálculo em Uma Variável"
+      },
+      {
+        "codigo": "2650",
+        "nome": "Geometria Analítica"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 62,
+      "pratica": 10,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Limite de funções de várias variáveis",
+        "Continuidade",
+        "Derivação",
+        "Integração",
+        "Campos vetoriais"
+      ],
+      "descricao_completa": "Cálculo para funções de várias variáveis: limite, continuidade, derivação, integração e campos vetoriais."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["GUIDORIZZI, H. L."],
+          "titulo": "Um curso de cálculo",
+          "volume": "v. 2",
+          "edicao": "5ª Ed.",
+          "local": "Rio De Janeiro",
+          "editora": "LTC",
+          "ano": 2007
+        },
+        {
+          "autores": ["GUIDORIZZI, H. L."],
+          "titulo": "Um curso de cálculo",
+          "volume": "v. 3",
+          "edicao": "5ª Ed.",
+          "local": "Rio De Janeiro",
+          "editora": "LTC",
+          "ano": 2007
+        },
+        {
+          "autores": ["STEWART, J."],
+          "titulo": "Cálculo",
+          "volume": "v.2",
+          "edicao": "6ª ed.",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2009
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BOULOS, P.", "ABUD, Z. I."],
+          "titulo": "Cálculo diferencial e integral",
+          "volume": "v.2",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2006
+        },
+        {
+          "autores": ["FLEMMING, D. M.", "Gonçalves, M. B."],
+          "titulo": "Cálculo B: funções de várias variáveis, integrais múltiplas, integrais curvilíneas e de superfície",
+          "edicao": "2ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2007
+        },
+        {
+          "autores": ["LEITHOLD, L."],
+          "titulo": "O cálculo com geometria analítica",
+          "volume": "v. 2",
+          "edicao": "3ª ed.",
+          "local": "São Paulo",
+          "editora": "Harbra",
+          "ano": 1990
+        },
+        {
+          "autores": ["SIMMONS, G. F."],
+          "titulo": "Cálculo com geometria analítica",
+          "volume": "v. 2",
+          "edicao": "1ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2008
+        },
+        {
+          "autores": ["THOMAS, G. B."],
+          "titulo": "Cálculo",
+          "volume": "v. 2",
+          "edicao": "12ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson",
+          "ano": 2013
+        }
+      ]
+    }
+  }
+}

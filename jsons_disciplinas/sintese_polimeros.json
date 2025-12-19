@@ -1,0 +1,125 @@
+{
+  "disciplina": {
+    "codigo": "5786",
+    "nome": "Síntese de Polímeros",
+    "nome_ingles": "Polymer Synthesis",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Materiais"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": null,
+    "docentes": ["Maurício Pinheiro"],
+    "pre_requisitos": [
+      {
+        "codigo": "4350",
+        "nome": "Química Orgânica"
+      },
+      {
+        "codigo": "5144",
+        "nome": "Materiais Poliméricos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 52,
+      "pratica": 20,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Introdução geral e conceitos básicos sobre polímeros",
+        "Origem das matérias primas empregadas na síntese de polímeros",
+        "Polimerização em etapas",
+        "Polimerização em cadeia via radicais livres",
+        "Polimerização em cadeia estereo-regular (catalisadores Ziegler-Natta e Metalocênicos)",
+        "Homopolimerização e Copolimerização",
+        "Polimerização por abertura de anel",
+        "Técnicas de polimerização",
+        "Reações químicas em polímeros",
+        "Processos de polimerização",
+        "Principais aplicações",
+        "Laboratório de síntese dos principais polímeros comerciais"
+      ],
+      "descricao_completa": "Introdução geral e conceitos básicos sobre polímeros. Origem das matérias primas empregadas na síntese de polímeros. Polimerização em etapas. Polimerização em cadeia via radicais livres. Polimerização em cadeia estereo-regular (catalisadores Ziegler-Natta e Metalocênicos). Homopolimerização e Copolimerização. Polimerização por abertura de anel. Técnicas de polimerização. Reações químicas em polímeros. Processos de polimerização. Principais aplicações. Laboratório de síntese dos principais polímeros comerciais. Poderão ser realizadas visitas técnicas, de acordo com a disponibilidade."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["Sperling, L.H."],
+          "titulo": "Introduction to Physical Polymer Science",
+          "edicao": "4a ed.",
+          "local": "Hoboken",
+          "editora": "John Wiley & Sons",
+          "ano": 2006,
+          "paginas": 845
+        },
+        {
+          "autores": ["Billmeyer Jr., F.W."],
+          "titulo": "Textbook of Polymer Science",
+          "edicao": "3rd ed.",
+          "local": "New York",
+          "editora": "John Wiley",
+          "ano": 1984,
+          "paginas": 578
+        },
+        {
+          "autores": ["Odian, G."],
+          "titulo": "Principles of Polymerization",
+          "local": "Hoboken",
+          "editora": "John Wiley & Sons",
+          "edicao": "4a ed.",
+          "ano": 2004,
+          "paginas": 812
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["Mano, E.B.", "Dias, M. L.", "Oliveira, C.M.F."],
+          "titulo": "Química Experimental de Polímeros",
+          "local": "Rio de Janeiro",
+          "editora": "Edgard Blücher",
+          "ano": 2004,
+          "paginas": 326
+        },
+        {
+          "autores": ["Brandrup, J.", "Immergut, E.H.", "Grulke E.A.(eds.)"],
+          "titulo": "Polymer handbook: Fourth ed.",
+          "volume": "v. 2",
+          "edicao": "4th ed.",
+          "local": "New Jersey, USA",
+          "editora": "John Wiley & Sons",
+          "ano": 1999,
+          "paginas": 769,
+          "observacao": "Associate editors A. Abe and D.R. Bloch"
+        },
+        {
+          "autores": ["Mano, EB", "Mendes, LC"],
+          "titulo": "Introdução a Polímeros",
+          "edicao": "2a ed.",
+          "local": "São Paulo",
+          "editora": "Edgard Blücher",
+          "ano": 1999,
+          "paginas": 191
+        },
+        {
+          "autores": ["Michaeli, W.", "Greif H.", "Kaufmann H. et al."],
+          "titulo": "Tecnologia dos Plásticos",
+          "editora": "Edgard Blucher",
+          "ano": 1995
+        },
+        {
+          "autores": ["Bird, R. Byron", "Armstrong, Robert C."],
+          "titulo": "Dynamics of polymeric liquids",
+          "edicao": "2th ed.",
+          "local": "New Jersey, USA",
+          "editora": "John Wiley & Sons",
+          "ano": 1987,
+          "volume": "v.2",
+          "paginas": 437
+        }
+      ]
+    }
+  }
+}

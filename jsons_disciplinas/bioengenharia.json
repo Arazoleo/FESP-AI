@@ -1,0 +1,107 @@
+{
+  "disciplina": {
+    "codigo": "6111",
+    "nome": "Bioengenharia",
+    "nome_ingles": "Bioengineering",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 9,
+    "turno": "Integral",
+    "docentes": ["Fábio Aoki"],
+    "pre_requisitos": [
+      {
+        "codigo": "8215",
+        "nome": "Fisiologia Humana I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 72,
+      "pratica": 0,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Engenharia Biomolecular",
+        "Engenharia Imunológica",
+        "Visitas técnicas a laboratórios de pesquisa"
+      ],
+      "descricao_completa": "Engenharia Biomolecular e Engenharia Imunológica. Visitas técnicas a laboratórios de pesquisa. Poderão ser realizadas visitas técnicas, de acordo com a disponibilidade."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["NELSON, David L.", "COX, Michael M."],
+          "titulo": "Princípios de Bioquímica de Lehninger",
+          "edicao": "5ª ed.",
+          "editora": "Sarvier",
+          "ano": 2011
+        },
+        {
+          "autores": ["ALBERTS, Bruce", "WATSON, James", "BRAY, Dennis", "LEWIS, Julian"],
+          "titulo": "Molecular Biology of the Cell",
+          "editora": "Garland Science",
+          "ano": null
+        },
+        {
+          "autores": ["RANG, H.P.", "DALE, M.M."],
+          "titulo": "Farmacologia",
+          "edicao": "7ª ed.",
+          "editora": "Elsevier",
+          "ano": 2011
+        },
+        {
+          "autores": ["ABBAS, Abul K"],
+          "titulo": "Imunologia Celular e Molecular",
+          "editora": "Editora Elsevier",
+          "ano": 2015
+        },
+        {
+          "autores": ["BRONZINO, Joseph D.", "PETERSON, Donald R."],
+          "titulo": "Tissue Engineering and Artificial Organs (The Biomedical Engineering Handbook Series)",
+          "edicao": "3ª ed.",
+          "editora": "CRC Press",
+          "ano": 2006
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["NAIDOO, Kevin J.", "BRADY, John", "FIELD, Martin J.", "GAO, Jiali", "HANN, Michael"],
+          "titulo": "Modelling Molecular Structure and Reactivity in Biological Systems",
+          "editora": "Royal Society of Chemistry",
+          "ano": 2006
+        },
+        {
+          "autores": ["LOGAN, J. David", "WOLESENSKY, William"],
+          "titulo": "Mathematical Methods in Biology",
+          "editora": "Wiley",
+          "ano": 2009
+        },
+        {
+          "autores": ["CHAPLAIN, Mark A."],
+          "titulo": "Mathematical Modeling of Tumor Growth (Interdisciplinary Applied Mathematics)",
+          "edicao": "1ª ed.",
+          "editora": "Springer",
+          "ano": 2007
+        },
+        {
+          "autores": ["LANZA, Robert"],
+          "titulo": "Essentials of Stem Cell Biology",
+          "edicao": "2ª ed.",
+          "editora": "Academic Press",
+          "ano": 2009
+        },
+        {
+          "autores": ["POZRIKIDIS, C."],
+          "titulo": "Modeling and Simulation of Capsules and Biological Cells",
+          "edicao": "1ª ed.",
+          "editora": "Chapman & Hall",
+          "ano": 2003
+        }
+      ]
+    }
+  }
+}
