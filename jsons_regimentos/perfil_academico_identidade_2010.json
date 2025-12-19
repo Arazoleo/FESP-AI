@@ -1,0 +1,500 @@
+{
+  "documento": {
+    "tipo": "Proposta de Perfil Academico e Identidade",
+    "instituicao": "Universidade Federal de Sao Paulo (UNIFESP)",
+    "campus": "Sao Jose dos Campos",
+    "data_aprovacao": "2010-10",
+    "status": "Aprovado pela Camara de Graduacao em 2010",
+    "total_paginas": 48
+  },
+
+  "metadados": {
+    "administracao_2010": {
+      "reitor": "Prof. Dr. Walter Manna Albertoni",
+      "pro_reitor_graduacao": "Prof. Dr. Miguel Roberto Jorge",
+      "pro_reitor_pos_graduacao_pesquisa": "Prof. Dr. Arnaldo Lopes Colombo",
+      "pro_reitor_administracao": "Prof. Dr. Vilnei Mattioli Leite",
+      "pro_reitor_extensao": "Profa. Dra. Eleonora Menicucci de Oliveira",
+      "chefe_gabinete": "Prof. Dr. Manoel Joao Batista Castello Girao",
+      "diretor_academico_sjc": "Prof. Dr. Armando Zeferino Milioni",
+      "chefe_departamento_sjc": "Prof. Dr. Fabio Fagundes Silveira"
+    }
+  },
+
+  "estrutura": {
+    "secao_1_introducao": {
+      "titulo": "Introducao",
+      "contexto_educacional": {
+        "dados_2005": {
+          "brasil": {
+            "jovens_18_24_anos": "18 milhoes",
+            "matriculados_ensino_superior": "16%",
+            "estudantes_engenharia": "350 mil (menos de 2%)"
+          },
+          "comparacao_internacional": {
+            "argentina": "58% matriculados",
+            "chile": "46% matriculados",
+            "coreia_do_sul": {
+              "matriculados": "93%",
+              "estudantes_engenharia": "quase 1 milhao (mais de 30%)",
+              "populacao_faixa_etaria": "3,3 milhoes"
+            }
+          }
+        },
+        "problema_identificado": "Brasil tinha 1/5 da populacao na faixa etaria da Coreia do Sul mas 1/3 do numero de estudantes de engenharia"
+      },
+      "justificativa_campus_sjc": {
+        "vocacao_regional": "Presenca de grandes empresas tecnologicas e institutos de pesquisa",
+        "empresas": ["Embraer", "Petrobras"],
+        "institutos": ["INPE - Instituto Nacional de Pesquisas Espaciais", "ITA - Instituto Tecnologico de Aeronautica"],
+        "diferenciais": [
+          "Escassez historica de vagas de ensino superior publico",
+          "Parque Tecnologico modelo",
+          "Proximidade com ITA exige diferenciacao estrategica"
+        ]
+      },
+      "estrategia_diferenciacao": {
+        "foco": "Projeto pedagogico inovador",
+        "inspiracao": "Declaracao de Bolonha (1999)",
+        "proposta": "Bacharelado Interdisciplinar em Ciencia e Tecnologia (BCT)"
+      }
+    },
+
+    "secao_2_aspectos_historicos": {
+      "titulo": "Aspectos Historicos",
+      "subsecao_2_1_unifesp": {
+        "linha_do_tempo": [
+          {"ano": 1933, "evento": "Criacao da Escola Paulista de Medicina"},
+          {"ano": 1939, "evento": "Criacao da Escola Paulista de Enfermagem"},
+          {"ano": 1956, "evento": "Instituicao torna-se publica e gratuita (autarquia vinculada ao MEC)"},
+          {"ano": "decada de 1960", "evento": "Criacao de 3 novos cursos: Ciencias Biomedicas, Fonoaudiologia, Tecnologia Oftalmica"},
+          {"ano": 1994, "evento": "Transformacao em Universidade Federal de Sao Paulo (UNIFESP)"},
+          {"ano": 2005, "evento": "Inicio da expansao - adesao ao programa de expansao das universidades federais"},
+          {"ano": "2006-2007", "evento": "Consolidacao via REUNI - abertura de 14 novos cursos em 4 novos campi"}
+        ],
+        "novos_campi": [
+          {"nome": "Baixada Santista", "instituto": "Instituto de Saude e Sociedade", "area": "Saude e correlatas"},
+          {"nome": "Diadema", "instituto": "Instituto de Ciencias Ambientais, Quimicas e Farmaceuticas"},
+          {"nome": "Guarulhos", "instituto": "Escola de Filosofia, Letras e Ciencias Humanas"},
+          {"nome": "Sao Jose dos Campos", "instituto": "Instituto de Ciencia e Tecnologia"}
+        ]
+      },
+      "subsecao_2_2_sao_jose_dos_campos": {
+        "perfil_municipio": {
+          "ranking_nacional": {
+            "populacao": "30 mais populoso",
+            "pib": "21 maior PIB municipal",
+            "exportacoes_2008": "7 bilhoes de dolares (2 lugar, apos Sao Paulo)"
+          },
+          "educacao_superior_2008": {
+            "total_vagas": "23 mil (23a posicao nacional)",
+            "vagas_publicas_gratuitas": "310 vagas (menos de 1,5%)",
+            "ranking_vagas_publicas": {
+              "estaduais": "213a posicao",
+              "federais": "122a posicao"
+            }
+          }
+        },
+        "apoio_municipal": {
+          "terrenos_e_predios": {
+            "instalacao_atual": "Terreno de 10 mil m2 com predio de 1 mil m2",
+            "predio_novo": "Construcao de predio de 4 mil m2 (orcamento maior que 7 milhoes)",
+            "parque_tecnologico": "Terreno de 125 mil m2 doado",
+            "total_investimento": "Mais de 10 milhoes de reais em doacoes"
+          }
+        }
+      }
+    },
+
+    "secao_3_missao_visao_identidade": {
+      "titulo": "Missao, Visao e Identidade do Campus",
+      "missao": "Contribuir para o desenvolvimento cientifico e tecnologico da sociedade atraves de atividades de ensino, pesquisa e extensao com niveis de excelencia internacional",
+      "visao": "Ser um centro de referencia nacional e internacional pela sua excelencia academica",
+      "tres_pilares_identidade": [
+        "Instituto de Ciencia e Tecnologia (ICT) da UNIFESP",
+        "Bacharelado Interdisciplinar em Ciencia e Tecnologia (BCT) como marco de inovacao pedagogica",
+        "Operacao dentro do Parque Tecnologico de Sao Jose dos Campos"
+      ],
+
+      "subsecao_3_1_ict": {
+        "titulo": "Do Instituto de Ciencia e Tecnologia (ICT)",
+        "cursos_implantados_inicialmente": [
+          {"ano": 2007, "cursos": ["Bacharelado em Ciencia da Computacao - vespertino", "Bacharelado em Ciencia da Computacao - noturno"]},
+          {"ano": 2009, "cursos": ["Bacharelado em Matematica Computacional - diurno"]}
+        ],
+        "aprovacao_consu_2009": {
+          "data": "2009-07",
+          "novos_cursos_aprovados": [
+            "Bacharelado em Ciencia e Tecnologia (BCT)",
+            "Engenharia de Materiais",
+            "Engenharia Biomedica",
+            "Engenharia de Energia",
+            "Engenharia de Controle e Automacao"
+          ],
+          "recursos_alocados": {
+            "docentes": "+53 vagas",
+            "tecnicos_administrativos": "+37 vagas"
+          }
+        }
+      },
+
+      "subsecao_3_2_bct": {
+        "titulo": "Do Bacharelado em Ciencia e Tecnologia (BCT)",
+        "autoria_texto_base": "Prof. Helio Waldman (Reitor da UFABC)",
+        "contexto_historico": {
+          "seculo_19": "Conhecimento com dinamica cumulativa",
+          "seculo_20": "Revelou dinamica propria - obsolescencia programada",
+          "seculo_21": "Ciclos tecnologicos reduzidos (1-5 anos)"
+        },
+        "impacto_empregabilidade": {
+          "cenario": {
+            "ingresso": 2010,
+            "formatura": "2014-2015",
+            "aposentadoria": "2050-2060",
+            "desafio": "Maior parte do conhecimento profissional necessario ainda nao existe"
+          },
+          "solucao": "Educacao continuada ao longo da vida profissional"
+        },
+        "papel_graduacao_seculo_21": {
+          "objetivo_principal": "Preparar para educacao continuada",
+          "enfase": [
+            "Conhecimentos basicos solidos",
+            "Atitudes de questionamento cientifico",
+            "Formacao humanistica",
+            "Senso de responsabilidade social"
+          ]
+        },
+        "proposta_bct_unifesp": {
+          "caracteristicas": {
+            "foco": "Grande area do conhecimento",
+            "abordagem": "Ensinar fundamentos de varias areas relacionando-as entre si",
+            "areas_cobertas": ["biologia", "computacao", "fisica", "matematica", "quimica", "formacao humanistica"],
+            "autonomia_estudante": "50% da grade curricular escolhida pelo aluno"
+          },
+          "duracao": "3 anos",
+          "diploma": "Pleno de educacao superior",
+          "trajetorias_pos_bct": [
+            "Mercado de trabalho (ambientes dinamicos e inovadores)",
+            "Pos-graduacao direta (para vocacao cientifica)",
+            "Formacao especifica (+1 ou 2 anos): bacharelado, licenciatura ou engenharia"
+          ]
+        }
+      },
+
+      "subsecao_3_3_parque_tecnologico": {
+        "titulo": "Do Parque Tecnologico de Sao Jose dos Campos (Parqtec-SJC)",
+        "conceituacao_geral": {
+          "definicao": "Ambientes de inovacao para dinamizar economias regionais e nacionais",
+          "objetivos": [
+            "Agregar conteudo de conhecimento as economias",
+            "Tornar economias mais competitivas",
+            "Gerar empregos de qualidade",
+            "Promover bem-estar social"
+          ]
+        },
+        "especificidades_parqtec_sjc": {
+          "geracao": "Terceira geracao",
+          "caracteristicas_3a_geracao": [
+            "Fruto de politica regional/nacional",
+            "Associado ao desenvolvimento economico e tecnologico",
+            "Orientado para mercado globalizado"
+          ],
+          "localizacao": "Predio de 30.000 m2 em terreno de 188.000 m2 ao longo da via Dutra (12km a NE de SJC)"
+        },
+        "gestao": {
+          "entidade_gestora": "Associacao Parque Tecnologico de Sao Jose dos Campos",
+          "natureza": "Personalidade juridica propria, sem fins lucrativos",
+          "qualificacao": "Organizacao social"
+        },
+        "expansao": {
+          "area_total_lei": "12.500.000 m2",
+          "segmentos": ["Aeronautica", "Espaco", "Defesa", "Energia", "Meio Ambiente"],
+          "expectativa_empregos": "20 mil novos postos especializados"
+        },
+        "unifesp_no_parqtec": {
+          "area_doada": "126 mil m2",
+          "data_doacao": "02/02/2010",
+          "previsao_obras": "Inicio em 2011"
+        }
+      },
+
+      "subsecao_3_4_centro_divulgacao": {
+        "titulo": "Centro de Divulgacao Cientifica e Tecnologica",
+        "justificativa": {
+          "importancia": "Crescente impacto da C&T na vida cotidiana torna indispensavel amplo entendimento",
+          "publico_alvo": ["estudantes ensino fundamental", "estudantes ensino medio", "grupos sociais marginalizados de C&T"]
+        },
+        "proposta_unifesp_sjc": {
+          "vinculacao": "Campus SJC e Pro-reitoria de Extensao",
+          "funcao": "Promover projetos e acoes de divulgacao da C&T",
+          "atividades": [
+            "Mostras permanentes (Fisica, Quimica, Biologia, Matematica)",
+            "Programas externos e itinerantes",
+            "Olimpiadas Cientificas",
+            "Projetos de despertar vocacoes"
+          ],
+          "metodologia": "Carater interativo - ver, tocar, discutir, refletir"
+        },
+        "relevancia_regional": "Vale do Paraiba nao possui nenhum museu ou centro cultural deste tipo"
+      }
+    },
+
+    "secao_4_perfil_egresso": {
+      "titulo": "Do Perfil do Egresso",
+      "perfil_geral": {
+        "formacao": "Solida formacao tecnico-cientifica e profissional geral",
+        "capacidades": [
+          "Absorver e desenvolver novas tecnologias",
+          "Atuacao critica e criativa",
+          "Identificacao e resolucao de problemas",
+          "Consideracao de aspectos politico-economicos, sociais, ambientais e culturais",
+          "Visao etica e humanistica"
+        ]
+      },
+      "estrutura_curricular_bct": {
+        "disciplinas_obrigatorias": "~50%",
+        "disciplinas_eletivas": "~25% (areas especificas de C&T)",
+        "disciplinas_livres": "~25% (livre escolha)"
+      },
+      "possibilidades_atuacao": [
+        "Organizacoes publicas, privadas ou terceiro setor (area C&T)",
+        "Pesquisador, gestor, consultor",
+        "Pesquisa em C&T (pos-graduacao stricto/lato sensu)",
+        "Comercio (vendas, gerenciamento, servicos em C&T)",
+        "Continuidade em cursos de formacao especifica",
+        "Empreendedorismo em C&T",
+        "Cargos de tecnologista em instituicoes de pesquisa",
+        "Cargos de nivel superior em concursos publicos"
+      ]
+    },
+
+    "secao_5_proposta_didatico_pedagogica": {
+      "titulo": "Da Proposta Didatico-Pedagogica",
+      "subsecao_5_1_pressupostos": {
+        "contexto_atual": {
+          "mudancas_necessarias": [
+            "Educacao permanente",
+            "Processo educativo centrado na aprendizagem dos estudantes"
+          ],
+          "aspectos_privilegiados": [
+            "Flexibilidade",
+            "Criatividade",
+            "Autonomia",
+            "Inovacao",
+            "Rapidez de adaptacao",
+            "Estudo permanente",
+            "Trabalho cooperativo"
+          ]
+        },
+        "habilidades_competencias": {
+          "categorias": [
+            "Pensamento sistemico",
+            "Investigacao",
+            "Abstracao",
+            "Solidariedade/cooperacao"
+          ]
+        },
+        "papel_universidade": {
+          "capacidades_desenvolver": [
+            "Resolucao de problemas",
+            "Trato com incertezas",
+            "Busca de compreensao sobre o desconhecido"
+          ],
+          "perspectiva": "Aprender a aprender e saber fazer"
+        },
+        "habilidades_incentivadas": {
+          "basicas": ["leitura", "redacao", "comunicacao oral", "calculos matematicos"],
+          "raciocinio": ["pensamento criativo", "tomada de decisoes", "aprender a aprender"],
+          "pessoais": ["responsabilidade", "auto-estima", "sociabilidade", "auto-gerenciamento", "integridade", "honestidade", "solidariedade"]
+        },
+        "enfases_cursos": [
+          "Aplicacao independente e inovadora de conhecimentos",
+          "Formacao humanistica",
+          "Habilidades de trabalho em grupo",
+          "Comunicacao e expressao",
+          "Atualizacao tecnologica constante",
+          "Dominio de ingles tecnico",
+          "Conhecimento de legislacao trabalhista e propriedade intelectual"
+        ]
+      },
+
+      "subsecao_5_3_sistema_avaliacao": {
+        "avaliacao_ensino_aprendizagem": {
+          "caracteristicas": [
+            "Processo continuo de acompanhamento",
+            "Procedimentos, instrumentos e criterios adequados",
+            "Elemento de reordenacao da pratica pedagogica"
+          ],
+          "requisitos": {
+            "frequencia": {
+              "minima": "75% das aulas ministradas",
+              "consequencia": "Frequencia menor que 75% equivale a reprovacao automatica"
+            }
+          }
+        }
+      }
+    },
+
+    "secao_6_visao_prospectiva": {
+      "titulo": "Da Visao Prospectiva e das Consideracoes Finais",
+      "diagnostico_vagas_2008": {
+        "sao_jose_campos": {
+          "vagas_publicas_gratuitas": 310,
+          "federais": 230,
+          "estaduais": 80,
+          "distribuicao_federais": {
+            "unifesp": 100,
+            "ita": 130
+          }
+        }
+      },
+      "evolucao_historica": {
+        "periodo": "4 decadas (~1970-2010)",
+        "vagas_publicas_estagnadas": "200 vagas (120 ITA + 80 UNESP)",
+        "crescimento_populacional": {
+          "brasil": "Dobrou (90M para 190M)",
+          "sjc": "Quadruplicou (150 mil para 600 mil, caminho para 1 milhao)"
+        }
+      },
+      "conclusao_diagnostico": "Sao Jose dos Campos e o municipio de seu porte menos privilegiado em oferta de vagas publicas gratuitas",
+      "proposta_horizonte_2020": {
+        "numeros_meta_2020": {
+          "corpo_docente": 500,
+          "tecnicos_administrativos": 300,
+          "alunos_graduacao": 5000,
+          "alunos_pos_graduacao": 1500,
+          "vagas_anuais_graduacao": 1000,
+          "vagas_anuais_bct": 1000,
+          "vagas_anuais_pos_bct": 1000
+        }
+      },
+      "cronograma_cursos": {
+        "existentes": [
+          {"ano": 2007, "curso": "Bacharelado em Ciencia da Computacao", "vagas": 50},
+          {"ano": 2009, "curso": "Bacharelado em Matematica Computacional", "vagas": 50}
+        ],
+        "aprovados_2011": [
+          {"ano": 2011, "curso": "Bacharelado em Ciencia e Tecnologia", "vagas": "200 (crescendo 100/ano ate 1000)"},
+          {"ano": 2011, "curso": "Engenharia de Materiais", "vagas": 125},
+          {"ano": 2011, "curso": "Engenharia Biomedica", "vagas": 125}
+        ],
+        "planejados": [
+          {"ano": 2012, "cursos": ["Engenharia de Computacao", "Engenharia de Automacao e Controle"], "vagas_cada": 125},
+          {"ano": 2013, "curso": "Engenharia de Energia", "vagas": 125},
+          {"anos": "2013-2015", "ideias": ["Engenharia de Producao", "Engenharia Fisica", "Engenharia do Petroleo", "Bacharelado em Fisica Computacional", "Bioestatistica", "Petroquimica", "Biotecnologia", "Bioquimica"]}
+        ]
+      }
+    }
+  },
+
+  "anexos": {
+    "anexo_a_declaracao_bolonha": {
+      "titulo": "The Bologna Declaration of 19 June 1999",
+      "contexto": "Declaracao conjunta dos Ministros da Educacao Europeus",
+      "conceito_chave": "Europe of Knowledge (Europa do Conhecimento)",
+      "objetivos_principais": [
+        "Sistema de diplomas comparaveis e legiveis",
+        "Sistema baseado em dois ciclos principais (undergraduate e graduate)",
+        "Primeiro ciclo: minimo 3 anos, diploma relevante para mercado europeu",
+        "Segundo ciclo: mestrado e/ou doutorado",
+        "Sistema de creditos (modelo ECTS)",
+        "Promocao de mobilidade estudantil"
+      ]
+    },
+
+    "anexo_b_parque_tecnologico_sjc": {
+      "titulo": "O Parque Tecnologico de SJC - Detalhamento",
+      "objetivos": [
+        "Estimular surgimento e desenvolvimento de empresas baseadas em conhecimento",
+        "Incentivar interacao empresa-ICT-universidade",
+        "Promover parcerias publico-privadas em P&D",
+        "Apoiar atividades de P,D&E em empresas",
+        "Desenvolvimento regional via atracao de investimentos em C&T"
+      ],
+      "empresas_cdts": {
+        "embraer": "Centro de Desenvolvimento em Tecnologias Aeronauticas (CDTA)",
+        "vse": "Centro de Desenvolvimento de Tecnologias em Energia (CDTE)",
+        "sabesp": "Centro de Desenvolvimento de Tecnologia em Recursos Hidricos e Saneamento Basico (CDTRHSA)",
+        "spdm": "Centro de Tecnologia e Inovacao em Saude (CTIS)"
+      },
+      "icts_participantes": [
+        "Escola de Engenharia USP Sao Carlos",
+        "Escola Politecnica USP",
+        "Instituto de Pesquisas Tecnologicas (IPT)",
+        "Instituto Tecnologico de Aeronautica (ITA)",
+        "Laboratorio Nacional de Computacao Cientifica (LNCC)",
+        "Universidade Estadual Paulista (UNESP)",
+        "Universidade Federal de Sao Paulo (UNIFESP)"
+      ]
+    }
+  },
+
+  "glossario": {
+    "siglas": {
+      "BCT": "Bacharelado em Ciencia e Tecnologia",
+      "BI": "Bacharelado Interdisciplinar",
+      "CDT": "Centro de Desenvolvimento Tecnologico",
+      "CDTA": "Centro de Desenvolvimento em Tecnologias Aeronauticas",
+      "CECOMPI": "Centro para a Competitividade e Inovacao do Cone Leste Paulista",
+      "CONSU": "Conselho Universitario",
+      "ECTS": "European Credit Transfer System",
+      "ENEM": "Exame Nacional do Ensino Medio",
+      "FATEC": "Faculdade de Tecnologia",
+      "ICT": "Instituto de Ciencia e Tecnologia",
+      "INPE": "Instituto Nacional de Pesquisas Espaciais",
+      "IPT": "Instituto de Pesquisas Tecnologicas",
+      "ITA": "Instituto Tecnologico de Aeronautica",
+      "MEC": "Ministerio da Educacao",
+      "PARQTEC-SJC": "Parque Tecnologico de Sao Jose dos Campos",
+      "PIB": "Produto Interno Bruto",
+      "REUNI": "Reestruturacao e Expansao das Universidades Federais",
+      "SJC": "Sao Jose dos Campos",
+      "UFABC": "Universidade Federal do ABC",
+      "UNIFESP": "Universidade Federal de Sao Paulo"
+    }
+  },
+
+  "perguntas_frequentes": [
+    {
+      "pergunta": "Qual a missao do Campus Sao Jose dos Campos?",
+      "resposta": "Contribuir para o desenvolvimento cientifico e tecnologico da sociedade atraves de atividades de ensino, pesquisa e extensao com niveis de excelencia internacional.",
+      "secao": "Missao, Visao e Identidade do Campus"
+    },
+    {
+      "pergunta": "Quais sao os tres pilares da identidade do Campus SJC?",
+      "resposta": "1) Ser o Instituto de Ciencia e Tecnologia (ICT) da UNIFESP; 2) Ter o Bacharelado Interdisciplinar em Ciencia e Tecnologia (BCT) como marco de inovacao pedagogica; 3) Instalar o campus no Parque Tecnologico de Sao Jose dos Campos.",
+      "secao": "Missao, Visao e Identidade do Campus"
+    },
+    {
+      "pergunta": "Qual a duracao do BCT e o que acontece apos a formatura?",
+      "resposta": "O BCT dura 3 anos e confere diploma pleno de educacao superior. Apos a formatura, o aluno pode: ingressar no mercado de trabalho, seguir para pos-graduacao, ou cursar mais 1-2 anos para formacao especifica (bacharelado, licenciatura ou engenharia).",
+      "secao": "Do Bacharelado em Ciencia e Tecnologia"
+    },
+    {
+      "pergunta": "Quanto a Prefeitura de Sao Jose dos Campos investiu no campus?",
+      "resposta": "Mais de 10 milhoes de reais em doacoes, incluindo terreno de 10 mil m2 com predio de 1 mil m2, construcao de novo predio de 4 mil m2 (custo superior a 7 milhoes), e terreno de 125 mil m2 no Parque Tecnologico.",
+      "secao": "Aspectos Historicos - Da Cidade de Sao Jose dos Campos"
+    },
+    {
+      "pergunta": "Quais sao as metas do campus para 2020?",
+      "resposta": "500 docentes, 300 tecnicos-administrativos, 5.000 alunos de graduacao, 1.500 alunos de pos-graduacao, oferecendo 1.000 vagas anuais de graduacao.",
+      "secao": "Da Visao Prospectiva e das Consideracoes Finais"
+    },
+    {
+      "pergunta": "Quais cursos foram aprovados para 2011?",
+      "resposta": "Bacharelado em Ciencia e Tecnologia (BCT), Engenharia de Materiais e Engenharia Biomedica.",
+      "secao": "Do Instituto de Ciencia e Tecnologia"
+    },
+    {
+      "pergunta": "O que e o BCT?",
+      "resposta": "O Bacharelado em Ciencia e Tecnologia (BCT) e um curso de 3 anos inspirado na Declaracao de Bolonha, com foco em fundamentos de biologia, computacao, fisica, matematica, quimica e formacao humanistica, onde 50% da grade curricular e escolhida pelo aluno.",
+      "secao": "Do Bacharelado em Ciencia e Tecnologia"
+    },
+    {
+      "pergunta": "Qual a estrutura curricular do BCT?",
+      "resposta": "Aproximadamente 50% de disciplinas obrigatorias, 25% de disciplinas eletivas (areas especificas de C&T) e 25% de disciplinas de livre escolha.",
+      "secao": "Do Perfil do Egresso"
+    }
+  ]
+}
+

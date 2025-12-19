@@ -1,0 +1,319 @@
+{
+  "documento": {
+    "tipo": "Cursos Sequenciais - Normas e Propostas",
+    "instituicao": "Universidade Federal de Sao Paulo (UNIFESP)",
+    "campus": "Sao Jose dos Campos",
+    "departamento": "Departamento de Ciencia e Tecnologia",
+    "unidade_certificacao": "Instituto de Ciencia e Tecnologia"
+  },
+
+  "resolucao_normativa": {
+    "numero": "Resolucao CG n 1 de 17 de abril de 2019",
+    "titulo": "Normas e criterios para o funcionamento de Cursos Sequenciais na UNIFESP",
+    "orgao_responsavel": "Conselho de Graduacao",
+    "pro_reitoria": "Pro-Reitoria de Graduacao",
+    
+    "legislacao_base": [
+      "Lei n 9.394/1996 - Art. 44, Inciso I",
+      "Parecer CNE/CES n 57/2016",
+      "Resolucao n 1 de 22 de maio de 2017"
+    ],
+    
+    "capitulos": {
+      "capitulo_I": {
+        "titulo": "Disposicoes Gerais",
+        "artigos": [
+          {
+            "artigo": "Art. 1",
+            "conteudo": "Os Cursos Sequenciais sao programas de estudos concebidos por Instituicoes de Educacao Superior devidamente credenciadas pelo MEC para atender a objetivos formativos definidos."
+          },
+          {
+            "artigo": "Art. 2",
+            "conteudo": "Os Cursos Sequenciais na Unifesp terao apenas destinacao coletiva e serao regulamentados nos termos da legislacao educacional vigente e da presente Resolucao."
+          },
+          {
+            "artigo": "Art. 3",
+            "conteudo": "Os Cursos Sequenciais com destinacao coletiva na Unifesp devem abranger somente os campos de saber circunscritos as areas de conhecimento dos cursos de graduacao desta universidade e serao oferecidos nos mesmos locais onde esses cursos de graduacao funcionam.",
+            "paragrafos": [
+              "Paragrafo 1 - As denominacoes de Cursos Sequenciais devem diferir das denominacoes dos cursos regulares de graduacao",
+              "Paragrafo 2 - Os Cursos Sequenciais nao tem carater permanente, podendo, no entanto, ser oferecidos sem limite de vezes e ininterruptamente"
+            ]
+          },
+          {
+            "artigo": "Art. 4",
+            "conteudo": "Os Cursos Sequenciais conduzem a certificado."
+          },
+          {
+            "artigo": "Art. 5",
+            "conteudo": "Os Cursos Sequenciais serao oferecidos aos alunos regularmente matriculados em cursos de graduacao da Unifesp."
+          }
+        ]
+      },
+      
+      "capitulo_II": {
+        "titulo": "Da Oferta",
+        "artigos": [
+          {
+            "artigo": "Art. 6",
+            "conteudo": "Os Cursos Sequenciais devem ser compostos de, no minimo, tres disciplinas e/ou modulos de um ou mais cursos de graduacao da Unifesp, sendo ao menos duas delas de carater eletivo de acordo com o projeto politico-pedagogico do curso de graduacao no qual o aluno estiver matriculado."
+          },
+          {
+            "artigo": "Art. 7",
+            "conteudo": "A proposicao de Cursos Sequenciais deve se dar por meio de projeto fundamentado que contemple no minimo os seguintes itens:",
+            "itens_obrigatorios": [
+              "o(s) campo(s) de saber",
+              "unidade(s) envolvida(s) (curso/departamento etc)",
+              "unidade universitaria responsavel pela certificacao",
+              "proponente(s) do curso, que devera(ao) ser professor(es) do quadro permanente da Unifesp",
+              "publico-alvo",
+              "justificativa",
+              "objetivos gerais e especificos",
+              "rol das disciplinas e/ou modulos que compoem o Curso Sequencial e suas respectivas ementas e cargas horarias"
+            ]
+          },
+          {
+            "artigo": "Art. 8",
+            "conteudo": "O projeto do Curso Sequencial sera submetido a aprovacao da(s) Camaras de Graduacao e da(s) Congregacao(oes) das unidades envolvidas."
+          }
+        ]
+      },
+      
+      "capitulo_III": {
+        "titulo": "Da Certificacao",
+        "artigos": [
+          {
+            "artigo": "Art. 9",
+            "conteudo": "O concluinte do Curso Sequencial recebera certificado para comprovar a formacao recebida, que nao corresponde a diploma de graduacao nem permite matricula em cursos de pos-graduacao."
+          },
+          {
+            "artigo": "Art. 10",
+            "conteudo": "O aluno devera solicitar o certificado a Secretaria Academica da unidade academica responsavel pela certificacao uma vez concluidas as disciplinas e/ou modulos do Curso Sequencial mediante o preenchimento de um formulario proprio.",
+            "paragrafos": [
+              "Paragrafo 1 - Sera admitido o aproveitamento de disciplinas, contanto que o numero de disciplinas consideradas nao ultrapasse 1/3 da carga horaria total que o aluno deve cumprir no Curso Sequencial.",
+              "Paragrafo 2 - O certificado sera emitido pela Direcao Academica da unidade responsavel pela certificacao ao aluno que cursar as disciplinas com aproveitamento e frequencia.",
+              "Paragrafo 3 - Alunos egressos que tenham concluido cursos de graduacao a partir de 22/05/2017 e que facam jus ao certificado poderao solicita-lo."
+            ]
+          }
+        ]
+      }
+    },
+    
+    "assinatura": {
+      "responsavel": "Profa. Dra. Isabel Marian Hartmann de Quadros",
+      "cargo": "Pro-Reitora de Graduacao"
+    }
+  },
+
+  "cursos_sequenciais_bct": [
+    {
+      "nome": "Metodos Estatisticos para Experimentos em Ciencias e Engenharias",
+      "carga_horaria": "324h",
+      "area": "Estatistica",
+      "curso_base": "Bacharelado Interdisciplinar em Ciencia e Tecnologia (BCT)",
+      "publico_alvo": "Graduandos do BCT"
+    },
+    {
+      "nome": "Fundamentos de Ciencia de Dados",
+      "carga_horaria": "432h",
+      "area": "Ciencia da Computacao e Estatistica",
+      "curso_base": "Bacharelado Interdisciplinar em Ciencia e Tecnologia (BCT)",
+      "publico_alvo": "Graduandos do BCT"
+    },
+    {
+      "nome": "Economia e Mercados Financeiros",
+      "carga_horaria": "216h",
+      "area": "Economia e Financas",
+      "curso_base": "Bacharelado Interdisciplinar em Ciencia e Tecnologia (BCT)",
+      "publico_alvo": "Graduandos do BCT"
+    },
+    {
+      "nome": "Quimica Aplicada",
+      "carga_horaria": "360h",
+      "area": "Quimica",
+      "curso_base": "Bacharelado Interdisciplinar em Ciencia e Tecnologia (BCT)",
+      "publico_alvo": "Graduandos do BCT",
+      "proponentes": [
+        "Dayane Batista Tada",
+        "Silvia Lucia Cuffini",
+        "Marli Leite de Moraes",
+        "Elias de Barros Santos",
+        "Maraisa Goncalves",
+        "Raquel Aparecida Domingues",
+        "Hugo de Campos Braga",
+        "Joao Marcos Batista Junior"
+      ],
+      "objetivos": {
+        "geral": "Articular dentro do BCT um conjunto de disciplinas que oferecam ao discente capacitacao teorico-pratica para o desenvolvimento de atividades relacionadas a laboratorios quimicos.",
+        "especificos": [
+          "Oferecer uma formacao nas principais competencias das diferentes areas da quimica",
+          "Abordar quimica geral, organica, inorganica, analitica e fisico-quimica",
+          "Fornecer fundamentacao teorica de cada competencia",
+          "Ensinar as principais metodologias laboratoriais",
+          "Incluir questoes de seguranca",
+          "Capacitar no manuseio correto e descarte de substancias quimicas"
+        ]
+      },
+      "disciplinas": [
+        {
+          "nome": "Quimica Geral",
+          "codigo": "5704",
+          "carga_horaria": "72h",
+          "periodo": "1o termo",
+          "pre_requisito": "Nao ha"
+        },
+        {
+          "nome": "Quimica Geral Experimental",
+          "codigo": "4370",
+          "carga_horaria": "72h",
+          "periodo": "2o termo",
+          "pre_requisito": "5704 - Quimica Geral"
+        },
+        {
+          "nome": "Quimica Inorganica",
+          "codigo": "4772",
+          "carga_horaria": "72h",
+          "periodo": "3o termo",
+          "pre_requisito": "5704 - Quimica Geral / 4370 - Quimica Geral Experimental"
+        },
+        {
+          "nome": "Quimica Analitica",
+          "codigo": "5883",
+          "carga_horaria": "72h",
+          "periodo": "5o termo",
+          "pre_requisito": "5704 - Quimica Geral"
+        },
+        {
+          "nome": "Quimica Organica Experimental",
+          "codigo": "4536",
+          "carga_horaria": "72h",
+          "periodo": "6o termo",
+          "pre_requisito": "5704 - Quimica Geral / 4370 - Quimica Geral Experimental / 4350 - Quimica Organica"
+        }
+      ]
+    }
+  ],
+
+  "requisitos_normativos": {
+    "minimo_disciplinas": 3,
+    "minimo_eletivas": 2,
+    "aproveitamento_maximo": "1/3 da carga horaria total",
+    "certificacao": "Nao equivale a diploma de graduacao",
+    "pos_graduacao": "Nao permite matricula em pos-graduacao",
+    "destinacao": "Apenas coletiva",
+    "publico": "Alunos regularmente matriculados na UNIFESP"
+  },
+
+  "aspectos_comuns": [
+    "Todos voltados para graduandos do BCT",
+    "Certificacao pelo ICT (Instituto de Ciencia e Tecnologia)",
+    "Aproveitam disciplinas ja existentes no BCT",
+    "Nao requerem criacao de novas disciplinas",
+    "Foco em interdisciplinaridade",
+    "Preparacao para mercado de trabalho",
+    "Combinacao de teoria e pratica"
+  ],
+
+  "indices_tematicos": {
+    "por_area_conhecimento": {
+      "matematica_estatistica": [
+        "Metodos Estatisticos para Experimentos em Ciencias e Engenharias",
+        "Fundamentos de Ciencia de Dados"
+      ],
+      "computacao": [
+        "Fundamentos de Ciencia de Dados"
+      ],
+      "economia_financas": [
+        "Economia e Mercados Financeiros"
+      ],
+      "quimica": [
+        "Quimica Aplicada"
+      ]
+    },
+    
+    "por_competencia": {
+      "analise_dados": [
+        "Metodos Estatisticos para Experimentos em Ciencias e Engenharias",
+        "Fundamentos de Ciencia de Dados",
+        "Economia e Mercados Financeiros"
+      ],
+      "programacao": [
+        "Fundamentos de Ciencia de Dados"
+      ],
+      "experimentacao": [
+        "Metodos Estatisticos para Experimentos em Ciencias e Engenharias",
+        "Quimica Aplicada"
+      ],
+      "analise_laboratorial": [
+        "Quimica Aplicada"
+      ],
+      "mercado_financeiro": [
+        "Economia e Mercados Financeiros"
+      ]
+    },
+    
+    "por_carga_horaria": {
+      "ate_250h": ["Economia e Mercados Financeiros (216h)"],
+      "251_400h": [
+        "Metodos Estatisticos para Experimentos em Ciencias e Engenharias (324h)",
+        "Quimica Aplicada (360h)"
+      ],
+      "acima_400h": ["Fundamentos de Ciencia de Dados (432h)"]
+    }
+  },
+
+  "glossario": {
+    "siglas": {
+      "BCT": "Bacharelado Interdisciplinar em Ciencia e Tecnologia",
+      "ICT": "Instituto de Ciencia e Tecnologia",
+      "MEC": "Ministerio da Educacao",
+      "CNE": "Conselho Nacional de Educacao",
+      "CES": "Camara de Educacao Superior",
+      "CG": "Conselho de Graduacao",
+      "UNIFESP": "Universidade Federal de Sao Paulo"
+    }
+  },
+
+  "perguntas_frequentes": [
+    {
+      "pergunta": "O que sao Cursos Sequenciais?",
+      "resposta": "Sao programas de estudos concebidos por Instituicoes de Educacao Superior para atender a objetivos formativos definidos. Na UNIFESP, terao apenas destinacao coletiva e conduzem a certificado.",
+      "secao": "Disposicoes Gerais"
+    },
+    {
+      "pergunta": "Quais Cursos Sequenciais existem no BCT?",
+      "resposta": "Existem 4 cursos: Metodos Estatisticos para Experimentos em Ciencias e Engenharias (324h), Fundamentos de Ciencia de Dados (432h), Economia e Mercados Financeiros (216h) e Quimica Aplicada (360h).",
+      "secao": "Cursos Sequenciais BCT"
+    },
+    {
+      "pergunta": "O certificado de Curso Sequencial equivale a diploma de graduacao?",
+      "resposta": "Nao. O certificado comprova a formacao recebida, mas nao corresponde a diploma de graduacao nem permite matricula em cursos de pos-graduacao.",
+      "secao": "Da Certificacao"
+    },
+    {
+      "pergunta": "Quantas disciplinas sao necessarias para um Curso Sequencial?",
+      "resposta": "No minimo 3 disciplinas e/ou modulos, sendo ao menos 2 delas de carater eletivo.",
+      "secao": "Da Oferta"
+    },
+    {
+      "pergunta": "Quem pode fazer Cursos Sequenciais na UNIFESP?",
+      "resposta": "Alunos regularmente matriculados em cursos de graduacao da UNIFESP.",
+      "secao": "Disposicoes Gerais"
+    },
+    {
+      "pergunta": "Como solicitar o certificado de Curso Sequencial?",
+      "resposta": "O aluno deve solicitar a Secretaria Academica da unidade responsavel pela certificacao apos concluir as disciplinas, mediante preenchimento de formulario proprio.",
+      "secao": "Da Certificacao"
+    },
+    {
+      "pergunta": "Qual a carga horaria do Curso Sequencial em Quimica Aplicada?",
+      "resposta": "360 horas, distribuidas em 5 disciplinas: Quimica Geral, Quimica Geral Experimental, Quimica Inorganica, Quimica Analitica e Quimica Organica Experimental.",
+      "secao": "Quimica Aplicada"
+    },
+    {
+      "pergunta": "Posso aproveitar disciplinas para o Curso Sequencial?",
+      "resposta": "Sim, sera admitido o aproveitamento de disciplinas, desde que nao ultrapasse 1/3 da carga horaria total do Curso Sequencial.",
+      "secao": "Da Certificacao"
+    }
+  ]
+}
+

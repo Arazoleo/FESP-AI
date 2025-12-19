@@ -5,716 +5,554 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
-import os
-import json
-import shutil
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Optional
+import hashlib
+import json
+import os
 
-class RAGUnifespJSON:
+
+class RAGUnifesp:
     def __init__(self, 
-                 model_name="qwen2.5:14b", 
-                 embedding_model="nomic-embed-text",
-                 persist_directory="./chroma_db_unifesp_json"):
-        """
-        Inicializa o sistema RAG para disciplinas da Unifesp ICT usando JSONs estruturados
+                 model_name: str = "qwen2.5:14b", 
+                 embedding_model: str = "nomic-embed-text",
+                 persist_directory: str = "./chroma_db_unifesp"):
         
-        Args:
-            model_name: Nome do modelo Ollama para LLM
-            embedding_model: Nome do modelo Ollama para embeddings
-            persist_directory: Diretório para persistir o banco vetorial
-        """
         self.llm = OllamaLLM(model=model_name)
         self.embeddings = OllamaEmbeddings(model=embedding_model)
         self.persist_directory = persist_directory
+        self.index_file = os.path.join(persist_directory, "index.json")
         self.db = None
         self.retriever = None
+        self.chain = None
+        
+        self.sources = {
+            "disciplinas": "./jsons_disciplinas",
+            "regimentos": "./jsons_regimentos"
+        }
     
-    def reiniciar_banco_vetorial(self, confirmar=True):
-        """
-        Remove o banco vetorial existente para recriá-lo do zero
-        ÚTIL quando você alterou a estrutura dos JSONs ou adicionou novos campos
-        
-        Args:
-            confirmar: Se True, pede confirmação antes de deletar
-        
-        Returns:
-            bool: True se deletado, False se cancelado
-        """
-        if not os.path.exists(self.persist_directory):
-            print(f"ℹ️  Banco vetorial não existe em: {self.persist_directory}")
-            print(f"   Você pode criar um novo normalmente.")
-            return False
-        
-        print("\n" + "="*80)
-        print("⚠️  REINICIAR BANCO VETORIAL")
-        print("="*80)
-        print(f"\n📂 Localização: {self.persist_directory}")
-        
-        # Calcular tamanho
-        total_size = sum(
-            os.path.getsize(os.path.join(dirpath, filename))
-            for dirpath, _, filenames in os.walk(self.persist_directory)
-            for filename in filenames
-        )
-        size_mb = total_size / (1024**2)
-        print(f"💾 Tamanho: {size_mb:.2f} MB")
-        
-        if confirmar:
-            print(f"\n⚠️  ATENÇÃO: Esta ação vai DELETAR permanentemente o banco vetorial!")
-            print(f"   Motivos comuns:")
-            print(f"   • Você adicionou novos campos nos JSONs")
-            print(f"   • Você alterou a estrutura dos dados")
-            print(f"   • Você quer reprocessar tudo do zero")
-            resposta = input(f"\n   Confirma a exclusão? (sim/não): ").strip().lower()
-            
-            if resposta not in ['sim', 's', 'yes', 'y']:
-                print("\n🚫 Operação cancelada. Banco vetorial mantido.")
-                return False
-        
-        try:
-            shutil.rmtree(self.persist_directory)
-            print(f"\n✅ Banco vetorial deletado com sucesso!")
-            print(f"\n💡 Próximo passo: Execute o método para recriar:")
-            print(f"   documentos = rag.carregar_jsons_diretorio('./seu_diretorio')")
-            print(f"   splits = rag.processar_documentos(documentos)")
-            print(f"   rag.criar_banco_vetorial(splits)")
-            return True
-        except Exception as e:
-            print(f"\n❌ Erro ao deletar banco vetorial: {e}")
-            return False
+    def _get_file_hash(self, filepath: str) -> str:
+        with open(filepath, 'rb') as f:
+            return hashlib.md5(f.read()).hexdigest()
     
-    def recriar_banco_completo(self, diretorio_jsons, confirmar=True):
-        """
-        Deleta o banco antigo e recria automaticamente do zero
-        PERFEITO para quando você alterou os JSONs e precisa reindexar tudo
+    def _load_index(self) -> Dict:
+        if os.path.exists(self.index_file):
+            with open(self.index_file, 'r') as f:
+                return json.load(f)
+        return {"files": {}}
+    
+    def _save_index(self, index: Dict):
+        os.makedirs(self.persist_directory, exist_ok=True)
+        with open(self.index_file, 'w') as f:
+            json.dump(index, f, indent=2)
+    
+    def _detect_changes(self) -> Dict[str, List[str]]:
+        index = self._load_index()
+        changes = {"new": [], "modified": [], "deleted": []}
+        current_files = {}
         
-        Args:
-            diretorio_jsons: Caminho do diretório com os arquivos JSON
-            confirmar: Se True, pede confirmação antes de deletar o banco antigo
+        for source_type, directory in self.sources.items():
+            if not os.path.exists(directory):
+                continue
+            for json_file in Path(directory).glob("*.json"):
+                filepath = str(json_file)
+                file_hash = self._get_file_hash(filepath)
+                current_files[filepath] = file_hash
+                
+                if filepath not in index["files"]:
+                    changes["new"].append(filepath)
+                elif index["files"][filepath] != file_hash:
+                    changes["modified"].append(filepath)
         
-        Returns:
-            bool: True se bem-sucedido, False se houve erro
-        """
-        print("\n" + "="*80)
-        print("🔄 RECRIAR BANCO VETORIAL COMPLETO")
-        print("="*80 + "\n")
+        for filepath in index["files"]:
+            if filepath not in current_files:
+                changes["deleted"].append(filepath)
         
-        # Verificar se diretório de JSONs existe
-        if not os.path.exists(diretorio_jsons):
-            print(f"❌ ERRO: Diretório não encontrado: {diretorio_jsons}")
-            return False
-        
-        arquivos = list(Path(diretorio_jsons).glob("*.json"))
-        if not arquivos:
-            print(f"❌ ERRO: Nenhum arquivo JSON encontrado em: {diretorio_jsons}")
-            return False
-        
-        print(f"📁 Diretório de JSONs: {diretorio_jsons}")
-        print(f"📄 Arquivos JSON encontrados: {len(arquivos)}")
-        
-        # Passo 1: Deletar banco antigo
-        if os.path.exists(self.persist_directory):
-            print(f"\n🗑️  PASSO 1: Deletando banco vetorial antigo...")
-            if not self.reiniciar_banco_vetorial(confirmar=confirmar):
-                return False
-        else:
-            print(f"\nℹ️  PASSO 1: Nenhum banco antigo encontrado (OK)")
-        
-        # Passo 2: Carregar JSONs
-        print(f"\n📚 PASSO 2: Carregando arquivos JSON...")
-        try:
-            documentos = self.carregar_jsons_diretorio(diretorio_jsons)
-            if not documentos:
-                print(f"❌ ERRO: Nenhum documento foi carregado!")
-                return False
-        except Exception as e:
-            print(f"❌ ERRO ao carregar JSONs: {e}")
-            return False
-        
-        # Passo 3: Processar documentos
-        print(f"\n✂️  PASSO 3: Processando documentos em chunks...")
-        try:
-            splits = self.processar_documentos(documentos, chunk_size=1000, chunk_overlap=200)
-        except Exception as e:
-            print(f"❌ ERRO ao processar documentos: {e}")
-            return False
-        
-        # Passo 4: Criar banco vetorial
-        print(f"\n🔧 PASSO 4: Criando novo banco vetorial...")
-        try:
-            self.criar_banco_vetorial(splits, persistir=True)
-        except Exception as e:
-            print(f"❌ ERRO ao criar banco vetorial: {e}")
-            return False
-        
-        # Sucesso!
-        print(f"\n" + "="*80)
-        print(f"✅ BANCO VETORIAL RECRIADO COM SUCESSO!")
-        print(f"="*80)
-        print(f"\n📊 Resumo:")
-        print(f"   • Arquivos JSON: {len(arquivos)}")
-        print(f"   • Documentos originais: {len(documentos)}")
-        print(f"   • Chunks indexados: {len(splits)}")
-        print(f"   • Localização: {self.persist_directory}")
-        print(f"\n💡 Agora você pode usar:")
-        print(f"   rag.configurar_chain()")
-        print(f"   rag.consultar('sua pergunta')")
-        
-        return True
-        
-    def carregar_json_disciplina(self, caminho_json):
-        """
-        Carrega um arquivo JSON de disciplina e converte em documentos estruturados
-        
-        Args:
-            caminho_json: Caminho para o arquivo JSON da disciplina
-        
-        Returns:
-            Lista de documentos com diferentes aspectos da disciplina
-        """
-        with open(caminho_json, 'r', encoding='utf-8') as f:
+        return changes, current_files
+    
+    def _parse_disciplina(self, filepath: str) -> List[Document]:
+        with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
         
-        disciplina = data['disciplina']
-        documentos = []
+        docs = []
+        d = data.get('disciplina', data)
+        nome = d.get('nome', 'N/A')
+        codigo = d.get('codigo', 'N/A')
+        base_meta = {
+            'tipo_documento': 'disciplina',
+            'disciplina': nome,
+            'codigo': codigo,
+            'source': filepath
+        }
         
-        # 1. Documento com informações gerais
-        docentes = disciplina.get('docentes', [])
-        docentes_str = ', '.join(docentes) if docentes else 'N/A'
+        docentes = d.get('docentes', [])
+        if isinstance(docentes, str):
+            docentes = [docentes]
         
-        info_geral = f"""
-Disciplina: {disciplina['nome']}
-Nome em Inglês: {disciplina.get('nome_ingles', 'N/A')}
-Código: {disciplina.get('codigo', 'N/A')}
-Campus: {disciplina.get('campus', 'N/A')}
-Curso(s): {', '.join(disciplina.get('curso', []))}
-Tipo: {disciplina.get('tipo', 'N/A')}
-Formato: {disciplina.get('formato', 'N/A')}
-Termo: {disciplina.get('termo', 'N/A')}
-Turno: {disciplina.get('turno', 'N/A')}
-Oferta: {disciplina.get('oferta', 'N/A')}
-Docentes: {docentes_str}
-"""
-        documentos.append(Document(
-            page_content=info_geral.strip(),
-            metadata={
-                'disciplina': disciplina['nome'],
-                'codigo': disciplina.get('codigo', 'N/A'),
-                'tipo_conteudo': 'informacoes_gerais',
-                'source': caminho_json
-            }
-        ))
+        info = f"""Disciplina: {nome}
+Codigo: {codigo}
+Campus: {d.get('campus', 'N/A')}
+Curso(s): {', '.join(d.get('curso', []))}
+Tipo: {d.get('tipo', 'N/A')}
+Termo: {d.get('termo', 'N/A')}
+Turno: {d.get('turno', 'N/A')}
+Docentes: {', '.join(docentes) if docentes else 'N/A'}"""
+        docs.append(Document(page_content=info, metadata={**base_meta, 'secao': 'info_geral'}))
         
-        # 2. Documento com carga horária
-        carga = disciplina.get('carga_horaria', {})
-        carga_horaria = f"""
-Disciplina: {disciplina['nome']}
-Carga Horária:
-- Total: {carga.get('total', 'N/A')} horas
-- Teórica: {carga.get('teorica', 'N/A')} horas
-- Prática: {carga.get('pratica', 'N/A')} horas
-- Extensão: {carga.get('extensao', 'N/A')} horas
-"""
-        documentos.append(Document(
-            page_content=carga_horaria.strip(),
-            metadata={
-                'disciplina': disciplina['nome'],
-                'codigo': disciplina.get('codigo', 'N/A'),
-                'tipo_conteudo': 'carga_horaria',
-                'source': caminho_json
-            }
-        ))
+        carga = d.get('carga_horaria', {})
+        if carga:
+            ch = f"""Disciplina: {nome}
+Carga Horaria Total: {carga.get('total', 'N/A')}h
+Teorica: {carga.get('teorica', 'N/A')}h
+Pratica: {carga.get('pratica', 'N/A')}h
+Extensao: {carga.get('extensao', 'N/A')}h"""
+            docs.append(Document(page_content=ch, metadata={**base_meta, 'secao': 'carga_horaria'}))
         
-        # 3. Documento com pré-requisitos
-        pre_reqs = disciplina.get('pre_requisitos', [])
-        if pre_reqs:
-            pre_requisitos = f"Disciplina: {disciplina['nome']}\nPré-requisitos:\n"
-            for req in pre_reqs:
-                pre_requisitos += f"- {req.get('codigo', 'N/A')} - {req.get('nome', 'N/A')}\n"
+        ementa = d.get('ementa', {})
+        if ementa:
+            topicos = ementa.get('topicos', [])
+            em = f"Disciplina: {nome}\nEmenta: {ementa.get('descricao_completa', 'N/A')}"
+            if topicos:
+                em += "\nTopicos:\n" + "\n".join(f"- {t}" for t in topicos)
+            docs.append(Document(page_content=em, metadata={**base_meta, 'secao': 'ementa'}))
+        
+        biblio = d.get('bibliografia', {})
+        for tipo_bib in ['basica', 'complementar']:
+            livros = biblio.get(tipo_bib, [])
+            if livros:
+                bib = f"Disciplina: {nome}\nBibliografia {tipo_bib.title()}:\n"
+                for i, livro in enumerate(livros, 1):
+                    autores = ', '.join(livro.get('autores', ['N/A']))
+                    bib += f"{i}. {autores}. {livro.get('titulo', 'N/A')}. {livro.get('editora', '')}, {livro.get('ano', '')}.\n"
+                docs.append(Document(page_content=bib.strip(), metadata={**base_meta, 'secao': f'bibliografia_{tipo_bib}'}))
+        
+        return docs
+    
+    def _parse_regimento(self, filepath: str) -> List[Document]:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        docs = []
+        doc_info = data.get('documento', {})
+        tipo_doc = doc_info.get('tipo', 'Documento Institucional')
+        
+        base_meta = {
+            'tipo_documento': 'institucional',
+            'documento': tipo_doc,
+            'resolucao': doc_info.get('resolucao', doc_info.get('data_aprovacao', 'N/A')),
+            'source': filepath
+        }
+        
+        info_parts = [f"Documento: {tipo_doc}"]
+        if doc_info.get('resolucao'):
+            info_parts.append(f"Resolucao: {doc_info['resolucao']}")
+        if doc_info.get('instituicao'):
+            info_parts.append(f"Instituicao: {doc_info['instituicao']}")
+        if doc_info.get('campus'):
+            info_parts.append(f"Campus: {doc_info['campus']}")
+        if doc_info.get('data_vigencia'):
+            info_parts.append(f"Data Vigencia: {doc_info['data_vigencia']}")
+        if doc_info.get('data_aprovacao'):
+            info_parts.append(f"Data Aprovacao: {doc_info['data_aprovacao']}")
+        if doc_info.get('status'):
+            info_parts.append(f"Status: {doc_info['status']}")
+        
+        docs.append(Document(page_content="\n".join(info_parts), metadata={**base_meta, 'secao': 'info_geral'}))
+        
+        if 'objetivo' in data:
+            obj = data['objetivo']
+            obj_txt = "Objetivo do documento:\n"
+            if isinstance(obj, dict):
+                for k, v in obj.items():
+                    obj_txt += f"- {k.replace('_', ' ').title()}: {v}\n"
+            docs.append(Document(page_content=obj_txt.strip(), metadata={**base_meta, 'secao': 'objetivo'}))
+        
+        if 'ponto_encontro' in data:
+            pe = data['ponto_encontro']
+            pe_txt = f"Ponto de Encontro em caso de emergencia:\nLocal: {pe.get('localizacao', 'N/A')}\nInstrucoes: {pe.get('instrucoes', 'N/A')}"
+            docs.append(Document(page_content=pe_txt, metadata={**base_meta, 'secao': 'ponto_encontro'}))
+        
+        if 'recursos_materiais' in data:
+            rm = data['recursos_materiais']
+            rm_txt = "Recursos Materiais de Seguranca:\n"
+            if 'extintores' in rm:
+                ext = rm['extintores']
+                rm_txt += f"Extintores: {ext.get('total', 'N/A')} unidades\n"
+            if 'hidrantes' in rm:
+                rm_txt += f"Hidrantes: {rm['hidrantes']} unidades\n"
+            if 'saidas_emergencia' in rm:
+                rm_txt += "Saidas de Emergencia:\n" + "\n".join(f"  - {s}" for s in rm['saidas_emergencia'])
+            docs.append(Document(page_content=rm_txt.strip(), metadata={**base_meta, 'secao': 'recursos_materiais'}))
+        
+        if 'riscos_especificos' in data:
+            riscos = data['riscos_especificos']
+            riscos_txt = "Riscos Especificos:\n"
+            for r in riscos:
+                riscos_txt += f"\n- {r.get('tipo', 'N/A')} ({r.get('localizacao', 'N/A')}): {', '.join(r.get('riscos', []))}"
+            docs.append(Document(page_content=riscos_txt.strip(), metadata={**base_meta, 'secao': 'riscos'}))
+        
+        if 'procedimentos_emergencia' in data:
+            proc = data['procedimentos_emergencia']
+            for proc_key, proc_data in proc.items():
+                if isinstance(proc_data, dict):
+                    proc_txt = f"Procedimento: {proc_key.replace('_', ' ').title()}\n"
+                    for k, v in proc_data.items():
+                        if isinstance(v, str):
+                            proc_txt += f"- {k.replace('_', ' ').title()}: {v}\n"
+                        elif isinstance(v, list):
+                            proc_txt += f"- {k.replace('_', ' ').title()}:\n"
+                            for item in v:
+                                proc_txt += f"  * {item}\n"
+                    docs.append(Document(page_content=proc_txt.strip(), metadata={**base_meta, 'secao': f'procedimento_{proc_key}'}))
+        
+        if 'notas_importantes' in data:
+            notas = data['notas_importantes']
+            notas_txt = "Notas Importantes de Seguranca:\n" + "\n".join(f"- {n}" for n in notas)
+            docs.append(Document(page_content=notas_txt, metadata={**base_meta, 'secao': 'notas_importantes'}))
+        
+        if 'contatos_emergencia' in data:
+            cont = data['contatos_emergencia']
+            cont_txt = "Contatos de Emergencia:\n"
+            for k, v in cont.items():
+                cont_txt += f"- {k.replace('_', ' ').title()}: {v}\n"
+            docs.append(Document(page_content=cont_txt.strip(), metadata={**base_meta, 'secao': 'contatos_emergencia'}))
+        
+        glossario = data.get('glossario', {})
+        siglas = glossario.get('siglas', {})
+        if siglas:
+            siglas_txt = "Glossario de Siglas Unifesp ICT:\n" + "\n".join(f"- {s}: {v}" for s, v in siglas.items())
+            docs.append(Document(page_content=siglas_txt, metadata={**base_meta, 'secao': 'glossario'}))
+        
+        estrutura = data.get('estrutura', {})
+        for secao_key, secao_data in estrutura.items():
+            if not isinstance(secao_data, dict):
+                continue
+            
+            secao_titulo = secao_data.get('titulo', secao_data.get('nome', secao_key))
+            
+            for artigo in secao_data.get('artigos', []):
+                doc = self._format_artigo(artigo, secao_titulo, base_meta)
+                if doc:
+                    docs.append(doc)
+            
+            for capitulo in secao_data.get('capitulos', []):
+                cap_nome = capitulo.get('nome', '')
+                for artigo in capitulo.get('artigos', []):
+                    doc = self._format_artigo(artigo, secao_titulo, base_meta, cap_nome)
+                    if doc:
+                        docs.append(doc)
+            
+            secao_doc = self._format_secao(secao_key, secao_data, base_meta)
+            if secao_doc:
+                docs.append(secao_doc)
+        
+        for faq in data.get('perguntas_frequentes', []):
+            faq_txt = f"Pergunta: {faq.get('pergunta', '')}\nResposta: {faq.get('resposta', '')}\nArtigo: {faq.get('artigo', 'N/A')}"
+            docs.append(Document(page_content=faq_txt, metadata={**base_meta, 'secao': 'faq'}))
+        
+        return docs
+    
+    def _format_artigo(self, artigo: Dict, titulo: str, base_meta: Dict, capitulo: str = None) -> Optional[Document]:
+        conteudo = artigo.get('conteudo', '')
+        if not conteudo:
+            return None
+        
+        numero = artigo.get('numero', 'N/A')
+        texto = f"TITULO: {titulo}"
+        if capitulo:
+            texto += f"\nCAPITULO: {capitulo}"
+        texto += f"\n\nArt. {numero}. {conteudo}"
+        
+        if artigo.get('paragrafo_unico'):
+            texto += f"\n\nParagrafo unico. {artigo['paragrafo_unico']}"
+        
+        for p in artigo.get('paragrafos', []):
+            if isinstance(p, dict):
+                texto += f"\n\nParagrafo {p.get('numero', '')}. {p.get('conteudo', '')}"
+                for key in ['divisoes', 'cursos', 'programas']:
+                    items = p.get(key, [])
+                    if items:
+                        for item in items:
+                            if isinstance(item, dict):
+                                texto += f"\n  - {item.get('nome', '')}: {', '.join(item.get('modalidades', []))}"
+                            else:
+                                texto += f"\n  - {item}"
+        
+        meta = {**base_meta, 'secao': 'artigo', 'titulo': titulo, 'artigo': numero}
+        if capitulo:
+            meta['capitulo'] = capitulo
+        
+        return Document(page_content=texto, metadata=meta)
+    
+    def _format_secao(self, secao_key: str, secao_data: Dict, base_meta: Dict) -> Optional[Document]:
+        titulo = secao_data.get('titulo', secao_data.get('nome', secao_key))
+        partes = [f"SECAO: {titulo}"]
+        
+        campos_texto = ['missao', 'visao', 'contexto', 'justificativa', 'problema_identificado', 
+                        'conclusao_diagnostico', 'relevancia_regional']
+        for campo in campos_texto:
+            if campo in secao_data and isinstance(secao_data[campo], str):
+                partes.append(f"{campo.replace('_', ' ').title()}: {secao_data[campo]}")
+        
+        if 'tres_pilares_identidade' in secao_data:
+            partes.append("Tres Pilares da Identidade:")
+            for i, pilar in enumerate(secao_data['tres_pilares_identidade'], 1):
+                partes.append(f"  {i}. {pilar}")
+        
+        for sub_key, sub_data in secao_data.items():
+            if sub_key.startswith('subsecao_') and isinstance(sub_data, dict):
+                sub_titulo = sub_data.get('titulo', sub_key)
+                partes.append(f"\n{sub_titulo}:")
+                self._extract_nested_content(sub_data, partes, indent=1)
+        
+        if 'perfil_geral' in secao_data:
+            perfil = secao_data['perfil_geral']
+            if 'formacao' in perfil:
+                partes.append(f"Formacao: {perfil['formacao']}")
+            if 'capacidades' in perfil:
+                partes.append("Capacidades:")
+                for cap in perfil['capacidades']:
+                    partes.append(f"  - {cap}")
+        
+        if 'possibilidades_atuacao' in secao_data:
+            partes.append("Possibilidades de Atuacao:")
+            for pos in secao_data['possibilidades_atuacao']:
+                partes.append(f"  - {pos}")
+        
+        if 'proposta_horizonte_2020' in secao_data:
+            metas = secao_data['proposta_horizonte_2020'].get('numeros_meta_2020', {})
+            if metas:
+                partes.append("Metas 2020:")
+                for k, v in metas.items():
+                    partes.append(f"  - {k.replace('_', ' ').title()}: {v}")
+        
+        if 'cronograma_cursos' in secao_data:
+            crono = secao_data['cronograma_cursos']
+            for tipo in ['existentes', 'aprovados_2011', 'planejados']:
+                if tipo in crono:
+                    partes.append(f"Cursos {tipo.replace('_', ' ').title()}:")
+                    for item in crono[tipo]:
+                        if 'curso' in item:
+                            partes.append(f"  - {item.get('ano', '')}: {item['curso']} ({item.get('vagas', '')} vagas)")
+                        elif 'cursos' in item:
+                            partes.append(f"  - {item.get('ano', item.get('anos', ''))}: {', '.join(item['cursos'])}")
+        
+        if len(partes) <= 1:
+            return None
+        
+        meta = {**base_meta, 'secao': titulo}
+        return Document(page_content="\n".join(partes), metadata=meta)
+    
+    def _extract_nested_content(self, data: Dict, partes: List[str], indent: int = 0):
+        prefix = "  " * indent
+        
+        campos_simples = ['duracao', 'diploma', 'autoria_texto_base', 'geracao', 'area_doada', 
+                          'data_doacao', 'previsao_obras', 'metodologia', 'funcao', 'vinculacao']
+        for campo in campos_simples:
+            if campo in data and isinstance(data[campo], str):
+                partes.append(f"{prefix}{campo.replace('_', ' ').title()}: {data[campo]}")
+        
+        if 'caracteristicas' in data and isinstance(data['caracteristicas'], dict):
+            carac = data['caracteristicas']
+            for k, v in carac.items():
+                if isinstance(v, str):
+                    partes.append(f"{prefix}{k.replace('_', ' ').title()}: {v}")
+                elif isinstance(v, list):
+                    partes.append(f"{prefix}{k.replace('_', ' ').title()}: {', '.join(str(x) for x in v)}")
+        
+        if 'trajetorias_pos_bct' in data:
+            partes.append(f"{prefix}Trajetorias pos-BCT:")
+            for traj in data['trajetorias_pos_bct']:
+                partes.append(f"{prefix}  - {traj}")
+        
+        if 'objetivos' in data and isinstance(data['objetivos'], list):
+            partes.append(f"{prefix}Objetivos:")
+            for obj in data['objetivos']:
+                partes.append(f"{prefix}  - {obj}")
+        
+        if 'cursos_implantados_inicialmente' in data:
+            partes.append(f"{prefix}Cursos implantados:")
+            for item in data['cursos_implantados_inicialmente']:
+                ano = item.get('ano', '')
+                cursos = item.get('cursos', [])
+                partes.append(f"{prefix}  - {ano}: {', '.join(cursos)}")
+        
+        if 'aprovacao_consu_2009' in data:
+            aprov = data['aprovacao_consu_2009']
+            partes.append(f"{prefix}Aprovacao CONSU 2009:")
+            if 'novos_cursos_aprovados' in aprov:
+                for curso in aprov['novos_cursos_aprovados']:
+                    partes.append(f"{prefix}  - {curso}")
+    
+    def _parse_file(self, filepath: str) -> List[Document]:
+        if 'disciplinas' in filepath:
+            return self._parse_disciplina(filepath)
+        elif 'regimentos' in filepath:
+            return self._parse_regimento(filepath)
+        return []
+    
+    def sync(self, force: bool = False) -> bool:
+        changes, current_files = self._detect_changes()
+        
+        has_changes = any(changes.values())
+        db_exists = os.path.exists(self.persist_directory) and os.path.exists(
+            os.path.join(self.persist_directory, "chroma.sqlite3")
+        )
+        
+        if not has_changes and db_exists and not force:
+            print("Banco atualizado, nenhuma mudanca detectada.")
+            self._load_db()
+            return False
+        
+        if force or not db_exists:
+            print("Recriando banco vetorial...")
+            all_docs = []
+            for filepath in current_files:
+                all_docs.extend(self._parse_file(filepath))
+            
+            splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+            splits = splitter.split_documents(all_docs)
+            
+            self.db = Chroma.from_documents(splits, self.embeddings, persist_directory=self.persist_directory)
+            self._save_index({"files": current_files})
+            print(f"Banco criado: {len(splits)} chunks de {len(current_files)} arquivos.")
         else:
-            pre_requisitos = f"Disciplina: {disciplina['nome']}\nPré-requisitos: Não há pré-requisitos"
-        
-        documentos.append(Document(
-            page_content=pre_requisitos.strip(),
-            metadata={
-                'disciplina': disciplina['nome'],
-                'codigo': disciplina.get('codigo', 'N/A'),
-                'tipo_conteudo': 'pre_requisitos',
-                'source': caminho_json
-            }
-        ))
-        
-        # 4. Documento com ementa completa
-        ementa_data = disciplina.get('ementa', {})
-        ementa = f"""
-Disciplina: {disciplina['nome']}
-Ementa: {ementa_data.get('descricao_completa', 'N/A')}
-
-Tópicos principais:
-"""
-        for topico in ementa_data.get('topicos', []):
-            ementa += f"- {topico}\n"
-        
-        documentos.append(Document(
-            page_content=ementa.strip(),
-            metadata={
-                'disciplina': disciplina['nome'],
-                'codigo': disciplina.get('codigo', 'N/A'),
-                'tipo_conteudo': 'ementa',
-                'source': caminho_json
-            }
-        ))
-        
-        # 5. Documento com bibliografia básica
-        biblio = disciplina.get('bibliografia', {})
-        if biblio.get('basica'):
-            biblio_basica = f"Disciplina: {disciplina['nome']}\nBibliografia Básica:\n\n"
-            for i, livro in enumerate(biblio['basica'], 1):
-                autores = ', '.join(livro.get('autores', ['N/A']))
-                titulo = livro.get('titulo', 'N/A')
-                editora = livro.get('editora', 'N/A')
-                ano = livro.get('ano', 'N/A')
-                biblio_basica += f"{i}. {autores}. {titulo}. {editora}, {ano}.\n"
+            self._load_db()
             
-            documentos.append(Document(
-                page_content=biblio_basica.strip(),
-                metadata={
-                    'disciplina': disciplina['nome'],
-                    'codigo': disciplina.get('codigo', 'N/A'),
-                    'tipo_conteudo': 'bibliografia_basica',
-                    'source': caminho_json
-                }
-            ))
-        
-        # 6. Documento com bibliografia complementar
-        if biblio.get('complementar'):
-            biblio_comp = f"Disciplina: {disciplina['nome']}\nBibliografia Complementar:\n\n"
-            for i, livro in enumerate(biblio['complementar'], 1):
-                autores = ', '.join(livro.get('autores', ['N/A']))
-                titulo = livro.get('titulo', 'N/A')
-                editora = livro.get('editora', 'N/A')
-                ano = livro.get('ano', 'N/A')
-                biblio_comp += f"{i}. {autores}. {titulo}. {editora}, {ano}.\n"
+            if changes["deleted"]:
+                print(f"Removendo {len(changes['deleted'])} arquivos deletados...")
+                for filepath in changes["deleted"]:
+                    ids_to_delete = []
+                    results = self.db.get(where={"source": filepath})
+                    if results and results['ids']:
+                        ids_to_delete.extend(results['ids'])
+                    if ids_to_delete:
+                        self.db._collection.delete(ids=ids_to_delete)
             
-            documentos.append(Document(
-                page_content=biblio_comp.strip(),
-                metadata={
-                    'disciplina': disciplina['nome'],
-                    'codigo': disciplina.get('codigo', 'N/A'),
-                    'tipo_conteudo': 'bibliografia_complementar',
-                    'source': caminho_json
-                }
-            ))
-        
-        # 7. Documento específico para docentes (facilita buscas por professor)
-        docentes = disciplina.get('docentes', [])
-        if docentes:
-            docentes_doc = f"Disciplina: {disciplina['nome']}\nCódigo: {disciplina.get('codigo', 'N/A')}\n\nDocentes que ministram esta disciplina:\n"
-            for i, docente in enumerate(docentes, 1):
-                docentes_doc += f"{i}. {docente}\n"
+            files_to_update = changes["new"] + changes["modified"]
+            if files_to_update:
+                print(f"Atualizando {len(files_to_update)} arquivos...")
+                
+                for filepath in changes["modified"]:
+                    results = self.db.get(where={"source": filepath})
+                    if results and results['ids']:
+                        self.db._collection.delete(ids=results['ids'])
+                
+                new_docs = []
+                for filepath in files_to_update:
+                    new_docs.extend(self._parse_file(filepath))
+                
+                if new_docs:
+                    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+                    splits = splitter.split_documents(new_docs)
+                    self.db.add_documents(splits)
+                    print(f"Adicionados {len(splits)} novos chunks.")
             
-            documentos.append(Document(
-                page_content=docentes_doc.strip(),
-                metadata={
-                    'disciplina': disciplina['nome'],
-                    'codigo': disciplina.get('codigo', 'N/A'),
-                    'tipo_conteudo': 'docentes',
-                    'source': caminho_json
-                }
-            ))
+            self._save_index({"files": current_files})
         
-        return documentos
+        self.retriever = self.db.as_retriever(search_type="similarity", search_kwargs={"k": 6})
+        self._setup_chain()
+        return True
     
-    def carregar_jsons_diretorio(self, diretorio_jsons):
-        """
-        Carrega todos os arquivos JSON de um diretório
-        
-        Args:
-            diretorio_jsons: Caminho para o diretório com os JSONs
-        """
-        print(f"📚 Carregando JSONs do diretório: {diretorio_jsons}")
-        
-        todos_documentos = []
-        arquivos_json = list(Path(diretorio_jsons).glob("*.json"))
-        
-        print(f"📄 Encontrados {len(arquivos_json)} arquivos JSON")
-        
-        for json_file in arquivos_json:
-            try:
-                docs = self.carregar_json_disciplina(str(json_file))
-                todos_documentos.extend(docs)
-                print(f"  ✅ {json_file.name}: {len(docs)} documentos")
-            except Exception as e:
-                print(f"  ❌ Erro ao carregar {json_file.name}: {e}")
-        
-        print(f"\n✅ Total: {len(todos_documentos)} documentos carregados de {len(arquivos_json)} disciplinas")
-        return todos_documentos
+    def _load_db(self):
+        self.db = Chroma(persist_directory=self.persist_directory, embedding_function=self.embeddings)
+        self.retriever = self.db.as_retriever(search_type="similarity", search_kwargs={"k": 6})
+        self._setup_chain()
     
-    def processar_documentos(self, documentos, chunk_size=1000, chunk_overlap=200):
-        """
-        Divide documentos em chunks para melhor recuperação
-        Para JSONs estruturados, chunks maiores preservam melhor o contexto
-        
-        Args:
-            documentos: Lista de documentos carregados
-            chunk_size: Tamanho de cada chunk (1000 é bom para conteúdo estruturado)
-            chunk_overlap: Sobreposição entre chunks
-        """
-        print(f"✂️  Dividindo documentos em chunks...")
-        
-        splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap,
-            separators=["\n\n", "\n", ". ", " ", ""],
-            length_function=len
-        )
-        
-        splits = splitter.split_documents(documentos)
-        print(f"✅ {len(splits)} chunks criados")
-        return splits
-    
-    def criar_banco_vetorial(self, splits, persistir=True):
-        """
-        Cria o banco vetorial com os chunks processados
-        
-        Args:
-            splits: Documentos divididos em chunks
-            persistir: Se True, salva o banco em disco para reutilização
-        """
-        print(f"🔧 Criando banco vetorial...")
-        
-        if persistir:
-            self.db = Chroma.from_documents(
-                splits, 
-                embedding=self.embeddings,
-                persist_directory=self.persist_directory
-            )
-            print(f"💾 Banco vetorial salvo em: {self.persist_directory}")
-        else:
-            self.db = Chroma.from_documents(splits, embedding=self.embeddings)
-            print(f"✅ Banco vetorial criado (apenas em memória)")
-        
-        self.retriever = self.db.as_retriever(
-            search_type="similarity",
-            search_kwargs={"k": 6}  # Retorna top 6 chunks mais relevantes
-        )
-        
-        # Estatísticas
-        print(f"📊 Total de documentos no banco: {len(splits)}")
-        disciplinas = set(doc.metadata.get('disciplina', 'Desconhecida') for doc in splits)
-        print(f"📚 Disciplinas indexadas: {len(disciplinas)}")
-        
-        # Tipos de conteúdo
-        tipos = set(doc.metadata.get('tipo_conteudo', 'Desconhecido') for doc in splits)
-        print(f"📋 Tipos de conteúdo: {', '.join(tipos)}")
-    
-    def carregar_banco_existente(self):
-        """Carrega um banco vetorial já criado anteriormente"""
-        if not os.path.exists(self.persist_directory):
-            raise FileNotFoundError(f"Banco vetorial não encontrado em {self.persist_directory}")
-        
-        print(f"📂 Carregando banco vetorial existente...")
-        self.db = Chroma(
-            persist_directory=self.persist_directory,
-            embedding_function=self.embeddings
-        )
-        self.retriever = self.db.as_retriever(
-            search_type="similarity",
-            search_kwargs={"k": 6}
-        )
-        print(f"✅ Banco vetorial carregado")
-    
-    def buscar_por_disciplina(self, disciplina, k=5):
-        """Busca chunks específicos de uma disciplina"""
-        if not self.db:
-            raise ValueError("Banco vetorial não foi criado ou carregado")
-        
-        resultados = self.db.similarity_search(
-            disciplina,
-            k=k,
-            filter={"disciplina": disciplina}
-        )
-        return resultados
-    
-    def buscar_por_tipo_conteudo(self, tipo_conteudo, disciplina=None, k=5):
-        """
-        Busca por tipo específico de conteúdo
-        
-        Args:
-            tipo_conteudo: 'informacoes_gerais', 'ementa', 'bibliografia_basica', etc.
-            disciplina: Nome da disciplina (opcional, para filtrar)
-            k: Número de resultados
-        """
-        if not self.db:
-            raise ValueError("Banco vetorial não foi criado ou carregado")
-        
-        filtro = {"tipo_conteudo": tipo_conteudo}
-        if disciplina:
-            filtro["disciplina"] = disciplina
-        
-        resultados = self.db.similarity_search(
-            tipo_conteudo,
-            k=k,
-            filter=filtro
-        )
-        return resultados
-    
-    def listar_disciplinas(self):
-        """Lista todas as disciplinas no banco vetorial"""
-        if not self.db:
-            raise ValueError("Banco vetorial não foi criado ou carregado")
-        
-        resultados = self.db.get()
-        disciplinas = set()
-        
-        if resultados and 'metadatas' in resultados:
-            for metadata in resultados['metadatas']:
-                if 'disciplina' in metadata:
-                    disciplinas.add(metadata['disciplina'])
-        
-        return sorted(list(disciplinas))
-    
-    def listar_disciplinas_com_codigo(self):
-        """Lista todas as disciplinas com seus códigos"""
-        if not self.db:
-            raise ValueError("Banco vetorial não foi criado ou carregado")
-        
-        resultados = self.db.get()
-        disciplinas_dict = {}
-        
-        if resultados and 'metadatas' in resultados:
-            for metadata in resultados['metadatas']:
-                nome = metadata.get('disciplina')
-                codigo = metadata.get('codigo')
-                if nome and codigo and codigo != 'N/A':
-                    disciplinas_dict[nome] = codigo
-        
-        return disciplinas_dict
-    
-    def configurar_chain(self):
-        """Configura a chain RAG para consultas"""
-        template = """Você é um assistente especializado nas disciplinas da Unifesp ICT (Instituto de Ciência e Tecnologia) em São José dos Campos.
-
-Responda a pergunta baseado APENAS no seguinte contexto estruturado das disciplinas:
+    def _setup_chain(self):
+        template = """Voce e um assistente da Unifesp ICT (Instituto de Ciencia e Tecnologia) em Sao Jose dos Campos.
+Responda baseado APENAS no contexto abaixo:
 
 {context}
 
 Pergunta: {question}
 
-Instruções para responder:
-- Use EXATAMENTE as informações do contexto fornecido
-- Cite o nome da disciplina e código quando disponível
-- Para carga horária, pré-requisitos, ementa ou bibliografia, use os dados estruturados
-- Seja específico: mencione horas exatas, códigos de disciplinas, nomes de autores/livros
-- Se a informação não estiver no contexto, diga claramente "Não encontrei essa informação"
-- Organize a resposta de forma clara (use tópicos quando apropriado)
-- Se houver múltiplas disciplinas relevantes, compare-as
+Instrucoes:
+- Use as informacoes do contexto
+- Para disciplinas: cite nome, codigo, carga horaria
+- Para regimentos: cite artigo e secao
+- Se nao encontrar a informacao, diga claramente
+- Seja objetivo e direto
 
 Resposta:"""
         
         prompt = ChatPromptTemplate.from_template(template)
         
         def format_docs(docs):
-            formatted = []
+            parts = []
             for doc in docs:
-                disciplina = doc.metadata.get('disciplina', 'Disciplina desconhecida')
-                codigo = doc.metadata.get('codigo', '')
-                tipo = doc.metadata.get('tipo_conteudo', '')
-                
-                header = f"[{disciplina}"
-                if codigo and codigo != 'N/A':
-                    header += f" - Código: {codigo}"
-                if tipo:
-                    header += f" - {tipo.replace('_', ' ').title()}"
-                header += "]"
-                
-                formatted.append(f"{header}\n{doc.page_content}")
-            return "\n\n---\n\n".join(formatted)
+                tipo = doc.metadata.get('tipo_documento', 'documento')
+                if tipo == 'disciplina':
+                    header = f"[Disciplina: {doc.metadata.get('disciplina', 'N/A')} - {doc.metadata.get('secao', '')}]"
+                else:
+                    header = f"[Regimento {doc.metadata.get('resolucao', '')} - {doc.metadata.get('secao', '')}]"
+                parts.append(f"{header}\n{doc.page_content}")
+            return "\n\n---\n\n".join(parts)
         
-        self.rag_chain = (
+        self.chain = (
             {"context": self.retriever | format_docs, "question": RunnablePassthrough()}
             | prompt
             | self.llm
             | StrOutputParser()
         )
         
-        print("🔗 Chain RAG configurada")
+    def query(self, question: str) -> str:
+        if not self.chain:
+            self.sync()
+        return self.chain.invoke(question)
     
-    def consultar(self, pergunta):
-        """Faz uma consulta ao sistema RAG"""
-        if not hasattr(self, 'rag_chain'):
-            self.configurar_chain()
+    def list_sources(self) -> Dict[str, int]:
+        if not self.db:
+            self.sync()
         
-        print(f"\n❓ Pergunta: {pergunta}")
-        print("🤔 Processando...\n")
+        results = self.db.get()
+        counts = {"disciplinas": 0, "regimentos": 0}
+        seen = set()
         
-        resultado = self.rag_chain.invoke(pergunta)
-        return resultado
+        for meta in results.get('metadatas', []):
+            source = meta.get('source', '')
+            if source in seen:
+                continue
+            seen.add(source)
+            if 'disciplinas' in source:
+                counts["disciplinas"] += 1
+            elif 'regimentos' in source:
+                counts["regimentos"] += 1
+        
+        return counts
 
 
-# ====================
-# EXEMPLOS DE USO
-# ====================
-
-def exemplo_1_criar_novo_banco():
-    """Exemplo: Criar banco vetorial do zero com JSONs de disciplinas"""
-    rag = RAGUnifespJSON()
+def main():
+    rag = RAGUnifesp()
+    rag.sync()
     
-    # Carregar todos os JSONs do diretório
-    documentos = rag.carregar_jsons_diretorio("./jsons_disciplinas")
-    
-    # Processar e criar banco vetorial
-    splits = rag.processar_documentos(documentos, chunk_size=1000, chunk_overlap=200)
-    rag.criar_banco_vetorial(splits, persistir=True)
-    
-    # Configurar e fazer consultas de teste
-    rag.configurar_chain()
-    
-    print("\n" + "="*80)
-    print("🧪 TESTANDO O SISTEMA")
-    print("="*80 + "\n")
-    
-    perguntas_teste = [
-        "Qual a carga horária de Banco de Dados?",
-        "Quais são os pré-requisitos de Algoritmos e Estruturas de Dados II?",
-        "Me fale sobre a ementa de Sistemas Operacionais"
-    ]
-    
-    for pergunta in perguntas_teste:
-        resposta = rag.consultar(pergunta)
-        print(f"💬 {resposta}")
-        print("\n" + "-"*80 + "\n")
-
-def exemplo_2_usar_banco_existente():
-    """Exemplo: Usar banco vetorial já criado"""
-    rag = RAGUnifespJSON()
-    
-    # Carregar banco existente
-    rag.carregar_banco_existente()
-    
-    # Listar disciplinas disponíveis
-    print("\n📚 Disciplinas disponíveis com códigos:")
-    disciplinas_dict = rag.listar_disciplinas_com_codigo()
-    for nome, codigo in sorted(disciplinas_dict.items()):
-        print(f"  {codigo} - {nome}")
-    
-    print(f"\n📊 Total: {len(disciplinas_dict)} disciplinas\n")
-    
-    # Configurar chain
-    rag.configurar_chain()
-
-def exemplo_reiniciar_banco():
-    """Exemplo: Reiniciar banco quando você alterou os JSONs"""
-    rag = RAGUnifespJSON()
-    
-    # OPÇÃO 1: Apenas deletar o banco (você recria manualmente depois)
-    # rag.reiniciar_banco_vetorial()
-    
-    # OPÇÃO 2: Deletar E recriar automaticamente (RECOMENDADO!)
-    rag.recriar_banco_completo(diretorio_jsons="./jsons_disciplinas")
-    
-    # Agora pode usar normalmente
-    rag.configurar_chain()
-    resposta = rag.consultar("Teste com os novos campos")
-    print(resposta)
-
-def exemplo_4_modo_interativo():
-    """Exemplo: Modo interativo para fazer perguntas"""
-    rag = RAGUnifespJSON()
-    rag.carregar_banco_existente()
-    rag.configurar_chain()
-    
-    print("\n" + "="*80)
-    print("🎓 MODO INTERATIVO - Sistema RAG Unifesp ICT")
-    print("="*80)
-    print("\nDigite suas perguntas sobre as disciplinas.")
-    print("Digite 'sair' para encerrar, 'disciplinas' para listar todas.")
-    print("Digite 'reiniciar' para recriar o banco vetorial.\n")
+    print("\nSistema RAG Unifesp ICT")
+    print("Comandos: 'sair', 'sync', 'status'\n")
     
     while True:
-        pergunta = input("❓ Você: ").strip()
-        
-        if pergunta.lower() in ['sair', 'exit', 'quit']:
-            print("\n👋 Até logo!")
+        try:
+            pergunta = input("Pergunta: ").strip()
+        except (KeyboardInterrupt, EOFError):
             break
-        
-        if pergunta.lower() == 'disciplinas':
-            disciplinas = rag.listar_disciplinas()
-            print(f"\n📚 {len(disciplinas)} disciplinas disponíveis:")
-            for i, disc in enumerate(disciplinas, 1):
-                print(f"  {i}. {disc}")
-            print()
-            continue
-        
-        if pergunta.lower() == 'reiniciar':
-            print("\n🔄 Você quer reiniciar o banco vetorial.")
-            diretorio = input("Digite o diretório dos JSONs [./jsons_disciplinas]: ").strip()
-            if not diretorio:
-                diretorio = "./jsons_disciplinas"
-            
-            if rag.recriar_banco_completo(diretorio):
-                rag.configurar_chain()
-                print("\n✅ Banco reiniciado! Continue fazendo perguntas.\n")
-            else:
-                print("\n❌ Falha ao reiniciar. Continuando com banco atual.\n")
-            continue
         
         if not pergunta:
             continue
         
-        try:
-            resposta = rag.consultar(pergunta)
-            print(f"\n🤖 Assistente: {resposta}\n")
-        except Exception as e:
-            print(f"\n❌ Erro: {e}\n")
+        if pergunta.lower() in ['sair', 'exit', 'quit']:
+            break
+        
+        if pergunta.lower() == 'sync':
+            rag.sync(force=True)
+            continue
+        
+        if pergunta.lower() == 'status':
+            counts = rag.list_sources()
+            print(f"Disciplinas: {counts['disciplinas']}, Regimentos: {counts['regimentos']}")
+            continue
+        
+        resposta = rag.query(pergunta)
+        print(f"\n{resposta}\n")
 
 
 if __name__ == "__main__":
-    # Descomente o exemplo que quiser executar:
-    
-    # 1. PRIMEIRA VEZ: Criar o banco vetorial a partir dos JSONs
-    # exemplo_1_criar_novo_banco()
-    
-    # 2. CONSULTAS NORMAIS: Usar banco já criado
-    # exemplo_2_usar_banco_existente()
-    
-    # 3. REINICIAR: Quando você alterou os JSONs (NOVO!)
-    # exemplo_reiniciar_banco()
-    
-    # 4. MODO INTERATIVO: Perguntas em tempo real (com opção de reiniciar)
-    exemplo_4_modo_interativo()
-    
-    print("""
-    🎓 Sistema RAG Unifesp ICT - Disciplinas (JSON)
-    
-    ══════════════════════════════════════════════════════════════
-    
-    🔄 REINICIAR BANCO (QUANDO VOCÊ ALTEROU OS JSONs):
-    
-    rag = RAGUnifespJSON()
-    
-    # Deletar E recriar automaticamente
-    rag.recriar_banco_completo(diretorio_jsons="./jsons_disciplinas")
-    
-    # Ou apenas deletar (você recria depois)
-    rag.reiniciar_banco_vetorial()
-    
-    ══════════════════════════════════════════════════════════════
-    
-    📋 GUIA DE USO:
-    
-    1️⃣  PRIMEIRA VEZ - Criar o banco vetorial:
-       exemplo_1_criar_novo_banco()
-    
-    2️⃣  USO NORMAL - Consultas rápidas:
-       exemplo_2_usar_banco_existente()
-    
-    3️⃣  REINICIAR - Alterou os JSONs? (NOVO!)
-       exemplo_reiniciar_banco()
-    
-    4️⃣  MODO INTERATIVO - Chat com opção de reiniciar:
-       exemplo_4_modo_interativo()
-    
-    ══════════════════════════════════════════════════════════════
-    """)
+    main()
