@@ -1,0 +1,2093 @@
+{
+  "documento": {
+    "tipo": "projeto_pedagogico",
+    "instituicao": "Universidade Federal de São Paulo",
+    "campus": "São José dos Campos",
+    "curso": "Bacharelado em Ciência da Computação",
+    "ano_reformulacao": 2023,
+    "data_homologacao": "novembro de 2022"
+  },
+  "dados_institucionais": {
+    "mantenedora": "Universidade Federal de São Paulo",
+    "lei_criacao": "Lei 8.957, de 15 de dezembro de 1994",
+    "missao": "Formar profissionais e cidadãos conscientes, críticos e tecnicamente habilitados, nas mais diversas áreas, preparados para transformar a realidade e desenvolver o país, na construção de uma sociedade mais justa, democrática, plural e sustentável",
+    "campi": 7,
+    "regioes_atuacao": [
+      "Grande São Paulo",
+      "Baixada Santista",
+      "São José dos Campos"
+    ]
+  },
+  "dados_curso": {
+    "nome": "Bacharelado em Ciência da Computação",
+    "grau": "Bacharelado",
+    "codigo_curso": "BCC",
+    "forma_ingresso": "Progressão Pós Bacharelado Interdisciplinar (BCT)",
+    "vagas_totais": 50,
+    "turno": "Período integral (segunda a sábado)",
+    "carga_horaria_total": 3204,
+    "unidade_carga_horaria": "horas",
+    "regime": "matrícula por unidade curricular; semestral",
+    "tempo_integralizacao": {
+      "minimo": "08 semestres (a partir do BCT)",
+      "maximo": "conforme art. 120 do regimento interno da Pró-reitora de Graduação"
+    },
+    "situacao_legal": {
+      "autorizacao": {
+        "portaria": "355",
+        "dou": "14/03/2008",
+        "resolucao_consu": "43, de 04/07/2007"
+      },
+      "reconhecimento": {
+        "portaria": "SERES/MEC N° 516",
+        "data": "15/10/2013",
+        "dou": "16/10/2013"
+      },
+      "renovacao_reconhecimento": {
+        "portaria": "SERES/MEC nº 921",
+        "data": "27/12/2018",
+        "dou": "28/12/2018"
+      }
+    },
+    "endereco": "Av. Cesare Monsueto Giulio Lattes, 1201 – Eugenio de Mello, São José dos Campos SP. CEP: 12247-014",
+    "avaliacoes": {
+      "cpc_2017": 4,
+      "cc_2012": 4,
+      "enade_2021": 5
+    }
+  },
+  "historico": {
+    "universidade": {
+      "origem": "Escola Paulista de Medicina (EPM)",
+      "fundacao_epm": "junho de 1933",
+      "transformacao_unifesp": 1994,
+      "expansao_reuni": 2005,
+      "descricao": "A Unifesp surgiu da Escola Paulista de Medicina. Em 1956, tornou-se pública e gratuita. Em 1994, transformou-se em universidade. A partir de 2005, iniciou processo de expansão através do REUNI."
+    },
+    "campus_sjc": {
+      "inicio_atividades": 2007,
+      "instituto": "Instituto de Ciência e Tecnologia (ICT)",
+      "cursos_graduacao": [
+        "Bacharelado em Biotecnologia",
+        "Bacharelado em Ciência da Computação",
+        "Bacharelado em Engenharia Biomédica",
+        "Bacharelado em Engenharia de Computação",
+        "Bacharelado em Engenharia de Materiais",
+        "Bacharelado Interdisciplinar em Ciência e Tecnologia",
+        "Bacharelado em Matemática Computacional"
+      ],
+      "programas_pos_graduacao": [
+        "Mestrado/Doutorado em Biotecnologia",
+        "Mestrado/Doutorado em Ciência da Computação",
+        "Mestrado/Doutorado em Engenharia e Ciências de Materiais",
+        "Mestrado profissional em Matemática (PROFMAT)",
+        "Mestrado em Matemática Aplicada",
+        "Mestrado Profissional Interdisciplinar em Inovação Tecnológica",
+        "Mestrado em Engenharia Biomédica",
+        "Mestrado/Doutorado em Pesquisa Operacional"
+      ]
+    },
+    "curso_bcc": {
+      "primeiro_curso_campus": true,
+      "inicio_planejamento": 2005,
+      "primeira_turma": 2007,
+      "vagas_iniciais": {
+        "2007": "50 vagas anuais no período noturno",
+        "2008": "50 vagas adicionais no período vespertino",
+        "2011": "50 vagas período integral (vespertino redirecionado ao BCT)",
+        "2013": "50 vagas noturno redirecionadas ao BCT noturno"
+      },
+      "corpo_docente_atual": "aproximadamente 25 professores ligados diretamente à área da computação",
+      "vinculo_pos_graduacao": "aproximadamente 80% dos docentes ligados ao PPGCC"
+    }
+  },
+  "perfil_curso": {
+    "caracterizacao": "Curso com a computação como atividade-fim, visa à formação de recursos humanos para o desenvolvimento científico e tecnológico da computação",
+    "adequacao_diretrizes": "Resolução nº 5, de 16 de novembro de 2016 - MEC/CNE/CES",
+    "essencia_profissional": "Resolver problemas com domínio de vários aspectos da computação",
+    "caracteristicas_desejadas": [
+      "Capacidade de analisar e modelar problemas",
+      "Adoção de técnicas adequadas para soluções",
+      "Criatividade e curiosidade",
+      "Raciocínio lógico e bom senso",
+      "Capacidade de absorver novas tecnologias"
+    ],
+    "diferenciais": {
+      "organizacao_interdisciplinar": "Incentiva o diálogo entre diferentes áreas de conhecimento",
+      "formacao_extensionista": "Estimula desenvolvimento integral do aluno como cidadão crítico",
+      "localizacao_parque_tecnologico": "Instalado no Parque Tecnológico de São José dos Campos desde 2014, com mais de 20 empresas e instituições de ensino"
+    },
+    "contexto_regional": {
+      "regiao": "Vale do Paraíba",
+      "principais_cidades": [
+        "São José dos Campos",
+        "Taubaté",
+        "Jacareí",
+        "Pindamonhangaba",
+        "Guaratinguetá"
+      ],
+      "sjc_populacao_2017": 703219,
+      "sjc_ranking_populacao": {
+        "estado_sp": "6ª cidade mais populosa",
+        "brasil": "26ª cidade mais populosa"
+      },
+      "sjc_economia": {
+        "pib_ranking_brasil_2013": "19º",
+        "pib_ranking_sp_2013": "8º",
+        "pib_per_capita_2013": "pouco mais de 40 mil Reais",
+        "exportacoes_2017": "US$ 4 bilhões",
+        "ranking_exportacao_sp": "2ª maior cidade exportadora",
+        "ranking_exportacao_brasil": "6ª maior exportadora"
+      },
+      "empresas_principais": [
+        "Embraer",
+        "Refinaria Henrique Lage (Revap/Petrobras)",
+        "General Motors",
+        "Monsanto",
+        "Johnson & Johnson",
+        "Panasonic",
+        "Johnson Controls",
+        "Eaton",
+        "Parker Hannifin"
+      ],
+      "instituicoes_pesquisa": [
+        "Instituto Nacional de Pesquisas Espaciais (INPE)",
+        "Departamento de Ciência e Tecnologia Aeroespacial (DCTA)"
+      ],
+      "caracterizacao_polo": "Um dos maiores polos nacionais em tecnologia e engenharia, especialmente nos setores aeronáutico, de telecomunicações, automobilístico, químico-farmacêutico e de petróleo"
+    }
+  },
+  "pressupostos_pedagogicos": {
+    "epistemologicos": {
+      "abordagem": "Participação ativa do aluno no processo de ensino-aprendizagem",
+      "construcao_conhecimento": "Pela interação sujeito-objeto, pela relação de diálogo entre professor e aluno, pela reflexão e ação crítica do aluno sobre o seu contexto",
+      "interdisciplinaridade": "Diálogo entre diferentes saberes, em contraposição aos saberes compartimentados",
+      "justificativa_interdisciplinaridade": "Complexidade dos problemas atuais exige integração de diferentes áreas de conhecimento"
+    },
+    "didatico_pedagogicos": {
+      "papel_aluno": "Ativo no processo de ensino-aprendizagem",
+      "papel_professor": [
+        "Envolvimento no processo de ensino-aprendizagem",
+        "Quebra de barreiras entre disciplinas",
+        "Promoção de interdisciplinaridade",
+        "Ir além da aula expositiva"
+      ],
+      "atividades_recomendadas": [
+        "Visitas orientadas",
+        "Pesquisas em biblioteca e bases de dados digitais",
+        "Debates e seminários",
+        "Contato com profissionais do mercado",
+        "Interação com pesquisadores",
+        "Intercâmbio com alunos de outras instituições"
+      ]
+    },
+    "metodologicos": {
+      "pilares_conhecimento_unesco": [
+        "Aprender a conhecer",
+        "Aprender a fazer",
+        "Aprender a viver juntos",
+        "Aprender a ser"
+      ],
+      "declaracao_educacao_superior_1998": {
+        "foco": "Centrado no estudante",
+        "necessidades": "Reforma profunda e mudança de políticas de acesso",
+        "novos_metodos": [
+          "Facilitação de aquisição de conhecimentos práticos",
+          "Desenvolvimento de competências e habilidades para comunicação",
+          "Análise criativa e crítica",
+          "Reflexão independente",
+          "Trabalho em equipe em contextos multiculturais"
+        ]
+      },
+      "principios_avaliacao": {
+        "tipo": "Processo contínuo",
+        "finalidade": "Diagnóstica e formativa",
+        "formas": [
+          "Atividades individuais",
+          "Trabalhos em grupo",
+          "Exercícios",
+          "Assiduidade",
+          "Postura profissional ética e cidadã"
+        ],
+        "alcance": "Retroalimentação para gestores, professores, alunos e servidores"
+      }
+    }
+  },
+  "objetivos": {
+    "geral": "Formar profissionais com sólidos fundamentos em computação e matemática, especialmente em desenvolvimento de sistemas de propósito geral, capazes de atuar livremente em diferentes áreas e enfrentar os desafios das rápidas transformações da sociedade, do mercado de trabalho e das condições de exercício profissional",
+    "especificos": [
+      "Capacitar profissionais com sólidos conhecimentos em subáreas tradicionais e modernas da Ciência da Computação",
+      "Fornecer formação voltada tanto para área acadêmica como profissional",
+      "Desenvolver capacidade de elaboração de documentos técnico/científicos através do TCC",
+      "Proporcionar formação em metodologia científica"
+    ],
+    "subareas_formacao": [
+      "Projeto e Análise de Algoritmos",
+      "Estruturas de Dados",
+      "Programação Orientada a Objetos",
+      "Engenharia de Software",
+      "Inteligência Artificial",
+      "Teoria de Grafos",
+      "Computação Gráfica",
+      "Circuitos Digitais",
+      "Arquitetura e Organização de Computadores",
+      "Programação Concorrente e Distribuída",
+      "Sistemas Operacionais",
+      "Compiladores",
+      "Redes de Computadores"
+    ]
+  },
+  "perfil_egresso": {
+    "areas_atuacao": [
+      "Áreas industrial e comercial",
+      "Ensino",
+      "Prestação de serviços",
+      "Desenvolvimento científico e tecnológico",
+      "Empreendedorismo (criação de empresa própria)"
+    ],
+    "carreira_academica": {
+      "possibilidades": [
+        "Especialização",
+        "Mestrado",
+        "Doutorado"
+      ],
+      "atuacao": [
+        "Pesquisa na indústria",
+        "Centros de pesquisa",
+        "Instituições de ensino superior"
+      ],
+      "contribuicoes_potenciais": [
+        "Desenvolvimento de novas drogas farmacêuticas",
+        "Avanços na previsão do tempo",
+        "Sistemas para entendimento do Ser Humano",
+        "Transformação de campos como matemática, estatística, biologia, economia, física"
+      ]
+    },
+    "competencias_tecnicas": [
+      {
+        "id": 1,
+        "descricao": "Construir aplicativos de propósito geral, ferramentas e infraestrutura de software de sistemas de computação e de sistemas embarcados"
+      },
+      {
+        "id": 2,
+        "descricao": "Gerar conhecimento científico e inovação e estender competências à medida que a área se desenvolve"
+      },
+      {
+        "id": 3,
+        "descricao": "Adquirir visão sistêmica, global e interdisciplinar de sistemas"
+      },
+      {
+        "id": 4,
+        "descricao": "Conhecer a estrutura dos sistemas de computação e os processos envolvidos na sua construção e análise"
+      },
+      {
+        "id": 5,
+        "descricao": "Dominar os fundamentos teóricos da área de Computação e como eles influenciam a prática profissional"
+      },
+      {
+        "id": 6,
+        "descricao": "Agir de forma reflexiva na construção de sistemas de computação, compreendendo o seu impacto direto ou indireto sobre as pessoas e a sociedade"
+      },
+      {
+        "id": 7,
+        "descricao": "Reconhecer o caráter fundamental da inovação e da criatividade, compreendendo as perspectivas de negócios e oportunidades relevantes"
+      },
+      {
+        "id": 8,
+        "descricao": "Criar soluções, individualmente ou em equipe, para problemas complexos caracterizados por relações entre domínios de conhecimento e de aplicação"
+      },
+      {
+        "id": 9,
+        "descricao": "Operar eficientemente equipamentos computacionais e sistemas de software"
+      },
+      {
+        "id": 10,
+        "descricao": "Integrar e projetar sistemas que integrem hardware e software"
+      },
+      {
+        "id": 11,
+        "descricao": "Avaliar prazos e custos em projetos de software"
+      },
+      {
+        "id": 12,
+        "descricao": "Utilizar princípios e ferramentas que aperfeiçoem o processo de desenvolvimento"
+      },
+      {
+        "id": 13,
+        "descricao": "Implementar projetos de software com um alto grau de qualidade"
+      }
+    ],
+    "habilidades_gerais": [
+      "Trabalho em equipe",
+      "Criatividade e inovação para solução de problemas",
+      "Visão do negócio envolvido no desenvolvimento de projetos",
+      "Aprender e transmitir conhecimentos",
+      "Conciliar teoria e prática",
+      "Adaptação às mudanças e evolução da área",
+      "Concentração, paciência, dedicação e persistência",
+      "Raciocínio lógico e abstrato",
+      "Interesse para desvendar novas possibilidades",
+      "Capacidade de análise e síntese"
+    ]
+  },
+  "organizacao_curricular": {
+    "nucleos": [
+      {
+        "nome": "Núcleo básico do BCT",
+        "tipo": "Fixas do BCT",
+        "carga_horaria_minima": 684,
+        "unidades_curriculares": [
+          "Cálculo em Uma Variável",
+          "Ciência, Tecnologia e Sociedade",
+          "Ciência, Tecnologia, Sociedade e Meio Ambiente",
+          "Fenômenos Mecânicos",
+          "Fundamentos de Biologia Moderna",
+          "Lógica de Programação",
+          "Química Geral",
+          "Unidades Curriculares Interdisciplinares Extensionistas"
+        ]
+      },
+      {
+        "nome": "Núcleo obrigatório de Formação específica em Ciência da Computação",
+        "tipo": "Fixas do BCC",
+        "carga_horaria_minima": 1800,
+        "unidades_curriculares": [
+          "Álgebra Linear",
+          "Algoritmos e Estruturas de Dados I",
+          "Algoritmos e Estruturas de Dados II",
+          "Matemática Discreta",
+          "Linguagens Formais e Autômatos",
+          "Probabilidade e Estatística",
+          "Programação Concorrente e Distribuída",
+          "Programação Orientada a Objetos",
+          "Projeto e Análise de algoritmos",
+          "Projeto Orientado a Objetos",
+          "Redes de Computadores",
+          "Séries e equações diferenciais ordinárias",
+          "Sistemas Operacionais",
+          "Teoria dos Grafos",
+          "Interface Humano-Computador e Experiência do Usuário (UX)"
+        ]
+      },
+      {
+        "nome": "Núcleo de Eletivas para formação específica em Ciência da Computação",
+        "grupos": [
+          {
+            "grupo": 1,
+            "nome": "Eletivas Limitadas da Ciência da Computação",
+            "carga_horaria_minima": 216,
+            "exemplos": [
+              "Aprendizado de Máquina e Reconhecimento de Padrões",
+              "Aspectos de Implementação de Bancos de Dados",
+              "Fenômenos Eletromagnéticos",
+              "Introdução a Pesquisa Operacional",
+              "Introdução às Redes Neurais Artificiais",
+              "Paradigmas de Programação",
+              "Processamento de Imagens",
+              "Programação Paralela e Processamento de Alto Desempenho",
+              "Realidade Virtual e Aumentada",
+              "Segurança Computacional",
+              "Sistemas Distribuídos",
+              "Validação e Verificação de Software"
+            ]
+          },
+          {
+            "grupo": 2,
+            "nome": "Eletivas de Matemática e Computação",
+            "carga_horaria_minima": 144,
+            "exemplos": [
+              "Álgebra Linear Computacional",
+              "Álgebra Linear II",
+              "Algoritmos Avançados",
+              "Algoritmos em Bioinformática",
+              "Análise de Sinais",
+              "Análise Real I",
+              "Bioinformática Avançada",
+              "Computação Bioinspirada",
+              "Desenvolvimento de Aplicações Robóticas",
+              "Introdução à Lógica Fuzzy",
+              "Laboratório de Eletrônica Digital",
+              "Sistemas Embarcados",
+              "Teoria dos Números e Criptografia",
+              "Tópicos em Fundamentos da Computação I, II, III, IV e V",
+              "Tópicos em Tecnologia da Computação I, II, III, IV e V"
+            ]
+          },
+          {
+            "grupo": 3,
+            "nome": "Eletivas das Ciências Humanas, Econômicas e Sociais",
+            "carga_horaria_minima": 36,
+            "exemplos": [
+              "Alteridade e diversidade no Brasil: implicações para Política de Ciência e Tecnologia",
+              "Análise de Investimentos e Riscos",
+              "Cidadania, Ciência e Polêmica",
+              "Cultura Digital",
+              "Cultura dos Jogos Digitais",
+              "Direitos Humanos, Multiculturalismo e C&T",
+              "Empreendedorismo",
+              "Gestão da Inovação",
+              "Gestão de Projetos",
+              "Introdução à Economia Global",
+              "Marketing Estratégico",
+              "Metodologia da Pesquisa e Comunicação Científica",
+              "Política Científica e Tecnológica",
+              "Relações Étnico-Raciais e Cultura Afro-Brasileira e Indígena",
+              "Tecnologia e Meio Ambiente",
+              "Tecnologia Social: Práxis e Contrahegemonia"
+            ]
+          },
+          {
+            "grupo": 4,
+            "nome": "Eletiva Extensionista",
+            "carga_horaria_minima": 36,
+            "carga_horaria_extensao_minima": 15,
+            "exemplos": [
+              "Internet das Coisas (36 horas de extensão)",
+              "Desenvolvimento de Games (36 horas de extensão)",
+              "Sistemas Embarcados (16 horas de extensão)",
+              "Qualquer UC ofertada na UNIFESP com carga horária mínima de 15h em extensão"
+            ]
+          }
+        ]
+      }
+    ],
+    "trabalhos_conclusao_curso": {
+      "carga_horaria_total": 144,
+      "tcc_i": 72,
+      "tcc_ii": 72
+    },
+    "atividades_complementares": 144,
+    "carga_horaria_total_curso": 3204,
+    "curricularizacao_extensao": {
+      "exigencia_minima": "10% da carga horária total (321 horas)",
+      "base_legal": [
+        "Resolução CNE/CES nº 7 de 2018",
+        "Resolução CONSU nº 139 de 2017",
+        "Resolução CONSU nº 192 de 2021"
+      ],
+      "distribuicao": {
+        "ucs_fixas_extensao": 94,
+        "ucs_eletivas_interdisciplinares_extensionistas": 216,
+        "eletiva_extensionista_grupo4": 36
+      }
+    }
+  },
+  "matriz_curricular": {
+    "organizacao": "Por termos/semestres",
+    "credito_equivalencia": "1 crédito = 18 horas",
+    "semestres": [
+      {
+        "termo": 1,
+        "disciplinas": [
+          {
+            "nome": "Cálculo em uma variável",
+            "creditos": 6,
+            "carga_horaria": 108,
+            "tipo": "BCT Fixa"
+          },
+          {
+            "nome": "Ciência Tecnologia e Sociedade",
+            "creditos": 2,
+            "carga_horaria": 36,
+            "tipo": "BCT Fixa"
+          },
+          {
+            "nome": "Lógica de Programação",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCT Fixa"
+          },
+          {
+            "nome": "Química Geral",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCT Fixa"
+          },
+          {
+            "nome": "Fundamentos da Biologia Moderna",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCT Fixa"
+          }
+        ],
+        "total_creditos": 20
+      },
+      {
+        "termo": 2,
+        "disciplinas": [
+          {
+            "nome": "Fenômenos Mecânicos",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCT Fixa"
+          },
+          {
+            "nome": "Ciência, Tecnologia, Sociedade e Ambiente",
+            "creditos": 2,
+            "carga_horaria": 36,
+            "tipo": "BCT Fixa"
+          },
+          {
+            "nome": "Séries e Equações Diferenciais",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Cálculo em Uma Variável"
+            ]
+          },
+          {
+            "nome": "Matemática Discreta",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa"
+          },
+          {
+            "nome": "Algoritmos e Estruturas de Dados I",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Lógica de Programação"
+            ]
+          },
+          {
+            "nome": "Geometria Analítica",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa"
+          }
+        ],
+        "total_creditos": 22
+      },
+      {
+        "termo": 3,
+        "disciplinas": [
+          {
+            "nome": "Interdisciplinar Extensionista",
+            "creditos": 2,
+            "carga_horaria": 36,
+            "carga_horaria_extensao": 36,
+            "tipo": "Eletiva Extensionista"
+          },
+          {
+            "nome": "Probabilidade e Estatística",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "carga_horaria_extensao": 18,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Cálculo em Uma Variável"
+            ]
+          },
+          {
+            "nome": "Cálculo em Várias Variáveis",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Cálculo em Uma Variável",
+              "Geometria Analítica"
+            ]
+          },
+          {
+            "nome": "Circuitos Digitais",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "carga_horaria_extensao": 20,
+            "tipo": "BCC Fixa"
+          },
+          {
+            "nome": "Algoritmos e Estruturas de Dados II",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Algoritmos e Estruturas de Dados I"
+            ]
+          },
+          {
+            "nome": "Álgebra Linear",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Geometria Analítica"
+            ]
+          }
+        ],
+        "total_creditos": 22
+      },
+      {
+        "termo": 4,
+        "disciplinas": [
+          {
+            "nome": "Interdisciplinar Extensionista",
+            "creditos": 2,
+            "carga_horaria": 36,
+            "carga_horaria_extensao": 36,
+            "tipo": "Eletiva Extensionista"
+          },
+          {
+            "nome": "Banco de Dados",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "carga_horaria_extensao": 16,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Algoritmos e Estruturas de Dados I"
+            ]
+          },
+          {
+            "nome": "Programação Orientada a Objetos",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Algoritmos e Estruturas de Dados I"
+            ]
+          },
+          {
+            "nome": "Arquitetura e Organização de Computadores",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Lógica de Programação",
+              "Circuitos Digitais"
+            ]
+          },
+          {
+            "nome": "Projeto e Análise de Algoritmos",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Matemática Discreta",
+              "Algoritmos e Estruturas de Dados II"
+            ]
+          },
+          {
+            "nome": "Cálculo Numérico",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Cálculo em Uma Variável",
+              "Geometria Analítica"
+            ]
+          }
+        ],
+        "total_creditos": 22
+      },
+      {
+        "termo": 5,
+        "disciplinas": [
+          {
+            "nome": "Interdisciplinar Extensionista",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "carga_horaria_extensao": 72,
+            "tipo": "Eletiva Extensionista"
+          },
+          {
+            "nome": "Inteligência Artificial",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "carga_horaria_extensao": 8,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Algoritmos e Estruturas de Dados I"
+            ]
+          },
+          {
+            "nome": "Projeto Orientado a Objetos",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Programação Orientada a Objetos"
+            ]
+          },
+          {
+            "nome": "Linguagens Formais e Autômatos",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Matemática Discreta",
+              "Lógica de Programação"
+            ]
+          },
+          {
+            "nome": "Teoria dos Grafos",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Projeto e Análise de Algoritmos"
+            ]
+          },
+          {
+            "nome": "Sistemas Operacionais",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Algoritmos e Estruturas de Dados I"
+            ]
+          }
+        ],
+        "total_creditos": 24
+      },
+      {
+        "termo": 6,
+        "disciplinas": [
+          {
+            "nome": "Interdisciplinar Extensionista",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "carga_horaria_extensao": 72,
+            "tipo": "Eletiva Extensionista"
+          },
+          {
+            "nome": "Redes de Computadores",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Sistemas Operacionais"
+            ]
+          },
+          {
+            "nome": "Engenharia de Software",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "carga_horaria_extensao": 16,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Programação Orientada a Objetos"
+            ]
+          },
+          {
+            "nome": "Computação Gráfica",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Algoritmos e Estruturas de Dados I"
+            ]
+          },
+          {
+            "nome": "Programação Concorrente e Distribuída",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Sistemas Operacionais"
+            ]
+          },
+          {
+            "nome": "Compiladores",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Linguagens Formais e Autômatos"
+            ]
+          }
+        ],
+        "total_creditos": 24
+      },
+      {
+        "termo": 7,
+        "disciplinas": [
+          {
+            "nome": "TCC I",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "TCC",
+            "pre_requisitos": [
+              "Estar matriculado no curso BCC"
+            ]
+          },
+          {
+            "nome": "Interface Humano-Computador e Experiência do Usuário",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "carga_horaria_extensao": 16,
+            "tipo": "BCC Fixa",
+            "pre_requisitos": [
+              "Programação Orientada a Objetos"
+            ]
+          },
+          {
+            "nome": "Eletiva I",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "Eletiva"
+          },
+          {
+            "nome": "Eletiva II",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "Eletiva"
+          },
+          {
+            "nome": "Eletiva III",
+            "creditos": 2,
+            "carga_horaria": 36,
+            "tipo": "Eletiva"
+          }
+        ],
+        "total_creditos": 18
+      },
+      {
+        "termo": 8,
+        "disciplinas": [
+          {
+            "nome": "TCC II",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "TCC",
+            "pre_requisitos": [
+              "Trabalho de Conclusão de Curso I"
+            ]
+          },
+          {
+            "nome": "Eletiva IV",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "Eletiva"
+          },
+          {
+            "nome": "Eletiva V",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "Eletiva"
+          },
+          {
+            "nome": "Eletiva VI",
+            "creditos": 4,
+            "carga_horaria": 72,
+            "tipo": "Eletiva"
+          },
+          {
+            "nome": "Eletiva VII",
+            "creditos": 2,
+            "carga_horaria": 36,
+            "tipo": "Eletiva"
+          }
+        ],
+        "total_creditos": 18
+      }
+    ],
+    "quadro_resumo": {
+      "ucs_fixas": 2484,
+      "tcc": 144,
+      "atividades_complementares": 144,
+      "carga_horaria_total_fixa": 2772,
+      "ucs_eletivas": 432,
+      "carga_horaria_total": 3204
+    }
+  },
+  "unidades_curriculares_fixas_com_extensao": [
+    {
+      "nome": "Banco de Dados",
+      "carga_horaria_total": 72,
+      "carga_horaria_extensao": 16
+    },
+    {
+      "nome": "Circuitos Digitais",
+      "carga_horaria_total": 72,
+      "carga_horaria_extensao": 20
+    },
+    {
+      "nome": "Engenharia de Software",
+      "carga_horaria_total": 72,
+      "carga_horaria_extensao": 16
+    },
+    {
+      "nome": "Inteligência Artificial",
+      "carga_horaria_total": 72,
+      "carga_horaria_extensao": 8
+    },
+    {
+      "nome": "Interação Humano-Computador e Experiência do Usuário (UX)",
+      "carga_horaria_total": 72,
+      "carga_horaria_extensao": 16
+    },
+    {
+      "nome": "Probabilidade e Estatística",
+      "carga_horaria_total": 72,
+      "carga_horaria_extensao": 18
+    }
+  ],
+  "eletivas_interdisciplinares_extensionistas_bct": [
+    {
+      "nome": "Iniciação aos PEPICTs I",
+      "carga_horaria_total": 36,
+      "carga_horaria_extensao": 36
+    },
+    {
+      "nome": "Iniciação aos PEPICTs II",
+      "carga_horaria_total": 36,
+      "carga_horaria_extensao": 36
+    },
+    {
+      "nome": "Práticas em Projetos Extensionistas I",
+      "carga_horaria_total": 72,
+      "carga_horaria_extensao": 72
+    },
+    {
+      "nome": "Práticas em Projetos Extensionistas II",
+      "carga_horaria_total": 72,
+      "carga_horaria_extensao": 72
+    }
+  ],
+  "ementas_disciplinas_fixas": {
+    "primeiro_semestre": [
+      {
+        "codigo": "5702",
+        "nome": "Cálculo em Uma Variável",
+        "nome_ingles": "Calculus in One Variable",
+        "termo": 1,
+        "carga_horaria_total": 108,
+        "carga_horaria_teorica": 72,
+        "carga_horaria_pratica": 36,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Funções reais de uma variável. Limite e continuidade. Derivação. Integração. Aplicações.",
+        "bibliografia_basica": [
+          "GUIDORIZZI, H. L. Um curso de cálculo. v. 1. 5ª Ed. Rio De Janeiro: LTC, 2007.",
+          "LEITHOLD, L. O cálculo com geometria analítica. v. 1. 3ª ed. São Paulo: Harbra, 1990.",
+          "STEWART, J. Cálculo. v.1. 6ª ed. São Paulo: Cengage Learning, 2009."
+        ]
+      },
+      {
+        "codigo": "2672",
+        "nome": "Ciência, Tecnologia e Sociedade",
+        "nome_ingles": "Science, Technology and Society",
+        "termo": 1,
+        "carga_horaria_total": 36,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Advento do campo da CTS (Ciência, Tecnologia e Sociedade). Conceituação e definição a respeito do que é técnica e tecnologia. Ciência, tecnologia e inovação. Política científica e tecnológica. Valores e ética na prática científica. Controvérsias científicas.",
+        "bibliografia_basica": [
+          "ARANHA, Maria Lúcia de A. e MARTINS, Maria Helena P. Filosofando: Introdução à filosofia. São Paulo: Moderna, 2009.",
+          "DAGNINO, Renato. Neutralidade da ciência e determinismo tecnológico: um debate sobre a tecnociência. Campinas: UNICAMP, 2008.",
+          "CUPANI, Alberto. Filosofia da Tecnologia: um convite. Florianópolis: Ed. UFSC, 2011."
+        ]
+      },
+      {
+        "codigo": "9394",
+        "nome": "Lógica de Programação",
+        "nome_ingles": "Algorithms",
+        "termo": 1,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 42,
+        "carga_horaria_pratica": 30,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Introdução à computação; Noções de lógica; Conceitos e representação de algoritmos; Constantes e variáveis; Estruturas de controle; Vetores; Matrizes; Registros; Procedimentos, Funções com passagem de parâmetros por valor e referência; Recursividade; Introdução à linguagem de programação.",
+        "bibliografia_basica": [
+          "FORBELLONE, André L.V; EBERSPACHE, Henri F. Lógica de programação: a construção de algoritmos e estruturas de dados. 3.ed. São Paulo: Pearson, 2005.",
+          "FEOFILOFF, Paulo. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009.",
+          "MOKARZEL, Fábio; SOMA, Nei. Introdução à ciência da computação. Rio de Janeiro: Elsevier, 2008."
+        ]
+      },
+      {
+        "codigo": "5704",
+        "nome": "Química Geral",
+        "nome_ingles": "General Chemistry",
+        "termo": 1,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 72,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Noções preliminares. Estrutura do átomo e periodicidade química. Ligações químicas. Estudo dos gases. Estequiometria. Soluções. Termoquímica. Eletroquímica. Cinética química. Equilíbrios químicos. Biomoléculas.",
+        "bibliografia_basica": [
+          "ATKINS, P. W.; JONES, Loretta. Princípios de química: questionando a vida moderna e o meio ambiente. 3. ed. Porto Alegre: Bookman : Artmed, 2006.",
+          "KOTZ, John C.; TREICHEL, Paul M.; WEAVER, Gabriela C. Química geral e reações químicas: vol. 2. São Paulo: Heinle Cengage Learning, c2010.",
+          "KOTZ, John C; TREICHEL, Paul M; WEAVER, Gabriel C. Química geral e reações químicas. São Paulo: Heinle Cengage Learning, 2011."
+        ]
+      },
+      {
+        "codigo": "5703",
+        "nome": "Fundamentos de Biologia Moderna",
+        "nome_ingles": "The Bases of Modern Biology",
+        "termo": 1,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 72,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Introdução à Biologia. Bases químicas. Introdução à bioquímica. Estrutura e função das principais moléculas biológicas. Metabolismo. Estrutura da célula procariota e eucariota. Processo de replicação do DNA. Processo de transcrição do RNA. Processo de tradução de proteínas. Introdução à fisiologia.",
+        "bibliografia_basica": [
+          "ALBERTS, Bruce et al. Fundamentos da biologia celular. 2.ed. Porto Alegre: ARTMED, 2006.",
+          "Stryer, L., Tymoczko, J. L., Berg, J. M. Bioquímica. 5a ed., Ed. Guanabara-Koogan 2004.",
+          "Silverthorn, Deen Unglaub. - Fisiologia Humana – Uma Abordagem Integrada. 5a ed., Ed. Artmed 2010."
+        ]
+      }
+    ],
+    "segundo_semestre": [
+      {
+        "codigo": "4369",
+        "nome": "Fenômenos Mecânicos",
+        "nome_ingles": "Mechanical Phenomena",
+        "termo": 2,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 72,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Medição, Movimento Retilíneo, Vetores, Movimento em Duas e Três Dimensões, Força e Movimento, Energia Cinética e Trabalho, Energia Potencial e Conservação de Energia, Centro de Massa e Momento Linear, Rotação, Rolamento, Torque e Momento Angular.",
+        "bibliografia_basica": [
+          "YOUNG, Hugh D.; FREEDMAN, Roger A. Física de Sears & Zemansky: Volume I: Mecânica. Pearson, 14a Edição 2009.",
+          "KNIGHT, Randall D. Física: Uma Abordagem Estratégica: Volume 1 - Mecânica Newtoniana, Gravitação, Oscilações e Ondas. Bookman, 2a Edição 2009.",
+          "HALLIDAY, David; RESNICK, Robert; WALKER, Jearl. Fundamentos de Física, volume 1: Mecânica. LTC, 8a Edição 2009."
+        ]
+      },
+      {
+        "codigo": "5870",
+        "nome": "Ciência, Tecnologia, Sociedade e Ambiente",
+        "nome_ingles": "Science, Technology, Society and Environment",
+        "termo": 2,
+        "carga_horaria_total": 36,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Advento do campo de CTS. Política de Ciência e Tecnologia. Mudança tecnológica e inovação (o papel da pesquisa e desenvolvimento, relação entre mercado e universidade). A produção e difusão de novas tecnologias e suas considerações econômicas, culturais, políticas e éticas. Tecnologia e a questão ambiental (tecnologias alternativas, educação ambiental).",
+        "bibliografia_basica": [
+          "TRIGUEIRO, Michelangelo. Sociologia da Tecnologia: bioprospecção e legitimação. São Paulo: Centauro, 2009.",
+          "HOFFMANN, Wanda Aparecida Machado. Ciência, tecnologia e sociedade: desafios da construção do conhecimento. São Carlos: EDUFSCar, 2011.",
+          "MOWERY, David D. e ROSENBERG Nathan. Trajetórias da Inovação. Campinas: Editora Unicamp, 2005."
+        ]
+      },
+      {
+        "codigo": "4328",
+        "nome": "Séries e Equações Diferenciais Ordinárias",
+        "nome_ingles": "Series and Ordinary Differential Equations",
+        "termo": 2,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 62,
+        "carga_horaria_pratica": 10,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "5702 - Cálculo em Uma Variável",
+        "ementa": "Sequências e séries numéricas. Séries de Fourier. Equações diferenciais ordinárias.",
+        "bibliografia_basica": [
+          "BOYCE, W. E.; DIPRIMA, R. C. Equações diferenciais elementares e problemas de valores de contorno. 8a ed. Rio de Janeiro:LTC, 2006.",
+          "GUIDORIZZI, H. L. Um curso de cálculo. v. 4. 5a Ed. Rio De Janeiro:LTC, 2007.",
+          "STEWART, J. Cálculo. v.2. 6a ed. São Paulo:Cengage Learning, 2009."
+        ]
+      },
+      {
+        "codigo": "2201",
+        "nome": "Matemática Discreta",
+        "nome_ingles": "Discrete Mathematics",
+        "termo": 2,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 72,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Técnicas de demonstração. Demonstrações com inteiros. Demonstrações com conjuntos. Princípios de contagem. Aplicações.",
+        "bibliografia_basica": [
+          "ALENCAR FILHO, E. Iniciação a lógica matemática. 21. ed. São Paulo: Nobel, 2008.",
+          "ROSEN, K. H. Matemática discreta e suas aplicações. 6. ed. São Paulo: McGraw-Hill, 2009.",
+          "SCHEINERMAN, E. R. Matemática discreta: uma introdução. São Paulo: Cengage Learning, 2011."
+        ]
+      },
+      {
+        "codigo": "2832",
+        "nome": "Algoritmos e Estruturas de Dados I",
+        "nome_ingles": "Algorithms and Data Structures I",
+        "termo": 2,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 36,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "9394 - Lógica de Programação",
+        "ementa": "Alocação dinâmica e ponteiros; Arquivos; Introdução à notação assintótica; Tipos abstratos de dados: conceitos, operações, representações, manipulação, listas, pilhas e filas. Estruturas de representação de grafos (matriz de adjacência e de incidência). Estruturas para representação de árvores. Árvores binárias e suas aplicações.",
+        "bibliografia_basica": [
+          "TENENBAUM, Aaron M; MAYER, Roberto C; SOUZA, Teresa C.f; AUGENSTEIN, Moshe J; LANGSAM, Yedidyah. Estruturas de dados usando C. São Paulo: Pearson, 2008.",
+          "CORMEN, Thomas H; SOUZA, Vanderberg D; STEIN, Clifford; RIVEST, Ronald L; LEISERSON, Charles E. Algoritmos: teoria e prática. Rio de Janeiro: Campus, 2002.",
+          "ZIVIANI, Nivio. Projeto de algoritmos: com implementações em PASCAL e C. 3 ed. rev. e ampl. São Paulo: Heinle Cengage Learning, 2011."
+        ]
+      },
+      {
+        "codigo": "2650",
+        "nome": "Geometria Analítica",
+        "nome_ingles": "Analytical Geometry",
+        "termo": 2,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 64,
+        "carga_horaria_pratica": 8,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Não há",
+        "ementa": "Sistemas lineares. Vetores, operações. Dependência e independência linear, bases, sistemas de coordenadas. Distância, norma e ângulo. Produtos escalar, vetorial e misto. Retas no plano e no espaço. Planos. Posições relativas, interseções, distâncias e ângulos. Círculo e esfera. Coordenadas polares, cilíndricas e esféricas. Cônicas e quádricas, classificação.",
+        "bibliografia_basica": [
+          "CAMARGO, I.; BOULOS, P. Geometria analítica: um Tratamento Vetorial. 3a ed. São Paulo: Pearson, 2005",
+          "SANTOS, R. J. Matrizes, vetores e geometria analítica. Belo Horizonte: Imprensa Universitária da UFMG, 2012.",
+          "WINTERLE, P. Vetores e geometria analítica. São Paulo: Pearson, 2000."
+        ]
+      }
+    ],
+    "terceiro_semestre": [
+      {
+        "codigo": "2609",
+        "nome": "Probabilidade e Estatística",
+        "nome_ingles": "Probability and Statistics",
+        "termo": 3,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 54,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 18,
+        "pre_requisitos": "5702 - Cálculo em Uma Variável",
+        "ementa": "Estatística descritiva. Probabilidade: conceito e teoremas fundamentais. Variáveis aleatórias. Distribuição de probabilidade. Estimação pontual e intervalar. Teste de hipóteses. Análise de variância.",
+        "bibliografia_basica": [
+          "BUSSAB, W. O.; MORETTIN, P. A. Estatística básica. 6. ed. São Paulo:Saraiva, 2010.",
+          "MAGALHÃES, M. N.; LIMA, A. C. P. Noções de probabilidade e estatística. 7. ed. São Paulo:EDUSP, 2010.",
+          "MONTGOMERY, D. C.; RUNGER, G. C. Estatística aplicada e probabilidade para engenheiros. 2. ed. Rio de Janeiro:LTC, 2008."
+        ]
+      },
+      {
+        "codigo": "5359",
+        "nome": "Cálculo em Várias Variáveis",
+        "nome_ingles": "Calculus in Several Variables",
+        "termo": 3,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 62,
+        "carga_horaria_pratica": 10,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "5702 - Cálculo em Uma Variável; 2650 - Geometria Analítica",
+        "ementa": "Cálculo para funções de várias variáveis: limite, continuidade, derivação, integração e campos vetoriais.",
+        "bibliografia_basica": [
+          "GUIDORIZZI, H. L. Um curso de cálculo. v. 2. 5ª Ed. Rio De Janeiro: LTC, 2007.",
+          "GUIDORIZZI, H. L. Um curso de cálculo. v. 3. 5ª Ed. Rio De Janeiro: LTC, 2007.",
+          "STEWART, J. Cálculo. v.2. 6ª ed. São Paulo: Cengage Learning, 2009."
+        ]
+      },
+      {
+        "codigo": "3518",
+        "nome": "Circuitos Digitais",
+        "nome_ingles": "Digital Systems",
+        "termo": 3,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 52,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 20,
+        "pre_requisitos": "Não há",
+        "ementa": "Sistemas de Numeração. Funções Lógicas, Álgebra Booleana e Portas lógicas. Simplificação de funções booleanas. Circuitos Combinacionais: conversores, decodificadores, multiplexadores, demultiplexadores e geradores de paridade. Circuitos Combinacionais Aritméticos: somadores, subtratores, multiplicadores e comparadores de magnitude. Circuitos Sequenciais: latches, flip flops e registradores. Máquinas de estados finitos: Moore e Mealy. Projeto de Circuitos Combinacionais e Sequenciais. Introdução às aplicações de Circuitos Digitais.",
+        "bibliografia_basica": [
+          "TOCCI, Ronald J; WIDMER, Neal S; MOSS, Gregory L. Sistemas digitais: princípios e aplicações. 11.ed. São Paulo: Pearson, 2011.",
+          "IDOETA, Ivan Valeije; CAPUANO, Francisco Gabriel. Elementos de eletrônica digital. 40. ed. São Paulo: Érica, 2007.",
+          "LOURENÇO, Antonio Carlos de; CRUZ, Eduardo Cesar Alves; FERREIRA, Sabrina Rodero; CHOUERI JUNIOR, Salomão. Circuitos digitais. 9. ed. São Paulo: Érica, 2007."
+        ]
+      },
+      {
+        "codigo": "2833",
+        "nome": "Algoritmos e Estruturas de Dados II",
+        "nome_ingles": "Algorithms and Data Structures II",
+        "termo": 3,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 46,
+        "carga_horaria_pratica": 26,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2832 - Algoritmos e Estruturas de Dados I",
+        "ementa": "Métodos de ordenação interna: quadrático, n log n, linear e outros. Métodos de pesquisa interna: sequencial, busca binária, árvores de pesquisa. Balanceamento de árvores. Algoritmos em grafos (busca em largura, profundidade e menor caminho). Tabelas de espalhamento (Hash). Memória externa: modelos, ordenação e pesquisa.",
+        "bibliografia_basica": [
+          "CORMEN, Thomas H; SOUZA, Vanderberg D; STEIN, Clifford; RIVEST, Ronald L; LEISERSON, Charles E. Algoritmos: teoria e prática. Rio de Janeiro: Campus, 2002.",
+          "ZIVIANI, Nivio. Projeto de algoritmos: com implementações em PASCAL e C. 3 ed. rev. e ampl. São Paulo: Heinle Cengage Learning, 2011.",
+          "KNUTH, Donald E. The art of computer programming vol. 1: fundamental algorithms. 3 ed. Upper Saddle River, NJ: Addison-Wesley, 1997."
+        ]
+      },
+      {
+        "codigo": "2475",
+        "nome": "Álgebra Linear",
+        "nome_ingles": "Linear Algebra",
+        "termo": 3,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 62,
+        "carga_horaria_pratica": 10,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2650 - Geometria Analítica",
+        "ementa": "Espaços vetoriais. Transformações lineares. Operadores lineares. Funcionais lineares. Autovalores e Autovetores. Diagonalização. Produto interno.",
+        "bibliografia_basica": [
+          "BOLDRINI, J. L.; COSTA, S. I. R.; FIGUEIREDO, V. L.; WETZLER, H. G. Álgebra linear. 3ª ed. São Paulo: Harbra, 1986.",
+          "CALLIOLI, C.; DOMINGUES, H. H.; COSTA, R. C. F. Álgebra linear e aplicações. 6ª ed. São Paulo: Atual, 1990.",
+          "LIMA, E. L. Álgebra linear. 8ª ed. Rio de Janeiro: SBM-IMPA, 2011."
+        ]
+      }
+    ],
+    "quarto_semestre": [
+      {
+        "codigo": "2831",
+        "nome": "Banco de Dados",
+        "nome_ingles": "Database Systems",
+        "termo": 4,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 20,
+        "carga_horaria_extensao": 16,
+        "pre_requisitos": "2832 - Algoritmos e Estruturas de Dados I",
+        "ementa": "Conceitos básicos de banco de dados. Modelos de dados e linguagens. Projeto de bancos de dados. Novas tecnologias e aplicações de banco de dados.",
+        "bibliografia_basica": [
+          "SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S. Sistema de banco de dados. 6. ed. São Paulo: Elsevier, 2012.",
+          "HEUSER, Carlos Alberto. Projeto de banco de dados. 6.ed. Porto Alegre: Bookman, 2009.",
+          "ELMASRI, Ramez; NAVATHE, Shamkant B. Sistemas de banco de dados. 4.ed. São Paulo: Pearson, 2005."
+        ]
+      },
+      {
+        "codigo": "2471",
+        "nome": "Programação Orientada a Objetos",
+        "nome_ingles": "Object-Oriented Design",
+        "termo": 4,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 36,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2832 - Algoritmos e Estruturas de Dados I",
+        "ementa": "Introdução à Programação Orientada a Objetos; Introdução ao Diagrama de Classes da UML; Classes e Métodos; Encapsulamento e Sobrecarga; Sobreposição de Métodos; Construtores e Destrutores; Herança; Polimorfismo e Ligação Dinâmica; Introdução a uma linguagem Orientada a Objetos. Serialização de Objetos. Programação com threads. Tratamento de exceções. Introdução a padrões de projetos.",
+        "bibliografia_basica": [
+          "HORSTMANN, Cay S; CORNELL, Gary. Core Java 2. 7th.ed. São Paulo: Pearson, 2005.",
+          "SANTOS, Rafael. Introdução à programação orientada a objetos usando Java. Rio de Janeiro: Campus, 2003.",
+          "DEITEL, Paul J.; DEITEL, Harvey M.; LUCCHINI,Fábio; FURMANKIEWICZ, Edson. Java: como programar. 6.ed. São Paulo: Pearson, 2005."
+        ]
+      },
+      {
+        "codigo": "3519",
+        "nome": "Arquitetura e Organização de Computadores",
+        "nome_ingles": "Computer Architecture and Organization",
+        "termo": 4,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 52,
+        "carga_horaria_pratica": 20,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "9394 - Lógica de Programação; 3518 - Circuitos Digitais",
+        "ementa": "Organização de computadores: processador, memória, entrada/saída. Sistema de memória. Componentes da Unidade Central de Processamento (UCP): a unidade lógica e aritmética (ULA) e a unidade de controle. Conjunto de Instruções. Modos de Endereçamento. Arquitetura RISC e CISC. Noções de Linguagem de Máquina. Memória Cache. Pipeline. Arquiteturas Superescalares. Sistema Multiprocessado. Memória Virtual. Mecanismos de Entrada/Saída.",
+        "bibliografia_basica": [
+          "PATTERSON, David A; HENNESSY, John L. Organização e projeto de computadores: a interface hardware / software. 3.ed. Rio de Janeiro: Campus, 2005.",
+          "WEBER, Raul Fernando. Fundamentos de arquitetura de computadores. 3 ed. São Paulo: Bookman, 2008.",
+          "TANENBAUM, Andrew S. Organização estruturada de computadores. 5 ed. São Paulo: Pearson, 2007."
+        ]
+      },
+      {
+        "codigo": "3579",
+        "nome": "Projeto e Análise de Algoritmos",
+        "nome_ingles": "Design and Analysis of Algorithms",
+        "termo": 4,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 52,
+        "carga_horaria_pratica": 20,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2201 - Matemática Discreta; 2833 - Algoritmos e Estruturas de Dados II",
+        "ementa": "Análise assintótica. Relações de recorrência. Técnicas de prova de corretude de algoritmos. Construção de algoritmos por indução. Análise de Algoritmos: gulosos, ordenação e pesquisa. Programação dinâmica. Redutibilidade de problemas. Introdução à NP-Completude.",
+        "bibliografia_basica": [
+          "CORMEN, Thomas H; SOUZA, Vanderberg D; STEIN, Clifford; RIVEST, Ronald L; LEISERSON, Charles E. Algoritmos: teoria e prática. Rio de Janeiro: Campus, 2002.",
+          "VELOSO, Paulo; TOSCANI, Laira Vieira. Complexidade de algoritmos. 2.ed. Porto Alegre: Bookman, 2008.",
+          "ZIVIANI, Nivio. Projeto de algoritmos: com implementações em PASCAL e C. 3 ed. rev. e ampl. São Paulo: Heinle Cengage Learning, 2011."
+        ]
+      },
+      {
+        "codigo": "2828",
+        "nome": "Cálculo Numérico",
+        "nome_ingles": "Numerical Calculus",
+        "termo": 4,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 58,
+        "carga_horaria_pratica": 14,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "5702 - Cálculo em Uma Variável; 2650 - Geometria Analítica",
+        "ementa": "Erros. Zeros de funções reais. Resolução de sistemas lineares e não lineares. Interpolação. Ajuste de curvas. Integração numérica. Solução numérica de equações diferenciais ordinárias.",
+        "bibliografia_basica": [
+          "BURDEN, R. L.; FAIRES, J. D. Análise numérica. 8ª ed. São Paulo: Cengage Learning, 2008.",
+          "FRANCO, N. B. Cálculo numérico. São Paulo: Pearson, 2006.",
+          "RUGGIERO, M. A. G.; LOPES, V. L. R. Cálculo numérico – aspectos teóricos e computacionais. 2ª ed. São Paulo: Pearson, 2008."
+        ]
+      }
+    ],
+    "quinto_semestre": [
+      {
+        "codigo": "3490",
+        "nome": "Inteligência Artificial",
+        "nome_ingles": "Artificial Intelligence",
+        "termo": 5,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 48,
+        "carga_horaria_pratica": 16,
+        "carga_horaria_extensao": 8,
+        "pre_requisitos": "2832 - Algoritmos e Estrutura de Dados I",
+        "ementa": "História e fundamentos da Inteligência Artificial (IA). Métodos de busca para resolução de problemas: busca cega, busca heurística e busca competitiva. Representação do conhecimento. Conceitos de aprendizado de máquina: aprendizados supervisionado e não-supervisionado. Aplicações de IA: Processamento de Linguagens Naturais, Jogos, Robótica e Mineração de Dados.",
+        "bibliografia_basica": [
+          "RUSSELL, Stuart J; WAZLAWICK, Raul S; SOUZA, Vanderberg D; NORVIG, Peter. Inteligência artificial. Rio de Janeiro: Person, 2004.",
+          "HAN, Jiawei; KAMBER, Micheline; PEI, Jian. Data mining: concepts and techniques. 3rd ed. Waltham, MA: Elsevier, 2011.",
+          "NETO, Antonio Valerio; BERTON, Lilian; TAKAHATA, Andre Kazuo. Ciência de Dados e a Inteligência Artificial na Área da Saúde. Editora dos Editores, 220 pgs, 2021."
+        ]
+      },
+      {
+        "codigo": "5168",
+        "nome": "Projeto Orientado a Objetos",
+        "nome_ingles": "Object-Oriented Design",
+        "termo": 5,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 36,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2471 - Programação Orientada a Objetos",
+        "ementa": "Fundamentos de Projeto de Software; Modelagem Orientada a Objetos Utilizando UML e SysML; Modelos Arquiteturais; Componentes de Software; Reuso de Software; Padrões de Projeto.",
+        "bibliografia_basica": [
+          "GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John; SALGADO, Luiz A.m. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. Porto Alegre: Bookman, 2007.",
+          "BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar. UML: guia do usuário. 2 ed. Rio de Janeiro: Elsevier, 2005.",
+          "SOMMERVILLE, Ian. Engenharia de software. 8.ed. São Paulo: Pearson, 2007."
+        ]
+      },
+      {
+        "codigo": "2616",
+        "nome": "Linguagens Formais e Autômatos",
+        "nome_ingles": "Formal Languages and Automata",
+        "termo": 5,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 72,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2201 - Matemática Discreta; 9394 - Lógica de Programação",
+        "ementa": "Linguagens Regulares: Autômatos finitos determinísticos e não-determinísticos. Expressões regulares. Linguagens Livres de Contexto: Gramáticas Livres de Contexto. Autômatos de pilha. Linguagens Sensíveis ao Contexto e Linguagens Recursivamente Enumeráveis: Máquinas de Turing. Tese de Church-Turing. Indecibilidade: Máquinas de Turing Universais.",
+        "bibliografia_basica": [
+          "HOPCROFT, John E; MOTWANI, Rajeev; ULLMAN, Jeffrey D. Introdução à teoria de autômatos, linguagens e computação. Rio de Janeiro: Campus, 2002.",
+          "MENEZES, Paulo Blauth. Linguagens formais e autômatos. 6.ed. Porto Alegre: Bookman, 2011.",
+          "RAMOS, Marcus V. M; VEGA, Ítalo S; JOSÉ NETO, João. Linguagens formais: teoria, modelagem e implementação. Porto Alegre: Bookman, 2009."
+        ]
+      },
+      {
+        "codigo": "2975",
+        "nome": "Teoria dos Grafos",
+        "nome_ingles": "Graph Theory",
+        "termo": 5,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 62,
+        "carga_horaria_pratica": 10,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "3579 - Projeto e Análise de Algoritmos",
+        "ementa": "Definições e conceitos básicos. Isomorfismo. Árvores. Conexidade. Problema do caminho mínimo. Trilhas eulerianas e ciclos hamiltonianos. Emparelhamentos. Problema do Fluxo máximo. Planaridade. Coloração. Tópicos selecionados.",
+        "bibliografia_basica": [
+          "BONDY, J.A.; MURTY, U.S.R. Graph theory. New York: Springer, 2008.",
+          "DIESTEL, Reinhard. Graph theory. 4th ed. New York: Springer, 2010.",
+          "SEDGEWICK, Robert. Algorithms in C: part 5 - graph algorithms. New Jersey:Addison-Wesley, 2007."
+        ]
+      },
+      {
+        "codigo": "2612",
+        "nome": "Sistemas Operacionais",
+        "nome_ingles": "Operating Systems",
+        "termo": 5,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 54,
+        "carga_horaria_pratica": 18,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2832 - Algoritmos e Estruturas de Dados I",
+        "ementa": "Conceitos básicos de sistemas operacionais: processos, organizações de sistemas operacionais, chamadas de sistema. Gerência do processador: estados de processo, escalonamento. Entrada e saída: dispositivos e controladores, software de E/S, interrupções, dependência e independência. Gerência de memória: partições fixas e variáveis, paginação, segmentação, memória virtual. Gerência de arquivos.",
+        "bibliografia_basica": [
+          "TANENBAUM, Andrew S. Sistemas operacionais modernos. 2.ed. São Paulo: Pearson, 2006.",
+          "TORTELLO, João Eduardo N; WOODHULL, Albert S; TANENBAUM, Andrew S. Sistemas operacionais: projeto e implementação. 3.ed. Porto Alegre: Bookman, 2008.",
+          "SILBERSCHATZ, Abraham; GALVIN, Peter Baer; GAGNE, Greg; SILVA, Aldir J. C. C; LINS, Elisabete R. Fundamentos de sistemas operacionais. 8.ed. Rio de Janeiro: LTC, 2010."
+        ]
+      }
+    ],
+    "sexto_semestre": [
+      {
+        "codigo": "2617",
+        "nome": "Redes de Computadores",
+        "nome_ingles": "Computer Networks",
+        "termo": 6,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 52,
+        "carga_horaria_pratica": 20,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2612 - Sistemas Operacionais",
+        "ementa": "Introdução às Redes de Computadores: Conceitos Gerais Medidas de Desempenho, Camadas de protocolos e serviços; Histórico das redes de computadores e Internet; Camada Física: Características do meio de transmissão, Técnicas de transmissão; Camada de Aplicação: Fundamentos das aplicações de rede, Principais protocolos da camada de aplicação. Camada de Transporte: Introdução e Serviços da camada de transporte, Protocolos TCP e UDP, Princípios do controle de congestionamento Camada de Rede: Introdução, O protocolo IPv4, O protocolo IPv6, Algoritmos de roteamento; Camada de enlace e redes locais: Serviços oferecidos pela camada de enlace, Protocolos de acesso múltiplo, Endereçamento na camada de enlace, Redes Ethernet; Redes sem fio; Redes móveis; Princípios da Gerência de Redes.",
+        "bibliografia_basica": [
+          "KUROSE, James F.; ROSS, Keith W. Redes de computadores e a internet: uma abordagem top-down. 5. ed. São Paulo: Addison-Wesley, 2010.",
+          "TANENBAUM, Andrew S; WETHERALL, David. Redes de computadores. 5. ed. São Paulo: Pearson, 2011.",
+          "COMER, Douglas E. Interligação de redes com TCP/IP. 6 ed. Rio de Janeiro: Campus, 2015."
+        ]
+      },
+      {
+        "codigo": "2614",
+        "nome": "Engenharia de Software",
+        "nome_ingles": "Software Engineering",
+        "termo": 6,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 20,
+        "carga_horaria_extensao": 16,
+        "pre_requisitos": "2471 - Programação Orientada a Objetos",
+        "ementa": "Visão geral sobre a Engenharia de Software; Processos de desenvolvimento de software; Práticas de desenvolvimento de software; Modelos de processo; Engenharia de requisitos; Planejamento e gerenciamento de projetos; Especificação de software; Projeto de software; Metodologias de desenvolvimento de software; Verificação, Validação e Teste de Software; Evolução de software; Gerenciamento de configuração de software; Ferramentas CASE.",
+        "bibliografia_basica": [
+          "SOMMERVILLE, Ian. Engenharia de software. 8.ed. São Paulo: Pearson, 2007.",
+          "PRESSMAN, Roger S. Software engineering: a practitioner's approach. 6.ed. New York: McGraw-Hill, 2005.",
+          "FOWLER, Martin. Refactoring: improving the design of existing code. Massachusetts: Addison-Wesley, 1999."
+        ]
+      },
+      {
+        "codigo": "3051",
+        "nome": "Computação Gráfica",
+        "nome_ingles": "Computer Graphics",
+        "termo": 6,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 36,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2832 - Algoritmo e Estrutura de Dados I",
+        "ementa": "Transformações geométricas bi e tridimensionais; Primitivas gráficas de saída; Visualização tridimensional; Representação de Objetos Tridimensionais; Modelos de iluminação; Animação.",
+        "bibliografia_basica": [
+          "HEARN, Donald; BAKER, M. Pauline. Computer graphics with OpenGL. 3rd.ed. Upper Saddle River, NJ: Person Prentice-Hall, 2004.",
+          "FOLEY, James D; DAM, Andries van; FEINER, Steven K; HUGHES, John F. Computer graphics: principles and practice. 2nd.ed. Boston: Addison-Wesley, 1996.",
+          "AZEVEDO, Eduardo; CONCI, Aura. Computação gráfica vol.1: geração de imagens. Rio de Janeiro: Campus, 2003."
+        ]
+      },
+      {
+        "codigo": "3580",
+        "nome": "Programação Concorrente e Distribuída",
+        "nome_ingles": "Concurrent and Distributed Programming",
+        "termo": 6,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 42,
+        "carga_horaria_pratica": 30,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2612 - Sistemas Operacionais",
+        "ementa": "Introdução à programação concorrente; Arquitetura de máquinas paralelas e distribuídas; Análise de dependências; Técnicas e algoritmos clássicos em programação concorrente e distribuída (seções críticas, exclusão mútua, semáforos, monitores, sincronização de relógios, etc); Expressando concorrência em sistemas de memória compartilhada e distribuída; Medidas de desempenho de aplicações paralelas; Exploração de paralelismo; solução de problemas com concorrência; Introdução a programação para arquiteturas Multicore/Manycores e GPGPU. Técnica de Map-Reduce.",
+        "bibliografia_basica": [
+          "BEN-ARI, M. Principles of concurrent and distributed programming. 2nd ed. Harlow: Addison-Wesley, 2006.",
+          "GRAMA, Ananth; KUMAR, Vipin; KARYPIS, George; GUPTA, Anshul. Introduction to parallel computing. 2nd. ed. London: Person Addison Wesley, c2003.",
+          "PACHECO, Peter S. An introduction to parallel programming. Burlington, MA: Morgan Kaufmann, 2011."
+        ]
+      },
+      {
+        "codigo": "2615",
+        "nome": "Compiladores",
+        "nome_ingles": "Compilers",
+        "termo": 6,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 36,
+        "carga_horaria_pratica": 36,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "2616 - Linguagens Formais e Autômatos",
+        "ementa": "Sistema de Varredura - Análise Léxica; Gerador de Analisador Léxico; Análise Sintática Descendente; Análise Sintática Ascendente; Gerador de Analisador Sintático; Análise Semântica; Geração de Código; Otimização de Código.",
+        "bibliografia_basica": [
+          "LOUDEN, Kenneth C; SILVA, Flávio S.c. Compiladores: princípios e práticas. São Paulo: Thomson, 2004.",
+          "AHO, Alfred V; ULLMAN, Jeffrey D; SETHI, Ravi; LAM, Monica S. Compiladores: princípios, técnicas e ferramentas. 2 ed. São Paulo: Person Addison Wesley, 2007.",
+          "APPEL, Andrew W; PALSBERG, Jens. Modern compiler implementation in Java. 2nd ed. New York: Cambridge University Press, 2002."
+        ]
+      }
+    ],
+    "setimo_semestre": [
+      {
+        "codigo": "6106",
+        "nome": "Trabalho de Conclusão de Curso I",
+        "nome_ingles": "Degree Final Project I",
+        "termo": 7,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 72,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Estar regularmente matriculado no curso de Bacharelado em Ciência de Computação",
+        "ementa": "NSA",
+        "bibliografia_basica": "Livros, periódicos, anais de eventos e outros textos relacionados a área de desenvolvimento do trabalho de conclusão."
+      },
+      {
+        "codigo": "sem_codigo",
+        "nome": "Interação Humano-Computador e Experiência do Usuário (UX)",
+        "nome_ingles": "Human-Computer Interaction and User Experience",
+        "termo": 7,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 54,
+        "carga_horaria_pratica": 18,
+        "carga_horaria_extensao": 16,
+        "pre_requisitos": "2471 Programação Orientada a Objetos",
+        "ementa": "Reflexão sobre conceitos e teorias relacionados à qualidade de uso e design de sistemas interativos. Aplicação de técnicas para elicitação e análise de dados sobre usuários e tarefas. Aplicação de fundamentos e técnicas para concepção de interfaces e de interação. Aplicação de métodos de avaliação de sistemas interativos. Prática com ferramentas de apoio.",
+        "bibliografia_basica": [
+          "PREECE, Jennifer; ROGERS, Yvonne; SHARP, Helen. Design de interação: além da interação homem-computador. Porto Alegre, RS: Bookman, 2005.",
+          "Barbosa, Simone Diniz Junqueira; Silva, Bruno Santana. Interação humano-computador. Rio de Janeiro: Campus, 2010.",
+          "Benyon, David. Interação humano-computador. 2 ed. Pearson Prentice Hall, 2011."
+        ]
+      }
+    ],
+    "oitavo_semestre": [
+      {
+        "codigo": "sem_codigo",
+        "nome": "Trabalho de Conclusão de Curso II",
+        "nome_ingles": "Degree Final Project II",
+        "termo": 8,
+        "carga_horaria_total": 72,
+        "carga_horaria_teorica": 72,
+        "carga_horaria_pratica": 0,
+        "carga_horaria_extensao": 0,
+        "pre_requisitos": "Trabalho de Conclusão de Curso I",
+        "ementa": "NSA",
+        "bibliografia_basica": "Livros, periódicos, anais de eventos e outros textos relacionados a área de desenvolvimento do trabalho de conclusão."
+      }
+    ]
+  },
+  "disciplina_optativa_libras": {
+    "nome": "Introdução à Língua Brasileira de Sinais (LIBRAS)",
+    "carga_horaria": 40,
+    "objetivo": "Propiciar aos alunos condições para utilizarem a Libras como instrumento de comunicação com indivíduos surdos",
+    "conteudo": [
+      "Legislação referente ao ensino de Libras",
+      "Aspectos históricos da educação de surdos no Brasil",
+      "Libras e sua estrutura",
+      "Sinais básicos da Libra"
+    ]
+  },
+  "avaliacao": {
+    "processo_ensino_aprendizagem": {
+      "caracteristicas": "Processo contínuo de acompanhamento do desempenho dos alunos",
+      "finalidade": "Diagnóstico da situação e indicação de formas de intervenção",
+      "momentos": "Vários momentos ao longo do curso",
+      "formas": [
+        "Atividades individuais",
+        "Trabalhos em grupo",
+        "Exercícios",
+        "Assiduidade",
+        "Postura profissional ética e cidadã"
+      ],
+      "frequencia_minima": "75% das aulas ministradas",
+      "nota_aprovacao": "6.0",
+      "nota_exame": {
+        "condicao": "Nota final entre 3.0 e 5.9",
+        "calculo": "Média aritmética simples entre nota do exame e nota final",
+        "aprovacao": "Média final igual ou superior a 6.0"
+      },
+      "reprovacao": [
+        "Frequência inferior a 75%",
+        "Média inferior a 3.0 sem exame",
+        "Média inferior a 6.0 após exame"
+      ],
+      "registro": "Sistema Institucional Pasta Verde"
+    },
+    "projeto_pedagogico": {
+      "atuacao_conjunta": [
+        "Coordenação de curso",
+        "Comissão de curso",
+        "Núcleo docente estruturante",
+        "Corpo docente do ICT"
+      ],
+      "papel_coordenacao": [
+        "Articuladora e proponente das políticas e práticas pedagógicas",
+        "Divulgadora e intermediadora das discussões sobre importância de cada conteúdo",
+        "Articuladora da integração entre corpo docente e discente",
+        "Avaliadora dos resultados das estratégias pedagógicas"
+      ],
+      "instrumentos_avaliacao": [
+        "Avaliação das Unidades Curriculares (discentes)",
+        "Avaliação do perfil dos ingressantes",
+        "Avaliação do curso pelos formandos",
+        "Estatísticas gerais do curso (evasões, reprovações, coeficiente de rendimento)",
+        "Análises da CPA local",
+        "Avaliações internas do curso",
+        "Desempenho no ENADE",
+        "Avaliação de CPC por comissão do INEP/MEC"
+      ]
+    }
+  },
+  "atividades_complementares": {
+    "objetivo": "Aperfeiçoar e complementar a formação nos aspectos técnicos e acadêmico culturais",
+    "obrigatoredade": "Obrigatórias para formação",
+    "carga_horaria_total": 144,
+    "momento_realizacao": "Qualquer momento do curso, incluindo primeiro semestre e períodos de férias",
+    "prazo": "Sem prazo específico, mas necessário para integralização do BCC",
+    "validacao": {
+      "procedimento": "Entrega de relatório ou formulário com documentos comprobatórios",
+      "destino": "Secretaria acadêmica",
+      "avaliacao": "Coordenação de curso"
+    },
+    "tipos_atividades": [
+      "Monitorias acadêmicas",
+      "Participação em atividades de extensão",
+      "Participação em atividades de pesquisa",
+      "Participação em eventos acadêmicos/tecnológicos",
+      "Participação em comissões ou organização de eventos",
+      "Disciplinas eletivas (extras curriculares)",
+      "Publicação de artigos em periódicos, conferências e outros veículos",
+      "Realização de estágios não obrigatórios",
+      "Representação discente junto a órgãos/comissões da instituição",
+      "Obtenção de certificações profissionais"
+    ],
+    "regulamento": "Documento específico disponibilizado na página oficial do curso"
+  },
+  "estagio_curricular": {
+    "caracterizacao": "Não obrigatório",
+    "funcao": "Contribuir para maturidade do aluno no exercício da profissão",
+    "vivencia": "Situações reais relacionadas à ciência da computação em empresas, indústrias ou instituições de ensino",
+    "carga_horaria_maxima_semanal": 30,
+    "compatibilidade": "Horário compatível com disciplinas do curso",
+    "requisitos_aluno": {
+      "matricula": "Regular no BCC",
+      "disciplinas_obrigatorias": [
+        "Lógica de Programação",
+        "Algoritmos e Estruturas de Dados I"
+      ],
+      "rendimento": "Bom rendimento acadêmico",
+      "termo_compromisso": "Compatível com Plano Pedagógico do Curso"
+    },
+    "convenios": {
+      "tipo_1": "Agente de integração autorizado pela UNIFESP",
+      "tipo_2": "Convênio direto com UNIFESP"
+    },
+    "relatorio": {
+      "periodicidade": "Final de cada semestre",
+      "conteudo": [
+        "Carga horária de estágio realizada",
+        "Atividades desenvolvidas"
+      ],
+      "endosso": "Supervisor de estágio da empresa"
+    },
+    "regulamento": "Documento específico disponibilizado na página oficial do curso"
+  },
+  "trabalho_conclusao_curso": {
+    "objetivo": "Síntese e integração dos conhecimentos adquiridos durante o curso",
+    "estrutura": {
+      "tcc_i": {
+        "semestre": 7,
+        "carga_horaria": 72
+      },
+      "tcc_ii": {
+        "semestre": 8,
+        "carga_horaria": 72
+      },
+      "total_horas": 144
+    },
+    "caracteristicas": {
+      "realizacao": "Individual",
+      "capacitacao": [
+        "Concatenação de conceitos e teorias do curso",
+        "Apresentação oral de ideias",
+        "Redação de textos técnicos e científicos de forma clara, concisa e objetiva"
+      ]
+    },
+    "obrigatoriedade": {
+      "bcc": true,
+      "referencias": [
+        "Sociedade Brasileira de Computação (SBC)",
+        "Resolução 11/2002 do CNE/CES (MEC)"
+      ]
+    },
+    "orientacao": {
+      "quantidade": "Um ou mais professores orientadores",
+      "acompanhamento": [
+        "Teórico",
+        "Metodológico",
+        "Técnico"
+      ],
+      "etapas": [
+        "Execução do Projeto",
+        "Supervisão para apresentação em banca",
+        "Entrega da versão final"
+      ],
+      "inicio": "Aceitação do aluno pelo orientador e preenchimento de formulário"
+    },
+    "responsabilidades_aluno": [
+      "Frequentar reuniões convocadas pelo coordenador de TCC ou orientador",
+      "Manter contato semanal com orientador",
+      "Justificar eventuais faltas",
+      "Cumprir cronograma divulgado",
+      "Seguir normas técnicas adotadas pelo BCC"
+    ],
+    "regulamento": "Documento específico disponibilizado na página oficial do curso"
+  },
+  "apoio_discente": {
+    "orgaos_principais": [
+      {
+        "nome": "Pró-Reitoria de Assuntos Estudantis (PRAE)",
+        "responsabilidade": "Desenvolver políticas e ações institucionais relacionadas ao ingresso e permanência de estudantes",
+        "abrangencia": [
+          "Graduação",
+          "Pós-graduação"
+        ],
+        "objetivos_desenvolvimento_sustentavel": "Contribuição com ODS da ONU através de projetos diversos"
+      },
+      {
+        "nome": "Núcleo de Apoio ao Estudante (NAE)",
+        "local": "Campus São José dos Campos",
+        "caracteristica": "Assistência presencial e imediata aos discentes",
+        "competencias": [
+          "Promoção de ações para políticas de permanência estudantil",
+          "Contribuição para desenvolvimento acadêmico",
+          "Formação integral e de qualidade",
+          "Execução de políticas de apoio aos discentes"
+        ]
+      },
+      {
+        "nome": "Rede de Acessibilidade e Inclusão",
+        "composicao": [
+          "Comissão Permanente de Acessibilidade e Inclusão (CPAI)",
+          "Coordenadoria de Acessibilidade e Inclusão",
+          "Núcleos de Acessibilidade e Inclusão (NAI)"
+        ],
+        "publico_alvo": [
+          "Estudantes com deficiência",
+          "Estudantes com transtornos globais do desenvolvimento",
+          "Estudantes com altas habilidades",
+          "Estudantes com superdotação"
+        ],
+        "atuacao_nai_campus": {
+          "identificacao": "Demandas locais de acessibilidade e inclusão",
+          "implementacao": "Ações para acesso e permanência",
+          "acolhimento": "Identificação de necessidades de adequação",
+          "interlocucao": "Entre alunos, Câmara de Graduação/Pós e Coordenação",
+          "acompanhamento": "Trajetória acadêmica do discente"
+        },
+        "base_legal": "Lei nº 13.146, de 6 de julho de 2015 (Lei Brasileira de Inclusão da Pessoa com Deficiência)"
+      },
+      {
+        "nome": "Centro Acadêmico Ada King",
+        "objetivo": "Representatividade e defesa dos direitos dos estudantes"
+      }
+    ],
+    "infraestrutura_campus": [
+      "Quadra de esportes",
+      "Áreas de lazer",
+      "Restaurante universitário"
+    ]
+  },
+  "gestao_academica": {
+    "estrutura_colegiados": {
+      "departamento": "Departamento de Ciência e Tecnologia (DCT)",
+      "instituto": "Instituto de Ciência e Tecnologia (ICT)",
+      "camara": "Câmara de Graduação local"
+    },
+    "coordenacao_curso": {
+      "composicao": [
+        "Coordenador",
+        "Vice-coordenador"
+      ],
+      "requisitos": [
+        "Docentes efetivos do campus SJC",
+        "Titulação de doutor",
+        "Membros da Comissão de curso"
+      ],
+      "mandato": "2 anos",
+      "eleicao": "Conforme normas do Regimento da Comissão de Curso"
+    },
+    "atribuicoes_coordenador": [
+      "Presidir reuniões da Comissão de Curso",
+      "Convocar e elaborar pauta das reuniões",
+      "Encaminhar solicitações da Comissão aos órgãos competentes",
+      "Encaminhar deliberações ao Conselho de Graduação",
+      "Representar curso em reuniões da Câmara de Graduação e Conselho de Graduação",
+      "Comunicação com alunos do curso",
+      "Receber e conduzir pleitos estudantis",
+      "Encaminhar decisões/solicitações aos órgãos competentes"
+    ]
+  },
+  "relacao_ensino_pesquisa_extensao": {
+    "ensino": {
+      "qualidade_garantida_por": [
+        "Matriz curricular",
+        "Corpo docente capacitado",
+        "Entrada pelo BCT (interdisciplinaridade)",
+        "Sólidos conhecimentos em Ciência da Computação"
+      ]
+    },
+    "pesquisa": {
+      "corpo_docente": "Grande maioria são pesquisadores ativos em pós-graduações",
+      "areas_pos_graduacao": [
+        "Ciência da Computação",
+        "Engenharia Biomédica",
+        "Matemática Aplicada",
+        "Interdisciplinar em Inovação Tecnológica"
+      ],
+      "orientacao": [
+        "Iniciações científicas",
+        "Trabalhos de graduação"
+      ],
+      "atividades_complementares": "Iniciações científicas e participação em eventos científicos são principais atividades para completar 144 horas"
+    },
+    "extensao": {
+      "objetivo": "Formação de alunos qualificados tecnicamente e conscientes de questões sociais, humanísticas e de cidadania",
+      "curricularizacao": {
+        "base_legal": "Resolução CONSU nº 139 de 2017 alterada pela Resolução CONSU nº 192 de 2021",
+        "definicao_forproex": "Processo educativo, cultural e científico que articula ensino e pesquisa de forma indissociável e viabiliza relação transformadora entre universidade e sociedade",
+        "metodologia": "Aprendizagem-serviço (combinação de aprendizagem de conteúdos, habilidades e valores com realização de tarefas de serviço à sociedade)",
+        "formacao_diferenciada": "Alunos qualificados tecnicamente e conscientes de questões sociais, humanísticas e cidadania"
+      },
+      "referencias": [
+        "Sociedade Brasileira de Computação (SBC)",
+        "ACM/IEEE",
+        "Diretrizes curriculares MEC"
+      ]
+    }
+  },
+  "infraestrutura": {
+    "unidades_fisicas": [
+      {
+        "nome": "Unidade I (Talim)",
+        "area_total": "8.600 m²",
+        "localizacao": "Rua Talim",
+        "uso_atual": "Laboratórios de pesquisa em áreas experimentais",
+        "pos_graduacoes_sediadas": [
+          "Engenharia de Materiais",
+          "Biotecnologia"
+        ],
+        "espacos": {
+          "salas_aula": 1,
+          "salas_docentes_13_8m2": 3,
+          "salas_docentes_9_25m2": 24,
+          "salas_docentes_9_20m2": 18,
+          "auditorio": 1,
+          "secretaria_pos": 1,
+          "labs_informatica": 1,
+          "labs_pesquisa_experimental": 46
+        }
+      },
+      {
+        "nome": "Unidade II (Parque Tecnológico)",
+        "area_total": "126.000 m²",
+        "area_edificacao": "aproximadamente 21.000 m²",
+        "localizacao": "Parque Tecnológico de São José dos Campos",
+        "pavimentos": 4,
+        "uso": "Atividades de ensino, pesquisa e extensão",
+        "inicio_operacao": "segundo semestre de 2014",
+        "infraestrutura_adicional": [
+          "Cantina",
+          "Biblioteca",
+          "Centro de convivência estudantil"
+        ],
+        "pos_graduacao_sediada": "Ciência da Computação",
+        "espacos": {
+          "salas_aula_70m2": 7,
+          "salas_aula_100m2": 6,
+          "salas_aula_130m2": 4,
+          "salas_aula_150m2": 3,
+          "salas_docentes_21m2": 5,
+          "salas_docentes_23m2": 7,
+          "salas_docentes_24m2": 15,
+          "salas_docentes_29m2": 4,
+          "sala_docente_33_6m2": 1,
+          "labs_graduacao_diversos": 13,
+          "labs_informatica": 5,
+          "anfiteatro": 1,
+          "secretaria_academica": 1,
+          "secretaria_extensao": 1,
+          "administracao": 1,
+          "biblioteca": 1,
+          "salas_estudo_biblioteca": 12,
+          "refeitorio": 1,
+          "labs_pesquisa_teorica": 13,
+          "areas_projeto_extensao": 5
+        }
+      },
+      {
+        "nome": "Unidade III",
+        "localizacao": "Avenida Cidade Jardim",
+        "pavimentos": 3,
+        "uso": "Laboratórios de pesquisa da área de Engenharia Biomédica"
+      },
+      {
+        "nome": "Unidade IV",
+        "localizacao": "Núcleo do Parque Tecnológico de São José dos Campos",
+        "uso": "Laboratórios de pesquisa"
+      }
+    ],
+    "equipamentos_informatica": {
+      "total_computadores_didaticos": 269,
+      "modelos": [
+        {
+          "quantidade": 110,
+          "modelo": "HP Compaq 6000 Pro MT pc",
+          "processador": "Intel Core 2 Quad CPU Q8400 @ 2.66GHz"
+        },
+        {
+          "quantidade": 159,
+          "modelo": "DELL Optiplex 7010",
+          "processador": "Intel Core i5-3470 CPU @ 3.20 GHz",
+          "hd": "500GB",
+          "ram": "4GB"
+        }
+      ],
+      "sistemas_operacionais": [
+        "Ubuntu (269 unidades)",
+        "Dual-boot Windows 7 (52 unidades)"
+      ],
+      "plataformas": [
+        "Moodle para EAD",
+        "OpenOffice"
+      ],
+      "labs_especializados": [
+        {
+          "nome": "Hardware e Redes de Computadores",
+          "equipamentos": [
+            "Kits FPGAs",
+            "Kits de robótica",
+            "Plataformas robóticas móveis",
+            "Osciloscópios",
+            "Multímetros",
+            "Geradores de onda",
+            "Componentes eletrônicos",
+            "Protoboards",
+            "Fontes de energia",
+            "Licenças de softwares"
+          ]
+        },
+        {
+          "nome": "Robótica e Sistemas Embarcados",
+          "equipamentos": [
+            "Kits educacionais diversos"
+          ]
+        }
+      ],
+      "data_center": {
+        "localizacao": "Unidade Talim",
+        "servicos": [
+          "Provedores de submissão e correção automática de códigos",
+          "Servidores de Banco de Dados",
+          {
+            "nome": "Cluster para Processamento de Alto Desempenho",
+            "nos_trabalho": 11
+          }
+        ]
+      }
+    },
+    "biblioteca": {
+      "objetivo": "Atender comunidade acadêmica e externa em necessidades bibliográficas e informacionais",
+      "suporte": "Desenvolvimento dos cursos, estímulo à pesquisa científica e acesso à informação",
+      "acervo": {
+        "titulos": 2652,
+        "exemplares": 12522
+      },
+      "espacos_estudo": {
+        "postos_individuais": 35,
+        "postos_em_grupo": 23,
+        "salas_estudo": 12
+      },
+      "recursos_tecnologicos": {
+        "computadores_consulta": 5,
+        "funcoes": [
+          "Consulta",
+          "Renovação",
+          "Reserva"
+        ]
+      },
+      "areas_adicionais": "Leitura de jornais e revistas"
+    }
+  },
+  "corpo_social": {
+    "docentes": {
+      "total": 116,
+      "regime_dedicacao_exclusiva": "maioria",
+      "titulacao": "100% doutores",
+      "areas_atuacao": [
+        "Ciências Exatas",
+        "Ciências Humanas",
+        "Ciências Biológicas"
+      ],
+      "areas_computacao": [
+        "Fundamentos da computação",
+        "Tecnologia da computação",
+        "Eletrônica"
+      ],
+      "vinculo_pos_graduacao": "Aproximadamente 80% dos docentes da área de computação ligados ao PPGCC"
+    },
+    "tecnicos_administrativos": {
+      "total": 70,
+      "divisoes": [
+        "Diretorias",
+        "Secretarias",
+        "Núcleos",
+        "Divisões administrativas e acadêmicas"
+      ],
+      "principais_setores": [
+        "Controladoria",
+        "Divisão de Infraestrutura",
+        "Secretaria de Pós Graduação",
+        "NAE (Núcleo de Apoio ao Estudante)",
+        "Setor de Convênios",
+        "DTI (Divisão de Tecnologia da Informação)",
+        "RH (Recursos Humanos)",
+        "Secretaria Acadêmica",
+        "Diretoria Acadêmica",
+        "Diretoria de Administração",
+        "DAE (Divisão de Apoio ao Estudante)",
+        "Biblioteca",
+        "Divisão de Serviços",
+        "Divisão de Contratos",
+        "Divisão de Gestão de Materiais",
+        "Câmara de Graduação",
+        "Secretaria de Extensão",
+        "Secretaria do Departamento",
+        "Laboratórios (diversos)"
+      ]
+    }
+  },
+  "referencias_bibliograficas": [
+    "Plano de Desenvolvimento Institucional da Unifesp para o quinquênio 2021-2025",
+    "Diretrizes Curriculares para Bacharelado em Ciência da Computação - Resolução nº 5, de 16 de novembro de 2016 (MEC/CNE/CES)",
+    "Resolução CNE/CES n. 2, de 18 de junho de 2007 (carga horária mínima e procedimentos de integralização)",
+    "Lei de Diretrizes e Base da Educação Nacional n. 9.394, de 20 de dezembro de 1996",
+    "Lei n. 11.788, de 25 de setembro de 2008 (estágio de estudantes)",
+    "SBC - Currículo de referência da SBC para cursos de Graduação em Computação, 2005",
+    "Parecer CNE/CES n. 136, de 09 de março de 2012 (Diretrizes Curriculares Nacionais para cursos de graduação em Computação)",
+    "The Joint Task Force on Computing Curricula - Computing Curricula, 2020 (ACM, AIS, Computer Society)",
+    "Unifesp/São José dos Campos - Projeto Pedagógico do BCT, dezembro de 2013",
+    "J. Delors - Educação: Um tesouro a descobrir (Relatório UNESCO), 1996",
+    "Resolução n. 01, de 17 de junho de 2010 (Núcleo Docente Estruturante)",
+    "Portaria n. 1.125 da Unifesp, de 29 de abril de 2013 (NDE)",
+    "Estatuto e Regimento Geral da Unifesp, 2011",
+    "Regimento Interno da Pró-reitora de Graduação, 2014",
+    "MEC/INEP - Instrumento de Avaliação de Cursos de Graduação, maio de 2012",
+    "MEC - Referenciais Orientadores para os Bacharelados Interdisciplinares e Similares, novembro de 2010",
+    "Academia Brasileira de Ciências - Subsídios para a Reforma da Educação Superior, novembro de 2004",
+    "UNESCO - Declaração Mundial sobre Educação Superior no Século XXI: Visão e Ação, outubro de 1998",
+    "Plano Nacional de Educação em Direitos Humanos (SEDH, MEC, MJ, UNESCO), 2007",
+    "Resolução CNE/CP n. 1, de 30 de maio de 2012 (Diretrizes Nacionais para Educação em Direitos Humanos)",
+    "Resolução CNE/CP n. 1, de 17 de junho de 2004 (Educação das relações étnico-raciais)",
+    "Resolução CNE/CP n. 2, de 15 de junho de 2012 (Diretrizes Curriculares Nacionais para Educação Ambiental)",
+    "FORPROEX - Conceito de extensão, institucionalização e financiamento, 1987"
+  ],
+  "metadados_rag": {
+    "tipo_documento": "projeto_pedagogico_curso",
+    "area_conhecimento": "ciencias_exatas_terra",
+    "subarea": "ciencia_computacao",
+    "nivel_ensino": "graduacao",
+    "grau": "bacharelado",
+    "instituicao_sigla": "UNIFESP",
+    "campus": "sao_jose_campos",
+    "ano_vigencia": 2023,
+    "palavras_chave": [
+      "ciência da computação",
+      "bacharelado",
+      "unifesp",
+      "são josé dos campos",
+      "projeto pedagógico",
+      "curricularização da extensão",
+      "bacharelado interdisciplinar",
+      "formação específica",
+      "competências técnicas",
+      "matriz curricular"
+    ],
+    "topicos_principais": [
+      "dados institucionais",
+      "histórico do curso",
+      "perfil do egresso",
+      "objetivos do curso",
+      "organização curricular",
+      "matriz curricular",
+      "ementas disciplinas",
+      "extensão universitária",
+      "atividades complementares",
+      "trabalho de conclusão de curso",
+      "estágio supervisionado",
+      "avaliação",
+      "infraestrutura",
+      "corpo docente",
+      "apoio ao discente"
+    ],
+    "versao_json": "1.0",
+    "data_conversao": "2025-01-XX"
+  }
+}
