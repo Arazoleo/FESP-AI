@@ -32,15 +32,22 @@ FESP-AI/
 
 - Python 3.9+
 - Ollama rodando localmente
-- Modelo: qwen2.5:14b
-- Embeddings: nomic-embed-text
+- Modelo LLM: qwen2.5:7b (configurável em `src/config.py`)
+- Embeddings: mxbai-embed-large (configurável em `src/config.py`)
 
 ## Instalacao
 
 ```bash
 python -m venv venv
-source venv/bin/activate
-pip install langchain-ollama langchain-community chromadb
+source venv/bin/activate  # No Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Baixar modelos do Ollama
+
+```bash
+ollama pull qwen2.5:7b
+ollama pull mxbai-embed-large
 ```
 
 ## Uso

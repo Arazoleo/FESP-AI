@@ -1,11 +1,15 @@
 import os
 import json
 import hashlib
+import warnings
 from pathlib import Path
 from typing import Dict, List
 
+# Suprimir warnings de depreciação
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 from langchain_ollama import OllamaLLM, OllamaEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough

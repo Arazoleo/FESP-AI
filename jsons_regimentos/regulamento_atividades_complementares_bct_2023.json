@@ -1,0 +1,531 @@
+{
+  "tipo_documento": "Regulamento",
+  "titulo": "Regulamento para Acreditação das Atividades Complementares do Bacharelado Interdisciplinar em Ciência e Tecnologia",
+  "instituicao": "Universidade Federal de São Paulo (UNIFESP)",
+  "campus": "São José dos Campos",
+  "departamento": "Departamento de Ciência e Tecnologia",
+  "curso": "Bacharelado Interdisciplinar em Ciência e Tecnologia (BCT)",
+  "data_aprovacao": "17 de março de 2023",
+  "orgao_responsavel": "Coordenação do Bacharelado Interdisciplinar em Ciência e Tecnologia",
+  
+  "objetivo": "Regulamentar as atividades extraclasse para acreditação como Atividades Complementares (AC) e Atividades Complementares Extensionistas (ACE), com o objetivo de complementar a formação técnico-científica e humanística dos estudantes",
+  
+  "tipos_atividades": {
+    "AC": {
+      "nome_completo": "Atividades Complementares",
+      "carater": "Obrigatório",
+      "carga_horaria_minima": "312 horas",
+      "descricao": "Atividades que complementam o conteúdo curricular regular oferecido pelo curso"
+    },
+    "ACE": {
+      "nome_completo": "Atividades Complementares Extensionistas",
+      "carater": "Eletivo",
+      "carga_horaria_minima": "36 horas",
+      "carga_horaria_maxima": "108 horas",
+      "descricao": "Atividades de cunho exclusivamente colaborativo realizadas em eventos, cursos, programas ou projetos de extensão",
+      "unidades_curriculares": [
+        "Atividades Complementares Extensionistas I (36h)",
+        "Atividades Complementares Extensionistas II (36h)",
+        "Atividades Complementares Extensionistas III (36h)"
+      ]
+    }
+  },
+  
+  "artigos": {
+    "artigo_1": {
+      "titulo": "Disposições Gerais",
+      "paragrafos": {
+        "paragrafo_1": {
+          "conteudo": "Cada hora de atividade complementar equivalerá a 1 hora acreditada"
+        },
+        "paragrafo_2": {
+          "conteudo": "O aluno deverá, obrigatoriamente, comprovar o cumprimento de, no mínimo, 312 horas em Atividades Complementares (AC) que irão complementar o conteúdo curricular regular oferecido pelo curso.",
+          "observacao": "Estudante que não completar as horas mínimas não integralizará o curso"
+        },
+        "paragrafo_3": {
+          "conteudo": "As Atividades Complementares Extensionistas (ACE) têm caráter eletivo, conforme descrito no Projeto Pedagógico do Curso de 2023 (PPC 2023)."
+        },
+        "paragrafo_4": {
+          "conteudo": "A Coordenação do Curso estabelecerá e renovará, bienalmente, a Comissão de Atividades Complementares (CAC) responsável por avaliar a AC e ACE desenvolvidas pelos estudantes através de parecer.",
+          "comissao": "Comissão de Atividades Complementares (CAC)",
+          "periodicidade_renovacao": "Bienal"
+        },
+        "paragrafo_5": {
+          "conteudo": "O formulário específico das AC e ACE realizadas pelos alunos, acompanhado de documentos comprobatórios, deverá ser apresentado à Secretaria Acadêmica",
+          "fluxo": [
+            "1. Estudante apresenta formulário + documentos à Secretaria Acadêmica",
+            "2. Secretaria encaminha à Câmara de Graduação",
+            "3. Câmara distribui às Coordenações de Curso",
+            "4. Coordenação BCT atribui e envia à CAC"
+          ]
+        },
+        "paragrafo_6": {
+          "conteudo": "O parecer da CAC deverá contemplar as seguintes alternativas:",
+          "alternativas_parecer": [
+            {
+              "tipo": "Deferimento",
+              "criterio": "Obedecendo ao mérito acadêmico para o estudante e para o curso"
+            },
+            {
+              "tipo": "Indeferimento",
+              "criterio": "Descrevendo os motivos pelos quais a solicitação não foi contemplada"
+            }
+          ]
+        },
+        "paragrafo_7": {
+          "conteudo": "O parecer de deferimento/indeferimento da CAC deverá ser encaminhado para aprovação pela Coordenação de Curso."
+        },
+        "paragrafo_8": {
+          "conteudo": "A Secretaria Acadêmica fará o lançamento final de 312 horas de AC ao estudante, ainda que tenha sido deferido em quantidade superior de horas.",
+          "observacao": "Limite máximo de lançamento: 312 horas"
+        },
+        "paragrafo_9": {
+          "conteudo": "As ACE serão lançadas pela Secretaria Acadêmica em grupos de 36 horas correspondentes às unidades curriculares Atividades Complementares Extensionistas I, II e III, de 36 horas cada."
+        },
+        "paragrafo_10": {
+          "conteudo": "O estudante deve entrar com o pedido de acreditação de AC quando julgar ter completado o mínimo de 312 horas em atividades comprovadas nas 3 (três) áreas constantes no PPC 2023 do BCT.",
+          "requisito": "Atividades nos 3 eixos obrigatórios"
+        },
+        "paragrafo_11": {
+          "conteudo": "O estudante pode entrar opcionalmente com pedido de acreditação das ACE quando completar no mínimo 36 horas e no máximo 108 horas de atividades de extensão comprovadas.",
+          "limites_ace": {
+            "minimo": "36 horas",
+            "maximo": "108 horas"
+          }
+        },
+        "paragrafo_12": {
+          "conteudo": "Os prazos de solicitação e resposta seguem o Calendário Acadêmico, item 'Aproveitamento de Estudos'."
+        }
+      }
+    },
+    
+    "artigo_2": {
+      "titulo": "Período de Realização",
+      "conteudo": "Os alunos podem realizar AC e/ou ACE desde o primeiro semestre de matrícula no Bacharelado em Ciência e Tecnologia.",
+      "paragrafos": {
+        "paragrafo_1": {
+          "conteudo": "As AC e as ACE podem ser realizadas a qualquer momento do curso, inclusive durante o período de férias."
+        },
+        "paragrafo_2": {
+          "conteudo": "O estudante que não completar as horas mínimas de AC previstas neste regimento não integralizará o curso.",
+          "consequencia": "Não integralização do curso"
+        }
+      }
+    },
+    
+    "artigo_3": {
+      "titulo": "Eixos das Atividades Complementares (AC)",
+      "conteudo": "As AC que podem ser reconhecidas para efeito de aproveitamento de carga horária de 312 horas são subdivididas em 3 (três) eixos",
+      
+      "eixos": {
+        "eixo_1": {
+          "nome": "Eixo de Formação Cidadã, Cultural ou Artística",
+          "limite_horas": "104 horas (máximo)",
+          "requisito_participacao": "Participação ativa como colaboradores para a execução das atividades",
+          
+          "atividades_aceitas": [
+            {
+              "tipo": "Organização de eventos",
+              "descricao": "Colaboração na organização de eventos para a comunidade externa que não sejam propostos pela UNIFESP"
+            },
+            {
+              "tipo": "Serviços sociais",
+              "descricao": "Colaboração em atividades organizadas por Organizações da Sociedade Civil ou instituições em geral que realizem serviços sociais, ambientais, políticos, religiosos, esportivos e culturais para a comunidade"
+            },
+            {
+              "tipo": "Atividades artísticas",
+              "descricao": "Participação em atividades artísticas como grupos de dança, teatro, canto, instrumental, circenses, performáticos, dentre outros"
+            },
+            {
+              "tipo": "Concursos e exposições",
+              "descricao": "Participação em concursos culturais ou exposições"
+            },
+            {
+              "tipo": "Doação e cadastros",
+              "descricao": "Doação de sangue, cadastramento no Registro Nacional de Doadores Voluntários de Medula Óssea (REDOME) e atividades afins"
+            },
+            {
+              "tipo": "Participação em entidades estudantis",
+              "descricao": "Participação no centro acadêmico (CAAK-UNIFESP) e/ou associação atlética (AAAJA-UNIFESP)"
+            }
+          ]
+        },
+        
+        "eixo_2": {
+          "nome": "Eixo de Orientação Acadêmica ou Monitoria",
+          "limite_horas": "Não especificado",
+          
+          "atividades_aceitas": [
+            {
+              "tipo": "Monitoria e tutoria",
+              "descricao": "Participação como monitor, tutor ou orientador acadêmico"
+            },
+            {
+              "tipo": "Mobilidade internacional",
+              "descricao": "Colaboração em projetos ou ações de recepção e acompanhamento acadêmico de estudantes estrangeiros em mobilidade internacional na UNIFESP"
+            },
+            {
+              "tipo": "Orientação acadêmica - DAE",
+              "descricao": "Participação ou colaboração em atividades de orientação acadêmica propostas pela Divisão de Assuntos Educacionais (DAE)"
+            },
+            {
+              "tipo": "Apoio estudantil",
+              "descricao": "Participação ou colaboração em atividades de orientação e apoio ao estudante propostas pelo Núcleo de Assistência Estudantil (NAE) ou Núcleo de Acessibilidade e Inclusão (NAI)"
+            },
+            {
+              "tipo": "Orientação vocacional",
+              "descricao": "Colaboração em atividades de orientação sobre os cursos do ICT para estudantes do ensino médio"
+            },
+            {
+              "tipo": "Recepção de calouros",
+              "descricao": "Colaboração nas ações institucionais da Semana de Recepção e Acolhimento de Calouros no ICT-UNIFESP e em período de matrículas de ingressantes"
+            }
+          ]
+        },
+        
+        "eixo_3": {
+          "nome": "Eixo de Formação Pessoal, Científica ou Profissional",
+          "limite_horas": "Não especificado",
+          
+          "atividades_aceitas": [
+            {
+              "tipo": "Iniciação Científica",
+              "descricao": "Participação como bolsista ou não-bolsista em Iniciação Científica (IC)"
+            },
+            {
+              "tipo": "Eventos científicos - ouvinte",
+              "descricao": "Participação como ouvinte em congressos, palestras, cursos e eventos científicos e tecnológicos"
+            },
+            {
+              "tipo": "Apresentação de trabalhos",
+              "descricao": "Apresentação de trabalhos em congressos acadêmicos"
+            },
+            {
+              "tipo": "Competições",
+              "descricao": "Participação como competidor ou treinador em competições científicas e tecnológicas"
+            },
+            {
+              "tipo": "Estágio não obrigatório",
+              "descricao": "Realização de estágio supervisionado não obrigatório, devidamente acompanhado pela DAE e pela Coordenação de Estágios do BCT",
+              "requisito": "Não poderá haver pendências junto à DAE no momento da solicitação de AC"
+            },
+            {
+              "tipo": "Atividade profissional",
+              "descricao": "Realização de atividade profissional comprovadamente em áreas ligadas a Ciência e Tecnologia",
+              "documentacao": "Apresentar cópia da Carteira de Trabalho Profissional e/ou declaração do supervisor que contenha descrição das atividades realizadas, período da contratação e carga horária diária"
+            },
+            {
+              "tipo": "Cursos de línguas",
+              "descricao": "Cursos de línguas estrangeiras realizados em instituições com este fim"
+            },
+            {
+              "tipo": "Unidades Curriculares Optativas",
+              "descricao": "Unidades Curriculares (UC) Optativas comprovadas por meio de Histórico Escolar"
+            }
+          ]
+        }
+      },
+      
+      "requisito_geral": {
+        "conteudo": "O estudante deve realizar atividades nos três eixos, obrigatoriamente e independentemente da proporção",
+        "minimo_por_eixo": "1 hora de atividade em cada eixo"
+      }
+    },
+    
+    "artigo_4": {
+      "titulo": "Atividades Complementares Extensionistas (ACE)",
+      "conteudo": "As ACE que podem ser reconhecidas para efeito de aproveitamento de carga horária, são atividades de cunho exclusivamente colaborativo realizadas em eventos, cursos, programas ou projetos de extensão",
+      "comprovacao": "Certificado emitido pelo Sistema de Informação de Extensão (SIEX) da UNIFESP",
+      
+      "paragrafos": {
+        "paragrafo_1": {
+          "conteudo": "Conforme Resolução do CONSU nº 160, de 14 de novembro de 2018, a Empresa Júnior é considerada atividade de extensão e, portanto, deve ser aproveitada em ACE.",
+          "referencia_legal": "Resolução CONSU nº 160/2018"
+        }
+      }
+    },
+    
+    "artigo_5": {
+      "titulo": "Estudantes Transferidos",
+      "conteudo": "Os estudantes que ingressarem no BCT por meio de algum tipo de transferência ficam, também, sujeitos ao cumprimento da carga horária de AC",
+      "aproveitamento": "Podem solicitar o cômputo de parte da carga horária atribuída pela Instituição de origem, desde que estas sejam compatíveis com as atividades estabelecidas neste regulamento"
+    },
+    
+    "artigo_6": {
+      "titulo": "Exigências para Aproveitamento das AC",
+      "conteudo": "Ficam estabelecidos como exigência para o aproveitamento das AC documentos oficiais das instituições, pró-reitorias, docentes, dentre outros, assinados pelos respectivos representantes legais ou coordenadores",
+      
+      "regras_documentacao": {
+        "certificados": {
+          "requisitos": [
+            "Possuir meios de verificação de autenticidade online",
+            "Identificação clara dos emissores (nome e assinatura do responsável)",
+            "Identificação da instituição",
+            "Descrição das atividades realizadas",
+            "Período de realização da atividade",
+            "Carga horária total"
+          ],
+          "limite_carga_horaria_diaria": "16 horas"
+        },
+        
+        "declaracoes": {
+          "requisitos": [
+            "Identificação clara dos emissores (nome e assinatura do responsável)",
+            "Identificação clara da instituição",
+            "Meios de contato (endereço, e-mail e/ou telefone institucional)",
+            "Descrição das atividades realizadas",
+            "Período de realização das atividades",
+            "Carga horária total"
+          ],
+          "limite_carga_horaria_diaria": "16 horas"
+        },
+        
+        "limite_certificados_instituicao": {
+          "maximo": "2 certificados de uma mesma instituição de origem",
+          "excecao": "Certificados emitidos pela UNIFESP (sem limite)"
+        },
+        
+        "atividades_unifesp": {
+          "comprovacao_padrao": "Certificados oficiais emitidos pelas pró-reitorias, diretorias e demais instâncias competentes",
+          "excecao": "Excepcionalmente poderão ser aceitas declarações, avaliados pela Coordenação do Curso"
+        }
+      }
+    },
+    
+    "artigo_7": {
+      "titulo": "Casos Omissos",
+      "conteudo": "Os casos omissos serão resolvidos pela Coordenação de Curso."
+    }
+  },
+  
+  "fluxo_processo": {
+    "etapas": [
+      {
+        "ordem": 1,
+        "responsavel": "Estudante",
+        "acao": "Preenche formulário específico e reúne documentos comprobatórios"
+      },
+      {
+        "ordem": 2,
+        "responsavel": "Estudante",
+        "acao": "Apresenta documentação à Secretaria Acadêmica"
+      },
+      {
+        "ordem": 3,
+        "responsavel": "Secretaria Acadêmica",
+        "acao": "Encaminha à Câmara de Graduação"
+      },
+      {
+        "ordem": 4,
+        "responsavel": "Câmara de Graduação",
+        "acao": "Distribui às Coordenações de Curso"
+      },
+      {
+        "ordem": 5,
+        "responsavel": "Coordenação BCT",
+        "acao": "Atribui e envia documentação aos membros da CAC"
+      },
+      {
+        "ordem": 6,
+        "responsavel": "CAC (Comissão de Atividades Complementares)",
+        "acao": "Avalia e emite parecer (deferimento ou indeferimento)"
+      },
+      {
+        "ordem": 7,
+        "responsavel": "Coordenação de Curso",
+        "acao": "Aprova parecer da CAC"
+      },
+      {
+        "ordem": 8,
+        "responsavel": "Secretaria Acadêmica",
+        "acao": "Realiza lançamento final (312h para AC ou grupos de 36h para ACE)"
+      }
+    ]
+  },
+  
+  "resumo_executivo": {
+    "atividades_complementares_AC": {
+      "carater": "Obrigatório",
+      "carga_horaria_total": "312 horas",
+      "quantidade_eixos": 3,
+      "requisito_minimo_por_eixo": "1 hora",
+      "limite_eixo_1": "104 horas máximo",
+      "consequencia_nao_cumprimento": "Não integralização do curso"
+    },
+    
+    "atividades_complementares_extensionistas_ACE": {
+      "carater": "Eletivo",
+      "carga_horaria_minima": "36 horas",
+      "carga_horaria_maxima": "108 horas",
+      "lancamento": "Grupos de 36 horas (ACE I, II e III)",
+      "comprovacao": "Certificado SIEX"
+    },
+    
+    "prazos": {
+      "referencia": "Calendário Acadêmico - item 'Aproveitamento de Estudos'",
+      "renovacao_comissao": "Bienal"
+    },
+    
+    "documentacao": {
+      "limite_horas_dia": "16 horas",
+      "limite_certificados_mesma_instituicao": "2 (exceto UNIFESP)"
+    }
+  },
+  
+  "entidades_citadas": {
+    "comissoes": [
+      {
+        "sigla": "CAC",
+        "nome": "Comissão de Atividades Complementares",
+        "funcao": "Avaliar AC e ACE através de parecer",
+        "renovacao": "Bienal"
+      }
+    ],
+    
+    "unidades_unifesp": [
+      {
+        "sigla": "DAE",
+        "nome": "Divisão de Assuntos Educacionais"
+      },
+      {
+        "sigla": "NAE",
+        "nome": "Núcleo de Assistência Estudantil"
+      },
+      {
+        "sigla": "NAI",
+        "nome": "Núcleo de Acessibilidade e Inclusão"
+      },
+      {
+        "sigla": "ICT",
+        "nome": "Instituto de Ciência e Tecnologia"
+      },
+      {
+        "sigla": "SIEX",
+        "nome": "Sistema de Informação de Extensão"
+      }
+    ],
+    
+    "entidades_estudantis": [
+      {
+        "sigla": "CAAK-UNIFESP",
+        "tipo": "Centro Acadêmico"
+      },
+      {
+        "sigla": "AAAJA-UNIFESP",
+        "tipo": "Associação Atlética"
+      }
+    ],
+    
+    "externos": [
+      {
+        "sigla": "REDOME",
+        "nome": "Registro Nacional de Doadores Voluntários de Medula Óssea"
+      }
+    ]
+  },
+  
+  "referencias_legais": [
+    {
+      "tipo": "Resolução",
+      "numero": "CONSU nº 160",
+      "data": "14 de novembro de 2018",
+      "assunto": "Empresa Júnior como atividade de extensão"
+    },
+    {
+      "tipo": "Projeto Pedagógico",
+      "codigo": "PPC 2023",
+      "nome": "Projeto Pedagógico do Curso de 2023"
+    }
+  ],
+  
+  "indices": {
+    "por_tipo_atividade": {
+      "formacao_cidada_cultural": [
+        "Organização de eventos externos",
+        "Serviços sociais e comunitários",
+        "Atividades artísticas",
+        "Concursos e exposições",
+        "Doação de sangue e REDOME",
+        "Centro acadêmico e atlética"
+      ],
+      "orientacao_academica": [
+        "Monitoria e tutoria",
+        "Mobilidade internacional",
+        "Orientação DAE",
+        "NAE e NAI",
+        "Orientação vocacional",
+        "Recepção de calouros"
+      ],
+      "formacao_cientifica_profissional": [
+        "Iniciação Científica",
+        "Eventos científicos",
+        "Apresentação de trabalhos",
+        "Competições",
+        "Estágio não obrigatório",
+        "Atividade profissional",
+        "Cursos de línguas",
+        "UCs Optativas"
+      ]
+    },
+    
+    "por_carater": {
+      "obrigatorio": ["Atividades Complementares (AC) - 312h"],
+      "eletivo": ["Atividades Complementares Extensionistas (ACE) - 36-108h"]
+    }
+  },
+  
+  "perguntas_frequentes": [
+    {
+      "pergunta": "Qual a carga horária mínima obrigatória de AC?",
+      "resposta": "312 horas, distribuídas nos três eixos obrigatórios (mínimo 1 hora em cada eixo)"
+    },
+    {
+      "pergunta": "As ACE são obrigatórias?",
+      "resposta": "Não, as ACE têm caráter eletivo e podem totalizar de 36 a 108 horas"
+    },
+    {
+      "pergunta": "Preciso fazer atividades nos três eixos?",
+      "resposta": "Sim, é obrigatório ter pelo menos 1 hora de atividade em cada um dos três eixos"
+    },
+    {
+      "pergunta": "Posso fazer AC durante as férias?",
+      "resposta": "Sim, as AC e ACE podem ser realizadas a qualquer momento do curso, inclusive durante o período de férias"
+    },
+    {
+      "pergunta": "Qual o limite de horas no Eixo 1 (Formação Cidadã)?",
+      "resposta": "O limite máximo é de 104 horas"
+    },
+    {
+      "pergunta": "Quantos certificados de uma mesma instituição posso apresentar?",
+      "resposta": "Máximo de 2 certificados, exceto certificados emitidos pela UNIFESP que não têm limite"
+    },
+    {
+      "pergunta": "Qual o limite de horas por dia em uma atividade?",
+      "resposta": "A carga horária diária não poderá ultrapassar 16 horas"
+    },
+    {
+      "pergunta": "O que acontece se eu não completar as 312 horas de AC?",
+      "resposta": "O estudante não integralizará o curso"
+    },
+    {
+      "pergunta": "Empresa Júnior conta como AC ou ACE?",
+      "resposta": "Empresa Júnior é considerada atividade de extensão (ACE) conforme Resolução CONSU nº 160/2018"
+    },
+    {
+      "pergunta": "Quando devo solicitar a acreditação das AC?",
+      "resposta": "Quando julgar ter completado o mínimo de 312 horas em atividades comprovadas nos 3 eixos"
+    }
+  ],
+  
+  "metadados": {
+    "data_extracao": "2025",
+    "fonte": "Regulamento_de_Atividades_Complementares_BCT_2023.pdf",
+    "instituicao": "UNIFESP - Campus São José dos Campos",
+    "departamento": "Departamento de Ciência e Tecnologia",
+    "curso": "Bacharelado Interdisciplinar em Ciência e Tecnologia",
+    "versao": "1.0",
+    "data_documento": "17 de março de 2023"
+  }
+}
+
+
