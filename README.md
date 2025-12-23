@@ -16,9 +16,15 @@ Este projeto utiliza ChromaDB como banco vetorial e Ollama como LLM local para r
 
 ```
 FESP-AI/
+├── src/
+│   ├── __init__.py        # Exports principais
+│   ├── config.py          # Configuracoes
+│   ├── parsers.py         # Parsers de JSON
+│   ├── rag.py             # Classe RAG principal
+│   └── cli.py             # Interface de linha de comando
 ├── jsons_disciplinas/     # 86 arquivos JSON de disciplinas
 ├── jsons_regimentos/      # Documentos institucionais
-├── llm.py                 # Sistema RAG principal
+├── main.py                # Ponto de entrada
 └── ajudauni_downloader/   # Scripts auxiliares
 ```
 
@@ -42,7 +48,7 @@ pip install langchain-ollama langchain-community chromadb
 ### Modo interativo
 
 ```bash
-python llm.py
+python main.py
 ```
 
 Comandos disponiveis:
@@ -53,7 +59,7 @@ Comandos disponiveis:
 ### Uso programatico
 
 ```python
-from llm import RAGUnifesp
+from src import RAGUnifesp
 
 rag = RAGUnifesp()
 rag.sync()
