@@ -1,0 +1,110 @@
+{
+  "disciplina": {
+    "codigo": "3579",
+    "nome": "Projeto e Análise de Algoritmos",
+    "nome_ingles": "Design and Analysis of Algorithms",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Computação", "Ciência da Computação", "Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 4,
+    "turno": "Integral",
+    "docentes": ["Sanderson Oliveira", "Reginaldo Kuroshu"],
+    "pre_requisitos": [
+      {
+        "codigo": "2201",
+        "nome": "Matemática Discreta"
+      },
+      {
+        "codigo": "2833",
+        "nome": "Algoritmos e Estruturas de Dados II"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 52,
+      "pratica": 20,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Análise assintótica",
+        "Relações de recorrência",
+        "Técnicas de prova de corretude de algoritmos",
+        "Construção de algoritmos por indução",
+        "Análise de Algoritmos: gulosos, ordenação e pesquisa",
+        "Programação dinâmica",
+        "Redutibilidade de problemas",
+        "Introdução à NP-Completude"
+      ],
+      "descricao_completa": "Análise assintótica. Relações de recorrência. Técnicas de prova de corretude de algoritmos. Construção de algoritmos por indução. Análise de Algoritmos: gulosos, ordenação e pesquisa. Programação dinâmica. Redutibilidade de problemas. Introdução à NP-Completude."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["CORMEN, Thomas H", "SOUZA, Vanderberg D", "STEIN, Clifford", "RIVEST, Ronald L", "LEISERSON, Charles E"],
+          "titulo": "Algoritmos: teoria e prática",
+          "local": "Rio de Janeiro",
+          "editora": "Campus",
+          "ano": 2002
+        },
+        {
+          "autores": ["VELOSO, Paulo", "TOSCANI, Laira Vieira"],
+          "titulo": "Complexidade de algoritmos",
+          "edicao": "2ª ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2008
+        },
+        {
+          "autores": ["ZIVIANI, Nivio"],
+          "titulo": "Projeto de algoritmos: com implementações em PASCAL e C",
+          "edicao": "3ª ed. rev. e ampl.",
+          "local": "São Paulo",
+          "editora": "Heinle Cengage Learning",
+          "ano": 2011
+        },
+        {
+          "autores": ["GERSTING, Judith L", "IORIO, Valéria de M."],
+          "titulo": "Fundamentos matemáticos para a ciência da computação: um tratamento moderno de matemática discreta",
+          "edicao": "5ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2008
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["MANBER, Udi"],
+          "titulo": "Introduction to algorithms: a creative approach",
+          "local": "Reading, Massachusetts",
+          "editora": "Addison-Wesley",
+          "ano": 1989
+        },
+        {
+          "autores": ["SKIENA, Steven S."],
+          "titulo": "The algorithm design manual",
+          "edicao": "2ª ed.",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2008
+        },
+        {
+          "autores": ["ZIVIANI, Nivio"],
+          "titulo": "Projeto de algoritmos: com implementações em JAVA e C++",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2012
+        },
+        {
+          "autores": ["SIPSER, Michael"],
+          "titulo": "Introdução à teoria da computação",
+          "local": "São Paulo",
+          "editora": "Cengage Learning",
+          "ano": 2007
+        }
+      ]
+    }
+  }
+}

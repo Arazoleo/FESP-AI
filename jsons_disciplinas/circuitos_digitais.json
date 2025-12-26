@@ -14,7 +14,7 @@
     "oferta": "Semestral",
     "termo": 3,
     "turno": "Integral",
-    "docentes": ["Thaína Tosta", "Fernando Rossi", "Denise Stringhini", "Fábio Cappabianco", "Mateus Urban", "Sérgio Ronaldo"],
+    "docentes": ["Thaína Tosta", "Fernanda Rossi", "Denise Stringhini", "Fábio Cappabianco", "Mateus Urban", "Sérgio Ronaldo"],
     "pre_requisitos": [],
     "carga_horaria": {
       "total": 72,

@@ -1,0 +1,101 @@
+{
+  "disciplina": {
+    "codigo": "2975",
+    "nome": "Teoria dos Grafos",
+    "nome_ingles": "Graph Theory",
+    "campus": "São José dos Campos",
+    "curso": ["Ciência da Computação", "Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": "Integral",
+    "docentes": ["Elbert Macau", "Reginaldo Kuroshu", "Luís Pereira"],
+    "pre_requisitos": [
+      {
+        "codigo": "3579",
+        "nome": "Projeto e Análise de Algoritmos"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 62,
+      "pratica": 10,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Definições e conceitos básicos",
+        "Isomorfismo",
+        "Árvores",
+        "Conexidade",
+        "Problema do caminho mínimo",
+        "Trilhas eulerianas e ciclos hamiltonianos",
+        "Emparelhamentos",
+        "Problema do Fluxo máximo",
+        "Planaridade",
+        "Coloração",
+        "Tópicos selecionados"
+      ],
+      "descricao_completa": "Definições e conceitos básicos. Isomorfismo. Árvores. Conexidade. Problema do caminho mínimo. Trilhas eulerianas e ciclos hamiltonianos. Emparelhamentos. Problema do Fluxo máximo. Planaridade. Coloração. Tópicos selecionados."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["BONDY, J.A.", "MURTY, U.S.R."],
+          "titulo": "Graph theory",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2008
+        },
+        {
+          "autores": ["DIESTEL, Reinhard"],
+          "titulo": "Graph theory",
+          "edicao": "4ª ed.",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2010
+        },
+        {
+          "autores": ["SEDGEWICK, Robert"],
+          "titulo": "Algorithms in C: part 5 - graph algorithms",
+          "local": "New Jersey",
+          "editora": "Addison-Wesley",
+          "ano": 2007
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BOAVENTURA NETTO, Paulo Oswaldo"],
+          "titulo": "Grafos: introdução e prática",
+          "edicao": "2ª ed.",
+          "local": "São Paulo",
+          "editora": "Blucher",
+          "ano": 2017
+        },
+        {
+          "autores": ["ROSEN, Kenneth H", "YELLEN, Jay", "GROSS, Jonathan L."],
+          "titulo": "Graph Theory and its applications",
+          "edicao": "2ª ed.",
+          "local": "New York",
+          "editora": "Chapman & Hall/CRC",
+          "ano": 2006
+        },
+        {
+          "autores": ["BOLLOBÁS, Béla"],
+          "titulo": "Modern graph theory",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 1998
+        },
+        {
+          "autores": ["GOLDBARG, Marco", "GOLDBARG, Elizabeth"],
+          "titulo": "Grafos: conceitos, algoritmos e aplicações",
+          "local": "Rio de Janeiro",
+          "editora": "Elsevier",
+          "ano": 2012
+        }
+      ]
+    }
+  }
+}

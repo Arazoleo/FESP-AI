@@ -1,0 +1,117 @@
+{
+  "disciplina": {
+    "codigo": "3490",
+    "nome": "Inteligência Artificial",
+    "nome_ingles": "Artificial Intelligence",
+    "campus": "São José dos Campos",
+    "curso": ["Ciência da Computação", "Bacharelado Interdisciplinar em Ciência e Tecnologia"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 5,
+    "turno": "Integral",
+    "docentes": ["Lilian Berton", "Didier Vega", "Fábio Faria"],
+    "pre_requisitos": [
+      {
+        "codigo": "2832",
+        "nome": "Algoritmos e Estrutura de Dados I"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 48,
+      "pratica": 16,
+      "extensao": 8
+    },
+    "ementa": {
+      "topicos": [
+        "História e fundamentos da Inteligência Artificial (IA)",
+        "Métodos de busca para resolução de problemas: busca cega, busca heurística e busca competitiva",
+        "Representação do conhecimento",
+        "Conceitos de aprendizado de máquina: aprendizados supervisionado e não-supervisionado",
+        "Aplicações de IA: Processamento de Linguagens Naturais, Jogos, Robótica e Mineração de Dados"
+      ],
+      "descricao_completa": "História e fundamentos da Inteligência Artificial (IA). Métodos de busca para resolução de problemas: busca cega, busca heurística e busca competitiva. Representação do conhecimento. Conceitos de aprendizado de máquina: aprendizados supervisionado e não-supervisionado. Aplicações de IA: Processamento de Linguagens Naturais, Jogos, Robótica e Mineração de Dados."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["RUSSELL, Stuart J", "WAZLAWICK, Raul S", "SOUZA, Vanderberg D", "NORVIG, Peter"],
+          "titulo": "Inteligência artificial",
+          "local": "Rio de Janeiro",
+          "editora": "Person",
+          "ano": 2004
+        },
+        {
+          "autores": ["HAN, Jiawei", "KAMBER, Micheline", "PEI, Jian"],
+          "titulo": "Data mining: concepts and techniques",
+          "edicao": "3ª ed.",
+          "local": "Waltham, MA",
+          "editora": "Elsevier",
+          "ano": 2011
+        },
+        {
+          "autores": ["NETO, Antonio Valerio", "BERTON, Lilian", "TAKAHATA, Andre Kazuo"],
+          "titulo": "Ciência de Dados e a Inteligência Artificial na Área da Saúde",
+          "local": "",
+          "editora": "Editora dos Editores",
+          "ano": 2021
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["MOHAMMED, J. Zaki", "WAGNER MEIRA, Jr."],
+          "titulo": "Data Mining and Machine Learning: Fundamental Concepts and Algorithms",
+          "edicao": "2ª ed.",
+          "local": "",
+          "editora": "Cambridge University Press",
+          "ano": 2020
+        },
+        {
+          "autores": ["BISHOP, Christopher M."],
+          "titulo": "Pattern recognition and machine learning",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2006
+        },
+        {
+          "autores": ["TAN, Pang-Ning", "STEINBACH, Michael", "KUMAR, Vipin"],
+          "titulo": "Introduction to data mining",
+          "local": "Boston",
+          "editora": "Pearson",
+          "ano": 2006
+        },
+        {
+          "autores": ["LUGER, George F."],
+          "titulo": "Artificial intelligence: structures and strategies for complex problem solving",
+          "local": "Boston",
+          "editora": "Pearson",
+          "ano": 2008
+        },
+        {
+          "autores": ["LUGER, George F."],
+          "titulo": "Inteligência artificial",
+          "local": "",
+          "editora": "Editora Pearson",
+          "ano": 2014
+        },
+        {
+          "autores": ["WITTEN, Ian H.", "FRANK, Eibe", "HALL, Mark A."],
+          "titulo": "Data mining: Practical machine learning tools and techniques",
+          "edicao": "3ª ed.",
+          "local": "Burlington (USA)",
+          "editora": "Morgan Kaufmann",
+          "ano": 2011
+        },
+        {
+          "autores": ["FACELI, Katti", "LORENA, Ana C.", "GAMA, João", "AL, et"],
+          "titulo": "Inteligência artificial: uma abordagem de aprendizado de máquina",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2021
+        }
+      ]
+    }
+  }
+}
