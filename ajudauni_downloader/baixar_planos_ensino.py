@@ -22,7 +22,7 @@ BASE_URL = "https://ajudauni.com"
 def criar_pasta():
     """Cria a pasta de saída"""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    print(f"✓ Pasta '{OUTPUT_DIR}' criada\n")
+    print(f"Pasta '{OUTPUT_DIR}' criada\n")
 
 def criar_driver():
     """Cria o driver do Selenium"""
@@ -38,7 +38,7 @@ def limpar_nome(nome):
 
 def obter_disciplinas(driver):
     """Obtém lista de disciplinas"""
-    print("🔍 Buscando disciplinas...")
+    print("Buscando disciplinas...")
     driver.get(BASE_URL)
     time.sleep(3)
     
@@ -50,7 +50,7 @@ def obter_disciplinas(driver):
         if href and href not in disciplinas:
             disciplinas.append(href)
     
-    print(f"✓ Encontradas {len(disciplinas)} disciplinas\n")
+    print(f"Encontradas {len(disciplinas)} disciplinas\n")
     return disciplinas
 
 def baixar_pdf_disciplina(driver, url_disciplina):
@@ -85,7 +85,7 @@ def baixar_pdf_disciplina(driver, url_disciplina):
                 caminho = os.path.join(OUTPUT_DIR, nome_arquivo)
                 
                 if os.path.exists(caminho):
-                    print(f"  ⊙ Já existe")
+                    print(f"  Ja existe")
                     return True
                 
                 response = requests.get(pdf_url, timeout=60, stream=True)
@@ -96,18 +96,18 @@ def baixar_pdf_disciplina(driver, url_disciplina):
                         f.write(chunk)
                 
                 tamanho = os.path.getsize(caminho) / 1024
-                print(f"  ✓ Baixado ({tamanho:.1f} KB)")
+                print(f"  Baixado ({tamanho:.1f} KB)")
                 return True
             else:
-                print(f"  ⚠ Não é PDF")
+                print(f"  Aviso: Nao e PDF")
                 return None
                 
         except:
-            print(f"  ⚠ PDF não encontrado")
+            print(f"  Aviso: PDF nao encontrado")
             return None
             
     except Exception as e:
-        print(f"  ✗ Erro: {str(e)[:40]}")
+        print(f"  Erro: {str(e)[:40]}")
         return False
 
 def main():
@@ -128,7 +128,7 @@ def main():
         falha = 0
         sem_pdf = 0
         
-        print(f"📥 Baixando {total} planos de ensino...\n")
+        print(f"Baixando {total} planos de ensino...\n")
         
         for i, url in enumerate(disciplinas, 1):
             nome = url.split('/')[-1].replace('-', ' ').title()
@@ -147,10 +147,10 @@ def main():
         print("\n" + "=" * 70)
         print("  RESUMO")
         print("=" * 70)
-        print(f"✓ Sucesso: {sucesso}")
-        print(f"✗ Falha: {falha}")
-        print(f"⚠ Sem PDF: {sem_pdf}")
-        print(f"📁 Pasta: {os.path.abspath(OUTPUT_DIR)}")
+        print(f"Sucesso: {sucesso}")
+        print(f"Falha: {falha}")
+        print(f"Sem PDF: {sem_pdf}")
+        print(f"Pasta: {os.path.abspath(OUTPUT_DIR)}")
         print("=" * 70)
         
     finally:

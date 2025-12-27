@@ -1,0 +1,33 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Instalar dependências do sistema
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar requirements e instalar dependências Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar código da aplicação
+COPY src/ ./src/
+COPY jsons_disciplinas/ ./jsons_disciplinas/
+COPY jsons_regimentos/ ./jsons_regimentos/
+COPY start_api.py .
+
+# Criar diretório para persistência do ChromaDB
+RUN mkdir -p ./chroma_db_unifesp
+
+# Variáveis de ambiente
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONWARNINGS=ignore
+ENV OLLAMA_BASE_URL=http://ollama:11434
+
+# Expor porta da API
+EXPOSE 8000
+
+# Comando para iniciar a API
+CMD ["python", "start_api.py"]
