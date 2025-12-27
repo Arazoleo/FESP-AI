@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentação
+*.md
+!README.md
+
+# Dados temporários
+*.log
+*.tmp
+.DS_Store
+
+# Node (para não copiar frontend no build do backend)
+frontend/
+node_modules/
+
+# ChromaDB será montado como volume
+chroma_db_unifesp/
+

@@ -1,0 +1,52 @@
+services:
+  # Backend API
+  # Nota: Ollama roda nativamente no Mac (fora do Docker) para usar Metal/GPU
+  # Execute ./scripts/start_ollama_native.sh antes de iniciar o Docker
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: fesp-ai-backend
+    volumes:
+      - ./chroma_db_unifesp:/app/chroma_db_unifesp
+      - ./jsons_disciplinas:/app/jsons_disciplinas
+      - ./jsons_regimentos:/app/jsons_regimentos
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - PYTHONUNBUFFERED=1
+      # Modelos podem ser configurados via variáveis de ambiente
+      # Exemplo: MODEL_NAME=qwen2.5:7b docker-compose up (para usar modelo maior)
+      - MODEL_NAME=${MODEL_NAME:-qwen2.5:3b}  # Padrão: modelo mais rápido
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-mxbai-embed-large}  # Padrão: embeddings melhor qualidade
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - fesp-ai-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fesp-ai-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - fesp-ai-network
+
+networks:
+  fesp-ai-network:
+    driver: bridge

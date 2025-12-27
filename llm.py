@@ -1,6 +1,3 @@
-# Compatibilidade com versao anterior
-# Use: from src import RAGUnifesp
-
 from src.rag import RAGUnifesp
 from src.config import Config
 from src.cli import main
