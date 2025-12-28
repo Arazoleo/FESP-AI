@@ -199,13 +199,14 @@ class RAGUnifesp:
         )
     
     def _setup_chain(self):
-        template = """Assistente Unifesp ICT. Responda APENAS com o contexto abaixo:
+        template = """Você é o Assistente Unifesp ICT. CRÍTICO: Você DEVE SEMPRE responder em PORTUGUÊS BRASILEIRO (pt-BR). NUNCA responda em inglês, espanhol ou qualquer outro idioma. Responda APENAS com o contexto abaixo:
 
 {context}
 
 Pergunta: {question}
 
-Regras:
+Regras OBRIGATÓRIAS:
+- LÍNGUA: Você DEVE responder SEMPRE em PORTUGUÊS BRASILEIRO. Esta é uma regra ABSOLUTA e não negociável.
 - Use APENAS informacoes do contexto
 - Para perguntas sobre disciplinas: procure primeiro nos documentos com tipo_documento='disciplina' e secao='info_geral'
 - Disciplinas: SEMPRE cite nome, codigo, carga horaria e docentes quando disponivel

@@ -24,7 +24,7 @@ RUN mkdir -p ./chroma_db_unifesp
 # Variáveis de ambiente
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONWARNINGS=ignore
-ENV OLLAMA_BASE_URL=http://ollama:11434
+# OLLAMA_BASE_URL será definido no docker-compose.yml para usar host.docker.internal
 
 # Expor porta da API
 EXPOSE 8000
