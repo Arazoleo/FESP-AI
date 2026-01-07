@@ -1,0 +1,49 @@
+{
+  "disciplina": {
+    "codigo": "6100",
+    "nome": "Projetos em Engenharia de Computação",
+    "nome_ingles": "Projects in Computer Engineering",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia de Computação"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 7,
+    "turno": "Integral",
+    "docentes": ["Tiago de Oliveira", "Denise Stringhini"],
+    "pre_requisitos": [
+      {
+        "codigo": "2831",
+        "nome": "Banco de Dados"
+      },
+      {
+        "codigo": "2614",
+        "nome": "Engenharia de Software"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 0,
+      "pratica": 0,
+      "extensao": 72
+    },
+    "ementa": {
+      "topicos": [
+        "Resolução de problemas ou desenvolvimento de projetos relacionados à Engenharia de Computação por meio da metodologia PBL (Problem-Based Learning)"
+      ],
+      "descricao_completa": "Resolução de problemas ou desenvolvimento de projetos relacionados à Engenharia de Computação por meio da metodologia PBL (Problem-Based Learning)."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": [],
+          "titulo": "A bibliografia desta unidade curricular pode ser disponibilizada junto com o problema/projeto definido no início do semestre e deve compreender os recursos de aprendizagem que o aluno poderá utilizar no processo de fundamentação e levantamento bibliográfico do problema apresentado. Portanto, a bibliografia é variável, podendo ser composta por artigos técnicos e científicos, manuais e tutoriais, livros e sites da internet. No entanto, vale a pena ressaltar que o aluno deve ter total liberdade na busca de referências bibliográficas para a resolução do problema apresentado.",
+          "local": "",
+          "editora": "",
+          "ano": null
+        }
+      ],
+      "complementar": []
+    }
+  }
+}

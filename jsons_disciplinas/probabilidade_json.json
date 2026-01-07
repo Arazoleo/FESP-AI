@@ -1,0 +1,119 @@
+{
+  "disciplina": {
+    "codigo": "3163",
+    "nome": "Probabilidade",
+    "nome_ingles": "Probability",
+    "campus": "São José dos Campos",
+    "curso": ["Bacharelado em Matemática Computacional"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 4,
+    "turno": "",
+    "docentes": ["Sâmia Calheiros"],
+    "pre_requisitos": [
+      {
+        "codigo": "2609",
+        "nome": "Probabilidade e Estatística"
+      },
+      {
+        "codigo": "5359",
+        "nome": "Cálculo em Várias Variáveis"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 62,
+      "pratica": 10,
+      "extensao": 0
+    },
+    "ementa": {
+      "topicos": [
+        "Revisão sobre variáveis aleatórias e funções de densidade de probabilidade unidimensionais",
+        "Introdução à convergência de Variáveis Aleatórias",
+        "Teorema Central do Limite",
+        "Variável aleatória multidimensional",
+        "Distribuição de funções de variáveis aleatórias multidimensionais"
+      ],
+      "descricao_completa": "Revisão sobre variáveis aleatórias e funções de densidade de probabilidade unidimensionais. Introdução à convergência de Variáveis Aleatórias. Teorema Central do Limite. Variável aleatória multidimensional. Distribuição de funções de variáveis aleatórias multidimensionais."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["DANTAS, C. A. B."],
+          "titulo": "Probabilidade: um curso introdutório",
+          "edicao": "3ª ed.",
+          "local": "São Paulo",
+          "editora": "EDUSP",
+          "ano": 2008
+        },
+        {
+          "autores": ["MEYER, P. L."],
+          "titulo": "Probabilidade: aplicações à estatística",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2009
+        },
+        {
+          "autores": ["ROSS, S."],
+          "titulo": "Probabilidade: um curso moderno com aplicações",
+          "edicao": "8ª ed.",
+          "local": "Porto Alegre",
+          "editora": "Bookman",
+          "ano": 2010
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["BUSSAB, W. O.", "MORETTIN, P. A."],
+          "titulo": "Estatística básica",
+          "edicao": "6ª ed.",
+          "local": "São Paulo",
+          "editora": "Saraiva",
+          "ano": 2010
+        },
+        {
+          "autores": ["DEVORE, J. L."],
+          "titulo": "Probabilidade e estatística para engenharia e ciências",
+          "edicao": "1ª ed.",
+          "local": "São Paulo",
+          "editora": "Thomson",
+          "ano": 2006
+        },
+        {
+          "autores": ["GNEDENKO, B. V."],
+          "titulo": "A teoria da probabilidade",
+          "edicao": "1ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "Ciência Moderna",
+          "ano": 2008
+        },
+        {
+          "autores": ["JAMES, B. R."],
+          "titulo": "Probabilidade: um curso em nível intermediário",
+          "edicao": "3ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "SBM",
+          "ano": 2011
+        },
+        {
+          "autores": ["MAGALHÃES, M. N.", "LIMA, A. C. P."],
+          "titulo": "Noções de probabilidade e estatística",
+          "edicao": "7ª ed.",
+          "local": "São Paulo",
+          "editora": "EDUSP",
+          "ano": 2010
+        },
+        {
+          "autores": ["MONTGOMERY, D. C.", "RUNGER, G. C."],
+          "titulo": "Estatística aplicada e probabilidade para engenheiros",
+          "edicao": "2ª ed.",
+          "local": "Rio de Janeiro",
+          "editora": "LTC",
+          "ano": 2008
+        }
+      ]
+    }
+  }
+}
