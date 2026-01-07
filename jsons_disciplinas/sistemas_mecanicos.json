@@ -1,0 +1,119 @@
+{
+  "disciplina": {
+    "codigo": "5398",
+    "nome": "Sistemas Mecânicos",
+    "nome_ingles": "Mechanical Systems",
+    "campus": "São José dos Campos",
+    "curso": ["Engenharia Biomédica"],
+    "tipo": "Fixa",
+    "formato": "Disciplina",
+    "oferta": "Semestral",
+    "termo": 6,
+    "turno": "Integral",
+    "docentes": ["Mateus Urban", "Maria Elizete Kunkel"],
+    "pre_requisitos": [
+      {
+        "codigo": "4770",
+        "nome": "Mecânica Geral"
+      }
+    ],
+    "carga_horaria": {
+      "total": 72,
+      "teorica": 36,
+      "pratica": 16,
+      "extensao": 20
+    },
+    "ementa": {
+      "topicos": [
+        "Cinemática de Mecanismos",
+        "Síntese analítica dos mecanismos",
+        "Dinâmica de mecanismos",
+        "Modelagem, simulação e projeto de sistemas mecânicos",
+        "Atividades de extensão associadas aos conceitos teóricos e práticos",
+        "Visitas técnicas"
+      ],
+      "descricao_completa": "Cinemática de Mecanismos; Síntese analítica dos mecanismos; Dinâmica de mecanismos; Modelagem, simulação e projeto de sistemas mecânicos. Serão desenvolvidas atividades de extensão associadas aos conceitos teóricos e práticos previstos neste curso. Poderão ser realizadas visitas técnicas, de acordo com a disponibilidade."
+    },
+    "bibliografia": {
+      "basica": [
+        {
+          "autores": ["NORTON, Robert L."],
+          "titulo": "Cinemática e Dinâmica Dos Mecanismos",
+          "local": "",
+          "editora": "Mcgraw Hill",
+          "ano": 2010
+        },
+        {
+          "autores": ["HIBBELER, R.C."],
+          "titulo": "Estática, Mecânica para Engenharia",
+          "edicao": "12ª ed.",
+          "local": "São Paulo",
+          "editora": "Prentice Hall",
+          "ano": 2011
+        },
+        {
+          "autores": ["MOAVENI, Saeed"],
+          "titulo": "Finite element analysis: theory and application with ansys",
+          "edicao": "3ª ed.",
+          "local": "Upper Saddle River, EUA",
+          "editora": "Pearson Prentice",
+          "ano": 2008
+        }
+      ],
+      "complementar": [
+        {
+          "autores": ["SHIGLEY, J.E."],
+          "titulo": "Cinematica dos Mecanismos e Dinâmica das Máquinas",
+          "local": "",
+          "editora": "Ed. Blucher",
+          "ano": 1970
+        },
+        {
+          "autores": ["SCLATER, Neil"],
+          "titulo": "Mechanisms and Mechanical Devices Sourcebook",
+          "edicao": "5ª ed.",
+          "local": "",
+          "editora": "McGraw-Hill Professional",
+          "ano": 2011
+        },
+        {
+          "autores": ["WALDRON, Keneth J.", "KINZEL, Gary L."],
+          "titulo": "Kinematics, Dynamics, and Design of Machinery",
+          "edicao": "2ª ed.",
+          "local": "",
+          "editora": "John Wiley",
+          "ano": 2004
+        },
+        {
+          "autores": ["MADENCI, Erdogan", "GUVEN, Ibrahim"],
+          "titulo": "The finite element method and applications in engineering using ANSYS",
+          "local": "New York",
+          "editora": "Springer",
+          "ano": 2006
+        },
+        {
+          "autores": ["HIBBELER, R. C."],
+          "titulo": "Estática: mecânica para engenharia",
+          "edicao": "10ª ed.",
+          "local": "São Paulo",
+          "editora": "Pearson Prentice Hall",
+          "ano": 2005
+        },
+        {
+          "autores": ["NORTON, Robert L."],
+          "titulo": "Projeto de Máquinas: Uma Abordagem Integrada",
+          "local": "",
+          "editora": "Bookman",
+          "ano": 2004
+        },
+        {
+          "autores": ["PIDAPARTI, R M."],
+          "titulo": "Engineering Finite Element Analysis",
+          "local": "",
+          "editora": "Morgan & Claypool",
+          "ano": 2017
+        }
+      ]
+    }
+  }
+}
