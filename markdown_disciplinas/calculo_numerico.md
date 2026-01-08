@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 2  
 **Turno:** Integral
+**Sigla:** CN
 
 ## Docentes
 

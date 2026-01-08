@@ -12,20 +12,7 @@
 
 ## Docentes
 
-- F
-- a
-- b
-- i
-- a
-- n
-- o
--  
-- P
-- a
-- i
-- x
-- ã
-- o
+- Fabiano Paixão
 
 ## Pré-requisitos
 

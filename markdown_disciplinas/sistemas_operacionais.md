@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 7  
 **Turno:** Integral
+**Sigla:** SO
 
 ## Docentes
 

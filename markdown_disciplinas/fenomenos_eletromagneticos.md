@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 4  
 **Turno:** N/A
+**Sigla:** Femag
 
 ## Docentes
 

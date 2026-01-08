@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { 
   Sparkles, 
   Brain, 
@@ -121,7 +122,7 @@ export default function LandingPage() {
             />
           ))}
         </div>
-      </div>
+                </div>
                 
       {/* ===== HERO SECTION ===== */}
       <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20">
@@ -156,7 +157,18 @@ export default function LandingPage() {
             `}
           >
             {/* FESP-AI em uma linha com estilo premium */}
-            <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <div className="flex items-center justify-center">
+              {/* Logo à esquerda - maior e sem fundo */}
+              <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-52 lg:h-52 xl:w-60 xl:h-60 flex-shrink-0 -mr-6 sm:-mr-8 md:-mr-10 lg:-mr-12 xl:-mr-14">
+                <Image
+                  src="/fespai-removebg-preview.png"
+                  alt="FESP-AI Logo"
+                  fill
+                  className="object-contain drop-shadow-2xl"
+                  style={{ filter: 'drop-shadow(0 0 20px rgba(16, 185, 129, 0.5))' }}
+                  priority
+                />
+              </div>
               <span className="bg-gradient-to-b from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent drop-shadow-2xl">
                 FESP
               </span>
@@ -235,21 +247,8 @@ export default function LandingPage() {
         >
           <span className="text-xs text-slate-500 uppercase tracking-widest">Explore</span>
           <ChevronDown className="w-5 h-5 text-slate-500 animate-bounce" />
-        </div>
+              </div>
 
-        {/* Decorative Brain Icon */}
-        <div 
-          className={`
-            absolute right-10 top-1/2 -translate-y-1/2 hidden xl:block
-            transition-all duration-1000 delay-500
-            ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'}
-          `}
-        >
-          <div className="relative">
-            <div className="absolute inset-0 bg-emerald-500/40 rounded-full blur-3xl animate-pulse" />
-            <Brain className="w-32 h-32 text-emerald-500/40" strokeWidth={0.5} />
-          </div>
-        </div>
       </section>
 
       {/* ===== FEATURES SECTION ===== */}
@@ -261,11 +260,11 @@ export default function LandingPage() {
               <span className="bg-gradient-to-r from-white via-emerald-50 to-emerald-100 bg-clip-text text-transparent">
                 Tudo que você precisa saber
               </span>
-            </h2>
+              </h2>
             <p className="text-xl text-slate-500 max-w-2xl mx-auto">
               Acesse informações acadêmicas da UNIFESP Campus São José dos Campos de forma rápida e inteligente
             </p>
-          </div>
+              </div>
 
           {/* Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -366,7 +365,7 @@ export default function LandingPage() {
             </div>
             <span className="font-bold text-lg text-emerald-50">FESP-AI</span>
           </div>
-          
+
           <p className="text-sm text-slate-500">
             UNIFESP Campus São José dos Campos • Assistente Acadêmico Inteligente
           </p>

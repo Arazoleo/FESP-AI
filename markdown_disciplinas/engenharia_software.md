@@ -9,10 +9,12 @@
 **Oferta:** None  
 **Termo:** None  
 **Turno:** N/A
+**Sigla:** Eng Software
 
 ## Docentes
 
 - Fábio Silveira
+- Otávio Lemos
 
 ## Pré-requisitos
 

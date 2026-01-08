@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 6  
 **Turno:** Integral
+**Sigla:** BD
 
 ## Docentes
 

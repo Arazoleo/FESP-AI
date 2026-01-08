@@ -8,7 +8,8 @@
 **Formato:** Disciplina  
 **Oferta:** Semestral  
 **Termo:** 3  
-**Turno:** 
+**Turno:** N/A
+**Sigla:** Prob Estat
 
 ## Docentes
 

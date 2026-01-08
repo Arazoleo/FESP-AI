@@ -24,10 +24,12 @@ class DisciplinaMarkdownParser:
         codigo = meta_info.get('codigo', 'N/A')
         
         # Metadados base enriquecidos
+        sigla = meta_info.get('sigla', '')
         base_meta = {
             'tipo_documento': 'disciplina',
             'disciplina': nome,
             'codigo': codigo,
+            'sigla': sigla,
             'campus': meta_info.get('campus', 'N/A'),
             'curso': meta_info.get('curso', 'N/A'),
             'termo': meta_info.get('termo', 'N/A'),
@@ -48,8 +50,9 @@ class DisciplinaMarkdownParser:
         carga_horaria = DisciplinaMarkdownParser._extract_carga_horaria(content)
         
         # 1. DOCUMENTO PRINCIPAL - Info completa (para perguntas gerais)
+        sigla_info = f"\nSigla: {sigla}" if sigla else ""
         info_completa = f"""DISCIPLINA: {nome}
-Código: {codigo}
+Código: {codigo}{sigla_info}
 Campus: {base_meta['campus']}
 Curso: {base_meta['curso']}
 Termo: {base_meta['termo']}
@@ -168,7 +171,7 @@ Livros recomendados ({tipo.lower()}) para {nome}."""
         nome_match = re.search(r'^# (.+)$', content, re.MULTILINE)
         meta['nome'] = nome_match.group(1).strip() if nome_match else 'N/A'
         
-        campos = ['Código', 'Campus', 'Curso', 'Tipo', 'Termo', 'Turno', 'Formato', 'Oferta']
+        campos = ['Código', 'Campus', 'Curso', 'Tipo', 'Termo', 'Turno', 'Formato', 'Oferta', 'Sigla']
         for campo in campos:
             # Tenta com (s) para Curso(s) e vários formatos de markdown
             patterns = [
