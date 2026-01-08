@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 5  
 **Turno:** Integral
+**Sigla:** CE II ou CE 2
 
 ## Docentes
 

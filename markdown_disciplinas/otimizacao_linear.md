@@ -8,7 +8,8 @@
 **Formato:** Disciplina  
 **Oferta:** Semestral  
 **Termo:** 5  
-**Turno:** 
+**Turno:** N/A
+**Sigla:** OL
 
 ## Docentes
 

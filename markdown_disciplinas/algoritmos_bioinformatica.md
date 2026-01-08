@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 3  
 **Turno:** Integral
+**Sigla:** Algo Bio
 
 ## Docentes
 

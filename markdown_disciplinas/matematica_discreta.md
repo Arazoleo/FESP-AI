@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 2  
 **Turno:** N/A
+**Sigla:** MD
 
 ## Docentes
 

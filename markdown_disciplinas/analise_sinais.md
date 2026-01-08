@@ -9,6 +9,8 @@
 **Oferta:** Semestral  
 **Termo:** 5  
 **Turno:** Integral
+**Sigla:** AS 
+
 
 ## Docentes
 

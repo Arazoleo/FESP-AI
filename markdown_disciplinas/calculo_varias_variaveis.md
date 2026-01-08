@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 3  
 **Turno:** N/A
+**Sigla:** CVV
 
 ## Docentes
 

@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 8  
 **Turno:** Integral
+**Sigla:** PCD
 
 ## Docentes
 

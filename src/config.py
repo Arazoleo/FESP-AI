@@ -14,6 +14,10 @@ class Config:
         "regimentos": "./markdown_regimentos"
     }
     
+    # Diretórios para Knowledge Graph
+    DISCIPLINAS_DIR = "./markdown_disciplinas"
+    REGIMENTOS_DIR = "./markdown_regimentos"
+    
     # Chunking semântico otimizado
     # Documentos menores que CHUNK_SIZE são mantidos inteiros
     # Documentos maiores são divididos com overlap

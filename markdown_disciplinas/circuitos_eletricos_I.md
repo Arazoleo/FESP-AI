@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 4  
 **Turno:** Integral
+**Sigla:** CE I ou CE 1
 
 ## Docentes
 

@@ -8,7 +8,8 @@
 **Formato:** Disciplina  
 **Oferta:** Semestral  
 **Termo:** 4  
-**Turno:** 
+**Turno:** N/A
+**Sigla:** Prob
 
 ## Docentes
 

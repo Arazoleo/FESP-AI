@@ -12,16 +12,7 @@
 
 ## Docentes
 
-- I
-- r
-- a
-- c
-- i
--  
-- J
-- o
-- ã
-- o
+- Iraci João
 
 ## Pré-requisitos
 

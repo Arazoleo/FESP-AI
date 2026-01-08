@@ -16,8 +16,8 @@ RUN npm install --legacy-peer-deps
 # Copiar código fonte
 COPY app/ ./app/
 
-# Criar diretório public (Next.js pode precisar, mesmo que vazio)
-RUN mkdir -p ./public
+# Copiar arquivos públicos (imagens, etc)
+COPY public/ ./public/
 
 # Build da aplicação
 RUN npm run build
@@ -34,8 +34,8 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/app ./app
-# Criar diretório public (Next.js pode precisar)
-RUN mkdir -p ./public
+# Copiar arquivos públicos
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
 # Expor porta

@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 6  
 **Turno:** Integral
+**Sigla:** CG
 
 ## Docentes
 
@@ -16,7 +17,7 @@
 
 ## Pré-requisitos
 
-- Algoritmo e Estrutura de Dados I (Código: 2832)
+- Algoritmos e Estruturas de Dados I (Código: 2832)
 
 ## Carga Horária
 

@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 6  
 **Turno:** N/A
+**Sigla:** EDOs
 
 ## Docentes
 

@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 3  
 **Turno:** Integral
+**Sigla:** AED II ou AED 2
 
 ## Docentes
 

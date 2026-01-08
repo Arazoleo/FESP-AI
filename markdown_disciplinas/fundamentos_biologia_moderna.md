@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 1  
 **Turno:** N/A
+**Sigla:** FBM
 
 ## Docentes
 

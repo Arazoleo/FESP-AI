@@ -9,6 +9,7 @@
 **Oferta:** Anual  
 **Termo:** 2  
 **Turno:** Integral
+**Sigla:** Femec 
 
 ## Docentes
 

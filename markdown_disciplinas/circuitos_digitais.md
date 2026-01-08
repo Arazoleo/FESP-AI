@@ -9,6 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 3  
 **Turno:** Integral
+**Sigla:** CD
 
 ## Docentes
 

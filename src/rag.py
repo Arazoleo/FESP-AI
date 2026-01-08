@@ -5,6 +5,8 @@ import hashlib
 import warnings
 from pathlib import Path
 from typing import Dict, List, Optional
+from .knowledge_graph import KnowledgeGraph
+from .graph_rag import GraphRAGEngine
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -78,6 +80,8 @@ class RAGUnifesp:
         self.db = None
         self.retriever = None
         self.chain = None
+        self.knowledge_graph = None
+        self.graph_rag = None
     
     def _get_file_hash(self, filepath: str) -> str:
         with open(filepath, 'rb') as f:
@@ -130,6 +134,9 @@ class RAGUnifesp:
         if not has_changes and db_exists and not force:
             print("Banco atualizado, nenhuma mudanca detectada.")
             self._load_db()
+            self._setup_retriever()
+            self._setup_chain()
+            self._setup_knowledge_graph()
             return False
         
         if force or not db_exists:
@@ -157,7 +164,23 @@ class RAGUnifesp:
         
         self._setup_retriever()
         self._setup_chain()
+        self._setup_knowledge_graph()
         return True
+    
+    def _setup_knowledge_graph(self):
+        """Inicializa o Knowledge Graph."""
+        try:
+            self.knowledge_graph = KnowledgeGraph()
+            self.knowledge_graph.build_from_directories(
+                str(self.config.DISCIPLINAS_DIR),
+                str(self.config.REGIMENTOS_DIR)
+            )
+            self.graph_rag = GraphRAGEngine(self.knowledge_graph)
+            print("Knowledge Graph inicializado!")
+        except Exception as e:
+            print(f"Erro ao inicializar Knowledge Graph: {e}")
+            self.knowledge_graph = None
+            self.graph_rag = None
     
     def _apply_changes(self, changes: Dict, current_files: Dict):
         if changes["deleted"]:
@@ -251,12 +274,47 @@ Resposta:"""
         
         question_lower = question.lower()
         
+        # 1. Obter contexto do GraphRAG (se disponível)
+        graph_context = ""
+        if self.graph_rag:
+            graph_response = self.graph_rag.get_graph_context(question)
+            if graph_response:
+                graph_context = f"\n\n[INFORMAÇÕES DO GRAFO DE CONHECIMENTO]\n{graph_response}\n"
+        
+        # 2. Obter documentos do RAG tradicional
         targeted_docs = self._smart_retrieve(question, question_lower)
         
+        # 3. Combinar contextos
         if targeted_docs:
-            return self._query_with_context(question, targeted_docs)
+            rag_context = self._format_docs(targeted_docs)
+        else:
+            # Fallback para retriever padrão
+            docs = self.retriever.invoke(question)
+            rag_context = self._format_docs(docs)
         
-        return self.chain.invoke(question)
+        # 4. Contexto final combinado (GraphRAG + RAG)
+        combined_context = graph_context + rag_context
+        
+        # 5. SEMPRE passar pelo LLM para gerar resposta natural
+        template = """Voce e o Assistente Unifesp ICT. Responda APENAS em PORTUGUES BRASILEIRO.
+
+{context}
+
+Pergunta: {question}
+
+REGRAS IMPORTANTES:
+1. PRIORIDADE MAXIMA: Se houver [INFORMACOES DO GRAFO DE CONHECIMENTO], use-as como BASE PRINCIPAL da resposta
+2. Use documentos adicionais apenas para complementar com detalhes (codigo, carga horaria, etc.)
+3. NAO repita informacoes - seja conciso
+4. Se a pergunta for sobre docentes/professores, use APENAS as disciplinas listadas no grafo de conhecimento
+5. Seja direto, objetivo e amigavel
+
+Resposta:"""
+        
+        prompt = ChatPromptTemplate.from_template(template)
+        chain = prompt | self.llm | StrOutputParser()
+        
+        return chain.invoke({"context": combined_context, "question": question})
     
     def _smart_retrieve(self, question: str, question_lower: str) -> List[Document]:
         # 1. Perguntas sobre regimentos/institucionais
@@ -287,6 +345,22 @@ Resposta:"""
         return []
     
     def _extract_discipline_name(self, query: str) -> Optional[str]:
+        # Primeiro, tentar detectar siglas (2-5 letras maiúsculas)
+        sigla_patterns = [
+            r'\b([A-Z]{2,5})\b',  # Sigla em maiúsculas isolada
+            r'(?:disciplina|matéria|cadeira)\s+([A-Z]{2,5})\b',  # disciplina SO
+            r'(?:de|da|do|em|sobre)\s+([A-Z]{2,5})\b',  # sobre IA
+        ]
+        
+        for pattern in sigla_patterns:
+            matches = re.findall(pattern, query)
+            for sigla in matches:
+                # Ignorar palavras comuns que podem parecer siglas
+                if sigla.upper() not in ['DE', 'DA', 'DO', 'NA', 'NO', 'EM', 'SE', 'OU', 'E', 'A', 'O', 'OS', 'AS']:
+                    # Verificar se é uma sigla válida no banco
+                    if self._is_valid_sigla(sigla.upper()):
+                        return f"SIGLA:{sigla.upper()}"
+        
         patterns = [
             r'quem\s+(?:leciona|da|ensina|ministra)\s+([A-Za-z][^?.,!]+)',
             r'professor(?:es)?\s+(?:de|da|do)\s+([A-Za-z][^?.,!]+)',
@@ -308,12 +382,30 @@ Resposta:"""
         
         return None
     
+    def _is_valid_sigla(self, sigla: str) -> bool:
+        """Verifica se a sigla existe no banco de dados."""
+        if not self.db:
+            return False
+        try:
+            all_results = self.db.get()
+            for meta in all_results.get('metadatas', []):
+                if meta.get('sigla', '').upper() == sigla.upper():
+                    return True
+        except:
+            pass
+        return False
+    
     def _retrieve_discipline_docs(self, disciplina: str, question_lower: str) -> List[Document]:
         try:
-            results = self.db.get(where={"disciplina": disciplina})
-            
-            if not results.get('ids'):
-                results = self._fuzzy_discipline_search(disciplina)
+            # Verificar se é uma busca por sigla
+            if disciplina.startswith('SIGLA:'):
+                sigla = disciplina.replace('SIGLA:', '')
+                results = self._search_by_sigla(sigla)
+            else:
+                results = self.db.get(where={"disciplina": disciplina})
+                
+                if not results.get('ids'):
+                    results = self._fuzzy_discipline_search(disciplina)
             
             if not results.get('ids'):
                 return []
@@ -356,6 +448,29 @@ Resposta:"""
             print(f"Erro ao buscar disciplina: {e}")
             return []
     
+    def _search_by_sigla(self, sigla: str) -> Dict:
+        """Busca disciplinas pela sigla."""
+        all_results = self.db.get()
+        
+        matching_ids = []
+        matching_metadatas = []
+        matching_documents = []
+        
+        sigla_upper = sigla.upper()
+        
+        for i, meta in enumerate(all_results.get('metadatas', [])):
+            meta_sigla = meta.get('sigla', '').upper()
+            if meta_sigla == sigla_upper:
+                matching_ids.append(all_results['ids'][i])
+                matching_metadatas.append(all_results['metadatas'][i])
+                matching_documents.append(all_results['documents'][i])
+        
+        return {
+            'ids': matching_ids,
+            'metadatas': matching_metadatas,
+            'documents': matching_documents
+        }
+    
     def _fuzzy_discipline_search(self, disciplina: str) -> Dict:
         all_results = self.db.get()
         
@@ -367,6 +482,7 @@ Resposta:"""
         
         for i, meta in enumerate(all_results.get('metadatas', [])):
             disciplina_db = meta.get('disciplina', '')
+            sigla_db = meta.get('sigla', '').lower()
             if not disciplina_db:
                 continue
                 
@@ -375,7 +491,10 @@ Resposta:"""
             
             score = 0
             
-            if disciplina_lower == disciplina_db_lower or disciplina_normalized == disciplina_db_normalized:
+            # Verificar match por sigla (case-insensitive)
+            if sigla_db and disciplina_lower == sigla_db:
+                score = 100
+            elif disciplina_lower == disciplina_db_lower or disciplina_normalized == disciplina_db_normalized:
                 score = 100
             elif disciplina_lower in disciplina_db_lower or disciplina_normalized in disciplina_db_normalized:
                 score = 90
