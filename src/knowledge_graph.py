@@ -9,7 +9,7 @@ class KnowledgeGraph:
     def __init__(self):
         self.graph = nx.DiGraph()
 
-    def build_from_directories(self, disciplinas_dir: str, regimentos_dir: str):
+    def build_from_directories(self, disciplinas_dir: str, regimentos_dir: str, docentes_dir: str = None):
         """Constrói o grafo a partir de ambos os diretórios."""
      
         disciplinas_path = Path(disciplinas_dir)
@@ -21,11 +21,18 @@ class KnowledgeGraph:
         for md_file in regimentos_path.glob("*.md"):
             self._process_regimento_file(md_file)
         
+        # Processar docentes com especialidades
+        if docentes_dir:
+            docentes_path = Path(docentes_dir)
+            for md_file in docentes_path.glob("*.md"):
+                self._process_docentes_file(md_file)
+        
         stats = self.get_stats()
         print(f"Grafo construído:")
         print(f"  - {stats['disciplinas']} disciplinas")
         print(f"  - {stats['docentes']} docentes")
         print(f"  - {stats['cursos']} cursos")
+        print(f"  - {stats['areas']} áreas de especialização")
         print(f"  - {stats['documentos']} documentos institucionais")
         print(f"  - {stats['orgaos']} órgãos/setores")
         print(f"  - {stats['artigos']} artigos")
@@ -152,6 +159,39 @@ class KnowledgeGraph:
         """Extrai um campo do formato **Campo:** valor"""
         match = re.search(rf'\*\*{field}:\*\*\s*(.+)', content)
         return match.group(1).strip() if match else None
+    
+    def _process_docentes_file(self, filepath: Path):
+        """Processa arquivo de docentes com especialidades."""
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Encontrar todos os docentes no formato ### Prof. Dr. Nome
+        docentes_matches = re.findall(
+            r'###\s+(?:Prof(?:a)?\.?\s+)?(?:Dr(?:a)?\.?\s+)?(.+?)\n-\s+\*\*Áreas?:\*\*\s+(.+?)(?=\n###|\n---|\n##|\Z)',
+            content,
+            re.DOTALL
+        )
+        
+        for nome, areas_str in docentes_matches:
+            nome = nome.strip()
+            doc_id = f"DOC:{nome}"
+            
+            # Atualizar ou criar nó do docente
+            if self.graph.has_node(doc_id):
+                # Já existe, atualizar com áreas
+                self.graph.nodes[doc_id]['areas'] = areas_str.strip()
+            else:
+                self.graph.add_node(doc_id, tipo="docente", nome=nome, areas=areas_str.strip())
+            
+            # Extrair áreas individuais e criar nós
+            areas = [a.strip() for a in areas_str.split(',')]
+            for area in areas:
+                if area:
+                    area_id = f"AREA:{area}"
+                    if not self.graph.has_node(area_id):
+                        self.graph.add_node(area_id, tipo="area", nome=area)
+                    # Criar aresta docente -> area
+                    self.graph.add_edge(doc_id, area_id, relacao="ESPECIALISTA_EM")
     
     def _extract_list_section(self, content: str, section: str) -> List[str]:
         """Extrai itens de uma seção com lista."""
@@ -354,8 +394,52 @@ class KnowledgeGraph:
             'disciplinas': tipos.get('disciplina', 0),
             'docentes': tipos.get('docente', 0),
             'cursos': tipos.get('curso', 0),
+            'areas': tipos.get('area', 0),
             'documentos': tipos.get('documento', 0),
             'artigos': tipos.get('artigo', 0),
             'orgaos': tipos.get('orgao', 0),
             'faqs': tipos.get('faq', 0)
         }
+    
+    def get_docentes_by_area(self, area: str) -> List[str]:
+        """Retorna docentes especialistas em uma área."""
+        area_lower = area.lower()
+        docentes = []
+        
+        for node, data in self.graph.nodes(data=True):
+            if data.get('tipo') == 'area' and area_lower in data.get('nome', '').lower():
+                # Encontrar docentes que apontam para essa área
+                for pred in self.graph.predecessors(node):
+                    edge = self.graph.get_edge_data(pred, node)
+                    if edge and edge.get('relacao') == 'ESPECIALISTA_EM':
+                        nome = self.graph.nodes[pred].get('nome')
+                        if nome and nome not in docentes:
+                            docentes.append(nome)
+        
+        return docentes
+    
+    def get_areas_of_docente(self, docente: str) -> List[str]:
+        """Retorna as áreas de especialização de um docente."""
+        docente_id = f"DOC:{docente}"
+        
+        if not self.graph.has_node(docente_id):
+            # Fuzzy search
+            docente_lower = docente.lower()
+            for node in self.graph.nodes():
+                if node.startswith("DOC:"):
+                    node_name = node.replace("DOC:", "").lower()
+                    if len(node_name) >= 3 and (docente_lower in node_name or node_name in docente_lower):
+                        docente_id = node
+                        break
+            else:
+                return []
+        
+        areas = []
+        for successor in self.graph.successors(docente_id):
+            edge = self.graph.get_edge_data(docente_id, successor)
+            if edge and edge.get('relacao') == 'ESPECIALISTA_EM':
+                nome = self.graph.nodes[successor].get('nome')
+                if nome:
+                    areas.append(nome)
+        
+        return areas

@@ -171,10 +171,21 @@ class RAGUnifesp:
         """Inicializa o Knowledge Graph."""
         try:
             self.knowledge_graph = KnowledgeGraph()
-            self.knowledge_graph.build_from_directories(
-                str(self.config.DISCIPLINAS_DIR),
-                str(self.config.REGIMENTOS_DIR)
-            )
+            
+            # Verificar se existe diretório de docentes
+            docentes_dir = getattr(self.config, 'DOCENTES_DIR', None)
+            if docentes_dir and os.path.exists(docentes_dir):
+                self.knowledge_graph.build_from_directories(
+                    str(self.config.DISCIPLINAS_DIR),
+                    str(self.config.REGIMENTOS_DIR),
+                    str(docentes_dir)
+                )
+            else:
+                self.knowledge_graph.build_from_directories(
+                    str(self.config.DISCIPLINAS_DIR),
+                    str(self.config.REGIMENTOS_DIR)
+                )
+            
             self.graph_rag = GraphRAGEngine(self.knowledge_graph)
             print("Knowledge Graph inicializado!")
         except Exception as e:
@@ -485,10 +496,10 @@ Resposta:"""
             sigla_db = meta.get('sigla', '').lower()
             if not disciplina_db:
                 continue
-                
+            
             disciplina_db_lower = disciplina_db.lower()
             disciplina_db_normalized = re.sub(r'(\w+)s\b', r'\1', disciplina_db_lower)
-            
+                        
             score = 0
             
             # Verificar match por sigla (case-insensitive)
@@ -536,11 +547,11 @@ Resposta:"""
                 matching_documents.append(all_results['documents'][idx])
         
         return {
-            'ids': matching_ids,
-            'metadatas': matching_metadatas,
-            'documents': matching_documents
-        }
-    
+                            'ids': matching_ids,
+                            'metadatas': matching_metadatas,
+                            'documents': matching_documents
+                        }
+                
     def _retrieve_regimento_docs(self, question_lower: str) -> List[Document]:
         try:
             all_results = self.db.get()

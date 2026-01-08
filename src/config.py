@@ -17,6 +17,7 @@ class Config:
     # Diretórios para Knowledge Graph
     DISCIPLINAS_DIR = "./markdown_disciplinas"
     REGIMENTOS_DIR = "./markdown_regimentos"
+    DOCENTES_DIR = "./markdown_docentes"
     
     # Chunking semântico otimizado
     # Documentos menores que CHUNK_SIZE são mantidos inteiros
