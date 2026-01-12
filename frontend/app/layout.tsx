@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   keywords: ['UNIFESP', 'IA', 'Assistente', 'São José dos Campos', 'RAG'],
   authors: [{ name: 'FESP-AI Team' }],
   icons: {
-    icon: '/favicon.ico',
+    icon: '/fespai-removebg-preview.png',
   },
 }
 

@@ -161,36 +161,54 @@ class KnowledgeGraph:
         return match.group(1).strip() if match else None
     
     def _process_docentes_file(self, filepath: Path):
-        """Processa arquivo de docentes com especialidades."""
+        """Processa arquivo de docentes com especialidades, email e sala."""
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Encontrar todos os docentes no formato ### Prof. Dr. Nome
-        docentes_matches = re.findall(
-            r'###\s+(?:Prof(?:a)?\.?\s+)?(?:Dr(?:a)?\.?\s+)?(.+?)\n-\s+\*\*Áreas?:\*\*\s+(.+?)(?=\n###|\n---|\n##|\Z)',
-            content,
-            re.DOTALL
-        )
+        # Encontrar blocos de docentes (do ### até o próximo ### ou ---)
+        docente_blocks = re.split(r'(?=###\s+Prof)', content)
         
-        for nome, areas_str in docentes_matches:
-            nome = nome.strip()
+        for block in docente_blocks:
+            if not block.strip() or not block.startswith('###'):
+                continue
+            
+            # Extrair nome
+            nome_match = re.search(r'###\s+(?:Prof(?:a)?\.?\s+)?(?:Dr(?:a)?\.?\s+)?(.+)', block)
+            if not nome_match:
+                continue
+            nome = nome_match.group(1).strip()
+            
+            # Extrair áreas
+            areas_match = re.search(r'\*\*Áreas?:\*\*\s*(.+?)(?=\n-|\n###|\n---|\Z)', block, re.DOTALL)
+            areas_str = areas_match.group(1).strip() if areas_match else ""
+            
+            # Extrair email
+            email_match = re.search(r'\*\*Email:\*\*\s*(.+?)(?=\n|\Z)', block)
+            email = email_match.group(1).strip() if email_match else ""
+            
+            # Extrair sala
+            sala_match = re.search(r'\*\*Sala:\*\*\s*(.+?)(?=\n|\Z)', block)
+            sala = sala_match.group(1).strip() if sala_match else ""
+            
             doc_id = f"DOC:{nome}"
             
             # Atualizar ou criar nó do docente
             if self.graph.has_node(doc_id):
-                # Já existe, atualizar com áreas
-                self.graph.nodes[doc_id]['areas'] = areas_str.strip()
+                self.graph.nodes[doc_id]['areas'] = areas_str
+                self.graph.nodes[doc_id]['email'] = email
+                self.graph.nodes[doc_id]['sala'] = sala
             else:
-                self.graph.add_node(doc_id, tipo="docente", nome=nome, areas=areas_str.strip())
+                self.graph.add_node(doc_id, tipo="docente", nome=nome, areas=areas_str, email=email, sala=sala)
             
             # Extrair áreas individuais e criar nós
-            areas = [a.strip() for a in areas_str.split(',')]
+            areas = [a.strip() for a in areas_str.split(',') if a.strip()]
             for area in areas:
-                if area:
+                # Limpar área (remover quebras de linha, etc)
+                area = re.sub(r'\s+', ' ', area).strip()
+                if area and len(area) > 2:
                     area_id = f"AREA:{area}"
                     if not self.graph.has_node(area_id):
                         self.graph.add_node(area_id, tipo="area", nome=area)
-                    # Criar aresta docente -> area
                     self.graph.add_edge(doc_id, area_id, relacao="ESPECIALISTA_EM")
     
     def _extract_list_section(self, content: str, section: str) -> List[str]:
@@ -403,11 +421,31 @@ class KnowledgeGraph:
     
     def get_docentes_by_area(self, area: str) -> List[str]:
         """Retorna docentes especialistas em uma área."""
-        area_lower = area.lower()
+        area_lower = area.lower().strip()
+        area_words = set(area_lower.split())
         docentes = []
         
         for node, data in self.graph.nodes(data=True):
-            if data.get('tipo') == 'area' and area_lower in data.get('nome', '').lower():
+            if data.get('tipo') != 'area':
+                continue
+            
+            nome_area = data.get('nome', '').lower()
+            nome_words = set(nome_area.split())
+            
+            # Match por palavras (evita "ia" dar match em "engenharia")
+            is_match = False
+            
+            # Match exato
+            if area_lower == nome_area:
+                is_match = True
+            # Todas as palavras da query estão na área
+            elif len(area_lower) > 3 and area_words.issubset(nome_words):
+                is_match = True
+            # Substring match (apenas para termos maiores que 5 chars)
+            elif len(area_lower) > 5 and area_lower in nome_area:
+                is_match = True
+            
+            if is_match:
                 # Encontrar docentes que apontam para essa área
                 for pred in self.graph.predecessors(node):
                     edge = self.graph.get_edge_data(pred, node)
@@ -418,21 +456,45 @@ class KnowledgeGraph:
         
         return docentes
     
+    def _find_docente_id(self, docente: str) -> Optional[str]:
+        """Encontra o ID do docente por nome (com fuzzy search, preferindo nós com mais info)."""
+        docente_lower = docente.lower().strip()
+        docente_words = set(docente_lower.split())
+        
+        # Buscar todos os matches possíveis
+        matches = []
+        
+        for node in self.graph.nodes():
+            if not node.startswith("DOC:"):
+                continue
+            
+            node_name = node.replace("DOC:", "").lower()
+            node_words = set(node_name.split())
+            data = self.graph.nodes[node]
+            
+            # Match exato
+            if node_name == docente_lower:
+                matches.append((node, 100, data))
+            # Todas as palavras da query estão no nome do docente
+            elif docente_words.issubset(node_words):
+                matches.append((node, 80, data))
+            # Substring match
+            elif len(node_name) >= 3 and (docente_lower in node_name or node_name in docente_lower):
+                matches.append((node, 50, data))
+        
+        if not matches:
+            return None
+        
+        # Ordenar por: 1) se tem email (info mais completa), 2) score de match
+        matches.sort(key=lambda x: (1 if x[2].get('email') else 0, x[1]), reverse=True)
+        
+        return matches[0][0]
+    
     def get_areas_of_docente(self, docente: str) -> List[str]:
         """Retorna as áreas de especialização de um docente."""
-        docente_id = f"DOC:{docente}"
-        
-        if not self.graph.has_node(docente_id):
-            # Fuzzy search
-            docente_lower = docente.lower()
-            for node in self.graph.nodes():
-                if node.startswith("DOC:"):
-                    node_name = node.replace("DOC:", "").lower()
-                    if len(node_name) >= 3 and (docente_lower in node_name or node_name in docente_lower):
-                        docente_id = node
-                        break
-            else:
-                return []
+        docente_id = self._find_docente_id(docente)
+        if not docente_id:
+            return []
         
         areas = []
         for successor in self.graph.successors(docente_id):
@@ -443,3 +505,17 @@ class KnowledgeGraph:
                     areas.append(nome)
         
         return areas
+    
+    def get_docente_info(self, docente: str) -> Optional[Dict]:
+        """Retorna informações completas de um docente (nome, email, sala, áreas)."""
+        docente_id = self._find_docente_id(docente)
+        if not docente_id:
+            return None
+        
+        data = self.graph.nodes[docente_id]
+        return {
+            'nome': data.get('nome', ''),
+            'email': data.get('email', ''),
+            'sala': data.get('sala', ''),
+            'areas': data.get('areas', ''),
+        }
