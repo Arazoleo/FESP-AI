@@ -44,6 +44,13 @@ class GraphRAGEngine:
                 r'(?:quais?\s+)?(?:as?\s+)?[aá]reas?\s+(?:de\s+)?(?:especializa[çc][aã]o|pesquisa|atua[çc][aã]o)\s+(?:de|do|da)\s+(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
                 r'(?:em\s+que|quais?\s+[aá]reas?)\s+(?:o\s+|a\s+)?(.+?)\s+(?:pesquisa|trabalha|atua|[eé]\s+especialista)(?:\?|$)',
             ],
+            'docente_info': [
+                r'(?:qual|quais?)\s+(?:[oé]\s+)?(?:o\s+)?e[-\s]?mail\s+(?:de|do|da)\s+(?:o\s+|a\s+)?(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
+                r'(?:qual|onde)\s+(?:[eé]\s+)?(?:a\s+)?sala\s+(?:de|do|da)\s+(?:o\s+|a\s+)?(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
+                r'onde\s+fica\s+(?:a\s+sala\s+)?(?:de|do|da)\s+(?:o\s+|a\s+)?(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
+                r'(?:como\s+)?(?:entro\s+em\s+)?contato\s+(?:com\s+)?(?:o\s+|a\s+)?(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
+                r'(?:informa[çc][oõ]es?|dados?)\s+(?:de|do|da|sobre)\s+(?:o\s+|a\s+)?(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
+            ],
         }
     
     def should_use_graph(self, question: str) -> Tuple[bool, Optional[str], Optional[str]]:
@@ -155,6 +162,20 @@ Total: {len(docentes)} docente(s) trabalham com **{termo}**."""
 O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
             else:
                 return f"Não encontrei informações sobre as áreas de **{termo}**."
+        
+        elif query_type == 'docente_info':
+            info = self.kg.get_docente_info(termo)
+            if info:
+                resultado = f"**Informações de {info['nome']}:**\n\n"
+                if info.get('email'):
+                    resultado += f"- **Email:** {info['email']}\n"
+                if info.get('sala'):
+                    resultado += f"- **Sala:** {info['sala']}\n"
+                if info.get('areas'):
+                    resultado += f"- **Áreas:** {info['areas']}\n"
+                return resultado
+            else:
+                return f"Não encontrei informações sobre **{termo}**."
         
         return None
     
