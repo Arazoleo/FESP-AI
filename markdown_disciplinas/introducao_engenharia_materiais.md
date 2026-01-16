@@ -15,6 +15,7 @@
 
 - Fabio Roberto Passador
 - Ana Paula F. Albers
+- Leonardo Wendler
 
 ## Pré-requisitos
 

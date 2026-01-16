@@ -15,6 +15,7 @@
 
 - Luzia Oliveira
 - Sâmia Calheiros
+- Flávia Queiroz
 
 ## Pré-requisitos
 
