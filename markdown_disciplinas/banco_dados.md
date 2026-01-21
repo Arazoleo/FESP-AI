@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Daniela Musa
+- Daniela Leal Musa
 
 ## Pré-requisitos
 

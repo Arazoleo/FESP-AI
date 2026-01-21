@@ -223,7 +223,7 @@ Livros recomendados ({tipo.lower()}) para {nome}."""
                     carga[key] = match.group(1).strip()
         
         return carga
-    
+
 class RegimentoMarkdownParser:
     """Parser otimizado para arquivos Markdown de regimentos institucionais."""
     
@@ -273,18 +273,18 @@ class RegimentoMarkdownParser:
             for artigo_match in artigos:
                 numero = artigo_match.group(1)
                 conteudo = artigo_match.group(2).strip()
-                
+                    
                 # Encontrar o título/seção do artigo
                 pos = artigo_match.start()
                 titulo = "Geral"
                 for titulo_match in re.finditer(r'### (.+?)\n', estrutura_text[:pos]):
                     titulo = titulo_match.group(1).strip()
-                
+                    
                 texto = f"DOCUMENTO: {doc_tipo}\nSEÇÃO: {titulo}\n\nArt. {numero}. {conteudo}"
-                
+                        
                 meta = {**base_meta, 'secao': 'artigo', 'titulo': titulo, 'artigo': numero}
                 docs.append(Document(page_content=texto, metadata=meta))
-        
+                
         # FAQs - Parse mais robusto
         faqs_match = re.search(r'## Perguntas Frequentes\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
         if faqs_match:
@@ -339,16 +339,125 @@ Para perguntas específicas, consulte os artigos e FAQs deste documento."""
         return docs
 
 
+class MatrizCurricularParser:
+    """Parser para arquivos de matriz curricular."""
+    
+    @staticmethod
+    def parse(filepath: str) -> List[Document]:
+        """Parseia arquivo de matriz curricular em documentos."""
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        docs = []
+        
+        # Extrair título
+        titulo_match = re.search(r'^# (.+)$', content, re.MULTILINE)
+        titulo = titulo_match.group(1).strip() if titulo_match else Path(filepath).stem
+        
+        # Extrair sigla
+        sigla_match = re.search(r'\(([A-Z]{2,5})\)', titulo)
+        sigla = sigla_match.group(1) if sigla_match else ""
+        
+        # Extrair carga horária
+        carga_match = re.search(r'\*\*Carga Horária Total:\*\*\s*(\d+)', content)
+        carga_total = carga_match.group(1) if carga_match else ""
+        
+        base_meta = {
+            'source': filepath,
+            'tipo': 'matriz_curricular',
+            'titulo': titulo,
+            'sigla': sigla,
+            'carga_horaria_total': carga_total
+        }
+        
+        # Contar quantos termos existem (suporta "### Termo 1", "### 1º Semestre", "### 1º Termo")
+        termo_pattern = r'### (?:Termo\s+)?(\d+)[º°]?\s*(?:Semestre|Termo)?'
+        termos_encontrados = re.findall(termo_pattern, content)
+        num_termos = len(termos_encontrados)
+        
+        # Documento com resumo
+        resumo = f"""# {titulo}
+
+**Sigla:** {sigla}
+**Carga Horária Total:** {carga_total} horas
+**Duração:** {num_termos} termos (semestres)
+
+O curso de {titulo} possui **{num_termos} termos** (semestres), totalizando **{carga_total} horas**.
+
+Estrutura do curso:
+- Termos 1-2: Núcleo básico com disciplinas fundamentais
+- Termos 3-6: Formação específica na área
+- Termos 7-8: TCC e disciplinas eletivas
+
+A matriz curricular contém:
+- Disciplinas fixas organizadas por termo/semestre (8 termos)
+- Eletivas do Grupo 1 (Eletivas Limitadas da área)
+- Eletivas do Grupo 2 (Matemática e Computação)
+- Eletivas do Grupo 3 (Ciências Humanas, Econômicas e Sociais)
+- Eletivas Extensionistas
+- Trabalho de Conclusão de Curso (TCC I e TCC II)
+- Atividades Complementares (144 horas)"""
+        
+        docs.append(Document(page_content=resumo, metadata={**base_meta, 'secao': 'resumo', 'num_termos': num_termos}))
+        
+        # Extrair disciplinas por termo (suporta "### Termo 1", "### 1º Semestre", "### 1º Termo")
+        # Lookahead simplificado: próximo ### com número, ou --- ou ## ou fim
+        termo_pattern = r'###\s+(?:Termo\s+)?(\d+)[º°]?\s*(?:Semestre|Termo)?[^\n]*\n(.*?)(?=\n###\s+|\n---|\n## |\Z)'
+        termos = re.findall(termo_pattern, content, re.DOTALL)
+        
+        for termo_num, termo_content in termos:
+            termo_doc = f"**Termo {termo_num} - {titulo}**\n\n"
+            # Suporta tabelas com 2 ou 3+ colunas
+            disc_pattern = r'\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|'
+            disciplinas = re.findall(disc_pattern, termo_content)
+            
+            for disc_nome, creditos in disciplinas:
+                disc_nome = disc_nome.strip()
+                if disc_nome and disc_nome != "Disciplina" and not disc_nome.startswith('-'):
+                    termo_doc += f"- {disc_nome} ({creditos} créditos)\n"
+            
+            if termo_doc.count('-') > 0:
+                docs.append(Document(
+                    page_content=termo_doc,
+                    metadata={**base_meta, 'secao': f'termo_{termo_num}', 'termo': termo_num}
+                ))
+        
+        # Extrair seções de eletivas
+        eletiva_sections = [
+            ('Eletivas do Grupo 1', 'eletivas_grupo1'),
+            ('Eletivas do Grupo 2', 'eletivas_grupo2'),
+            ('Eletivas do Grupo 3', 'eletivas_grupo3'),
+            ('Eletivas Extensionistas', 'eletivas_extensionistas'),
+        ]
+        
+        for section_name, section_key in eletiva_sections:
+            match = re.search(rf'## {section_name}.*?\n(.*?)(?=\n## |$)', content, re.DOTALL)
+            if match:
+                section_content = match.group(1).strip()
+                docs.append(Document(
+                    page_content=f"**{section_name} - {titulo}**\n\n{section_content}",
+                    metadata={**base_meta, 'secao': section_key}
+                ))
+        
+        return docs
+
+
 def parse_file(filepath: str) -> List[Document]:
     """Função principal para parsear arquivos Markdown."""
-    if 'disciplinas' in filepath or filepath.endswith('.md'):
-        # Detectar se é disciplina ou regimento pelo conteúdo
-        with open(filepath, 'r', encoding='utf-8') as f:
-            first_lines = ''.join(f.readlines()[:5])
-        
-        if 'Código:' in first_lines or 'Docentes' in first_lines:
+    # Detectar tipo de arquivo
+    with open(filepath, 'r', encoding='utf-8') as f:
+        first_lines = ''.join(f.readlines()[:10])
+    
+    # Matriz curricular
+    if 'Matriz Curricular' in first_lines or 'cursos' in filepath:
+        return MatrizCurricularParser.parse(filepath)
+    
+    # Disciplina
+    if 'Código:' in first_lines or 'Docentes' in first_lines or 'disciplinas' in filepath:
             return DisciplinaMarkdownParser.parse(filepath)
-        else:
+    
+    # Regimento (fallback)
+    if filepath.endswith('.md'):
             return RegimentoMarkdownParser.parse(filepath)
     
     return []
