@@ -66,7 +66,11 @@ class RAGUnifesp:
             self.llm = OllamaLLM(
                 model=self.config.MODEL_NAME, 
                 base_url=ollama_base_url,
-                keep_alive=keep_alive_seconds
+                keep_alive=keep_alive_seconds,
+                num_predict=2048,
+                temperature=0.1,
+                top_k=10,
+                repeat_penalty=1.1
             )
             self.embeddings = OllamaEmbeddings(
                 model=self.config.EMBEDDING_MODEL, 
@@ -74,7 +78,14 @@ class RAGUnifesp:
                 keep_alive=keep_alive_seconds
             )
         else:
-            self.llm = OllamaLLM(model=self.config.MODEL_NAME, keep_alive=keep_alive_seconds)
+            self.llm = OllamaLLM(
+                model=self.config.MODEL_NAME, 
+                keep_alive=keep_alive_seconds,
+                num_predict=2048,
+                temperature=0.1,
+                top_k=10,
+                repeat_penalty=1.1
+            )
             self.embeddings = OllamaEmbeddings(model=self.config.EMBEDDING_MODEL, keep_alive=keep_alive_seconds)
         
         self.db = None
@@ -172,19 +183,20 @@ class RAGUnifesp:
         try:
             self.knowledge_graph = KnowledgeGraph()
             
-            # Verificar se existe diretório de docentes
+            # Verificar diretórios opcionais
             docentes_dir = getattr(self.config, 'DOCENTES_DIR', None)
-            if docentes_dir and os.path.exists(docentes_dir):
-                self.knowledge_graph.build_from_directories(
-                    str(self.config.DISCIPLINAS_DIR),
-                    str(self.config.REGIMENTOS_DIR),
-                    str(docentes_dir)
-                )
-            else:
-                self.knowledge_graph.build_from_directories(
-                    str(self.config.DISCIPLINAS_DIR),
-                    str(self.config.REGIMENTOS_DIR)
-                )
+            cursos_dir = getattr(self.config, 'CURSOS_DIR', None)
+            
+            # Passar diretórios que existem
+            docentes_arg = str(docentes_dir) if docentes_dir and os.path.exists(docentes_dir) else None
+            cursos_arg = str(cursos_dir) if cursos_dir and os.path.exists(cursos_dir) else None
+            
+            self.knowledge_graph.build_from_directories(
+                str(self.config.DISCIPLINAS_DIR),
+                str(self.config.REGIMENTOS_DIR),
+                docentes_arg,
+                cursos_arg
+            )
             
             self.graph_rag = GraphRAGEngine(self.knowledge_graph)
             print("Knowledge Graph inicializado!")
@@ -287,24 +299,44 @@ Resposta:"""
         
         # 1. Obter contexto do GraphRAG (se disponível)
         graph_context = ""
+        graph_query_type = None
         if self.graph_rag:
-            graph_response = self.graph_rag.get_graph_context(question)
-            if graph_response:
-                graph_context = f"\n\n[INFORMAÇÕES DO GRAFO DE CONHECIMENTO]\n{graph_response}\n"
+            should_use, query_type, termo = self.graph_rag.should_use_graph(question)
+            if should_use:
+                graph_query_type = query_type
+                graph_response = self.graph_rag.query_graph(query_type, termo)
+                if graph_response:
+                    graph_context = f"\n\n{graph_response}\n"
         
-        # 2. Obter documentos do RAG tradicional
-        targeted_docs = self._smart_retrieve(question, question_lower)
+        # 2. Para queries estruturadas, o GraphRAG já tem tudo - não precisa RAG tradicional
+        graph_only_types = [
+            # Docentes
+            'docente_info', 'docente_areas', 'docente_disciplines', 
+            'discipline_docentes', 'docentes_by_area', 'docente_leciona_disciplina',
+            # Matriz curricular
+            'disciplinas_termo', 'todos_termos_curso', 'matriz_info', 'eletivas_curso',
+            # Cursos
+            'listar_cursos', 'coordenador_curso',
+            # Pré-requisitos
+            'prerequisite_chain', 'dependents'
+        ]
         
-        # 3. Combinar contextos
-        if targeted_docs:
-            rag_context = self._format_docs(targeted_docs)
+        if graph_query_type in graph_only_types and graph_context:
+            # Usar apenas o contexto do GraphRAG para evitar confusão
+            combined_context = graph_context
         else:
-            # Fallback para retriever padrão
-            docs = self.retriever.invoke(question)
-            rag_context = self._format_docs(docs)
-        
-        # 4. Contexto final combinado (GraphRAG + RAG)
-        combined_context = graph_context + rag_context
+            # 3. Obter documentos do RAG tradicional
+            targeted_docs = self._smart_retrieve(question, question_lower)
+            
+            # 4. Combinar contextos
+            if targeted_docs:
+                rag_context = self._format_docs(targeted_docs)
+            else:
+                # Fallback para retriever padrão
+                docs = self.retriever.invoke(question)
+                rag_context = self._format_docs(docs)
+            
+            combined_context = graph_context + rag_context
         
         # 5. SEMPRE passar pelo LLM para gerar resposta natural
         template = """Voce e o Assistente Unifesp ICT. Responda APENAS em PORTUGUES BRASILEIRO.
@@ -313,12 +345,14 @@ Resposta:"""
 
 Pergunta: {question}
 
-REGRAS IMPORTANTES:
-1. PRIORIDADE MAXIMA: Se houver [INFORMACOES DO GRAFO DE CONHECIMENTO], use-as como BASE PRINCIPAL da resposta
-2. Use documentos adicionais apenas para complementar com detalhes (codigo, carga horaria, etc.)
-3. NAO repita informacoes - seja conciso
-4. Se a pergunta for sobre docentes/professores, use APENAS as disciplinas listadas no grafo de conhecimento
-5. Seja direto, objetivo e amigavel
+INSTRUCOES OBRIGATORIAS:
+1. Use APENAS as informacoes presentes no contexto acima
+2. NAO INVENTE disciplinas, emails, salas ou informacoes que nao estejam no contexto
+3. Se houver listas, mantenha TODAS as informacoes listadas
+4. Responda de forma natural e direta
+5. Se a informacao nao estiver no contexto, diga que nao tem essa informacao
+
+IMPORTANTE: Nao adicione disciplinas ou dados que nao foram explicitamente mencionados no contexto.
 
 Resposta:"""
         

@@ -7,10 +7,10 @@ class KnowledgeGraph:
     """" Grafo de conhecimento """
 
     def __init__(self):
-        self.graph = nx.DiGraph()
+        self.graph = nx.MultiDiGraph()
 
-    def build_from_directories(self, disciplinas_dir: str, regimentos_dir: str, docentes_dir: str = None):
-        """Constrói o grafo a partir de ambos os diretórios."""
+    def build_from_directories(self, disciplinas_dir: str, regimentos_dir: str, docentes_dir: str = None, cursos_dir: str = None):
+        """Constrói o grafo a partir de todos os diretórios."""
      
         disciplinas_path = Path(disciplinas_dir)
         for md_file in disciplinas_path.glob("*.md"):
@@ -27,11 +27,18 @@ class KnowledgeGraph:
             for md_file in docentes_path.glob("*.md"):
                 self._process_docentes_file(md_file)
         
+        # Processar matrizes curriculares
+        if cursos_dir:
+            cursos_path = Path(cursos_dir)
+            for md_file in cursos_path.glob("*.md"):
+                self._process_matriz_curricular(md_file)
+        
         stats = self.get_stats()
         print(f"Grafo construído:")
         print(f"  - {stats['disciplinas']} disciplinas")
         print(f"  - {stats['docentes']} docentes")
         print(f"  - {stats['cursos']} cursos")
+        print(f"  - {stats['matrizes']} matrizes curriculares")
         print(f"  - {stats['areas']} áreas de especialização")
         print(f"  - {stats['documentos']} documentos institucionais")
         print(f"  - {stats['orgaos']} órgãos/setores")
@@ -218,6 +225,115 @@ class KnowledgeGraph:
             return [item.replace('- ', '').strip() for item in match.group(1).split('\n') 
                    if item.strip() and item.strip().startswith('-')]
         return []
+    
+    def _process_matriz_curricular(self, filepath: Path):
+        """Processa arquivo de matriz curricular."""
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Extrair título (nome do curso)
+        titulo_match = re.search(r'^# Matriz Curricular - (.+)$', content, re.MULTILINE)
+        if not titulo_match:
+            titulo_match = re.search(r'^# (.+)$', content, re.MULTILINE)
+        
+        if not titulo_match:
+            return
+        
+        curso_nome = titulo_match.group(1).strip()
+        
+        # Extrair sigla (ex: BCC, BCT)
+        sigla_match = re.search(r'\(([A-Z]{2,5})\)', curso_nome)
+        sigla = sigla_match.group(1) if sigla_match else ""
+        
+        # Extrair carga horária total
+        carga_match = re.search(r'\*\*Carga Horária Total:\*\*\s*(\d+)', content)
+        carga_total = carga_match.group(1) if carga_match else ""
+        
+        # Extrair duração em termos
+        duracao_match = re.search(r'\*\*Duração:\*\*\s*(\d+)\s*termos?', content, re.IGNORECASE)
+        duracao_termos = duracao_match.group(1) if duracao_match else ""
+        
+        # Extrair coordenador e vice-coordenador
+        coordenador = ""
+        vice_coordenador = ""
+        coord_match = re.search(r'\*\*Coordenador[a]?:\*\*\s*(.+?)(?:\n|$)', content)
+        if coord_match:
+            coordenador = coord_match.group(1).strip()
+        vice_match = re.search(r'\*\*Vice-?[Cc]oordenador[a]?:\*\*\s*(.+?)(?:\n|$)', content)
+        if vice_match:
+            vice_coordenador = vice_match.group(1).strip()
+        
+        # Criar nó da matriz curricular
+        matriz_id = f"MATRIZ:{curso_nome}"
+        self.graph.add_node(matriz_id, 
+                           tipo="matriz_curricular", 
+                           nome=curso_nome, 
+                           sigla=sigla,
+                           carga_horaria=carga_total,
+                           duracao_termos=duracao_termos,
+                           coordenador=coordenador,
+                           vice_coordenador=vice_coordenador,
+                           source=str(filepath))
+        
+        # Conectar com o curso
+        curso_id = f"CURSO:{curso_nome}"
+        if not self.graph.has_node(curso_id):
+            self.graph.add_node(curso_id, tipo="curso", nome=curso_nome, sigla=sigla)
+        self.graph.add_edge(matriz_id, curso_id, relacao="MATRIZ_DE")
+        
+        # Extrair disciplinas por termo (suporta "### Termo 1", "### 1º Semestre", "### 1º Termo")
+        # Lookahead simplificado: próximo ### com número, ou --- ou ## ou fim
+        termo_pattern = r'###\s+(?:Termo\s+)?(\d+)[º°]?\s*(?:Semestre|Termo)?[^\n]*\n(.*?)(?=\n###\s+|\n---|\n## |\Z)'
+        termos = re.findall(termo_pattern, content, re.DOTALL)
+        
+        for termo_num, termo_content in termos:
+            # Encontrar disciplinas na tabela (suporta 2 ou 3+ colunas)
+            # Captura: | Nome | Créditos | [resto opcional]
+            disc_pattern = r'\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|'
+            disciplinas = re.findall(disc_pattern, termo_content)
+            
+            for disc_nome, creditos in disciplinas:
+                disc_nome = disc_nome.strip()
+                if disc_nome and disc_nome != "Disciplina" and not disc_nome.startswith('-'):
+                    disc_id = f"DISC:{disc_nome}"
+                    
+                    # Criar nó da disciplina se não existir
+                    # NOTA: Uma disciplina pode aparecer em múltiplos termos de diferentes cursos
+                    # Então não atualizamos o termo, mantemos o nó genérico
+                    if not self.graph.has_node(disc_id):
+                        self.graph.add_node(disc_id, tipo="disciplina", nome=disc_nome)
+                    
+                    # Conectar disciplina com a matriz
+                    # A informação do termo fica na ARESTA, não no nó
+                    # Assim a mesma disciplina pode estar em múltiplos termos
+                    self.graph.add_edge(matriz_id, disc_id, relacao="INCLUI", termo=termo_num, creditos=creditos)
+        
+        # Extrair eletivas - usando padrões mais flexíveis para os títulos
+        # Procurar todas as seções de eletivas no documento
+        eletivas_sections = [
+            (r"##\s*Eletivas?\s+(?:do\s+)?Grupo\s+1", "eletiva_grupo1"),
+            (r"##\s*Eletivas?\s+(?:do\s+)?Grupo\s+2", "eletiva_grupo2"),
+            (r"##\s*Eletivas?\s+(?:do\s+)?Grupo\s+3", "eletiva_grupo3"),
+            (r"##\s*Eletivas?\s+Extensionistas?", "eletiva_extensionista"),
+        ]
+        
+        for section_pattern, eletiva_tipo in eletivas_sections:
+            # Buscar seção com padrão flexível - termina em próximo ## ou ---
+            match = re.search(rf'{section_pattern}[^\n]*\n(.*?)(?=\n##\s|\n---|\Z)', content, re.DOTALL | re.IGNORECASE)
+            if match:
+                section_content = match.group(1)
+                # Extrair itens da lista (- item)
+                eletivas = re.findall(r'^-\s+(.+)$', section_content, re.MULTILINE)
+                for eletiva in eletivas:
+                    # Limpar nome da eletiva (remover parênteses com horas, "OU qualquer", etc)
+                    if eletiva.upper().startswith('OU '):
+                        continue  # Pular linhas que começam com "OU"
+                    eletiva = re.sub(r'\s*\([^)]*\)\s*$', '', eletiva).strip()
+                    if eletiva and len(eletiva) > 3 and not eletiva.startswith('*'):
+                        eletiva_id = f"DISC:{eletiva}"
+                        if not self.graph.has_node(eletiva_id):
+                            self.graph.add_node(eletiva_id, tipo="disciplina", nome=eletiva, tipo_eletiva=eletiva_tipo)
+                        self.graph.add_edge(matriz_id, eletiva_id, relacao="ELETIVA_DE", grupo=eletiva_tipo)
 
     
     def get_prerequisite_chain(self, disciplina: str, max_depth: int = 10) -> List[str]:
@@ -265,8 +381,17 @@ class KnowledgeGraph:
         if not disc_id:
             return []
         
-        return [self.graph.nodes[p].get('nome') for p in self.graph.predecessors(disc_id)
-                if self.graph.get_edge_data(p, disc_id, {}).get('relacao') == 'LECIONA']
+        docentes = []
+        for p in self.graph.predecessors(disc_id):
+            # MultiDiGraph: get_edge_data retorna dict de dicts
+            edges_data = self.graph.get_edge_data(p, disc_id)
+            if edges_data:
+                # Iterar sobre todas as arestas entre os mesmos nós
+                for edge_key, edge in edges_data.items():
+                    if edge.get('relacao') == 'LECIONA':
+                        docentes.append(self.graph.nodes[p].get('nome'))
+                        break  # Evita duplicatas se houver múltiplas arestas LECIONA
+        return docentes
 
     def get_disciplines_of_docente(self, docente: str) -> List[str]:
         """Disciplinas que um docente leciona."""
@@ -286,11 +411,16 @@ class KnowledgeGraph:
         
         disciplinas = []
         for successor in self.graph.successors(docente_id):
-            edge = self.graph.get_edge_data(docente_id, successor)
-            if edge and edge.get('relacao') == 'LECIONA':
-                nome = self.graph.nodes[successor].get('nome')
-                if nome:
-                    disciplinas.append(nome)
+            # MultiDiGraph: get_edge_data retorna dict de dicts
+            edges_data = self.graph.get_edge_data(docente_id, successor)
+            if edges_data:
+                # Iterar sobre todas as arestas entre os mesmos nós
+                for edge_key, edge in edges_data.items():
+                    if edge.get('relacao') == 'LECIONA':
+                        nome = self.graph.nodes[successor].get('nome')
+                        if nome:
+                            disciplinas.append(nome)
+                        break  # Evita duplicatas se houver múltiplas arestas LECIONA
         
         return disciplinas
 
@@ -412,6 +542,7 @@ class KnowledgeGraph:
             'disciplinas': tipos.get('disciplina', 0),
             'docentes': tipos.get('docente', 0),
             'cursos': tipos.get('curso', 0),
+            'matrizes': tipos.get('matriz_curricular', 0),
             'areas': tipos.get('area', 0),
             'documentos': tipos.get('documento', 0),
             'artigos': tipos.get('artigo', 0),
@@ -419,40 +550,292 @@ class KnowledgeGraph:
             'faqs': tipos.get('faq', 0)
         }
     
-    def get_docentes_by_area(self, area: str) -> List[str]:
-        """Retorna docentes especialistas em uma área."""
-        area_lower = area.lower().strip()
-        area_words = set(area_lower.split())
-        docentes = []
+    def get_disciplinas_do_termo(self, curso: str, termo: int) -> List[Dict]:
+        """Retorna disciplinas de um termo específico de um curso."""
+        resultados = []
+        cursos_to_search = self._expand_curso_search(curso)
+        
+        # Encontrar a matriz do curso
+        for node, data in self.graph.nodes(data=True):
+            if data.get('tipo') == 'matriz_curricular':
+                nome = data.get('nome', '').lower()
+                sigla = data.get('sigla', '').lower()
+                
+                # Verificar match - MAIS ESPECÍFICO
+                match_found = False
+                for curso_term in cursos_to_search:
+                    # Priorizar match exato de sigla
+                    if curso_term == sigla:
+                        match_found = True
+                        break
+                    # Ou se o nome completo do curso está no termo de busca ou vice-versa
+                    # Mas evitar substring matches acidentais (ex: 'ec' em 'ciência')
+                    if len(curso_term) > 3:  # Para termos longos, usar substring
+                        if curso_term in nome or nome in curso_term:
+                            match_found = True
+                            break
+                
+                if match_found:
+                    # Encontrar disciplinas conectadas
+                    for successor in self.graph.successors(node):
+                        # MultiDiGraph: get_edge_data retorna dict de dicts
+                        edges_data = self.graph.get_edge_data(node, successor)
+                        if edges_data:
+                            # Iterar sobre todas as arestas entre os mesmos nós
+                            for edge_key, edge in edges_data.items():
+                                if edge.get('relacao') == 'INCLUI' and edge.get('termo') == str(termo):
+                                    disc_data = self.graph.nodes[successor]
+                                    resultados.append({
+                                        'nome': disc_data.get('nome'),
+                                        'creditos': edge.get('creditos'),
+                                        'termo': termo
+                                    })
+                    break
+        
+        return resultados
+    
+    def get_todos_termos_do_curso(self, curso: str) -> Dict[int, List[Dict]]:
+        """Retorna todas as disciplinas de todos os termos de um curso."""
+        resultados = {}
+        cursos_to_search = self._expand_curso_search(curso)
+        
+        # Encontrar a matriz do curso
+        for node, data in self.graph.nodes(data=True):
+            if data.get('tipo') == 'matriz_curricular':
+                nome = data.get('nome', '').lower()
+                sigla = data.get('sigla', '').lower()
+                duracao = data.get('duracao_termos', '8')
+                
+                # Verificar match - MAIS ESPECÍFICO
+                match_found = False
+                for curso_term in cursos_to_search:
+                    # Priorizar match exato de sigla
+                    if curso_term == sigla:
+                        match_found = True
+                        break
+                    # Ou se o nome completo do curso está no termo de busca ou vice-versa
+                    # Mas evitar substring matches acidentais (ex: 'ec' em 'ciência')
+                    if len(curso_term) > 3:  # Para termos longos, usar substring
+                        if curso_term in nome or nome in curso_term:
+                            match_found = True
+                            break
+                
+                if match_found:
+                    # Encontrar disciplinas conectadas e agrupar por termo
+                    for successor in self.graph.successors(node):
+                        # MultiDiGraph: get_edge_data retorna dict de dicts
+                        edges_data = self.graph.get_edge_data(node, successor)
+                        if edges_data:
+                            # Iterar sobre todas as arestas entre os mesmos nós
+                            for edge_key, edge in edges_data.items():
+                                if edge.get('relacao') == 'INCLUI':
+                                    termo_str = edge.get('termo', '0')
+                                    try:
+                                        termo_num = int(termo_str)
+                                    except ValueError:
+                                        continue
+                                    
+                                    if termo_num not in resultados:
+                                        resultados[termo_num] = []
+                                    
+                                    disc_data = self.graph.nodes[successor]
+                                    resultados[termo_num].append({
+                                        'nome': disc_data.get('nome'),
+                                        'creditos': edge.get('creditos'),
+                                        'termo': termo_num
+                                    })
+                    break
+        
+        return resultados
+    
+    # Mapeamento de siglas/abreviações para nomes de cursos
+    CURSO_ALIASES = {
+        'bcc': ['ciência da computação', 'ciencia da computacao', 'computação', 'computacao'],
+        'cc': ['ciência da computação', 'ciencia da computacao', 'computação'],
+        'ec': ['engenharia de computação', 'engenharia de computacao'],
+        'bct': ['bacharelado interdisciplinar', 'ciência e tecnologia'],
+        'mat comp': ['matemática computacional', 'matematica computacional'],
+        'bio': ['biotecnologia'],
+        'eb': ['engenharia biomédica', 'engenharia biomedica'],
+        'em': ['engenharia de materiais'],
+    }
+    
+    def _expand_curso_search(self, curso: str) -> List[str]:
+        """Expande a busca de curso incluindo aliases."""
+        curso_lower = curso.lower().strip()
+        cursos_to_search = [curso_lower]
+        
+        # Adicionar aliases
+        if curso_lower in self.CURSO_ALIASES:
+            cursos_to_search.extend(self.CURSO_ALIASES[curso_lower])
+        
+        return cursos_to_search
+    
+    def get_eletivas_do_curso(self, curso: str, grupo: str = None) -> List[Dict]:
+        """Retorna eletivas de um curso (opcionalmente filtrado por grupo)."""
+        resultados = []
+        cursos_to_search = self._expand_curso_search(curso)
         
         for node, data in self.graph.nodes(data=True):
-            if data.get('tipo') != 'area':
-                continue
+            if data.get('tipo') == 'matriz_curricular':
+                nome = data.get('nome', '').lower()
+                sigla = data.get('sigla', '').lower()
+                
+                # Verificar se algum termo de busca combina - MAIS ESPECÍFICO
+                match_found = False
+                for curso_term in cursos_to_search:
+                    # Priorizar match exato de sigla
+                    if curso_term == sigla:
+                        match_found = True
+                        break
+                    # Ou se o nome completo do curso está no termo de busca ou vice-versa
+                    # Mas evitar substring matches acidentais (ex: 'ec' em 'ciência')
+                    if len(curso_term) > 3:  # Para termos longos, usar substring
+                        if curso_term in nome or nome in curso_term:
+                            match_found = True
+                            break
+                
+                if match_found:
+                    for successor in self.graph.successors(node):
+                        # MultiDiGraph: get_edge_data retorna dict de dicts
+                        edges_data = self.graph.get_edge_data(node, successor)
+                        if edges_data:
+                            # Iterar sobre todas as arestas entre os mesmos nós
+                            for edge_key, edge in edges_data.items():
+                                if edge.get('relacao') == 'ELETIVA_DE':
+                                    grupo_eletiva = edge.get('grupo', '')
+                                    if grupo is None or grupo.lower() in grupo_eletiva.lower():
+                                        disc_data = self.graph.nodes[successor]
+                                        resultados.append({
+                                            'nome': disc_data.get('nome'),
+                                            'grupo': grupo_eletiva
+                                        })
+                    break
+        
+        return resultados
+    
+    def get_info_matriz(self, curso: str) -> Optional[Dict]:
+        """Retorna informações da matriz curricular de um curso."""
+        cursos_to_search = self._expand_curso_search(curso)
+        
+        for node, data in self.graph.nodes(data=True):
+            if data.get('tipo') == 'matriz_curricular':
+                nome = data.get('nome', '').lower()
+                sigla = data.get('sigla', '').lower()
+                
+                # Verificar match - MAIS ESPECÍFICO
+                match_found = False
+                for curso_term in cursos_to_search:
+                    # Priorizar match exato de sigla
+                    if curso_term == sigla:
+                        match_found = True
+                        break
+                    # Ou se o nome completo do curso está no termo de busca ou vice-versa
+                    # Mas evitar substring matches acidentais (ex: 'ec' em 'ciência')
+                    if len(curso_term) > 3:  # Para termos longos, usar substring
+                        if curso_term in nome or nome in curso_term:
+                            match_found = True
+                            break
+                
+                if match_found:
+                    return {
+                        'nome': data.get('nome'),
+                        'sigla': data.get('sigla'),
+                        'carga_horaria': data.get('carga_horaria'),
+                        'duracao_termos': data.get('duracao_termos'),
+                        'coordenador': data.get('coordenador', ''),
+                        'vice_coordenador': data.get('vice_coordenador', ''),
+                    }
+        
+        return None
+    
+    def get_coordenador(self, curso: str) -> Optional[Dict]:
+        """Retorna informações do coordenador de um curso."""
+        info = self.get_info_matriz(curso)
+        if info and (info.get('coordenador') or info.get('vice_coordenador')):
+            return {
+                'curso': info.get('nome'),
+                'sigla': info.get('sigla'),
+                'coordenador': info.get('coordenador'),
+                'vice_coordenador': info.get('vice_coordenador'),
+            }
+        return None
+    
+    def get_all_cursos(self) -> List[Dict]:
+        """Retorna lista de todos os cursos com matriz curricular."""
+        cursos = []
+        for node, data in self.graph.nodes(data=True):
+            if data.get('tipo') == 'matriz_curricular':
+                cursos.append({
+                    'nome': data.get('nome', ''),
+                    'sigla': data.get('sigla', ''),
+                    'duracao_termos': data.get('duracao_termos', ''),
+                    'carga_horaria': data.get('carga_horaria', ''),
+                    'coordenador': data.get('coordenador', ''),
+                })
+        return cursos
+    
+    # Sinônimos de áreas para melhor busca
+    AREA_SYNONYMS = {
+        'machine learning': ['aprendizado de máquina', 'aprendizagem de máquina', 'inteligência artificial', 'redes neurais'],
+        'aprendizado de máquina': ['machine learning', 'inteligência artificial', 'redes neurais'],
+        'ia': ['inteligência artificial'],
+        'ai': ['inteligência artificial', 'artificial intelligence'],
+        'deep learning': ['aprendizado profundo', 'redes neurais', 'inteligência artificial'],
+        'ml': ['machine learning', 'aprendizado de máquina'],
+        'redes neurais': ['neural networks', 'deep learning', 'inteligência artificial'],
+        'data science': ['ciência de dados', 'mineração de dados'],
+        'ciência de dados': ['data science', 'mineração de dados', 'inteligência artificial'],
+    }
+    
+    def _expand_area_search(self, area: str) -> List[str]:
+        """Expande a busca de área incluindo sinônimos."""
+        area_lower = area.lower().strip()
+        areas_to_search = [area_lower]
+        
+        # Adicionar sinônimos
+        if area_lower in self.AREA_SYNONYMS:
+            areas_to_search.extend(self.AREA_SYNONYMS[area_lower])
+        
+        return areas_to_search
+    
+    def get_docentes_by_area(self, area: str) -> List[str]:
+        """Retorna docentes especialistas em uma área (com suporte a sinônimos)."""
+        areas_to_search = self._expand_area_search(area)
+        docentes = []
+        
+        for search_area in areas_to_search:
+            area_lower = search_area.lower().strip()
+            area_words = set(area_lower.split())
             
-            nome_area = data.get('nome', '').lower()
-            nome_words = set(nome_area.split())
-            
-            # Match por palavras (evita "ia" dar match em "engenharia")
-            is_match = False
-            
-            # Match exato
-            if area_lower == nome_area:
-                is_match = True
-            # Todas as palavras da query estão na área
-            elif len(area_lower) > 3 and area_words.issubset(nome_words):
-                is_match = True
-            # Substring match (apenas para termos maiores que 5 chars)
-            elif len(area_lower) > 5 and area_lower in nome_area:
-                is_match = True
-            
-            if is_match:
-                # Encontrar docentes que apontam para essa área
-                for pred in self.graph.predecessors(node):
-                    edge = self.graph.get_edge_data(pred, node)
-                    if edge and edge.get('relacao') == 'ESPECIALISTA_EM':
-                        nome = self.graph.nodes[pred].get('nome')
-                        if nome and nome not in docentes:
-                            docentes.append(nome)
+            for node, data in self.graph.nodes(data=True):
+                if data.get('tipo') != 'area':
+                    continue
+                
+                nome_area = data.get('nome', '').lower()
+                nome_words = set(nome_area.split())
+                
+                # Match por palavras (evita "ia" dar match em "engenharia")
+                is_match = False
+                
+                # Match exato
+                if area_lower == nome_area:
+                    is_match = True
+                # Todas as palavras da query estão na área
+                elif len(area_lower) > 3 and area_words.issubset(nome_words):
+                    is_match = True
+                # Substring match (apenas para termos maiores que 5 chars)
+                elif len(area_lower) > 5 and area_lower in nome_area:
+                    is_match = True
+                
+                if is_match:
+                    # Encontrar docentes que apontam para essa área
+                    for pred in self.graph.predecessors(node):
+                        edge = self.graph.get_edge_data(pred, node)
+                        if edge and edge.get('relacao') == 'ESPECIALISTA_EM':
+                            nome = self.graph.nodes[pred].get('nome')
+                            if nome and nome not in docentes:
+                                docentes.append(nome)
         
         return docentes
     
@@ -497,12 +880,27 @@ class KnowledgeGraph:
             return []
         
         areas = []
+        
+        # 1. Verificar atributo 'areas' no nó do docente
+        node_areas = self.graph.nodes[docente_id].get('areas', '')
+        if node_areas:
+            if isinstance(node_areas, list):
+                areas.extend(node_areas)
+            elif isinstance(node_areas, str):
+                # Pode ser uma string única ou separada por vírgulas
+                areas.extend([a.strip() for a in node_areas.split(',') if a.strip()])
+        
+        # 2. Verificar conexões com nós de área (ESPECIALISTA_EM)
         for successor in self.graph.successors(docente_id):
-            edge = self.graph.get_edge_data(docente_id, successor)
-            if edge and edge.get('relacao') == 'ESPECIALISTA_EM':
-                nome = self.graph.nodes[successor].get('nome')
-                if nome:
-                    areas.append(nome)
+            # MultiDiGraph: get_edge_data retorna dict de dicts
+            edges_data = self.graph.get_edge_data(docente_id, successor)
+            if edges_data:
+                for edge_key, edge in edges_data.items():
+                    if edge.get('relacao') == 'ESPECIALISTA_EM':
+                        nome = self.graph.nodes[successor].get('nome')
+                        if nome and nome not in areas:
+                            areas.append(nome)
+                        break
         
         return areas
     

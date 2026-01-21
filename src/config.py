@@ -11,13 +11,15 @@ class Config:
     
     SOURCES = {
         "disciplinas": "./markdown_disciplinas",
-        "regimentos": "./markdown_regimentos"
+        "regimentos": "./markdown_regimentos",
+        "cursos": "./markdown_cursos"
     }
     
     # Diretórios para Knowledge Graph
     DISCIPLINAS_DIR = "./markdown_disciplinas"
     REGIMENTOS_DIR = "./markdown_regimentos"
     DOCENTES_DIR = "./markdown_docentes"
+    CURSOS_DIR = "./markdown_cursos"
     
     # Chunking semântico otimizado
     # Documentos menores que CHUNK_SIZE são mantidos inteiros
