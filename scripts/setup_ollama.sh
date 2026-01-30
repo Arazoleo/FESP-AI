@@ -62,3 +62,4 @@ echo "Você pode verificar os modelos instalados com:"
 echo "  docker exec $CONTAINER_NAME ollama list"
 echo ""
 
+

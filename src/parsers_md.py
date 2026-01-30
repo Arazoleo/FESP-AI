@@ -448,17 +448,21 @@ def parse_file(filepath: str) -> List[Document]:
     with open(filepath, 'r', encoding='utf-8') as f:
         first_lines = ''.join(f.readlines()[:10])
     
-    # Matriz curricular
-    if 'Matriz Curricular' in first_lines or 'cursos' in filepath:
+    # Regimentos primeiro (para evitar falsos positivos com 'cursos' no path)
+    if 'regimentos' in filepath.lower() or 'regimento' in filepath.lower():
+        return RegimentoMarkdownParser.parse(filepath)
+    
+    # Matriz curricular (apenas arquivos na pasta markdown_cursos OU com título específico)
+    if 'Matriz Curricular' in first_lines or 'markdown_cursos' in filepath:
         return MatrizCurricularParser.parse(filepath)
     
     # Disciplina
     if 'Código:' in first_lines or 'Docentes' in first_lines or 'disciplinas' in filepath:
-            return DisciplinaMarkdownParser.parse(filepath)
+        return DisciplinaMarkdownParser.parse(filepath)
     
     # Regimento (fallback)
     if filepath.endswith('.md'):
-            return RegimentoMarkdownParser.parse(filepath)
+        return RegimentoMarkdownParser.parse(filepath)
     
     return []
 

@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from .knowledge_graph import KnowledgeGraph
 from .graph_rag import GraphRAGEngine
+from .relation_extractor import RelationExtractor, KnowledgeGraphEnricher
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -62,6 +63,9 @@ class RAGUnifesp:
         self.config = config or Config()
         ollama_base_url = self.config.OLLAMA_BASE_URL
         keep_alive_seconds = 3600
+        # Timeout para evitar requests travadas (60 segundos) - apenas para LLM
+        llm_timeout = 60
+        
         if ollama_base_url and ollama_base_url != "http://localhost:11434":
             self.llm = OllamaLLM(
                 model=self.config.MODEL_NAME, 
@@ -70,7 +74,8 @@ class RAGUnifesp:
                 num_predict=2048,
                 temperature=0.1,
                 top_k=10,
-                repeat_penalty=1.1
+                repeat_penalty=1.1,
+                timeout=llm_timeout
             )
             self.embeddings = OllamaEmbeddings(
                 model=self.config.EMBEDDING_MODEL, 
@@ -84,15 +89,21 @@ class RAGUnifesp:
                 num_predict=2048,
                 temperature=0.1,
                 top_k=10,
-                repeat_penalty=1.1
+                repeat_penalty=1.1,
+                timeout=llm_timeout
             )
-            self.embeddings = OllamaEmbeddings(model=self.config.EMBEDDING_MODEL, keep_alive=keep_alive_seconds)
+            self.embeddings = OllamaEmbeddings(
+                model=self.config.EMBEDDING_MODEL, 
+                keep_alive=keep_alive_seconds
+            )
         
         self.db = None
         self.retriever = None
         self.chain = None
         self.knowledge_graph = None
         self.graph_rag = None
+        self.relation_extractor = None
+        self.graph_enricher = None
     
     def _get_file_hash(self, filepath: str) -> str:
         with open(filepath, 'rb') as f:
@@ -179,7 +190,7 @@ class RAGUnifesp:
         return True
     
     def _setup_knowledge_graph(self):
-        """Inicializa o Knowledge Graph."""
+        """Inicializa o Knowledge Graph com classificador semântico."""
         try:
             self.knowledge_graph = KnowledgeGraph()
             
@@ -198,12 +209,23 @@ class RAGUnifesp:
                 cursos_arg
             )
             
-            self.graph_rag = GraphRAGEngine(self.knowledge_graph)
+            # Criar GraphRAG com embeddings para classificação semântica
+            self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings)
+            
+            # Inicializar classificador de intenção (pré-computa embeddings)
+            self.graph_rag.initialize_classifier()
+            
+            # Inicializar extrator de relações (usa o mesmo LLM)
+            self.relation_extractor = RelationExtractor(llm=self.llm)
+            self.graph_enricher = KnowledgeGraphEnricher(self.knowledge_graph, self.relation_extractor)
+            
             print("Knowledge Graph inicializado!")
         except Exception as e:
             print(f"Erro ao inicializar Knowledge Graph: {e}")
             self.knowledge_graph = None
             self.graph_rag = None
+            self.relation_extractor = None
+            self.graph_enricher = None
     
     def _apply_changes(self, changes: Dict, current_files: Dict):
         if changes["deleted"]:
@@ -291,6 +313,54 @@ Resposta:"""
             parts.append(f"{header}\n{doc.page_content}")
         return "\n\n---\n\n".join(parts)
     
+    def enrich_graph_from_text(self, text: str, min_confidence: float = 0.7) -> Dict:
+        """
+        Extrai relações de um texto e adiciona ao Knowledge Graph.
+        
+        Args:
+            text: Texto para extrair relações
+            min_confidence: Confiança mínima (0.5 a 1.0)
+            
+        Returns:
+            Estatísticas da extração
+        """
+        if not self.graph_enricher:
+            return {"error": "Graph enricher não inicializado. Execute sync() primeiro."}
+        
+        added = self.graph_enricher.enrich_from_text(text, min_confidence)
+        stats = self.graph_enricher.get_extraction_stats()
+        stats['relations_added_now'] = added
+        
+        return stats
+    
+    def extract_relations(self, text: str, min_confidence: float = 0.6) -> List[Dict]:
+        """
+        Extrai relações de um texto sem adicionar ao grafo.
+        Útil para preview/validação antes de enriquecer.
+        
+        Args:
+            text: Texto para extrair relações
+            min_confidence: Confiança mínima
+            
+        Returns:
+            Lista de relações extraídas
+        """
+        if not self.relation_extractor:
+            return []
+        
+        relations = self.relation_extractor.extract_from_text(text, min_confidence)
+        return [
+            {
+                'subject': r.subject,
+                'subject_type': r.subject_type,
+                'relation': r.relation,
+                'object': r.object,
+                'object_type': r.object_type,
+                'confidence': r.confidence
+            }
+            for r in relations
+        ]
+    
     def query(self, question: str) -> str:
         if not self.chain:
             self.sync()
@@ -321,7 +391,33 @@ Resposta:"""
             'prerequisite_chain', 'dependents'
         ]
         
-        if graph_query_type in graph_only_types and graph_context:
+        # Termos que indicam que o grafo não tem a informação completa
+        # e precisamos do RAG vetorial como fallback
+        needs_rag_fallback = any(term in question_lower for term in [
+            'sequencial', 'sequenciais', 'certificado', 'certificacao',
+            'regulamento', 'norma', 'regimento', 'artigo', 'resolucao',
+            'evacuacao', 'incendio', 'seguranca', 'faq', 'perguntas frequentes',
+            # Nomes de cursos sequenciais específicos
+            'fundamentos de ciência de dados', 'fundamentos de ciencia de dados',
+            'métodos estatísticos', 'metodos estatisticos',
+            'economia e mercados', 'química aplicada', 'quimica aplicada',
+            'desenvolvimento de games', 'jogos digitais',
+            # Detalhes de matriz curricular (documentos tem mais info que o grafo)
+            'matriz curricular', 'grade curricular', 'carga horária total', 'carga horaria total',
+            'primeiro termo', 'segundo termo', 'terceiro termo', 'quarto termo',
+            'quinto termo', 'sexto termo', 'sétimo termo', 'oitavo termo', 'nono termo', 'décimo termo',
+            '1º termo', '2º termo', '3º termo', '4º termo', '5º termo',
+            '6º termo', '7º termo', '8º termo', '9º termo', '10º termo',
+            '1o termo', '2o termo', '3o termo', '4o termo', '5o termo',
+            'coordenador', 'coordenadora', 'vice-coordenador', 'vice-coordenadora',
+            'informações sobre', 'informacoes sobre', 'detalhes do curso', 'visão geral',
+            'engenharia de computação', 'engenharia de computacao',
+            'ciência da computação', 'ciencia da computacao', 
+            'engenharia de materiais', 'engenharia biomedica', 'engenharia biomédica',
+            'biotecnologia', 'matemática computacional', 'matematica computacional'
+        ])
+        
+        if graph_query_type in graph_only_types and graph_context and not needs_rag_fallback:
             # Usar apenas o contexto do GraphRAG para evitar confusão
             combined_context = graph_context
         else:
@@ -372,7 +468,21 @@ Resposta:"""
             'camara', 'congregacao', 'departamento', 'conselho',
             'eleicao', 'mandato', 'diretor', 'chefe',
             'extensao', 'cultura', 'biblioteca', 'sae', 'nae',
-            'falta', 'perda de mandato', 'missao'
+            'falta', 'perda de mandato', 'missao',
+            # Matriz curricular e informações detalhadas de cursos
+            'matriz curricular', 'grade curricular', 'grade de',
+            'termo', 'semestre', 'primeiro termo', 'segundo termo', 
+            'terceiro termo', 'quarto termo', 'quinto termo',
+            '1º termo', '2º termo', '3º termo', '4º termo', '5º termo',
+            '6º termo', '7º termo', '8º termo', '9º termo', '10º termo',
+            'carga horaria total', 'total de creditos', 'coordenador',
+            'certificacao', 'diploma', 'tcc', 'estagio supervisionado',
+            'informações sobre o curso', 'informacoes sobre o curso',
+            'disciplinas do curso', 'disciplinas de ec', 'disciplinas de bcc',
+            'engenharia de computação', 'engenharia de computacao',
+            'ciência da computação', 'ciencia da computacao',
+            'engenharia de materiais', 'engenharia biomedica',
+            'biotecnologia', 'matemática computacional', 'matematica computacional'
         ]
         
         if any(kw in question_lower for kw in regimento_keywords):
@@ -436,8 +546,9 @@ Resposta:"""
             for meta in all_results.get('metadatas', []):
                 if meta.get('sigla', '').upper() == sigla.upper():
                     return True
-        except:
-            pass
+        except Exception as e:
+            # Log para debug, mas não falha a operação
+            print(f"[WARNING] Erro ao verificar sigla {sigla}: {e}")
         return False
     
     def _retrieve_discipline_docs(self, disciplina: str, question_lower: str) -> List[Document]:
@@ -603,14 +714,34 @@ Resposta:"""
                 'regimento': 4, 'regulamento': 4, 'regra': 3, 'artigo': 3,
                 'camara': 3, 'congregacao': 3, 'departamento': 2, 'conselho': 2,
                 'sae': 5, 'biblioteca': 3, 'extensao': 3, 'nae': 4,
-                'missao': 3, 'objetivo': 2, 'campus': 2, 'unifesp': 2
+                'missao': 3, 'objetivo': 2, 'campus': 2, 'unifesp': 2,
+                # Matriz curricular keywords
+                'matriz': 5, 'semestre': 4, 'termo': 4, 'disciplina': 3,
+                'coordenador': 5, 'creditos': 3, 'primeiro': 3, 'segundo': 3
             }
+            
+            # Keywords específicos para detectar perguntas sobre matrizes curriculares
+            matriz_keywords = ['matriz', 'termo', 'semestre', 'primeiro', 'segundo', 
+                             'terceiro', 'quarto', 'quinto', 'sexto', 'sétimo', 'oitavo',
+                             'coordenador', 'grade', 'disciplinas do curso', 'engenharia de computação',
+                             'ciência da computação', 'biotecnologia', 'engenharia de materiais',
+                             'matemática computacional', 'engenharia biomédica']
+            is_matriz_question = any(kw in question_lower for kw in matriz_keywords)
             
             for i, doc_text in enumerate(all_results.get('documents', [])):
                 meta = all_results['metadatas'][i]
                 
-                if meta.get('tipo_documento') != 'institucional':
-                    continue
+                # Aceitar documentos institucionais OU matrizes curriculares
+                tipo_doc = meta.get('tipo_documento', '')
+                tipo = meta.get('tipo', '')
+                
+                # Se é pergunta sobre matriz, priorizar matrizes curriculares
+                if is_matriz_question:
+                    if tipo != 'matriz_curricular' and tipo_doc != 'institucional':
+                        continue
+                else:
+                    if tipo_doc != 'institucional' and tipo != 'matriz_curricular':
+                        continue
                 
                 doc_lower = doc_text.lower()
                 score = 0
@@ -634,6 +765,49 @@ Resposta:"""
                 # Bonus para objetivo do documento
                 if meta.get('secao') == 'objetivo':
                     score += 3
+                
+                # Bonus para matrizes curriculares
+                if tipo == 'matriz_curricular':
+                    secao = meta.get('secao', '')
+                    sigla = meta.get('sigla', '').lower()
+                    
+                    # Se pergunta menciona termo/semestre específico, priorizar esses docs
+                    if 'termo_' in secao:
+                        termo_num = secao.replace('termo_', '')
+                        termos_map = {
+                            'primeiro': '1', 'primeiro termo': '1', '1': '1', '1º': '1', '1o': '1', 'termo 1': '1',
+                            'segundo': '2', 'segundo termo': '2', '2': '2', '2º': '2', '2o': '2', 'termo 2': '2',
+                            'terceiro': '3', 'terceiro termo': '3', '3': '3', '3º': '3', '3o': '3', 'termo 3': '3',
+                            'quarto': '4', 'quarto termo': '4', '4': '4', '4º': '4', '4o': '4', 'termo 4': '4',
+                            'quinto': '5', 'quinto termo': '5', '5': '5', '5º': '5', '5o': '5', 'termo 5': '5',
+                            'sexto': '6', 'sexto termo': '6', '6': '6', '6º': '6', '6o': '6', 'termo 6': '6',
+                            'sétimo': '7', 'setimo': '7', 'sétimo termo': '7', '7': '7', '7º': '7', '7o': '7', 'termo 7': '7',
+                            'oitavo': '8', 'oitavo termo': '8', '8': '8', '8º': '8', '8o': '8', 'termo 8': '8',
+                            'nono': '9', 'nono termo': '9', '9': '9', '9º': '9', '9o': '9', 'termo 9': '9',
+                            'décimo': '10', 'decimo': '10', 'décimo termo': '10', '10': '10', '10º': '10', '10o': '10', 'termo 10': '10'
+                        }
+                        for termo_word, termo_val in termos_map.items():
+                            if termo_word in question_lower and termo_val == termo_num:
+                                score += 20  # Alto bonus para termo correto
+                    
+                    # Se pergunta menciona sigla do curso, priorizar
+                    if sigla and sigla in question_lower:
+                        score += 15
+                    
+                    # Se pergunta menciona nome do curso
+                    titulo = meta.get('titulo', '').lower()
+                    if 'engenharia de computa' in question_lower and 'engenharia de computa' in titulo:
+                        score += 15
+                    if 'ciência da computa' in question_lower and 'ciência da computa' in titulo:
+                        score += 15
+                    if 'ciencia da computa' in question_lower:
+                        score += 15
+                    if 'biotecnologia' in question_lower and 'biotecnologia' in titulo:
+                        score += 15
+                    
+                    # Resumo sempre tem pontos para perguntas gerais
+                    if secao == 'resumo':
+                        score += 5
                 
                 if score > 0:
                     regimento_docs.append(Document(page_content=doc_text, metadata=meta))

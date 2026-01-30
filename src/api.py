@@ -3,8 +3,9 @@ import warnings
 import os
 import re
 import logging
-from typing import List, Optional
-from datetime import datetime
+from typing import List, Optional, Dict
+from datetime import datetime, timedelta
+from collections import OrderedDict
 from uuid import uuid4
 
 warnings.filterwarnings("ignore")
@@ -20,6 +21,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from .rag import RAGUnifesp
+from .context_resolver import context_resolver
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -41,7 +43,36 @@ app.add_middleware(
 )
 
 rag = None
-conversations: dict[str, List[dict]] = {}
+
+# Configurações de gerenciamento de memória para conversas
+MAX_CONVERSATIONS = 1000  # Máximo de conversas simultâneas
+CONVERSATION_TTL = timedelta(hours=24)  # Tempo de vida das conversas
+
+# Usar OrderedDict para manter ordem de inserção (LRU)
+conversations: OrderedDict[str, List[dict]] = OrderedDict()
+conversation_timestamps: Dict[str, datetime] = {}
+
+
+def cleanup_old_conversations():
+    """Remove conversas antigas e limita o número total de conversas."""
+    now = datetime.now()
+    
+    # Remover conversas expiradas
+    expired = [
+        cid for cid, ts in conversation_timestamps.items()
+        if now - ts > CONVERSATION_TTL
+    ]
+    for cid in expired:
+        conversations.pop(cid, None)
+        conversation_timestamps.pop(cid, None)
+    
+    # Limitar número máximo (remover mais antigas - LRU)
+    while len(conversations) > MAX_CONVERSATIONS:
+        oldest_cid, _ = conversations.popitem(last=False)
+        conversation_timestamps.pop(oldest_cid, None)
+    
+    if expired:
+        logger.info(f"[CLEANUP] Removidas {len(expired)} conversas expiradas. Total: {len(conversations)}")
 
 
 class Message(BaseModel):
@@ -127,8 +158,16 @@ async def chat(request: ChatRequest):
     
     conversation_id = request.conversation_id or str(uuid4())
     
+    # Limpar conversas antigas periodicamente
+    cleanup_old_conversations()
+    
     if conversation_id not in conversations:
         conversations[conversation_id] = []
+        conversation_timestamps[conversation_id] = datetime.now()
+    else:
+        # Atualizar timestamp (mover para final - LRU)
+        conversations.move_to_end(conversation_id)
+        conversation_timestamps[conversation_id] = datetime.now()
     
     user_message = {
         "role": "user",
@@ -137,161 +176,41 @@ async def chat(request: ChatRequest):
     }
     conversations[conversation_id].append(user_message)
     
+    # Usar o ContextResolver para resolver referências contextuais
     if request.include_history and len(conversations[conversation_id]) > 1:
         history = conversations[conversation_id][-request.max_history-1:-1]
         
-        # Expandir pergunta contextual se necessário
-        message_lower = request.message.lower().strip()
-        enhanced_question = request.message
+        # Atualizar contexto com mensagens do histórico
+        for msg in history:
+            context_resolver.update_context(conversation_id, msg['content'], msg['role'])
         
-        # 1. Resolver referências pronominais (dele, dela, ele, ela, etc.)
-        pronome_patterns = [
-            r'\b(?:dele|dela|desse|dessa|do professor|da professora|desse docente|dessa docente)\b',
-            r'\ba área (?:dele|dela)\b',
-            r'\b(?:sobre|com)\s+(?:ele|ela)\b',  # "sobre ele", "com ele", "contato com ele"
-        ]
-        has_pronome = any(re.search(p, message_lower) for p in pronome_patterns)
+        # Resolver referências na pergunta atual (baseado em regras)
+        enhanced_question, was_modified = context_resolver.resolve_question(
+            request.message, 
+            conversation_id, 
+            history
+        )
         
-        if has_pronome:
-            # Procurar nome de docente mencionado na conversa
-            docente_encontrado = None
-            
-            # PRIORIDADE 0: Nome na própria pergunta atual (ex: "IC com o Álvaro, qual a área dele?")
-            docente_match_atual = re.search(
-                r'(?:com\s+o|com\s+a|do|da)\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)',
-                request.message
-            )
-            if docente_match_atual:
-                docente_encontrado = docente_match_atual.group(1)
-            
-            # PRIORIDADE 1: Se não encontrou na pergunta atual, procurar em perguntas do usuário no histórico
-            if not docente_encontrado:
-                for msg in reversed(history):
-                    if msg['role'] == 'user':
-                        content = msg['content']
-                        # "com o Álvaro Fazenda", "do Álvaro Fazenda"
-                        docente_match = re.search(
-                            r'(?:com\s+o|com\s+a|do|da)\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)',
-                            content
-                        )
-                        if docente_match:
-                            docente_encontrado = docente_match.group(1)
-                            break
-            
-            # PRIORIDADE 2: Se não encontrou em perguntas, procurar em respostas do sistema
-            if not docente_encontrado:
-                for msg in reversed(history):
-                    if msg['role'] == 'assistant':
-                        content = msg['content']
-                        
-                        # "X é especialista" ou "X leciona"
-                        nome_match = re.search(
-                            r'^([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)\s+(?:é\s+especialista|leciona)',
-                            content
-                        )
-                        if nome_match:
-                            docente_encontrado = nome_match.group(1)
-                            break
-                        
-                        # "O professor X é especialista"
-                        prof_match = re.search(
-                            r'(?:O\s+)?[Pp]rofessor(?:a)?\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)',
-                            content
-                        )
-                        if prof_match:
-                            docente_encontrado = prof_match.group(1)
-                            break
-                        
-                        # "são X e Y" ou "são: X, Y" - pegar o primeiro nome
-                        sao_match = re.search(
-                            r'são:?\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)',
-                            content
-                        )
-                        if sao_match:
-                            docente_encontrado = sao_match.group(1)
-                            break
-                        
-                        # Lista com "- Nome" (ex: "- Daniela Leal Musa")
-                        lista_match = re.search(
-                            r'^-\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)',
-                            content,
-                            re.MULTILINE
-                        )
-                        if lista_match:
-                            docente_encontrado = lista_match.group(1)
-                            break
-            
-            if docente_encontrado:
-                # Substituir referência pronominal pelo nome do docente
-                for pronome in ['com ele', 'com ela', 'dele', 'dela', 'desse professor', 'da professora', 'desse docente', 'dessa docente']:
-                    if pronome in message_lower:
-                        if pronome in ['com ele', 'com ela']:
-                            enhanced_question = re.sub(
-                                rf'\b{pronome}\b',
-                                f'com o professor {docente_encontrado}',
-                                enhanced_question,
-                                flags=re.IGNORECASE
-                            )
-                        else:
-                            enhanced_question = re.sub(
-                                rf'\b{pronome}\b',
-                                f'do professor {docente_encontrado}',
-                                enhanced_question,
-                                flags=re.IGNORECASE
-                            )
-                        break
-                logger.info(f"[CONTEXTO] Referência pronominal resolvida: '{request.message}' -> '{enhanced_question}'")
+        # Se não foi modificado mas a pergunta é ambígua, usar LLM
+        if not was_modified and context_resolver.is_ambiguous_question(request.message):
+            # Usar LLM para reescrever apenas se realmente necessário
+            if rag and rag.llm:
+                enhanced_question = context_resolver.rewrite_with_llm(
+                    request.message,
+                    conversation_id,
+                    history,
+                    rag.llm
+                )
+                if enhanced_question != request.message:
+                    was_modified = True
         
-        # 2. Resolver referências a "essa disciplina", "essa matéria", etc.
-        disciplina_refs = ['essa disciplina', 'essa matéria', 'essa cadeira', 'a disciplina', 'a matéria']
-        if not has_pronome and any(ref in message_lower for ref in disciplina_refs):
-            # Procurar nome de disciplina mencionada anteriormente
-            disciplina_encontrada = None
-            for msg in reversed(history):
-                content = msg['content']
-                # Perguntas do usuário sobre disciplinas
-                if msg['role'] == 'user':
-                    disc_match = re.search(
-                        r'(?:pré-?requisitos?\s+(?:de|da|do)|disciplinas?\s+(?:de|da|do)|professore?s?\s+(?:de|da|do|que\s+d[aã]o))\s+(.+?)(?:\?|$)',
-                        content,
-                        re.IGNORECASE
-                    )
-                    if disc_match:
-                        disciplina_encontrada = disc_match.group(1).strip()
-                        break
-            
-            if disciplina_encontrada:
-                for ref in disciplina_refs:
-                    if ref in message_lower:
-                        enhanced_question = re.sub(
-                            rf'\b{ref}\b',
-                            disciplina_encontrada,
-                            enhanced_question,
-                            flags=re.IGNORECASE
-                        )
-                        break
-                logger.info(f"[CONTEXTO] Referência a disciplina resolvida: '{request.message}' -> '{enhanced_question}'")
-        
-        # 3. Expandir perguntas curtas sobre termos (ex: "e as do termo 5?")
-        elif len(request.message.split()) < 10 and any(word in message_lower for word in ['e as', 'e o', 'e do']):
-            # Pegar a última pergunta do usuário
-            last_user_question = None
-            for msg in reversed(history):
-                if msg['role'] == 'user':
-                    last_user_question = msg['content']
-                    break
-            
-            if last_user_question:
-                # Detectar número de termo na pergunta atual
-                termo_match = re.search(r'termo\s+(\d+)', message_lower)
-                if termo_match:
-                    novo_termo = termo_match.group(1)
-                    # Substituir termo na pergunta anterior
-                    expanded = re.sub(r'termo\s+\d+', f'termo {novo_termo}', last_user_question, flags=re.IGNORECASE)
-                    enhanced_question = expanded
-                    logger.info(f"[CONTEXTO] Pergunta expandida: '{request.message}' -> '{enhanced_question}'")
+        if was_modified:
+            logger.info(f"[CONTEXT] Pergunta resolvida: '{request.message}' → '{enhanced_question}'")
     else:
         enhanced_question = request.message
+    
+    # Atualizar contexto com a pergunta atual
+    context_resolver.update_context(conversation_id, request.message, 'user')
     
     try:
         response_text = rag.query(enhanced_question)
@@ -304,6 +223,9 @@ async def chat(request: ChatRequest):
         "timestamp": datetime.now().isoformat()
     }
     conversations[conversation_id].append(assistant_message)
+    
+    # Atualizar contexto com a resposta (para extrair listas de docentes, etc.)
+    context_resolver.update_context(conversation_id, response_text, 'assistant')
     
     return ChatResponse(
         response=response_text,
@@ -333,6 +255,7 @@ async def delete_conversation(conversation_id: str):
         raise HTTPException(status_code=404, detail="Conversa nao encontrada")
     
     del conversations[conversation_id]
+    context_resolver.clear_context(conversation_id)
     return {"message": "Conversa deletada com sucesso"}
 
 
@@ -355,6 +278,79 @@ async def status():
         "active_conversations": len(conversations),
         "total_messages": sum(len(msgs) for msgs in conversations.values())
     }
+
+
+# ==================== ENDPOINTS DE EXTRAÇÃO DE RELAÇÕES ====================
+
+class ExtractRequest(BaseModel):
+    text: str
+    min_confidence: float = 0.6
+
+
+class EnrichRequest(BaseModel):
+    text: str
+    min_confidence: float = 0.7
+
+
+@app.post("/extract-relations")
+async def extract_relations(request: ExtractRequest):
+    """
+    Extrai relações de um texto sem adicionar ao grafo.
+    Útil para preview antes de enriquecer o Knowledge Graph.
+    """
+    if rag is None:
+        raise HTTPException(status_code=503, detail="RAG não inicializado")
+    
+    if not rag.relation_extractor:
+        raise HTTPException(status_code=503, detail="Extrator de relações não disponível")
+    
+    try:
+        relations = rag.extract_relations(request.text, request.min_confidence)
+        return {
+            "relations": relations,
+            "count": len(relations),
+            "text_length": len(request.text)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro na extração: {str(e)}")
+
+
+@app.post("/enrich-graph")
+async def enrich_graph(request: EnrichRequest):
+    """
+    Extrai relações de um texto e adiciona ao Knowledge Graph.
+    Requer maior confiança por padrão (0.7).
+    """
+    if rag is None:
+        raise HTTPException(status_code=503, detail="RAG não inicializado")
+    
+    if not rag.graph_enricher:
+        raise HTTPException(status_code=503, detail="Enriquecedor de grafo não disponível")
+    
+    try:
+        stats = rag.enrich_graph_from_text(request.text, request.min_confidence)
+        return {
+            "success": True,
+            "stats": stats
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro no enriquecimento: {str(e)}")
+
+
+@app.get("/graph-stats")
+async def graph_stats():
+    """Retorna estatísticas do Knowledge Graph."""
+    if rag is None or not rag.knowledge_graph:
+        raise HTTPException(status_code=503, detail="Knowledge Graph não disponível")
+    
+    stats = rag.knowledge_graph.get_stats()
+    
+    # Adicionar estatísticas de extração se disponíveis
+    if rag.graph_enricher:
+        extraction_stats = rag.graph_enricher.get_extraction_stats()
+        stats['extracted_relations'] = extraction_stats
+    
+    return stats
 
 
 if __name__ == "__main__":

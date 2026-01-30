@@ -4,7 +4,7 @@ from pathlib import Path
 
 class Config:
     # Modelo mais leve e rápido (3B vs 7B = ~2x mais rápido)
-    MODEL_NAME = "qwen2.5:3b"
+    MODEL_NAME = "qwen2.5:7b"
     EMBEDDING_MODEL = "mxbai-embed-large"
     PERSIST_DIR = "./chroma_db_unifesp"
     OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", None)

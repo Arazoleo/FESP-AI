@@ -1,5 +1,6 @@
 import networkx as nx
 import re
+import unicodedata
 from typing import List, Dict, Optional, Tuple
 from pathlib import Path
 
@@ -8,6 +9,52 @@ class KnowledgeGraph:
 
     def __init__(self):
         self.graph = nx.MultiDiGraph()
+        # Índices para busca O(1) em vez de O(n)
+        self._index_by_name: Dict[str, str] = {}      # nome_normalizado -> node_id
+        self._index_by_sigla: Dict[str, str] = {}     # sigla_normalizada -> node_id
+        self._index_by_codigo: Dict[str, str] = {}    # codigo_normalizado -> node_id
+    
+    @staticmethod
+    def _normalize_text(text: str) -> str:
+        """Remove acentos e normaliza texto para busca."""
+        if not text:
+            return ""
+        # NFD decompõe caracteres acentuados
+        normalized = unicodedata.normalize('NFD', text.lower().strip())
+        # Remove marcas diacríticas (acentos)
+        return ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+    
+    def _index_node(self, node_id: str, data: dict):
+        """Adiciona nó aos índices para busca rápida."""
+        nome = self._normalize_text(data.get('nome', ''))
+        sigla = self._normalize_text(data.get('sigla') or '')
+        codigo = self._normalize_text(str(data.get('codigo', '')))
+        
+        if nome:
+            self._index_by_name[nome] = node_id
+        if sigla:
+            self._index_by_sigla[sigla] = node_id
+        if codigo:
+            self._index_by_codigo[codigo] = node_id
+    
+    def _get_edge_relation(self, edge_data: dict) -> Optional[str]:
+        """Helper para extrair relação de edge data do MultiDiGraph."""
+        # MultiDiGraph retorna {0: {dados}, 1: {dados}, ...}
+        if not edge_data:
+            return None
+        # Pegar a primeira aresta
+        for edge_key, edge in edge_data.items():
+            return edge.get('relacao')
+        return None
+    
+    def _has_edge_relation(self, edge_data: dict, relacao: str) -> bool:
+        """Verifica se alguma aresta tem a relação especificada."""
+        if not edge_data:
+            return False
+        for edge_key, edge in edge_data.items():
+            if edge.get('relacao') == relacao:
+                return True
+        return False
 
     def build_from_directories(self, disciplinas_dir: str, regimentos_dir: str, docentes_dir: str = None, cursos_dir: str = None):
         """Constrói o grafo a partir de todos os diretórios."""
@@ -76,6 +123,7 @@ class KnowledgeGraph:
         
         disc_id = f"DISC:{nome}"
         self.graph.add_node(disc_id, tipo="disciplina", nome=nome, codigo=codigo, sigla=sigla, termo=termo)
+        self._index_node(disc_id, {"nome": nome, "codigo": codigo, "sigla": sigla})
         
         for docente in docentes:
             if docente:
@@ -94,6 +142,7 @@ class KnowledgeGraph:
             prereq_id = f"DISC:{prereq_nome}"
             if not self.graph.has_node(prereq_id):
                 self.graph.add_node(prereq_id, tipo="disciplina", nome=prereq_nome, codigo=prereq_codigo)
+                self._index_node(prereq_id, {"nome": prereq_nome, "codigo": prereq_codigo})
             self.graph.add_edge(prereq_id, disc_id, relacao="PREREQUISITO_DE")
 
     def _process_regimento_file(self, filepath: Path):
@@ -351,8 +400,9 @@ class KnowledgeGraph:
             visited.add(node)
             
             for predecessor in self.graph.predecessors(node):
-                edge = self.graph.get_edge_data(predecessor, node)
-                if edge and edge.get('relacao') == 'PREREQUISITO_DE':
+                edge_data = self.graph.get_edge_data(predecessor, node)
+                # MultiDiGraph: iterar sobre todas as arestas
+                if self._has_edge_relation(edge_data, 'PREREQUISITO_DE'):
                     node_data = self.graph.nodes[predecessor]
                     if node_data.get('tipo') == 'disciplina':
                         chain.append(node_data.get('nome'))
@@ -369,8 +419,9 @@ class KnowledgeGraph:
         
         dependentes = []
         for successor in self.graph.successors(disc_id):
-            edge = self.graph.get_edge_data(disc_id, successor)
-            if edge and edge.get('relacao') == 'PREREQUISITO_DE':
+            edge_data = self.graph.get_edge_data(disc_id, successor)
+            # MultiDiGraph: verificar corretamente
+            if self._has_edge_relation(edge_data, 'PREREQUISITO_DE'):
                 dependentes.append(self.graph.nodes[successor].get('nome'))
         
         return dependentes
@@ -450,8 +501,9 @@ class KnowledgeGraph:
         
         resultados = []
         for predecessor in self.graph.predecessors(orgao_id):
-            edge = self.graph.get_edge_data(predecessor, orgao_id)
-            if edge and edge.get('relacao') == 'MENCIONA':
+            edge_data = self.graph.get_edge_data(predecessor, orgao_id)
+            # MultiDiGraph: verificar corretamente
+            if self._has_edge_relation(edge_data, 'MENCIONA'):
                 data = self.graph.nodes[predecessor]
                 if data.get('tipo') == 'artigo':
                     resultados.append({
@@ -489,8 +541,9 @@ class KnowledgeGraph:
         relacionados = []
         
         for successor in self.graph.successors(artigo_id):
-            edge = self.graph.get_edge_data(artigo_id, successor)
-            if edge and edge.get('relacao') == 'REFERENCIA':
+            edge_data = self.graph.get_edge_data(artigo_id, successor)
+            # MultiDiGraph: verificar corretamente
+            if self._has_edge_relation(edge_data, 'REFERENCIA'):
                 data = self.graph.nodes.get(successor, {})
                 if data.get('tipo') == 'artigo':
                     relacionados.append({
@@ -500,8 +553,9 @@ class KnowledgeGraph:
                     })
         
         for predecessor in self.graph.predecessors(artigo_id):
-            edge = self.graph.get_edge_data(predecessor, artigo_id)
-            if edge and edge.get('relacao') == 'REFERENCIA':
+            edge_data = self.graph.get_edge_data(predecessor, artigo_id)
+            # MultiDiGraph: verificar corretamente
+            if self._has_edge_relation(edge_data, 'REFERENCIA'):
                 data = self.graph.nodes.get(predecessor, {})
                 if data.get('tipo') == 'artigo':
                     relacionados.append({
@@ -513,18 +567,32 @@ class KnowledgeGraph:
         return relacionados
 
     def _find_node(self, termo: str, tipo: str = None) -> Optional[str]:
-        """Encontra um nó por nome, código ou sigla."""
-        termo_lower = termo.lower().strip()
+        """Encontra um nó por nome, código ou sigla usando índices O(1)."""
+        termo_normalized = self._normalize_text(termo)
         
+        # Busca O(1) nos índices
+        node_id = (
+            self._index_by_name.get(termo_normalized) or
+            self._index_by_sigla.get(termo_normalized) or
+            self._index_by_codigo.get(termo_normalized)
+        )
+        
+        if node_id:
+            # Verificar se o tipo corresponde (se especificado)
+            if tipo is None or self.graph.nodes.get(node_id, {}).get('tipo') == tipo:
+                return node_id
+        
+        # Fallback para busca por substring (mantém compatibilidade)
         for node, data in self.graph.nodes(data=True):
             if tipo and data.get('tipo') != tipo:
                 continue
             
-            nome = data.get('nome', '').lower()
-            codigo = str(data.get('codigo', '')).lower()
-            sigla = (data.get('sigla') or '').lower()
+            nome = self._normalize_text(data.get('nome', ''))
+            codigo = self._normalize_text(str(data.get('codigo', '')))
+            sigla = self._normalize_text(data.get('sigla') or '')
             
-            if termo_lower in [nome, codigo, sigla] or termo_lower in nome or (sigla and termo_lower in sigla):
+            # Match exato (já verificado acima) ou substring
+            if termo_normalized in nome or (sigla and termo_normalized in sigla):
                 return node
         
         return None
@@ -805,34 +873,35 @@ class KnowledgeGraph:
         docentes = []
         
         for search_area in areas_to_search:
-            area_lower = search_area.lower().strip()
-            area_words = set(area_lower.split())
+            area_normalized = self._normalize_text(search_area)
+            area_words = set(area_normalized.split())
             
             for node, data in self.graph.nodes(data=True):
                 if data.get('tipo') != 'area':
                     continue
                 
-                nome_area = data.get('nome', '').lower()
+                nome_area = self._normalize_text(data.get('nome', ''))
                 nome_words = set(nome_area.split())
                 
                 # Match por palavras (evita "ia" dar match em "engenharia")
                 is_match = False
                 
                 # Match exato
-                if area_lower == nome_area:
+                if area_normalized == nome_area:
                     is_match = True
                 # Todas as palavras da query estão na área
-                elif len(area_lower) > 3 and area_words.issubset(nome_words):
+                elif len(area_normalized) > 3 and area_words.issubset(nome_words):
                     is_match = True
                 # Substring match (apenas para termos maiores que 5 chars)
-                elif len(area_lower) > 5 and area_lower in nome_area:
+                elif len(area_normalized) > 5 and area_normalized in nome_area:
                     is_match = True
                 
                 if is_match:
                     # Encontrar docentes que apontam para essa área
                     for pred in self.graph.predecessors(node):
-                        edge = self.graph.get_edge_data(pred, node)
-                        if edge and edge.get('relacao') == 'ESPECIALISTA_EM':
+                        edge_data = self.graph.get_edge_data(pred, node)
+                        # MultiDiGraph: verificar corretamente
+                        if self._has_edge_relation(edge_data, 'ESPECIALISTA_EM'):
                             nome = self.graph.nodes[pred].get('nome')
                             if nome and nome not in docentes:
                                 docentes.append(nome)

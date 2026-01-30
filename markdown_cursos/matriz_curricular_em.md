@@ -208,3 +208,4 @@ O curso possui três áreas de ênfase com disciplinas específicas:
 - **Núcleo Específico - Cerâmicos:** Disciplinas da ênfase em Materiais Cerâmicos
 - **Eletiva de Livre Escolha ou Eletiva EM:** Disciplinas optativas
 
+

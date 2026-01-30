@@ -194,3 +194,4 @@ A Engenharia de Computação da UNIFESP é um curso de 10 semestres (5 anos) com
 - **BCT (Trajetória):** Disciplinas da trajetória específica de Engenharia de Computação
 - **Ecomp (Fixa):** Disciplinas específicas obrigatórias de Engenharia de Computação
 
+
