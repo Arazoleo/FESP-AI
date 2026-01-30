@@ -1,13 +1,19 @@
 import re
 from typing import Optional, List, Dict, Tuple
 from .knowledge_graph import KnowledgeGraph
+from .intent_classifier import IntentClassifier, ClassificationResult
 
 class GraphRAGEngine:
     """Metodologia híbrida GraphRAG + RAG"""
 
-    def __init__(self, knowledge_graph: KnowledgeGraph):
+    def __init__(self, knowledge_graph: KnowledgeGraph, embeddings_model=None):
         self.kg = knowledge_graph
         
+        # Novo classificador de intenção baseado em embeddings
+        self.intent_classifier = IntentClassifier(embeddings_model)
+        self._use_semantic_classification = embeddings_model is not None
+        
+        # Patterns regex legados (fallback)
         self.graph_patterns = {
             'prerequisite_chain': [
                 r'(?:quais?|todos?)\s+(?:os?\s+)?pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
@@ -117,12 +123,71 @@ class GraphRAGEngine:
             ],
         }
     
+    def initialize_classifier(self):
+        """Inicializa o classificador de intenção com embeddings."""
+        if self._use_semantic_classification:
+            self.intent_classifier.initialize()
+    
     def should_use_graph(self, question: str) -> Tuple[bool, Optional[str], Optional[str]]:
         """
         Determina se a pergunta deve usar GraphRAG.
         Retorna: (usar_graph, tipo_query, termo_extraido)
         Para disciplinas_termo, retorna termo como "termo:curso" (ex: "5:bcc")
+        
+        Usa classificação semântica (embeddings) quando disponível,
+        com fallback para regex.
         """
+        # 1. Tentar classificação semântica primeiro
+        if self._use_semantic_classification and self.intent_classifier._initialized:
+            result = self.intent_classifier.classify(question)
+            
+            if result.intent != 'unknown' and result.confidence >= 0.45:
+                # Pós-processamento para casos especiais
+                termo = self._post_process_term(question, result.intent, result.term)
+                return True, result.intent, termo
+        
+        # 2. Fallback para regex (mantém compatibilidade)
+        return self._regex_fallback(question)
+    
+    def _post_process_term(self, question: str, intent: str, term: str) -> str:
+        """Pós-processamento do termo extraído para casos especiais."""
+        question_lower = question.lower()
+        
+        # Caso especial: listar_cursos não precisa de termo
+        if intent == 'listar_cursos':
+            return ""
+        
+        # Caso especial: docente_leciona_disciplina precisa de "docente:disciplina"
+        if intent == 'docente_leciona_disciplina':
+            # Tentar extrair docente e disciplina
+            match = re.search(
+                r'(?:professor(?:a)?|docente)\s+(.+?)\s+(?:leciona|d[aá]|ensina)\s+(.+?)(?:\?|$)',
+                question_lower
+            )
+            if match:
+                docente = match.group(1).strip()
+                disciplina = match.group(2).strip()
+                disciplina = re.sub(r'[\?.,!]+$', '', disciplina).strip()
+                return f"{docente}:{disciplina}"
+        
+        # Caso especial: disciplinas_termo precisa de "numero:curso"
+        if intent == 'disciplinas_termo':
+            # Verificar se já está no formato correto
+            if ':' in term:
+                return term
+            # Tentar extrair número do termo
+            match = re.search(r'(?:termo|semestre)\s+(\d+)', question_lower)
+            if match:
+                numero = match.group(1)
+                # Remover o número do termo extraído
+                curso = re.sub(r'\d+\s*', '', term).strip()
+                if curso:
+                    return f"{numero}:{curso}"
+        
+        return term
+    
+    def _regex_fallback(self, question: str) -> Tuple[bool, Optional[str], Optional[str]]:
+        """Fallback para classificação baseada em regex (método legado)."""
         question_lower = question.lower().strip()
         
         for query_type, patterns in self.graph_patterns.items():
@@ -350,7 +415,9 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
         elif query_type == 'coordenador_curso':
             info = self.kg.get_coordenador(termo)
             if info and (info.get('coordenador') or info.get('vice_coordenador')):
-                resultado = f"**Coordenação do curso {info['nome']}**"
+                # Usar 'curso' em vez de 'nome' (retorno de get_coordenador)
+                curso_nome = info.get('curso') or info.get('nome') or termo
+                resultado = f"**Coordenação do curso {curso_nome}**"
                 if info.get('sigla'):
                     resultado += f" ({info['sigla']})"
                 resultado += ":\n\n"

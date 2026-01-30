@@ -186,3 +186,4 @@ A Engenharia Biomédica da UNIFESP é um curso de 10 termos (5 anos) com carga h
 - **Engenharia Biomédica (Específica):** Disciplinas exclusivas do curso
 - **Eletiva:** Disciplinas de livre escolha
 
+

@@ -14,3 +14,4 @@ ollama pull mxbai-embed-large
 
 echo "Modelos instalados com sucesso!"
 
+

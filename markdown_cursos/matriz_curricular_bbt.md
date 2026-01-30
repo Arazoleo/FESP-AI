@@ -196,3 +196,4 @@ Disciplinas com carga horária extensionista:
 - **Eletivas:** 504 horas (divididas em Profissionalizantes BBT, Escolha Limitada e Livre Escolha)
 - **Núcleo de Conhecimentos Específicos:** 504 horas
 
+
