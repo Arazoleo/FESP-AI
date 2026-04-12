@@ -12,10 +12,10 @@
 
 ## Docentes
 
-- Mateus Réu Urban
-- Fábio Gava Aoki
-- Regiane Albertini de Carvalho
-- Thiago Martini
+- Mateus Fernandes Réu Urban
+- Fabio Gava Aoki
+- Regiane Albertini
+- Thiago Martini Pereira
 
 ## Pré-requisitos
 

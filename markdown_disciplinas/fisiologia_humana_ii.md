@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Flávio Aimbire de Carvalho
-- Tatiana Cunha
+- Flávio Aimbire Soares de Carvalho
+- Tatiana Sousa Cunha
 - Fernando Porto
 
 ## Pré-requisitos

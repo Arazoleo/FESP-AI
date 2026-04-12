@@ -12,8 +12,8 @@
 
 ## Docentes
 
-- Gisele de Lima
-- Leonardo Wendler
+- Gisele Ferreira de Lima
+- Leonardo Pacheco Wendler
 
 ## Pré-requisitos
 

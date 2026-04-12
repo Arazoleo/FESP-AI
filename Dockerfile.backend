@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar código da aplicação
 COPY src/ ./src/
+COPY graph_viewer.html .
 COPY markdown_disciplinas/ ./markdown_disciplinas/
 COPY markdown_regimentos/ ./markdown_regimentos/
 COPY markdown_docentes/ ./markdown_docentes/

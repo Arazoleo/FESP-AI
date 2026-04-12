@@ -22,6 +22,7 @@ from langchain_core.documents import Document
 
 from .config import Config
 from .parsers_md import parse_file
+from .hybrid_retriever import HybridRetriever, build_bm25_from_chroma
 
 
 class SemanticChunker:
@@ -268,7 +269,7 @@ class RAGUnifesp:
         self._setup_chain()
     
     def _setup_retriever(self):
-        self.retriever = self.db.as_retriever(
+        vector_retriever = self.db.as_retriever(
             search_type="mmr",
             search_kwargs={
                 "k": self.config.RETRIEVER_K,
@@ -276,6 +277,20 @@ class RAGUnifesp:
                 "lambda_mult": 0.7
             }
         )
+        bm25_model, bm25_ids, bm25_corpus = build_bm25_from_chroma(self.db)
+        if bm25_model is not None and bm25_ids is not None:
+            self.retriever = HybridRetriever(
+                vector_retriever=vector_retriever,
+                top_k=self.config.RETRIEVER_K,
+                rrf_k=60,
+                bm25_corpus=bm25_corpus,
+                bm25_ids=bm25_ids,
+                bm25_model=bm25_model,
+                db=self.db,
+            )
+            print("Retriever híbrido (BM25 + vetorial + RRF) ativado.")
+        else:
+            self.retriever = vector_retriever
     
     def _setup_chain(self):
         template = """Voce e o Assistente Unifesp ICT. Responda APENAS em PORTUGUES BRASILEIRO usando o contexto abaixo:
@@ -522,7 +537,8 @@ Resposta:"""
             r'carga\s+horaria\s+(?:de|da|do)\s+([A-Za-z][^?.,!]+)',
             r'pre[-\s]?requisitos?\s+(?:de|da|do|para)\s+([A-Za-z][^?.,!]+)',
             r'ementa\s+(?:de|da|do)\s+([A-Za-z][^?.,!]+)',
-            r'sobre\s+(?:a\s+disciplina\s+)?([A-Za-z][^?.,!]+)',
+            r'(?:o\s+que\s+(?:vc\s+)?sabe\s+)?sobre\s+(?:a\s+disciplina\s+)?([A-Za-zÀ-ú][^?.,!]+)',
+            r'sobre\s+(?:a\s+disciplina\s+)?([A-Za-zÀ-ú][^?.,!]+)',
             r'(?:a\s+)?disciplina\s+([A-Za-z][^?.,!]+)',
         ]
         
@@ -717,7 +733,8 @@ Resposta:"""
                 'missao': 3, 'objetivo': 2, 'campus': 2, 'unifesp': 2,
                 # Matriz curricular keywords
                 'matriz': 5, 'semestre': 4, 'termo': 4, 'disciplina': 3,
-                'coordenador': 5, 'creditos': 3, 'primeiro': 3, 'segundo': 3
+                'coordenador': 5, 'creditos': 3, 'primeiro': 3, 'segundo': 3,
+                'eletiva': 8, 'eletivas': 8, 'grupo': 6, 'grupos': 6,
             }
             
             # Keywords específicos para detectar perguntas sobre matrizes curriculares
@@ -725,7 +742,8 @@ Resposta:"""
                              'terceiro', 'quarto', 'quinto', 'sexto', 'sétimo', 'oitavo',
                              'coordenador', 'grade', 'disciplinas do curso', 'engenharia de computação',
                              'ciência da computação', 'biotecnologia', 'engenharia de materiais',
-                             'matemática computacional', 'engenharia biomédica']
+                             'matemática computacional', 'engenharia biomédica',
+                             'eletiva', 'eletivas', 'grupo', 'grupos']
             is_matriz_question = any(kw in question_lower for kw in matriz_keywords)
             
             for i, doc_text in enumerate(all_results.get('documents', [])):
@@ -808,6 +826,13 @@ Resposta:"""
                     # Resumo sempre tem pontos para perguntas gerais
                     if secao == 'resumo':
                         score += 5
+                    
+                    # Perguntas sobre eletivas/grupos: priorizar trechos que falam de eletivas
+                    if 'eletiva' in question_lower or 'grupo' in question_lower:
+                        if 'eletiva' in doc_lower and 'grupo' in doc_lower:
+                            score += 12
+                        elif 'eletiva' in doc_lower or 'grupo' in doc_lower:
+                            score += 6
                 
                 if score > 0:
                     regimento_docs.append(Document(page_content=doc_text, metadata=meta))

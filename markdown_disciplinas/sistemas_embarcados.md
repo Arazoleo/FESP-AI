@@ -12,11 +12,11 @@
 
 ## Docentes
 
-- Luiz Eduardo Galvão
-- Sérgio Ronaldo
-- André Marcorin
-- Fernanda Rossi
-- Mateus Urban
+- Luiz Eduardo Galvão Martins
+- Sérgio Ronaldo Barros dos Santos
+- André Marcorin de Oliveira
+- Fernanda Quelho Rossi
+- Mateus Fernandes Réu Urban
 
 ## Pré-requisitos
 

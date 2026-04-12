@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Cláudio Shida
-- Thiago Martini
+- Claudio Saburo Shida
+- Thiago Martini Pereira
 
 ## Pré-requisitos
 

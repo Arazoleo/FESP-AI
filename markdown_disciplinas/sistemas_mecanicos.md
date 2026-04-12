@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Mateus Urban
+- Mateus Fernandes Réu Urban
 - Maria Elizete Kunkel
 
 ## Pré-requisitos

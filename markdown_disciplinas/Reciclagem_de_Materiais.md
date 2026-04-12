@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Lília Müller Guerrini
+- Lilia Müller Guerrini
 
 ## Pré-requisitos
 

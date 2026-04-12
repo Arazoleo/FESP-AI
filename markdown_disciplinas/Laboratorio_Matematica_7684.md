@@ -13,10 +13,10 @@
 
 ## Docentes
 
-- Leandro Candido Batista
-- Vanessa Paschoa
-- Renato Martins
-- Karen de Loló
+- Leandro Candido
+- Vanessa Gonçalves Paschoa Ferraz
+- Renato Alessandro Martins
+- Karen de Lolo Guilherme Paulino
 
 ## Pré-requisitos
 

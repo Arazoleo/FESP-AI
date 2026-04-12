@@ -12,8 +12,8 @@
 
 ## Docentes
 
-- Thaína Tosta
-- Daniela Musa
+- Thaína Aparecida Azevedo Tosta
+- Daniela Leal Musa
 
 ## Pré-requisitos
 

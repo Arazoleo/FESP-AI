@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Fabiano Paixão
+- Fabiano Carlos Paixão
 
 ## Pré-requisitos
 

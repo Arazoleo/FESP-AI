@@ -12,10 +12,10 @@
 
 ## Docentes
 
-- Grasiele Jorge
-- Erwin 
-- Renato Martins
-- Robson da Silva
+- Grasiele Cristiane Jorge
+- Erwin Doescher
+- Renato Alessandro Martins
+- Robson Oliveira da Silva
 
 ## Pré-requisitos
 

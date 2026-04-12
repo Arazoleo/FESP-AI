@@ -14,7 +14,7 @@
 ## Docentes
 
 - Lilian Berton
-- Didier Vega
+- Didier Vega-Oliveros
 - Fábio Faria
 
 ## Pré-requisitos

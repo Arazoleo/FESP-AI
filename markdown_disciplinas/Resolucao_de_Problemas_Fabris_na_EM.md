@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Aline Capella
+- Aline Gonçalves Capella
 
 ## Pré-requisitos
 

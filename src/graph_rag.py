@@ -16,14 +16,18 @@ class GraphRAGEngine:
         # Patterns regex legados (fallback)
         self.graph_patterns = {
             'prerequisite_chain': [
-                r'(?:quais?|todos?)\s+(?:os?\s+)?pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
+                r'(?:quais?|todos?)\s+(?:s[aã]o\s+)?(?:os?\s+)?pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
                 r'(?:o\s+que|quais?\s+disciplinas?)\s+(?:preciso|precisa|devo|deve)\s+(?:fazer|cursar|ter)\s+(?:antes\s+de|para\s+fazer|para\s+cursar)\s+(.+?)(?:\?|$)',
                 r'cadeia\s+(?:de\s+)?pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
+                r'pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
+                r'(?:preciso|precisa)\s+(?:ter\s+feito|ter\s+cursado|cursar|fazer)\s+(?:o\s+qu[eê]\s+)?(?:antes\s+(?:de|para)\s+(?:cursar|fazer)\s+)?(.+?)(?:\?|$)',
             ],
             'dependents': [
                 r'(?:quais?\s+)?disciplinas?\s+(?:que\s+)?depend(?:e|em)\s+(?:de|da|do)\s+(.+?)(?:\?|$)',
                 r'(?:quais?\s+)?disciplinas?\s+(?:que\s+)?(?:usam?|precisam?|requerem?|exigem?)\s+(.+?)\s+como\s+pr[eé][-\s]?requisito(?:\?|$)',
                 r'(?:para\s+)?(?:o\s+)?que\s+(.+?)\s+[eé]\s+pr[eé][-\s]?requisito(?:\?|$)',
+                r'(?:o\s+que\s+)?(.+?)\s+desbloqueia(?:\?|$)',
+                r'(?:o\s+que\s+)?(.+?)\s+[eé]\s+pr[eé][-\s]?requisito\s+(?:de\s+qu[eê]|para\s+qu[eê]|de\s+qu(?:a|ai)s?)(?:\?|$)',
             ],
             'docente_disciplines': [
                 r'(?:quais?\s+)?(?:disciplinas?|mat[eé]rias?)\s+(?:que\s+)?(?:o\s+|a\s+)?(?:professor(?:a)?|docente)?\s*(.+?)\s+(?:leciona|ensina|ministra|d[aá])(?:\?|$)',

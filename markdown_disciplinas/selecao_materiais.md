@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Prof. Dr. Eduardo Quinteiro
+- Eduardo Quinteiro
 
 ## Pré-requisitos
 

@@ -14,7 +14,7 @@
 ## Docentes
 
 - Rodrigo Colnago Contreras
-- Luiz Galvão
+- Luiz Eduardo Galvão Martins
 
 ## Pré-requisitos
 

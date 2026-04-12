@@ -13,12 +13,12 @@
 
 ## Docentes
 
-- Thaína Tosta
-- Fernanda Rossi
+- Thaína Aparecida Azevedo Tosta
+- Fernanda Quelho Rossi
 - Denise Stringhini
-- Fábio Cappabianco
-- Mateus Urban
-- Sérgio Ronaldo
+- Fábio Augusto Menocci Cappabianco
+- Mateus Fernandes Réu Urban
+- Sérgio Ronaldo Barros dos Santos
 
 ## Pré-requisitos
 

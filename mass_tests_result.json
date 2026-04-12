@@ -1,0 +1,675 @@
+{
+  "timestamp": "2026-02-25T23:35:05.703063",
+  "mode": "api",
+  "base_url": "http://localhost:8000",
+  "total": 57,
+  "passed": 39,
+  "failed": 18,
+  "errors": [],
+  "empty": [],
+  "generic": [
+    {
+      "n": 16,
+      "question": "O que posso cursar depois de Algoritmos?",
+      "agent": "disciplinas"
+    },
+    {
+      "n": 18,
+      "question": "Disciplinas necessárias para fazer Cálculo 2?",
+      "agent": "disciplinas"
+    },
+    {
+      "n": 28,
+      "question": "Áreas de pesquisa do professor Rodrigo Colnago?",
+      "agent": "docentes"
+    },
+    {
+      "n": 29,
+      "question": "Me fale sobre a professora Lilian Berton.",
+      "agent": "disciplinas"
+    },
+    {
+      "n": 31,
+      "question": "Em que o Álvaro é especialista?",
+      "agent": "docentes"
+    },
+    {
+      "n": 32,
+      "question": "Professores que trabalham com inteligência artificial?",
+      "agent": "docentes"
+    },
+    {
+      "n": 33,
+      "question": "Quem pesquisa machine learning?",
+      "agent": "docentes"
+    },
+    {
+      "n": 34,
+      "question": "Docentes especialistas em redes?",
+      "agent": "docentes"
+    },
+    {
+      "n": 35,
+      "question": "Quais disciplinas o professor Sanderson leciona?",
+      "agent": "docentes"
+    },
+    {
+      "n": 39,
+      "question": "O professor Fabrício Olivetti leciona Banco de Dados?",
+      "agent": "docentes"
+    },
+    {
+      "n": 44,
+      "question": "Grade completa de Ciência da Computação?",
+      "agent": "cursos"
+    },
+    {
+      "n": 48,
+      "question": "Estrutura do curso de Engenharia de Computação?",
+      "agent": "cursos"
+    },
+    {
+      "n": 50,
+      "question": "Coordenador do curso de Ciência da Computação?",
+      "agent": "cursos"
+    },
+    {
+      "n": 53,
+      "question": "Quais artigos falam sobre matrícula?",
+      "agent": "regimentos"
+    },
+    {
+      "n": 54,
+      "question": "O que diz o regimento sobre estágio?",
+      "agent": "regimentos"
+    },
+    {
+      "n": 55,
+      "question": "Perguntas frequentes sobre TCC?",
+      "agent": "regimentos"
+    },
+    {
+      "n": 56,
+      "question": "Artigos sobre trancamento?",
+      "agent": "regimentos"
+    },
+    {
+      "n": 57,
+      "question": "O que o regimento fala sobre diploma?",
+      "agent": "regimentos"
+    }
+  ],
+  "wrong_agent": [],
+  "results": [
+    {
+      "n": 1,
+      "question": "O que é Teoria dos Grafos?",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Disciplina:** Teoria dos Grafos  \n**Código:** 2975  \n**Campus:** São José dos Campos  \n**Curso:** Ciência da Computação (Bacharelado Interdisciplinar em Ciência e Tecnologia)  \n**Termo:** 5 – Integr…"
+    },
+    {
+      "n": 2,
+      "question": "O que é Matemática Discreta?",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Matemática Discreta**  \n\n- **Nome da disciplina:** Matemática Discreta  \n- **Código:** 2201  \n- **Sigla:** MD  \n- **Campus:** São José dos Campos  \n- **Curso:** Bacharelado em Matemática Computacion…"
+    },
+    {
+      "n": 3,
+      "question": "Descreva a disciplina Banco de Dados.",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Disciplina:** Banco de Dados  \n**Código:** 2831  \n**Campus:** São José dos Campos  \n**Cursos:** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia …"
+    },
+    {
+      "n": 4,
+      "question": "O que é Redes de Computadores?",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Redes de Computadores (Código: 2617)**  \n\n- **Campus:** São José dos Campos  \n- **Cursos:** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  \n- …"
+    },
+    {
+      "n": 5,
+      "question": "O que é Inteligência Artificial?",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Inteligência Artificial (IA)**  \n\nA disciplina **Inteligência Artificial** (código 3490, sigla IA) tem como objetivo estudar a história e os fundamentos da IA, bem como as técnicas e aplicações asso…"
+    },
+    {
+      "n": 6,
+      "question": "O que se estuda em Compiladores?",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Disciplina:** Compiladores  \n**Código:** 2615  \n**Carga horária total:** 72 h (36 h teóricas + 36 h práticas)  \n**Docentes:** Rodrigo Colnago Contreras; Luiz Eduardo Galvão Martins  \n\n**Pré‑requisit…"
+    },
+    {
+      "n": 7,
+      "question": "Qual a ementa de Álgebra Linear?",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**DISCIPLINA:** Álgebra Linear  \n**Código:** 2475  \n\n**Ementa / Conteúdo Programático:**  \nEspaços vetoriais. Transformações lineares. Operadores lineares. Funcionais lineares. Autovalores e autovetor…"
+    },
+    {
+      "n": 8,
+      "question": "Me fale sobre a disciplina de Programação Orientada a Objetos.",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Disciplina:** Programação Orientada a Objetos  \n**Código:** 2471  \n**Sigla:** POO  \n**Campus:** São José dos Campos  \n**Curso(s):** Engenharia de Computação, Ciência da Computação, Bacharelado Inter…"
+    },
+    {
+      "n": 9,
+      "question": "Do que trata Lógica de Programação?",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Disciplina:** Lógica de Programação  \n**Código:** 9394  \n**Sigla:** LP  \n**Campus:** São José dos Campos  \n**Cursos:** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar e…"
+    },
+    {
+      "n": 10,
+      "question": "Me fale sobre Matemática Discreta.",
+      "expected_agent": "disciplinas",
+      "note": "ementa",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Matemática Discreta**  \n\n- **Código:** 2201  \n- **Sigla:** MD  \n- **Campus:** São José dos Campos  \n- **Curso:** Bacharelado em Matemática Computacional  \n- **Termo:** 2 º  \n- **Tipo:** Disciplina f…"
+    },
+    {
+      "n": 11,
+      "question": "Quais são os pré-requisitos de Inteligência Artificial?",
+      "expected_agent": "disciplinas",
+      "note": "prereq",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Pré‑requisitos de Inteligência Artificial**\n\n- **Algoritmos e Estrutura de Dados I**\n\nCadeia completa de dependências:  \nInteligência Artificial ← Algoritmos e Estrutura de Dados I."
+    },
+    {
+      "n": 12,
+      "question": "Pré-requisitos de Banco de Dados?",
+      "expected_agent": "disciplinas",
+      "note": "prereq",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "**Pré‑requisitos de Banco de Dados**\n\n- **Banco de Dados** ← **Algoritmos e Estruturas de Dados I** ← **Lógica de Programação**\n\nTotal: **2** pré‑requisito(s) na cadeia."
+    },
+    {
+      "n": 13,
+      "question": "O que preciso fazer antes de Compiladores?",
+      "expected_agent": "disciplinas",
+      "note": "prereq",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "Para cursar **Compiladores** você deve ter concluído, na ordem indicada pela cadeia de dependências, as seguintes disciplinas:\n\n**Cadeia completa de pré‑requisitos**  \nCompiladores ← **Linguagens Form…"
+    },
+    {
+      "n": 14,
+      "question": "Pré-requisitos para cursar Algoritmos 2?",
+      "expected_agent": "disciplinas",
+      "note": "prereq",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "Não há pré‑requisitos cadastrados para cursar **Algoritmos 2**; a disciplina pode ser matriculada sem necessidade de disciplinas anteriores, conforme a informação disponível na base de dados."
+    },
+    {
+      "n": 15,
+      "question": "Quais disciplinas dependem de Cálculo 1?",
+      "expected_agent": "disciplinas",
+      "note": "dependentes",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "Nenhuma disciplina encontrada que tenha **Cálculo 1** como pré‑requisito. Portanto, no momento não há disciplinas que dependam de Cálculo 1 na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 16,
+      "question": "O que posso cursar depois de Algoritmos?",
+      "expected_agent": "disciplinas",
+      "note": "dependentes",
+      "ok": false,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 17,
+      "question": "Cadeia de pré-requisitos de Estrutura de Dados?",
+      "expected_agent": "disciplinas",
+      "note": "prereq",
+      "ok": true,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "A disciplina **Estrutura de Dados** não possui pré‑requisitos cadastrados no sistema. Portanto, a cadeia de pré‑requisitos é vazia."
+    },
+    {
+      "n": 18,
+      "question": "Disciplinas necessárias para fazer Cálculo 2?",
+      "expected_agent": "disciplinas",
+      "note": "prereq",
+      "ok": false,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 19,
+      "question": "Quem leciona Redes de Computadores?",
+      "expected_agent": "docentes",
+      "note": "quem_leciona",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Os professores que lecionam a disciplina **Redes de Computadores** são:\n\n- Bruno Yuji Lino Kimura  \n- Joahannes Bruno Dias da Costa  \n- Arlindo Flávio da Conceição"
+    },
+    {
+      "n": 20,
+      "question": "Quem leciona Cálculo Numérico?",
+      "expected_agent": "docentes",
+      "note": "quem_leciona",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Os professores que lecionam a disciplina **Cálculo Numérico** são:\n\n- Thadeu Alves Senne  \n- Tiago Rodrigues Macedo  \n- Luis Felipe Cesar da Rocha Bueno  \n- Erwin Doescher  \n- Luiz Leduíno de Salles N…"
+    },
+    {
+      "n": 21,
+      "question": "Quem dá aula de Sistemas Operacionais?",
+      "expected_agent": "docentes",
+      "note": "quem_leciona",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Os professores que dão aula de **Sistemas Operacionais** são:\n\n- Joahannes Bruno Dias da Costa  \n- Thaína Aparecida Azevedo Tosta  \n- Ezequiel Roberto Zorzal  \n- Bruno Yuji Lino Kimura"
+    },
+    {
+      "n": 22,
+      "question": "Quais professores lecionam Banco de Dados?",
+      "expected_agent": "docentes",
+      "note": "quem_leciona",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "A disciplina **Banco de Dados** é lecionada pela professora **Daniela Leal Musa**."
+    },
+    {
+      "n": 23,
+      "question": "Docentes de Teoria dos Grafos?",
+      "expected_agent": "docentes",
+      "note": "quem_leciona",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Os docentes da disciplina **Teoria dos Grafos** são:\n\n- Elbert Einstein Nehrer Macau  \n- Reginaldo Massanobu Kuroshu  \n- Luis Augusto Martins Pereira  \n- Sanderson Lincohn Gonzaga de Oliveira"
+    },
+    {
+      "n": 24,
+      "question": "Quem ensina Projeto e Análise de Algoritmos?",
+      "expected_agent": "docentes",
+      "note": "quem_leciona",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Os docentes que ensinam a disciplina **Projeto e Análise de Algoritmos** são:\n\n- Sanderson Lincohn Gonzaga de Oliveira  \n- Reginaldo Massanobu Kuroshu"
+    },
+    {
+      "n": 25,
+      "question": "Quem é o professor Sanderson?",
+      "expected_agent": "docentes",
+      "note": "info",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "O professor Sanderson é especialista em **Métodos numéricos e otimização combinatória**.  \n\nOutras informações (e‑mail, sala, disciplinas lecionadas) não constam no contexto disponível."
+    },
+    {
+      "n": 26,
+      "question": "Qual o email do professor Álvaro?",
+      "expected_agent": "docentes",
+      "note": "email",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "alvaro.fazenda@unifesp.br"
+    },
+    {
+      "n": 27,
+      "question": "Sala do professor Didier Vega?",
+      "expected_agent": "docentes",
+      "note": "sala",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Sala: 5 do Parque Tecnológico"
+    },
+    {
+      "n": 28,
+      "question": "Áreas de pesquisa do professor Rodrigo Colnago?",
+      "expected_agent": "docentes",
+      "note": "areas",
+      "ok": false,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 29,
+      "question": "Me fale sobre a professora Lilian Berton.",
+      "expected_agent": "docentes",
+      "note": "info",
+      "ok": false,
+      "agent": "disciplinas",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 30,
+      "question": "Contato do professor Elbert Macau?",
+      "expected_agent": "docentes",
+      "note": "email",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "**Contato do professor Elbert Macau**  \n- **E‑mail:** elbert.macau@unifesp.br  \n- **Sala:** 06 do Parque Tecnológico"
+    },
+    {
+      "n": 31,
+      "question": "Em que o Álvaro é especialista?",
+      "expected_agent": "docentes",
+      "note": "areas",
+      "ok": false,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 32,
+      "question": "Professores que trabalham com inteligência artificial?",
+      "expected_agent": "docentes",
+      "note": "por_area",
+      "ok": false,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Não tenho essa informação na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 33,
+      "question": "Quem pesquisa machine learning?",
+      "expected_agent": "docentes",
+      "note": "por_area",
+      "ok": false,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 34,
+      "question": "Docentes especialistas em redes?",
+      "expected_agent": "docentes",
+      "note": "por_area",
+      "ok": false,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 35,
+      "question": "Quais disciplinas o professor Sanderson leciona?",
+      "expected_agent": "docentes",
+      "note": "disciplinas_docente",
+      "ok": false,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 36,
+      "question": "Quais matérias o Sanderson dá?",
+      "expected_agent": "docentes",
+      "note": "disciplinas_docente",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Não tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 37,
+      "question": "O Sanderson dá aula de quê?",
+      "expected_agent": "docentes",
+      "note": "disciplinas_docente",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Sanderson leciona as seguintes disciplinas:\n\n- Projeto e Análise de Algoritmos  \n- Teoria dos Grafos"
+    },
+    {
+      "n": 38,
+      "question": "Disciplinas que o Rodrigo Colnago leciona?",
+      "expected_agent": "docentes",
+      "note": "disciplinas_docente",
+      "ok": true,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "- Aprendizado de Máquina e Reconhecimento de Padrões  \n- Compiladores  \n- Lógica de Programação  \n- Programação Orientada a Objetos"
+    },
+    {
+      "n": 39,
+      "question": "O professor Fabrício Olivetti leciona Banco de Dados?",
+      "expected_agent": "docentes",
+      "note": "sim_nao",
+      "ok": false,
+      "agent": "docentes",
+      "error": null,
+      "response_preview": "Não tenho essa informação na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 40,
+      "question": "Quais disciplinas do termo 3 de BCC?",
+      "expected_agent": "cursos",
+      "note": "termo",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "**Termo 3 – Bacharelado em Ciência da Computação (BCC)**  \n\n- Interdisciplinar Extensionista – **2 créditos**  \n- Probabilidade e Estatística – **4 créditos**  \n- Cálculo em Várias Variáveis – **4 cré…"
+    },
+    {
+      "n": 41,
+      "question": "Disciplinas do termo 5 de Ciência da Computação?",
+      "expected_agent": "cursos",
+      "note": "termo",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "**Termo 5 – Bacharelado em Ciência da Computação (BCC)**  \n\n- Interdisciplinar Extensionista – 4 créditos  \n- Inteligência Artificial – 4 créditos  \n- Projeto Orientado a Objetos – 4 créditos  \n- Ling…"
+    },
+    {
+      "n": 42,
+      "question": "Quais disciplinas tem no termo 1 de BCC?",
+      "expected_agent": "cursos",
+      "note": "termo",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "**Termo 1 – Bacharelado em Ciência da Computação (BCC)**  \n\n- Cálculo em Uma Variável – 6 créditos  \n- Ciência, Tecnologia e Sociedade – 2 créditos  \n- Lógica de Programação – 4 créditos  \n- Química G…"
+    },
+    {
+      "n": 43,
+      "question": "Grade curricular de BCC?",
+      "expected_agent": "cursos",
+      "note": "matriz",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "**Grade Curricular – Bacharelado em Ciência da Computação (BCC)**  \n\n*(informações disponíveis na base de dados)*  \n\n---\n\n### Termo 1\n| Disciplina | Créditos |\n|------------|----------|\n| Cálculo em U…"
+    },
+    {
+      "n": 44,
+      "question": "Grade completa de Ciência da Computação?",
+      "expected_agent": "cursos",
+      "note": "matriz",
+      "ok": false,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "Não tenho essa informação na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 45,
+      "question": "Quais cursos a UNIFESP oferece?",
+      "expected_agent": "cursos",
+      "note": "listar",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "A UNIFESP ICT oferece os seguintes cursos de graduação:\n\n1. Bacharelado em Biotecnologia (BBT) – 8 termos  \n2. Bacharelado em Ciência da Computação (BCC) – 8 termos  \n3. Bacharelado Interdisciplinar e…"
+    },
+    {
+      "n": 46,
+      "question": "Matérias do primeiro semestre de computação?",
+      "expected_agent": "cursos",
+      "note": "termo",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "**Bacharelado em Ciência da Computação (BCC) – Termo 1**\n\n- Cálculo em Uma Variável – 6 créditos  \n- Ciência, Tecnologia e Sociedade – 2 créditos  \n- Lógica de Programação – 4 créditos  \n- Química Ger…"
+    },
+    {
+      "n": 47,
+      "question": "Quantos termos tem o curso de BCC?",
+      "expected_agent": "cursos",
+      "note": "matriz",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "O curso de Bacharelado em Ciência da Computação (BCC) possui **8 termos (semestres)**."
+    },
+    {
+      "n": 48,
+      "question": "Estrutura do curso de Engenharia de Computação?",
+      "expected_agent": "cursos",
+      "note": "matriz",
+      "ok": false,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 49,
+      "question": "Quem é o coordenador de BCC?",
+      "expected_agent": "cursos",
+      "note": "coordenador",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "**Coordenador do BCC:** Prof. Dr. Tiago Silva da Silva  \n**Vice‑coordenador do BCC:** Prof. Dr. Marcos G. Quiles"
+    },
+    {
+      "n": 50,
+      "question": "Coordenador do curso de Ciência da Computação?",
+      "expected_agent": "cursos",
+      "note": "coordenador",
+      "ok": false,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 51,
+      "question": "Eletivas de Engenharia de Computação?",
+      "expected_agent": "cursos",
+      "note": "eletivas",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "**Eletivas do Curso de Engenharia de Computação (EC)**  \n\nO plano curricular de Engenharia de Computação contempla eletivas organizadas em quatro categorias. A seguir, a estrutura de acordo com a base…"
+    },
+    {
+      "n": 52,
+      "question": "Quais são as eletivas de BCC?",
+      "expected_agent": "cursos",
+      "note": "eletivas",
+      "ok": true,
+      "agent": "cursos",
+      "error": null,
+      "response_preview": "**Eletivas do Bacharelado em Ciência da Computação (BCC)**  \n\n---\n\n### Grupo 1 – Eletivas Limitadas de Ciência da Computação\n- Aprendizado de Máquina e Reconhecimento de Padrões  \n- Aspectos de Implem…"
+    },
+    {
+      "n": 53,
+      "question": "Quais artigos falam sobre matrícula?",
+      "expected_agent": "regimentos",
+      "note": "artigos",
+      "ok": false,
+      "agent": "regimentos",
+      "error": null,
+      "response_preview": "Não tenho essa informação na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 54,
+      "question": "O que diz o regimento sobre estágio?",
+      "expected_agent": "regimentos",
+      "note": "artigos",
+      "ok": false,
+      "agent": "regimentos",
+      "error": null,
+      "response_preview": "Não tenho essa informação na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 55,
+      "question": "Perguntas frequentes sobre TCC?",
+      "expected_agent": "regimentos",
+      "note": "faq",
+      "ok": false,
+      "agent": "regimentos",
+      "error": null,
+      "response_preview": "Não tenho essa informação na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 56,
+      "question": "Artigos sobre trancamento?",
+      "expected_agent": "regimentos",
+      "note": "artigos",
+      "ok": false,
+      "agent": "regimentos",
+      "error": null,
+      "response_preview": "Nao tenho essa informacao na base de dados da UNIFESP ICT."
+    },
+    {
+      "n": 57,
+      "question": "O que o regimento fala sobre diploma?",
+      "expected_agent": "regimentos",
+      "note": "artigos",
+      "ok": false,
+      "agent": "regimentos",
+      "error": null,
+      "response_preview": "Não tenho essa informação na base de dados da UNIFESP ICT."
+    }
+  ]
+}

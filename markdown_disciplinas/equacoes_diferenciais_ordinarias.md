@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Cláudia Santos
-- Marcelo Gama
+- Cláudia Aline A. S. Mesquita
+- Marcelo Cristino Gama
 
 ## Pré-requisitos
 

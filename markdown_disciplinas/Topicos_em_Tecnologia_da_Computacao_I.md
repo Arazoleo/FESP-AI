@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Arlindo Flavio da Conceição
+- Arlindo Flávio da Conceição
 
 ## Pré-requisitos
 

@@ -12,11 +12,11 @@
 
 ## Docentes
 
-- Reginaldo Kuroshu
+- Reginaldo Massanobu Kuroshu
 
 ## Pré-requisitos
 
-- 2832 – Algoritmos e Estruturas de Dados I
+- Algoritmos e Estruturas de Dados I (Código: 2832)
 
 ## Carga Horária
 

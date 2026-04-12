@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Profa. Grasiele Cristiane Jorge (grasiele.jorge@unifesp.br)
+- Grasiele Cristiane Jorge
 
 ## Pré-requisitos
 

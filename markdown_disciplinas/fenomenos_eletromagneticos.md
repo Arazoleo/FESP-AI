@@ -13,9 +13,9 @@
 
 ## Docentes
 
-- Manuel Lente
-- Kelly Sakamoto
-- Nirton Vieira
+- Manuel Henrique Lente
+- Kelly Cristina Jorge Sakamoto
+- Nirton Cristi Silva Vieira
 - Rossano Lang
 
 ## Pré-requisitos

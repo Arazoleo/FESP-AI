@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Fabio Roberto Passador 
+- Fábio Roberto Passador
 
 ## Pré-requisitos
 

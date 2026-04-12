@@ -12,8 +12,8 @@
 
 ## Docentes
 
-- Sâmia Regina Garcia Calheiros 
-- Daniela dos Santos Oliveira
+- Sâmia Regina Garcia Calheiros
+- Daniela dos Santos de Oliveira
 
 ## Pré-requisitos
 

@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Karina Casali
+- Karina Rabello Casali
 
 ## Pré-requisitos
 

@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Michael Brito
+- Michael dos Santos Brito
 - André Amado
 
 ## Pré-requisitos

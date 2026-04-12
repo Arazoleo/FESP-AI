@@ -13,10 +13,10 @@
 
 ## Docentes
 
-- Tiago Macedo
-- Luís Felipe Bueno
-- Vanessa Paschoa
-- Thadeu Senne
+- Tiago Rodrigues Macedo
+- Luis Felipe Cesar da Rocha Bueno
+- Vanessa Gonçalves Paschoa Ferraz
+- Thadeu Alves Senne
 
 ## Pré-requisitos
 

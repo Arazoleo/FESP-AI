@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Elisabeth F. Pires Augusto
+- Elisabeth de Fátima Pires Augusto
 
 ## Pré-requisitos
 

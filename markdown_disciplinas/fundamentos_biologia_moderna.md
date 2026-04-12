@@ -13,9 +13,9 @@
 
 ## Docentes
 
-- Cláudia Campos
-- Michael Brito
-- Luciane Capelo
+- Cláudia Barbosa Ladeira de Campos
+- Michael dos Santos Brito
+- Luciane Portas Capelo
 - André Zelanis
 
 ## Pré-requisitos

@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Adenauer Casali
+- Adenauer Girardi Casali
 
 ## Pré-requisitos
 

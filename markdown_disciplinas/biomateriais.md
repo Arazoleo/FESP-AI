@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Edson Fernandes
+- Edson Giuliani Ramos Fernandes
 
 ## Pré-requisitos
 

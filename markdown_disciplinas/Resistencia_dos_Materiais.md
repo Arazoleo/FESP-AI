@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Kátia Regina Cardoso
+- Katia Regina Cardoso
 
 ## Pré-requisitos
 

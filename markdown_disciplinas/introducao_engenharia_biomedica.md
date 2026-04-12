@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Matheus Moraes
+- Matheus Cardoso Moraes
 
 ## Pré-requisitos
 

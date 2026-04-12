@@ -12,8 +12,8 @@
 
 ## Docentes
 
-- Thiago Martin
-- Dayane Tada
+- Thiago Martini Pereira
+- Dayane Batista Tada
 
 ## Pré-requisitos
 

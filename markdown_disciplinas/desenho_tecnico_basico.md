@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Cláudio Shida
+- Claudio Saburo Shida
 
 ## Pré-requisitos
 

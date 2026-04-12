@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Manuel Lente
-- Thaciana Malaspina
+- Manuel Henrique Lente
+- Thaciana Valentina Malaspina Fileti
 - Eduardo Antonelli
 
 ## Pré-requisitos

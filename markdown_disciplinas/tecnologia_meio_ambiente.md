@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Maraísa Gonçalves
+- Maraisa Gonçalves
 
 ## Pré-requisitos
 

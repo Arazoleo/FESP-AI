@@ -16,7 +16,7 @@
 
 ## Pré-requisitos
 
-- 5144 - Materiais Poliméricos
+- Materiais Poliméricos (Código: 5144)
 
 ## Carga Horária
 

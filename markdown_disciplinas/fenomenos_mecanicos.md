@@ -14,7 +14,7 @@
 ## Docentes
 
 - Ana Maria Slapnik
-- Thaciana Malaspina
+- Thaciana Valentina Malaspina Fileti
 
 ## Pré-requisitos
 

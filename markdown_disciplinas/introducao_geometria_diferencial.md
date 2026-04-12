@@ -14,7 +14,7 @@
 
 ## Docentes
 
-- Patricia Cirilo
+- Patrícia Romano Cirilo
 
 ## Pré-requisitos
 

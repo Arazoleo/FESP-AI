@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Tatiana de Sousa da Cunha
+- Tatiana Sousa Cunha
 
 ## Pré-requisitos
 

@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Ana Luísa Lemos
+- Ana Luísa Dine Martins Lemos
 
 ## Pré-requisitos
 

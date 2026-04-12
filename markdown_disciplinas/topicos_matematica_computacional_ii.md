@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Luiz Leduino de Salles Neto
+- Luiz Leduíno de Salles Neto
 
 ## Pré-requisitos
 

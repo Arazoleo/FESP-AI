@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Rodrigo Contreras
-- Otávio Lemos
+- Rodrigo Colnago Contreras
+- Otavio Augusto Lazzarini Lemos
 
 ## Pré-requisitos
 

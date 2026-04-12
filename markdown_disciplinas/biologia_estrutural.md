@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Martin Wurtele
+- Martin Rodrigo Alejandro Wurtele Alfonso
 
 ## Pré-requisitos
 

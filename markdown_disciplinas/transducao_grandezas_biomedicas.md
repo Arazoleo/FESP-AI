@@ -13,8 +13,8 @@
 ## Docentes
 
 - Roberson Saraiva Polli
-- Henrique Amorim
-- Fabiano Paixão
+- Henrique Alves de Amorim
+- Fabiano Carlos Paixão
 
 ## Pré-requisitos
 

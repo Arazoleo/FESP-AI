@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Ana Paula Albers
+- Ana Paula Fonseca Albers
 
 ## Pré-requisitos
 

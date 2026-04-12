@@ -15,7 +15,7 @@
 
 - Ana Maria Slapnik
 - Eduardo Antonelli
-- Thaciana Malaspina
+- Thaciana Valentina Malaspina Fileti
 - Rossano Lang
 
 ## Pré-requisitos

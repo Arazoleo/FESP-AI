@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Iraci João
+- Iraci de Souza João
 
 ## Pré-requisitos
 

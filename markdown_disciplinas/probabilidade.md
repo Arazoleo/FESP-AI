@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Sâmia Calheiros
+- Sâmia Regina Garcia Calheiros
 
 ## Pré-requisitos
 

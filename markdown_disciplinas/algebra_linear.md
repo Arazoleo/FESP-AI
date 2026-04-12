@@ -13,12 +13,12 @@
 
 ## Docentes
 
-- Renato Martins
-- Ângelo Bianchi
-- Robson da Silva
-- Tiago Macedo
-- Horácio Hideki
-- Ana Moreira
+- Renato Alessandro Martins
+- Angelo Calil Bianchi
+- Robson Oliveira da Silva
+- Tiago Rodrigues Macedo
+- Horacio Hideki Yanasse
+- Ana Cláudia da Silva Moreira
 
 ## Pré-requisitos
 

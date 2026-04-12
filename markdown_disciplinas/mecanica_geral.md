@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Kelly Sakamoto
-- Eudes Fileti
+- Kelly Cristina Jorge Sakamoto
+- Eudes Eterno Fileti
 
 ## Pré-requisitos
 

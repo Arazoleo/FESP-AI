@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Luciane Capelo
+- Luciane Portas Capelo
 - Fernando Porto
 
 ## Pré-requisitos

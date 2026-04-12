@@ -14,14 +14,14 @@
 ## Docentes
 
 - Erwin Doescher
-- Cláudia Santos
-- Karen Paulino
+- Cláudia Aline A. S. Mesquita
+- Karen de Lolo Guilherme Paulino
 - Alfredo Vitorino
-- Vanessa Paschoa
-- Daniela Oliveira
-- Luís Felipe Bueno
-- Ângelo Bianchi
-- Tiago Macedo
+- Vanessa Gonçalves Paschoa Ferraz
+- Daniela dos Santos de Oliveira
+- Luis Felipe Cesar da Rocha Bueno
+- Angelo Calil Bianchi
+- Tiago Rodrigues Macedo
 
 ## Pré-requisitos
 

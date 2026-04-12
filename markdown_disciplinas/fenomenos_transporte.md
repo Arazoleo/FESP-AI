@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Marina Dias
+- Marina Oliveira de Souza Dias
 
 ## Pré-requisitos
 

@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Leonardo Wendler
+- Leonardo Pacheco Wendler
 
 ## Pré-requisitos
 

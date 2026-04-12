@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Claudia Barbosa Ladeira de Campos
+- Cláudia Barbosa Ladeira de Campos
 
 ## Pré-requisitos
 

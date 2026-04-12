@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Nirton Cristi
-- Edson Fernandes
+- Nirton Cristi Silva Vieira
+- Edson Giuliani Ramos Fernandes
 
 ## Pré-requisitos
 

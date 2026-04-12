@@ -13,13 +13,13 @@
 
 ## Docentes
 
-- Renato Martins
+- Renato Alessandro Martins
 - Erwin Doescher
-- Tiago Macedo
-- Grasiele Jorge
-- Pedro Kaufmann
-- Robson da Silva
-- Leandro Batista
+- Tiago Rodrigues Macedo
+- Grasiele Cristiane Jorge
+- Pedro Levit Kaufmann
+- Robson Oliveira da Silva
+- Leandro Candido
 
 ## Pré-requisitos
 

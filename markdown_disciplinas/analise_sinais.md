@@ -14,9 +14,9 @@
 
 ## Docentes
 
-- Adenauer Casali
-- Henrique Paiva
-- Fábio Aoki
+- Adenauer Girardi Casali
+- Henrique Mohallem Paiva
+- Fabio Gava Aoki
 
 ## Pré-requisitos
 

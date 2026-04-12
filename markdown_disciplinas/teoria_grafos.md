@@ -13,10 +13,10 @@
 
 ## Docentes
 
-- Elbert Macau
-- Reginaldo Kuroshu
-- Luís Pereira
-- Sanderson Oliveira
+- Elbert Einstein Nehrer Macau
+- Reginaldo Massanobu Kuroshu
+- Luis Augusto Martins Pereira
+- Sanderson Lincohn Gonzaga de Oliveira
 
 ## Pré-requisitos
 

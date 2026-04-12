@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Maraísa Gonçalves
+- Maraisa Gonçalves
 - Hugo de Campos Braga
 - João Marcos Batista Junior
 - Raquel Aparecida Domingues

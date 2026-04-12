@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Kátia da Conceição
+- Katia da Conceição
 
 ## Pré-requisitos
 

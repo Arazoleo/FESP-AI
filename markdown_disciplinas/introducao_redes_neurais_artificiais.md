@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Marcos G. Quiles
+- Marcos Gonçalves Quiles
 
 ## Pré-requisitos
 

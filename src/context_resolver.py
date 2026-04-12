@@ -75,18 +75,19 @@ class ConversationContext:
         if termo_match:
             self.termo = termo_match.group(1)
         
-        # Detectar disciplina mencionada
+        # Detectar disciplina mencionada — pesquisar em message_lower mas extrair
+        # da mensagem original para preservar capitalização (ex: "Cálculo Numérico")
         disc_patterns = [
             r'disciplina\s+(?:de\s+)?(.+?)(?:\?|$)',
             r'pr[eé]-?requisitos?\s+(?:de|da|do)\s+(.+?)(?:\?|,|\.|$)',
             r'quem\s+leciona\s+(.+?)(?:\?|$)',
-            r'(?:e\s+(?:de|sobre)\s+)?([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*),?\s+(?:quais?\s+)?(?:s[aã]o\s+)?(?:os?\s+)?pr[eé]-?requisitos?',
         ]
         for pattern in disc_patterns:
             match = re.search(pattern, message_lower)
             if match:
-                disc_name = match.group(1).strip()
-                # Limpar pontuação e palavras comuns
+                # Usar a posição do match para extrair o texto ORIGINAL (com capitalização)
+                start, end = match.span(1)
+                disc_name = message[start:end].strip()
                 disc_name = re.sub(r'[,\.\?]$', '', disc_name).strip()
                 if disc_name.lower() not in ['o', 'a', 'os', 'as', 'que', 'qual', 'quais', 'essa', 'esse']:
                     self.disciplina = disc_name
@@ -100,9 +101,18 @@ class ConversationContext:
         # Detectar disciplina em respostas do assistente sobre pré-requisitos
         if role == "assistant":
             # "Para cursar X, são necessários..." ou "Os pré-requisitos de X são..."
-            resp_disc_match = re.search(r'(?:para\s+cursar|pr[eé]-requisitos?\s+(?:de|da|para))\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)', message, re.IGNORECASE)
+            # IMPORTANTE: sem re.IGNORECASE para exigir letra maiúscula — evita capturar
+            # verbos como "cursar" de "pré-requisitos para cursar X" como nome de disciplina.
+            resp_disc_match = re.search(
+                r'(?:para\s+cursar|pr[eé]-requisitos?\s+(?:de|da))\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
+                message
+            )
             if resp_disc_match:
-                self.disciplina = resp_disc_match.group(1).strip()
+                disc = resp_disc_match.group(1).strip()
+                # Filtro extra: não aceitar verbos comuns como nome de disciplina
+                verbos_comuns = {'cursar', 'lecionar', 'fazer', 'pegar', 'estudar', 'ter'}
+                if disc.lower() not in verbos_comuns:
+                    self.disciplina = disc
         
         # Detectar docente mencionado
         docente_patterns = [
@@ -141,6 +151,9 @@ class ContextResolver:
             r'\b(?:desse|dessa)\s+(?:professor|professora|docente)\b',
             r'\b(?:sobre|com)\s+(?:ele|ela)\b',
             r'\b(?:email|sala|contato|[aá]reas?)\s+(?:dele|dela)\b',
+            # "que ele/ela leciona/faz" e "disciplinas que ele"
+            r'\bque\s+(?:ele|ela)\b',
+            r'\b(?:ele|ela)\s+(?:leciona|ensina|ministra|pesquisa|atua|costuma)\b',
         ],
         'disciplina': [
             r'\b(?:essa|essa|desta|destra)\s+(?:disciplina|mat[eé]ria|cadeira)\b',
@@ -194,6 +207,40 @@ class ContextResolver:
         
         question_lower = question.lower()
         
+        # 0. Se a pergunta menciona explicitamente um nome próprio com "com a/o X",
+        #    atualizar context.docente ANTES de resolver pronomes.
+        #    Isso evita substituir "dela" pelo docente errado do contexto.
+        explicit_match = re.search(
+            r'(?:com\s+(?:o|a)\s+)([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)+)',
+            question
+        )
+        if explicit_match:
+            context.docente = explicit_match.group(1)
+
+        # 0b. "Email/sala/contato do Rodrigo" → resolver usando docentes_list para evitar
+        #     ambiguidade (ex.: Martin Rodrigo vs Rodrigo Colnago). Escolher o docente da
+        #     lista cujo primeiro nome coincide.
+        if not modified and context.docentes_list:
+            partial_match = re.search(
+                r'\b(?:email|e-?mail|sala|contato)\s+(?:de|do|da)\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)',
+                question,
+                re.IGNORECASE
+            )
+            if partial_match:
+                partial_name = partial_match.group(1).strip()
+                full_name = self._resolve_partial_docente_from_list(partial_name, context.docentes_list)
+                if full_name:
+                    context.docente = full_name
+                    # Reescrever "do Rodrigo" / "da Maria" → "do professor Nome Completo"
+                    resolved = re.sub(
+                        r'\b(do|da)\s+' + re.escape(partial_name) + r'\b',
+                        f'\\1 professor {full_name}',
+                        resolved,
+                        count=1,
+                        flags=re.IGNORECASE
+                    )
+                    modified = True
+
         # 1. Resolver referências a docentes (dele, dela, etc.)
         for pattern in self.PRONOME_PATTERNS['docente']:
             if re.search(pattern, question_lower):
@@ -318,6 +365,30 @@ class ContextResolver:
         
         return resolved, modified
     
+    def _resolve_partial_docente_from_list(self, partial_name: str, docentes_list: List[str]) -> Optional[str]:
+        """
+        Dado um nome parcial (ex. "Rodrigo") e a lista de docentes da última resposta,
+        retorna o nome completo do docente cujo primeiro nome coincide.
+        Evita que "Rodrigo" pegue "Martin Rodrigo Alejandro..." em vez de "Rodrigo Colnago Contreras".
+        """
+        if not partial_name or not docentes_list:
+            return None
+        partial_first = partial_name.split()[0].lower() if partial_name else ""
+        matches = [
+            full for full in docentes_list
+            if full.strip() and full.split()[0].lower() == partial_first
+        ]
+        if len(matches) == 1:
+            return matches[0].strip()
+        if len(matches) > 1:
+            # Várias pessoas com o mesmo primeiro nome: preferir a que bate com o nome parcial completo
+            partial_lower = partial_name.lower()
+            for full in matches:
+                if full.lower().startswith(partial_lower) or partial_lower in full.lower().split():
+                    return full.strip()
+            return matches[0].strip()  # fallback: primeira da lista
+        return None
+
     def _replace_docente_reference(self, question: str, docente: str) -> str:
         """Substitui referências pronominais por nome do docente."""
         replacements = [
@@ -325,6 +396,10 @@ class ContextResolver:
             (r'\b(?:desse|dessa)\s+(?:professor|professora|docente)\b', f'do professor {docente}'),
             (r'\bcom\s+(?:ele|ela)\b', f'com o professor {docente}'),
             (r'\bsobre\s+(?:ele|ela)\b', f'sobre o professor {docente}'),
+            # "que ele leciona" → "que {docente} leciona"
+            (r'\bque\s+(?:ele|ela)\b', f'que {docente}'),
+            # "ele costuma lecionar" → "{docente} leciona"
+            (r'\b(?:ele|ela)\s+(?=leciona|ensina|ministra|pesquisa|atua|costuma)', f'{docente} '),
         ]
         result = question
         for pattern, replacement in replacements:
@@ -435,16 +510,19 @@ class ContextResolver:
             
             # Primeiro verificar respostas do assistente (mais confiável)
             if msg['role'] == 'assistant':
-                # "Para cursar X, são necessários..." 
+                # "Para cursar X, são necessários..." ou "Os pré-requisitos de X são..."
+                # Sem re.IGNORECASE: exige letra maiúscula para evitar capturar verbos
                 resp_patterns = [
-                    r'(?:para\s+cursar|pr[eé]-requisitos?\s+(?:de|da|para))\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
+                    r'(?:para\s+cursar|pr[eé]-requisitos?\s+(?:de|da))\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
                     r'[Dd]ocentes?\s+(?:que\s+lecionam?|de)\s+([A-Za-zÀ-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
                 ]
+                verbos_comuns = {'cursar', 'lecionar', 'fazer', 'pegar', 'estudar', 'ter', 'para'}
                 for pattern in resp_patterns:
-                    match = re.search(pattern, content, re.IGNORECASE)
+                    match = re.search(pattern, content)
                     if match:
                         disc = match.group(1).strip()
-                        if disc.lower() not in ['o', 'a', 'os', 'as', 'que', 'qual', 'quais', 'total']:
+                        if disc.lower() not in ['o', 'a', 'os', 'as', 'que', 'qual', 'quais', 'total'] \
+                                and disc.lower() not in verbos_comuns:
                             return disc
             
             # Depois verificar perguntas do usuário

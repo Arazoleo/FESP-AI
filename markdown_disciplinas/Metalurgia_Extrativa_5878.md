@@ -14,7 +14,7 @@
 
 ## Docentes
 
-- Gisele Ferreira de Lima Andreani
+- Gisele Ferreira de Lima
 
 ## Pré-requisitos
 
