@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Prof. Dr. Maurício Pinheiro de Oliveira
+- Maurício Pinheiro de Oliveira
 
 ## Pré-requisitos
 

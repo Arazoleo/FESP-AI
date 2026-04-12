@@ -13,10 +13,10 @@
 
 ## Docentes
 
-- Henrique Amorim
-- Fernanda Rossi
-- André Marcorin
-- Carlos Gurjão
+- Henrique Alves de Amorim
+- Fernanda Quelho Rossi
+- André Marcorin de Oliveira
+- Carlos Marcelo Gurjão de Godoy
 
 ## Pré-requisitos
 

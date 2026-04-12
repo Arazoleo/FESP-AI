@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Iraci de Souza João Roland
+- Iraci de Souza João
 
 ## Pré-requisitos
 

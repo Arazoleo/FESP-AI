@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Reginaldo Kuroshu
+- Reginaldo Massanobu Kuroshu
 
 ## Pré-requisitos
 

@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Vanessa Pereira
+- Vanessa Andrade Pereira
 
 ## Pré-requisitos
 

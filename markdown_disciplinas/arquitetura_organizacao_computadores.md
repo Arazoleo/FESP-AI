@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Thaína Tosta
-- Fábio Cappabianco
+- Thaína Aparecida Azevedo Tosta
+- Fábio Augusto Menocci Cappabianco
 - Denise Stringhini
 
 ## Pré-requisitos

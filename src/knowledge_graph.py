@@ -13,6 +13,8 @@ class KnowledgeGraph:
         self._index_by_name: Dict[str, str] = {}      # nome_normalizado -> node_id
         self._index_by_sigla: Dict[str, str] = {}     # sigla_normalizada -> node_id
         self._index_by_codigo: Dict[str, str] = {}    # codigo_normalizado -> node_id
+        # Mapeamento nome/variante -> sigla para unificar nós de curso (evitar CURSO:X e CURSO:Y para o mesmo curso)
+        self._curso_name_to_sigla: Dict[str, str] = {}
     
     @staticmethod
     def _normalize_text(text: str) -> str:
@@ -58,27 +60,25 @@ class KnowledgeGraph:
 
     def build_from_directories(self, disciplinas_dir: str, regimentos_dir: str, docentes_dir: str = None, cursos_dir: str = None):
         """Constrói o grafo a partir de todos os diretórios."""
-     
-        disciplinas_path = Path(disciplinas_dir)
-        for md_file in disciplinas_path.glob("*.md"):
-            self._process_discipline_file(md_file)
-        
-        
-        regimentos_path = Path(regimentos_dir)
-        for md_file in regimentos_path.glob("*.md"):
-            self._process_regimento_file(md_file)
-        
-        # Processar docentes com especialidades
-        if docentes_dir:
-            docentes_path = Path(docentes_dir)
-            for md_file in docentes_path.glob("*.md"):
-                self._process_docentes_file(md_file)
-        
-        # Processar matrizes curriculares
+        # 1) Matrizes primeiro → nós canônicos CURSO:sigla e mapeamento nome->sigla (evita duplicatas)
         if cursos_dir:
             cursos_path = Path(cursos_dir)
             for md_file in cursos_path.glob("*.md"):
                 self._process_matriz_curricular(md_file)
+            self._build_curso_name_mapping()
+
+        disciplinas_path = Path(disciplinas_dir)
+        for md_file in disciplinas_path.glob("*.md"):
+            self._process_discipline_file(md_file)
+
+        regimentos_path = Path(regimentos_dir)
+        for md_file in regimentos_path.glob("*.md"):
+            self._process_regimento_file(md_file)
+
+        if docentes_dir:
+            docentes_path = Path(docentes_dir)
+            for md_file in docentes_path.glob("*.md"):
+                self._process_docentes_file(md_file)
         
         stats = self.get_stats()
         print(f"Grafo construído:")
@@ -132,8 +132,19 @@ class KnowledgeGraph:
                 self.graph.add_edge(doc_id, disc_id, relacao="LECIONA")
         
 
+        # ICT é instituto, não curso — não criar nó CURSO:ICT
         for curso in cursos:
-            if curso:
+            if not curso:
+                continue
+            if self._is_curso_blocked(curso):
+                continue
+            sigla = self._resolve_curso_to_sigla(curso)
+            if sigla:
+                curso_id = f"CURSO:{sigla}"
+                if not self.graph.has_node(curso_id):
+                    self.graph.add_node(curso_id, tipo="curso", nome=curso, sigla=sigla)
+                self.graph.add_edge(curso_id, disc_id, relacao="OFERECE")
+            else:
                 curso_id = f"CURSO:{curso}"
                 self.graph.add_node(curso_id, tipo="curso", nome=curso)
                 self.graph.add_edge(curso_id, disc_id, relacao="OFERECE")
@@ -267,6 +278,72 @@ class KnowledgeGraph:
                         self.graph.add_node(area_id, tipo="area", nome=area)
                     self.graph.add_edge(doc_id, area_id, relacao="ESPECIALISTA_EM")
     
+    def _build_curso_name_mapping(self):
+        """Preenche _curso_name_to_sigla a partir dos nós curso já no grafo (sigla canônica)."""
+        self._curso_name_to_sigla.clear()
+        for node_id, data in self.graph.nodes(data=True):
+            if data.get("tipo") != "curso":
+                continue
+            sigla = (data.get("sigla") or "").strip()
+            nome = (data.get("nome") or "").strip()
+            if not sigla:
+                continue
+            norm_sigla = self._normalize_text(sigla)
+            norm_nome = self._normalize_text(nome)
+            self._curso_name_to_sigla[norm_sigla] = sigla
+            self._curso_name_to_sigla[norm_nome] = sigla
+            # Nome sem o sufixo "(BCC)" para match "Bacharelado em Ciência da Computação"
+            nome_sem_sigla = re.sub(r'\s*\([A-Z]{2,5}\)\s*$', '', nome).strip()
+            if nome_sem_sigla:
+                self._curso_name_to_sigla[self._normalize_text(nome_sem_sigla)] = sigla
+        # Mapeamentos explícitos para nomes que aparecem nas disciplinas (Curso(s): ...)
+        alias = [
+            ("ciência da computação", "BCC"), ("ciencia da computacao", "BCC"),
+            ("ciências da computação", "BCC"), ("ciencias da computacao", "BCC"),  # typo em alguns md
+            ("ciência e tecnologia", "BCT"), ("ciencia e tecnologia", "BCT"),
+            ("bacharelado interdisciplinar em ciência e tecnologia", "BCT"),
+            ("engenharia de computação", "EC"), ("engenharia da computação", "EC"),
+            ("engenharia biomédica", "EB"), ("engenharia biomedica", "EB"),
+            ("engenharia de materiais", "EM"), ("bacharelado em biotecnologia", "BBT"),
+            ("biotecnologia", "BBT"), ("matemática computacional", "BMC"), ("matematica computacional", "BMC"),
+        ]
+        for nome_key, sig in alias:
+            key = self._normalize_text(nome_key)
+            if key and key not in self._curso_name_to_sigla:
+                self._curso_name_to_sigla[key] = sig
+
+    # Nomes que aparecem em Curso(s) mas não são cursos (ex.: ICT = instituto)
+    CURSO_BLOCKLIST = frozenset({
+        "ict", "instituto de ciência e tecnologia", "instituto de ciencia e tecnologia",
+        "unifesp ict", "são josé dos campos/ict", "sao jose dos campos/ict",
+    })
+
+    def _is_curso_blocked(self, curso_nome: str) -> bool:
+        """Retorna True se não deve criar nó de curso (ex.: ICT)."""
+        key = self._normalize_text(curso_nome)
+        if not key or len(key) <= 2:
+            return True
+        if key in self.CURSO_BLOCKLIST:
+            return True
+        if key == "ict" or key.startswith("ict ") or key.endswith(" ict"):
+            return True
+        return False
+
+    def _resolve_curso_to_sigla(self, curso_nome: str) -> Optional[str]:
+        """Resolve nome/variante de curso para sigla canônica (para unificar nós)."""
+        if not curso_nome or not self._curso_name_to_sigla:
+            return None
+        key = self._normalize_text(curso_nome)
+        if key in self._curso_name_to_sigla:
+            return self._curso_name_to_sigla[key]
+        # Match por substring: se "ciência da computação" está em key ou key está em algum nome mapeado
+        for mapped_key, sigla in self._curso_name_to_sigla.items():
+            if len(mapped_key) < 4:
+                continue
+            if mapped_key in key or key in mapped_key:
+                return sigla
+        return None
+
     def _extract_list_section(self, content: str, section: str) -> List[str]:
         """Extrai itens de uma seção com lista."""
         match = re.search(rf'## {section}\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
@@ -324,10 +401,10 @@ class KnowledgeGraph:
                            vice_coordenador=vice_coordenador,
                            source=str(filepath))
         
-        # Conectar com o curso
-        curso_id = f"CURSO:{curso_nome}"
+        # Nó canônico do curso: ID por sigla (CURSO:BCC) para evitar duplicatas com nomes diferentes
+        curso_id = f"CURSO:{sigla}" if sigla else f"CURSO:{curso_nome}"
         if not self.graph.has_node(curso_id):
-            self.graph.add_node(curso_id, tipo="curso", nome=curso_nome, sigla=sigla)
+            self.graph.add_node(curso_id, tipo="curso", nome=curso_nome, sigla=sigla or "")
         self.graph.add_edge(matriz_id, curso_id, relacao="MATRIZ_DE")
         
         # Extrair disciplinas por termo (suporta "### Termo 1", "### 1º Semestre", "### 1º Termo")
@@ -617,7 +694,44 @@ class KnowledgeGraph:
             'orgaos': tipos.get('orgao', 0),
             'faqs': tipos.get('faq', 0)
         }
-    
+
+    def export_for_visualization(self) -> Dict:
+        """
+        Exporta o grafo em formato para visualização (vis-network, D3, etc.).
+        Retorna: { "nodes": [ { id, label, tipo, ... } ], "edges": [ { from, to, label } ] }
+        """
+        nodes = []
+        for node_id, data in self.graph.nodes(data=True):
+            nome = data.get('nome', node_id)
+            tipo = data.get('tipo', 'unknown')
+            # Cursos: rótulo padronizado "Nome (SIGLA)" sem repetir "Bacharelado em" onde redundante
+            if tipo == 'curso' and isinstance(nome, str):
+                sigla = (data.get('sigla') or "").strip()
+                nome_curto = re.sub(r'^Bacharelado\s+em\s+', '', nome, flags=re.IGNORECASE).strip()
+                nome_curto = re.sub(r'\s*\([A-Z]{2,5}\)\s*$', '', nome_curto).strip()
+                label = f"{nome_curto} ({sigla})" if sigla else nome_curto or nome
+                if len(label) > 50:
+                    label = label[:47] + "..."
+            elif isinstance(nome, str) and len(nome) > 60:
+                label = nome[:57] + "..."
+            else:
+                label = nome or node_id.replace("DISC:", "").replace("DOC:", "").replace("CURSO:", "")
+            nodes.append({
+                "id": node_id,
+                "label": label,
+                "tipo": tipo,
+                "titulo": nome,
+            })
+        edges = []
+        for u, v, key, edge_data in self.graph.edges(keys=True, data=True):
+            rel = edge_data.get('relacao', '')
+            edges.append({
+                "from": u,
+                "to": v,
+                "label": rel,
+            })
+        return {"nodes": nodes, "edges": edges}
+
     def get_disciplinas_do_termo(self, curso: str, termo: int) -> List[Dict]:
         """Retorna disciplinas de um termo específico de um curso."""
         resultados = []
@@ -985,4 +1099,90 @@ class KnowledgeGraph:
             'email': data.get('email', ''),
             'sala': data.get('sala', ''),
             'areas': data.get('areas', ''),
+        }
+
+    # ── Métodos Neurossimbólicos ──────────────────────────────────────────────
+
+    def get_all_ancestors(self, disciplina: str) -> List[str]:
+        """
+        Retorna TODOS os pré-requisitos transitivos (diretos + indiretos) usando
+        inferência transitiva via nx.ancestors() — núcleo da abordagem neurossimbólica.
+
+        Diferença em relação a get_prerequisite_chain():
+          - get_prerequisite_chain usa DFS até max_depth
+          - get_all_ancestors usa nx.ancestors() = fechamento transitivo completo do DAG
+        """
+        disc_id = self._find_node(disciplina, "disciplina")
+        if not disc_id:
+            return []
+
+        # Construir subgrafo apenas com arestas PREREQUISITO_DE
+        prereq_graph = nx.DiGraph()
+        for u, v, data in self.graph.edges(data=True):
+            if data.get('relacao') == 'PREREQUISITO_DE':
+                prereq_graph.add_edge(u, v)
+
+        if disc_id not in prereq_graph:
+            return []
+
+        ancestor_ids = nx.ancestors(prereq_graph, disc_id)
+        result = []
+        for anc_id in ancestor_ids:
+            node_data = self.graph.nodes.get(anc_id, {})
+            if node_data.get('tipo') == 'disciplina':
+                nome = node_data.get('nome', anc_id.replace('DISC:', ''))
+                result.append(nome)
+        return result
+
+    def verify_discipline_exists(self, nome: str) -> bool:
+        """Verifica se uma disciplina existe no grafo (por nome, sigla ou código)."""
+        return self._find_node(nome, "disciplina") is not None
+
+    def verify_prerequisite(self, disc_a: str, disc_b: str) -> bool:
+        """
+        Verifica se disc_a é pré-requisito DIRETO de disc_b.
+        Para verificar pré-requisito indireto use get_all_ancestors().
+        """
+        id_a = self._find_node(disc_a, "disciplina")
+        id_b = self._find_node(disc_b, "disciplina")
+        if not id_a or not id_b:
+            return False
+        edge_data = self.graph.get_edge_data(id_a, id_b)
+        if not edge_data:
+            return False
+        return self._has_edge_relation(edge_data, 'PREREQUISITO_DE')
+
+    def verify_docente_in_discipline(self, docente: str, disciplina: str) -> bool:
+        """Verifica se um docente leciona uma disciplina (com base no KG)."""
+        docentes = self.get_docentes_of_discipline(disciplina)
+        docente_norm = self._normalize_text(docente)
+        return any(
+            docente_norm in self._normalize_text(d) or self._normalize_text(d) in docente_norm
+            for d in docentes
+        )
+
+    def get_symbolic_facts(self, disciplina: str) -> Dict:
+        """
+        Retorna dicionário com todos os fatos estruturados do KG para uma disciplina.
+        Usado pelo SymbolicValidator para enriquecimento e validação.
+        """
+        node_id = self._find_node(disciplina, "disciplina")
+        if not node_id:
+            return {}
+
+        node_data = self.graph.nodes[node_id]
+        prereqs_diretos = self.get_prerequisite_chain(disciplina, max_depth=1)
+        todos_prereqs = self.get_all_ancestors(disciplina)
+        docentes = self.get_docentes_of_discipline(disciplina)
+        dependentes = self.get_dependent_disciplines(disciplina)
+
+        return {
+            'nome': node_data.get('nome', disciplina),
+            'codigo': node_data.get('codigo', ''),
+            'sigla': node_data.get('sigla', ''),
+            'termo': node_data.get('termo', ''),
+            'prerequisitos_diretos': prereqs_diretos,
+            'prerequisitos_transitivos': todos_prereqs,
+            'docentes': docentes,
+            'dependentes': dependentes,
         }

@@ -13,10 +13,10 @@
 
 ## Docentes
 
-- Cláudia Santos
-- Daniela Oliveira
-- Karen Paulino
-- Marcelo Gama
+- Cláudia Aline A. S. Mesquita
+- Daniela dos Santos de Oliveira
+- Karen de Lolo Guilherme Paulino
+- Marcelo Cristino Gama
 
 ## Pré-requisitos
 

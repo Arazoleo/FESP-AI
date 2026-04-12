@@ -13,12 +13,12 @@
 
 ## Docentes
 
-- Marcelo Gama
-- Thadeu Senne
-- Daniela Oliveira
-- Leandro Batista
-- Ana Moreira
-- Robson da Silva
+- Marcelo Cristino Gama
+- Thadeu Alves Senne
+- Daniela dos Santos de Oliveira
+- Leandro Candido
+- Ana Cláudia da Silva Moreira
+- Robson Oliveira da Silva
 - Erwin Doescher
 
 ## Pré-requisitos

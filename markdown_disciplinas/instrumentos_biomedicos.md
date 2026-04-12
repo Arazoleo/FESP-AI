@@ -14,8 +14,8 @@
 ## Docentes
 
 - Roberson Saraiva
-- Fabiano Paixão
-- Thiago Martini
+- Fabiano Carlos Paixão
+- Thiago Martini Pereira
 
 ## Pré-requisitos
 

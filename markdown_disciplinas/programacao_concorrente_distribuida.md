@@ -14,7 +14,7 @@
 ## Docentes
 
 - Denise Stringhini
-- Álvaro Fazenda
+- Álvaro Luiz Fazenda
 
 ## Pré-requisitos
 

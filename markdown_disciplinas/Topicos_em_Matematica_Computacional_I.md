@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Pedro Kaufmann
+- Pedro Levit Kaufmann
 
 ## Pré-requisitos
 

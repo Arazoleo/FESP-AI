@@ -13,10 +13,10 @@
 
 ## Docentes
 
-- Joahannes Costa
-- Thaína Tosta
-- Ezequiel Zorzal
-- Bruno Kimura
+- Joahannes Bruno Dias da Costa
+- Thaína Aparecida Azevedo Tosta
+- Ezequiel Roberto Zorzal
+- Bruno Yuji Lino Kimura
 
 ## Pré-requisitos
 

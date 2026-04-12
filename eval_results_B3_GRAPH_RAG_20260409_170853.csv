@@ -1,0 +1,42 @@
+id,pergunta,categoria,tipo_query,latencia_s,resposta,label_avaliador1,label_avaliador2,notas,erro
+1,O que é Teoria dos Grafos?,ementa,factual_simples,2.66,Não tenho a informação.,,,,
+2,O que é Matemática Discreta?,ementa,factual_simples,2.7,Não tem a informação.,,,,
+3,Descreva a disciplina Banco de Dados.,ementa,factual_simples,2.42,Não tem a informação.,,,,
+4,O que é Redes de Computadores?,ementa,factual_simples,2.01,Não tem a informação.,,,,
+5,O que é Inteligência Artificial?,ementa,factual_simples,1.87,Não tem a informação.,,,,
+6,O que se estuda em Compiladores?,ementa,factual_simples,2.04,Não tem a informação.,,,,
+7,Qual a ementa de Álgebra Linear?,ementa,factual_simples,1.99,Não tem a informação.,,,,
+8,Me fale sobre a disciplina de Programação Orientada a Objetos.,ementa,factual_simples,4.45,"**Disciplina:** Projeto Orientado a Objetos (Código: 5168)
+
+**O que é estudado:**  
+- Fundamentos de Projeto de Software  
+- Modelagem Orientada a Objetos utilizando UML e SysML  
+- Modelos Arquiteturais  
+- Componentes de Software  
+- Reuso de Software  
+- Padrões de Projeto  
+
+**Ementa / Conteúdo Programático:**  
+A disciplina aborda os princípios e técnicas de desenvolvimento de software orientado a objetos. São explorados os fundamentos de projeto, a modelagem de sistemas por meio das linguagens de modelagem UML (Unified Modeling Language) e SysML (Systems Modeling Language), diferentes modelos arquiteturais, a estrutura e organização dos componentes de software, estratégias para reutilização de código e a aplicação de padrões de projeto reconhecidos na engenharia de software.",,,,
+9,Do que trata Lógica de Programação?,ementa,factual_simples,5.36,Não tem a informação.,,,,
+10,Me fale sobre Matemática Discreta.,ementa,factual_simples,2.68,Não tem a informação.,,,,
+11,Quais são os pré-requisitos de Inteligência Artificial?,prereq,composicional,3.17,"Para cursar **Inteligência Artificial**, o único pré‑requisito é:
+
+- **Algoritmos e Estrutura de Dados I**
+
+Total: **1 pré‑requisito** na cadeia.",,,,
+12,Pré-requisitos de Banco de Dados?,prereq,composicional,3.13,"Para cursar **Banco de Dados** é necessário ter concluído previamente:
+
+- **Algoritmos e Estruturas de Dados I**  
+- **Lógica de Programação**
+
+Total: **2** pré‑requisito(s) na cadeia.",,,,
+13,O que preciso fazer antes de Compiladores?,prereq,composicional,4.8,"Para cursar **Compiladores** (código 2615) você deve ter aprovação nos seguintes disciplinas:
+
+1. **Linguagens Formais e Autômatos** (código 2616) – pré‑requisito direto de Compiladores.  
+2. **Matemática Discreta** (código 2201) – pré‑requisito de Linguagens Formais e Autômatos.  
+3. **Lógica de Programação** (código 9394) – pré‑requisito de Linguagens Formais e Autômatos.
+
+Portanto, são **3 pré‑requisitos** na cadeia necessária antes de se matricular em Compiladores.",,,,
+14,Pré-requisitos para cursar Algoritmos 2?,prereq,composicional,2.66,"Não há informação de pré‑requisitos para a disciplina **Algoritmos 2**; segundo o sistema, ela não possui pré‑requisitos ou não foi encontrada.",,,,
+15,Quais disciplinas dependem de Cálculo 1?,dependentes,composicional,2.22,Não há disciplina encontrada que tenha **Cálculo 1** como pré‑requisito.,,,,

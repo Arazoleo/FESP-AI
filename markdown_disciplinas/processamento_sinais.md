@@ -13,10 +13,10 @@
 ## Docentes
 
 - Thiago Martini Pereira
-- Adenauer Casali
-- Henrique Paiva
-- Karina Casali
-- Matheus Moraes
+- Adenauer Girardi Casali
+- Henrique Mohallem Paiva
+- Karina Rabello Casali
+- Matheus Cardoso Moraes
 
 ## Pré-requisitos
 

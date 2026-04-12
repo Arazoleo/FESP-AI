@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Michael Brito
+- Michael dos Santos Brito
 
 ## Pré-requisitos
 

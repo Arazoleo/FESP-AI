@@ -13,11 +13,11 @@
 
 ## Docentes
 
-- Didier Vega
-- Arlindo da Conceição
-- Álvaro Fazenda
-- Luís Pereira
-- Regina Coelho
+- Didier Vega-Oliveros
+- Arlindo Flávio da Conceição
+- Álvaro Luiz Fazenda
+- Luis Augusto Martins Pereira
+- Regina Célia Coelho
 
 ## Pré-requisitos
 

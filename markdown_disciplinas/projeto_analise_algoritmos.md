@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Sanderson Oliveira
-- Reginaldo Kuroshu
+- Sanderson Lincohn Gonzaga de Oliveira
+- Reginaldo Massanobu Kuroshu
 
 ## Pré-requisitos
 

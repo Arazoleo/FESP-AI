@@ -13,7 +13,8 @@
 
 ## Docentes
 
-- Danieli Aparecida Pereira Reis 
+- Danieli A. P. Reis
+
 ## Pré-requisitos
 
 - 5143 – Materiais Metálicos

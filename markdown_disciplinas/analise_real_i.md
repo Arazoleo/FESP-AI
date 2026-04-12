@@ -13,9 +13,9 @@
 
 ## Docentes
 
-- Cláudia Santos
-- Leandro Batista
-- Vanessa Paschoa
+- Cláudia Aline A. S. Mesquita
+- Leandro Candido
+- Vanessa Gonçalves Paschoa Ferraz
 
 ## Pré-requisitos
 

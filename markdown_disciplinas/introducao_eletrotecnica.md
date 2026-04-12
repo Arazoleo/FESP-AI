@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Fabiano Paixão
-- Lauro da Silva Neto
+- Fabiano Carlos Paixão
+- Lauro Paulo da Silva Neto
 
 ## Pré-requisitos
 

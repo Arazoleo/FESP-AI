@@ -17,10 +17,12 @@ try:
 except ImportError:
     pass
 
+from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from .rag import RAGUnifesp
+from .multi_agent_rag import MultiAgentRAG
 from .context_resolver import context_resolver
 
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +34,8 @@ cors_origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://frontend:3000",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
 ]
 
 app.add_middleware(
@@ -42,7 +46,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-rag = None
+rag: MultiAgentRAG = None
 
 # Configurações de gerenciamento de memória para conversas
 MAX_CONVERSATIONS = 1000  # Máximo de conversas simultâneas
@@ -88,10 +92,19 @@ class ChatRequest(BaseModel):
     max_history: int = 10  # Número máximo de mensagens anteriores a incluir
 
 
+class AgentInfo(BaseModel):
+    label: str
+    description: str
+    color: str
+    icon: str
+
+
 class ChatResponse(BaseModel):
     response: str
     conversation_id: str
     timestamp: str
+    active_agent: str = "fallback"
+    agent_info: Optional[AgentInfo] = None
 
 
 class ConversationResponse(BaseModel):
@@ -103,10 +116,10 @@ class ConversationResponse(BaseModel):
 async def startup_event():
     import threading
     global rag
-    print("Inicializando RAG...")
-    rag = RAGUnifesp()
+    print("Inicializando Multi-Agent RAG...")
+    rag = MultiAgentRAG()
     rag.sync()
-    print("RAG inicializado e pronto!")
+    print("Multi-Agent RAG inicializado e pronto!")
     
     def warmup_models():
         import time
@@ -148,7 +161,12 @@ async def root():
 async def health():
     if rag is None:
         raise HTTPException(status_code=503, detail="RAG nao inicializado")
-    return {"status": "healthy", "rag_ready": rag.chain is not None}
+    return {
+        "status": "healthy",
+        "rag_ready": rag.chain is not None,
+        "multi_agent": rag._pipeline is not None,
+        "model": rag.config.MODEL_NAME,
+    }
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -213,7 +231,10 @@ async def chat(request: ChatRequest):
     context_resolver.update_context(conversation_id, request.message, 'user')
     
     try:
-        response_text = rag.query(enhanced_question)
+        result = rag.query_with_metadata(enhanced_question)
+        response_text = result["response"]
+        active_agent = result.get("active_agent", "fallback")
+        agent_metadata = result.get("agent_info") or result.get("agent_metadata", {})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao processar pergunta: {str(e)}")
     
@@ -227,10 +248,91 @@ async def chat(request: ChatRequest):
     # Atualizar contexto com a resposta (para extrair listas de docentes, etc.)
     context_resolver.update_context(conversation_id, response_text, 'assistant')
     
+    logger.info(f"[AGENT] Agente ativo: {active_agent}")
+    
+    agent_info = None
+    if agent_metadata:
+        agent_info = AgentInfo(
+            label=agent_metadata.get("label", active_agent),
+            description=agent_metadata.get("description", ""),
+            color=agent_metadata.get("color", "#6b7280"),
+            icon=agent_metadata.get("icon", "Bot"),
+        )
+    
     return ChatResponse(
         response=response_text,
         conversation_id=conversation_id,
-        timestamp=assistant_message["timestamp"]
+        timestamp=assistant_message["timestamp"],
+        active_agent=active_agent,
+        agent_info=agent_info,
+    )
+
+
+class BaselineRequest(BaseModel):
+    message: str
+    system: str = "b2"  # "b2" = Standard RAG | "b3" = Graph-RAG sem validação
+
+
+class BaselineResponse(BaseModel):
+    response: str
+    system: str
+    latency_s: float
+
+
+@app.post("/chat_baseline", response_model=BaselineResponse)
+async def chat_baseline(request: BaselineRequest):
+    """
+    Endpoint para avaliação dos baselines do paper BRACIS.
+    
+    system="b2" → Standard RAG (só vector store, sem KG, sem validação simbólica)
+    system="b3" → Graph-RAG (KG + vector store, sem validação neurossimbólica)
+    """
+    import time
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.output_parsers import StrOutputParser
+
+    if rag is None:
+        raise HTTPException(status_code=503, detail="RAG nao inicializado")
+    if request.system not in ("b2", "b3"):
+        raise HTTPException(status_code=400, detail="system deve ser 'b2' ou 'b3'")
+
+    PROMPT = (
+        "Você é um assistente acadêmico da UNIFESP ICT. Responda APENAS em português "
+        "brasileiro usando SOMENTE as informações abaixo. Se não encontrar, diga que "
+        "não tem a informação.\n\n"
+        "{context}\n\nPergunta: {question}\n\nResposta:"
+    )
+    prompt = ChatPromptTemplate.from_template(PROMPT)
+    chain = prompt | rag.llm | StrOutputParser()
+
+    t0 = time.time()
+    try:
+        inner = rag._rag  # RAGUnifesp instance (MultiAgentRAG wraps it)
+        if request.system == "b2":
+            # Só retriever híbrido, sem KG
+            docs = inner.retriever.invoke(request.message)
+            context = inner._format_docs(docs)
+        else:
+            # B3: KG + retriever, sem enriquecimento/validação simbólica
+            context_parts = []
+            if inner.graph_rag:
+                use_g, q_type, termo = inner.graph_rag.should_use_graph(request.message)
+                if use_g and q_type and termo:
+                    kg_resp = inner.graph_rag.query_graph(q_type, termo)
+                    if kg_resp:
+                        context_parts.append(kg_resp)
+            docs = inner.retriever.invoke(request.message)
+            context_parts.append(inner._format_docs(docs))
+            context = "\n\n".join(context_parts)
+
+        response = chain.invoke({"context": context, "question": request.message})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return BaselineResponse(
+        response=response.strip(),
+        system=request.system,
+        latency_s=round(time.time() - t0, 2),
     )
 
 
@@ -351,6 +453,23 @@ async def graph_stats():
         stats['extracted_relations'] = extraction_stats
     
     return stats
+
+
+@app.get("/graph")
+async def get_graph():
+    """Retorna o Knowledge Graph completo para visualização (nodes + edges)."""
+    if rag is None or not rag.knowledge_graph:
+        raise HTTPException(status_code=503, detail="Knowledge Graph não disponível")
+    return rag.knowledge_graph.export_for_visualization()
+
+
+@app.get("/graph-viewer")
+async def graph_viewer_page():
+    """Serve a página HTML que visualiza o grafo (mesma origem que /graph, evita CORS)."""
+    path = Path(__file__).resolve().parent.parent / "graph_viewer.html"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="graph_viewer.html não encontrado")
+    return FileResponse(path, media_type="text/html")
 
 
 if __name__ == "__main__":

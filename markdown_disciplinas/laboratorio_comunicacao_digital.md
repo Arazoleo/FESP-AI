@@ -16,7 +16,7 @@
 
 ## Pré-requisitos
 
-- 6102 – Laboratório de Sistemas Computacionais: Sistemas Operacionais
+- Laboratório de Sistemas Computacionais: Sistemas Operacionais (Código: 6102)
 
 ## Carga Horária
 

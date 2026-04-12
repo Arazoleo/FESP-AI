@@ -14,15 +14,15 @@
 ## Docentes
 
 - Lilian Berton
-- Arlindo da Conceição
-- Rodrigo Contreras
-- Ana Luísa Lemos
-- Marcos Quiles
-- Bruno Kimura
-- Ezequiel Zorzal
+- Arlindo Flávio da Conceição
+- Rodrigo Colnago Contreras
+- Ana Luísa Dine Martins Lemos
+- Marcos Gonçalves Quiles
+- Bruno Yuji Lino Kimura
+- Ezequiel Roberto Zorzal
 - Márcio Basgalupp
-- Daniela Musa
-- Otávio Lemos
+- Daniela Leal Musa
+- Otavio Augusto Lazzarini Lemos
 
 ## Pré-requisitos
 

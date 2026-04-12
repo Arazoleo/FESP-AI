@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Henrique Amorim
-- Henrique Paiva
+- Henrique Alves de Amorim
+- Henrique Mohallem Paiva
 
 ## Pré-requisitos
 

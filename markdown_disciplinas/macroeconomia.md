@@ -12,8 +12,8 @@
 
 ## Docentes
 
-- Juliana Scriptore
-- Renato Sato
+- Juliana Souza Scriptore Moreira
+- Renato Cesar Sato
 
 ## Pré-requisitos
 

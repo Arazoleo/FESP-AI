@@ -32,6 +32,17 @@ class IntentClassifier:
     
     # Exemplos de treinamento por intenção (quanto mais, melhor)
     INTENT_EXAMPLES = {
+        'ementa_disciplina': [
+            "o que é Geometria Analítica",
+            "o que é Cálculo Numérico",
+            "o que é Inteligência Artificial",
+            "descreva a disciplina Algoritmos",
+            "o que se estuda em Compiladores",
+            "o que aprendo em Banco de Dados",
+            "do que trata Álgebra Linear",
+            "qual é o conteúdo de Física 1",
+            "me explique o que é Redes de Computadores",
+        ],
         'prerequisite_chain': [
             "quais são os pré-requisitos de banco de dados",
             "pré-requisitos para cursar algoritmos 2",
@@ -78,6 +89,10 @@ class IntentClassifier:
             "onde fica a sala do docente Tiago",
             "informações de contato do professor",
             "email da professora Daniela",
+            "me fale sobre o professor João",
+            "quem é a professora Maria",
+            "informações sobre o docente Álvaro",
+            "fale sobre a professora Lilian",
         ],
         'docente_areas': [
             "qual a área de pesquisa do professor",
@@ -166,6 +181,8 @@ class IntentClassifier:
     
     # Regex rápido para casos óbvios (fallback/boost)
     QUICK_PATTERNS = {
+        # ementa_disciplina tem PRIORIDADE sobre prerequisite_chain — "o que é X?" ≠ pré-req
+        'ementa_disciplina': r'o\s+que\s+[eé]\s+|o\s+que\s+(?:se\s+)?(?:estuda|aprende)\s+em\b|descreva\s+a?\s+disciplina',
         'prerequisite_chain': r'pr[eé][-\s]?requisitos?',
         'dependents': r'depend(?:e|em)\s+de',
         'discipline_docentes': r'quem\s+(?:leciona|d[aá]|ensina)',
@@ -177,6 +194,12 @@ class IntentClassifier:
     
     # Padrões para extração de termos por intenção
     TERM_PATTERNS = {
+        'ementa_disciplina': [
+            r'o\s+que\s+[eé]\s+([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
+            r'o\s+que\s+(?:se\s+)?(?:estuda|aprende)\s+em\s+(.+?)(?:\?|$)',
+            r'descreva\s+a?\s+disciplina\s+(?:de\s+)?(.+?)(?:\?|$)',
+            r'do\s+que\s+trata\s+(.+?)(?:\?|$)',
+        ],
         'prerequisite_chain': [
             r'pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
             r'antes\s+de\s+(?:fazer\s+|cursar\s+)?(.+?)(?:\?|$)',
@@ -191,10 +214,11 @@ class IntentClassifier:
             r'(?:usam?|precisam?|exigem?)\s+(.+?)\s+como',
         ],
         'discipline_docentes': [
-            # "Quem leciona Compiladores?"
+            # "Quem leciona Compiladores?" / "Quais docentes dão Cálculo Numérico?"
             r'(?:leciona|ensina|ministra)\s+([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
             r'd[aá]\s+aula\s+(?:de\s+)?(.+?)(?:\?|$)',
-            r'(?:professore?s?|docentes?)\s+(?:de|da|do)\s+(.+?)(?:\?|$)',
+            r'(?:professore?s?|docentes?)\s+(?:d[aã]o|de|da|do)\s+(.+?)(?:\?|$)',
+            r'd[aã]o\s+([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
             r'aula\s+de\s+(.+?)(?:\?|$)',
             # "Quem leciona?" (sem disciplina - deve retornar vazio para pegar do contexto)
         ],
@@ -312,8 +336,10 @@ class IntentClassifier:
         stopwords = {
             'qual', 'quais', 'quem', 'como', 'onde', 'quando', 'que', 'o', 'a', 'os', 'as',
             'de', 'da', 'do', 'em', 'na', 'no', 'para', 'por', 'com', 'são', 'é', 'tem',
-            'professor', 'professora', 'docente', 'disciplina', 'matéria', 'curso',
-            'leciona', 'ensina', 'dá', 'aula', 'pré-requisitos', 'requisitos',
+            'professor', 'professora', 'professores', 'professoras',
+            'docente', 'docentes', 'disciplina', 'matéria', 'curso',
+            'leciona', 'lecionam', 'ensina', 'ensinam', 'dá', 'dão', 'aula',
+            'pré-requisitos', 'requisitos',
         }
         
         words = question_lower.split()

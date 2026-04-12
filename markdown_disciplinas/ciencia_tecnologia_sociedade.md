@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Walter Lima
-- Vanessa Pereira
+- Walter Teixeira Lima Junior
+- Vanessa Andrade Pereira
 
 ## Pré-requisitos
 

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grafo de Conhecimento — FESP-AI</title>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; }
+
+    #header {
+      padding: 10px 16px;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #334155;
+    }
+    #header h1 { margin: 0; font-size: 1.1rem; white-space: nowrap; }
+    #header input[type="text"] { padding: 7px 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #e2e8f0; width: 200px; }
+    #header button { padding: 7px 14px; border-radius: 8px; border: none; background: #3b82f6; color: white; cursor: pointer; font-weight: 600; font-size: 0.875rem; }
+    #header button:hover { background: #2563eb; }
+    #header button:disabled { opacity: 0.6; cursor: not-allowed; }
+    #header select { padding: 7px 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #e2e8f0; font-size: 0.875rem; }
+    #stats { font-size: 0.8rem; color: #94a3b8; }
+
+    /* Search container */
+    #searchWrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #searchInput {
+      padding: 7px 12px 7px 34px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #e2e8f0;
+      width: 240px;
+      font-size: 0.875rem;
+      transition: border-color .2s;
+    }
+    #searchInput:focus { outline: none; border-color: #3b82f6; }
+    #searchIcon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      pointer-events: none;
+      font-size: 14px;
+    }
+    #searchDropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 320px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5);
+      display: none;
+    }
+    #searchDropdown.show { display: block; }
+    .search-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      border-bottom: 1px solid #0f172a;
+    }
+    .search-item:last-child { border-bottom: none; }
+    .search-item:hover { background: #0f172a; }
+    .search-item .dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .search-item .item-name { color: #e2e8f0; flex: 1; }
+    .search-item .item-type { color: #64748b; font-size: 0.7rem; }
+    .search-empty { padding: 12px; color: #64748b; font-size: 0.8rem; text-align: center; }
+
+    /* Main layout */
+    #main {
+      display: flex;
+      height: calc(100vh - 55px);
+    }
+    #graph { flex: 1; min-width: 0; }
+
+    /* Info panel */
+    #infoPanel {
+      width: 320px;
+      flex-shrink: 0;
+      background: #1e293b;
+      border-left: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width .25s;
+    }
+    #infoPanel.collapsed { width: 36px; }
+    #panelToggle {
+      position: absolute;
+      right: 320px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 48px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-right: none;
+      border-radius: 6px 0 0 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 11px;
+      z-index: 10;
+      transition: right .25s;
+    }
+    #panelToggle:hover { background: #0f172a; color: #e2e8f0; }
+
+    #panelHeader {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #panelHeader h2 { margin: 0; font-size: 0.9rem; color: #94a3b8; font-weight: 600; letter-spacing: .04em; }
+    #panelEmpty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 24px;
+      gap: 8px;
+    }
+    #panelEmpty svg { opacity: .4; }
+    #panelContent { flex: 1; overflow-y: auto; display: none; }
+    #panelContent.show { display: block; }
+
+    #nodeTitle {
+      padding: 14px 16px 8px;
+      border-bottom: 1px solid #334155;
+    }
+    #nodeTitle .node-tipo {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+    }
+    #nodeTitle .node-nome { font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
+    #nodeTitle .node-meta { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+
+    .rel-section {
+      padding: 10px 16px 4px;
+    }
+    .rel-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rel-section-title .count {
+      background: #334155;
+      border-radius: 10px;
+      padding: 1px 6px;
+      font-size: 0.65rem;
+      color: #94a3b8;
+    }
+    .rel-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #1e293b;
+      cursor: pointer;
+    }
+    .rel-item:last-child { border-bottom: none; }
+    .rel-item:hover .rel-node-name { color: #60a5fa; }
+    .rel-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+    .rel-item-info { flex: 1; min-width: 0; }
+    .rel-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #0f172a;
+      color: #94a3b8;
+      white-space: nowrap;
+      margin-bottom: 2px;
+      display: inline-block;
+    }
+    .rel-node-name {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .rel-empty { font-size: 0.75rem; color: #475569; padding: 4px 0 8px; }
+
+    /* Legend */
+    #legend {
+      position: absolute;
+      top: 68px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.72rem;
+      line-height: 1.7;
+      z-index: 5;
+    }
+    #legend span { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .error { color: #f87171; padding: 20px; }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h1>Grafo de Conhecimento UNIFESP ICT</h1>
+    <input type="text" id="apiUrl" value="http://localhost:8000" placeholder="URL do backend" />
+    <button id="btnLoad">Carregar grafo</button>
+    <select id="filterTipo" title="Filtrar por tipo de nó">
+      <option value="">Todos</option>
+      <option value="curso">Só cursos</option>
+      <option value="curso,matriz_curricular">Cursos + matrizes</option>
+      <option value="disciplina">Só disciplinas</option>
+      <option value="docente">Só docentes</option>
+      <option value="docente,disciplina">Docentes + disciplinas</option>
+      <option value="docente,area">Docentes + áreas</option>
+      <option value="disciplina,curso">Disciplinas + cursos</option>
+      <option value="curso,matriz_curricular,disciplina">Cursos + matrizes + disciplinas</option>
+      <option value="area">Só áreas</option>
+      <option value="documento,artigo,orgao">Regimentos</option>
+      <option value="documento,artigo,faq">Documentos + artigos + FAQs</option>
+    </select>
+    <select id="filterRelação" title="Mostrar só arestas desta relação">
+      <option value="">Todas as arestas</option>
+      <option value="LECIONA">LECIONA</option>
+      <option value="PREREQUISITO_DE">PREREQUISITO_DE</option>
+      <option value="OFERECE">OFERECE</option>
+      <option value="MATRIZ_DE">MATRIZ_DE</option>
+      <option value="INCLUI">INCLUI</option>
+      <option value="ELETIVA_DE">ELETIVA_DE</option>
+      <option value="ESPECIALISTA_EM">ESPECIALISTA_EM</option>
+      <option value="CONTEM">CONTEM</option>
+    </select>
+
+    <!-- Busca de vértice -->
+    <div id="searchWrapper">
+      <span id="searchIcon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Buscar vértice…" autocomplete="off" />
+      <div id="searchDropdown"></div>
+    </div>
+
+    <span id="stats"></span>
+  </div>
+
+  <div id="main">
+    <div id="graph"></div>
+
+    <!-- Painel lateral de relações -->
+    <div id="infoPanel">
+      <div id="panelHeader">
+        <h2>RELAÇÕES DO VÉRTICE</h2>
+      </div>
+      <div id="panelEmpty">
+        <svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <circle cx="12" cy="12" r="4" stroke-width="1.5"/>
+          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <div>Clique num vértice<br>ou use a busca para<br>ver suas relações</div>
+      </div>
+      <div id="panelContent"></div>
+    </div>
+  </div>
+
+  <div id="legend">
+    <div><span style="background:#10b981"></span>disciplina</div>
+    <div><span style="background:#8b5cf6"></span>docente</div>
+    <div><span style="background:#f59e0b"></span>curso / matriz</div>
+    <div><span style="background:#ef4444"></span>documento</div>
+    <div><span style="background:#06b6d4"></span>artigo</div>
+    <div><span style="background:#84cc16"></span>área</div>
+    <div><span style="background:#64748b"></span>outros</div>
+  </div>
+
+  <script>
+    const tipoColors = {
+      disciplina: '#10b981',
+      docente: '#8b5cf6',
+      curso: '#f59e0b',
+      matriz_curricular: '#f59e0b',
+      documento: '#ef4444',
+      artigo: '#06b6d4',
+      area: '#84cc16',
+      orgao: '#64748b',
+      faq: '#a855f7',
+    };
+    function colorFor(tipo) { return tipoColors[tipo] || '#64748b'; }
+
+    let currentNetwork = null;
+    let fullNodes = [];
+    let fullEdges = [];
+    let selectedNodeId = null;
+
+    // ── Filtros ─────────────────────────────────────────────────────────────
+    function applyFilter(nodes, edges, filterTipos, filterRelacao) {
+      let keepId = null;
+      let filteredEdges = edges;
+
+      if (filterRelacao) {
+        filteredEdges = edges.filter(e => e.label === filterRelacao);
+        const nodeIdsFromEdges = new Set();
+        filteredEdges.forEach(e => { nodeIdsFromEdges.add(e.from); nodeIdsFromEdges.add(e.to); });
+        keepId = nodeIdsFromEdges;
+      }
+      if (filterTipos && filterTipos.length > 0) {
+        const set = new Set(filterTipos);
+        const byTipo = new Set(nodes.filter(n => set.has(n.tipo)).map(n => n.id));
+        keepId = keepId ? new Set([...keepId].filter(id => byTipo.has(id))) : byTipo;
+        filteredEdges = filteredEdges.filter(e => keepId.has(e.from) && keepId.has(e.to));
+      } else if (keepId) {
+        filteredEdges = filteredEdges.filter(e => keepId.has(e.from) && keepId.has(e.to));
+      } else {
+        keepId = new Set(nodes.map(n => n.id));
+      }
+
+      const filteredNodes = nodes.filter(n => keepId.has(n.id));
+      return { nodes: filteredNodes, edges: filteredEdges };
+    }
+
+    // ── Build network ────────────────────────────────────────────────────────
+    function buildNetwork(nodes, edges) {
+      const filterVal = document.getElementById('filterTipo').value || '';
+      const relVal    = document.getElementById('filterRelação').value || '';
+      const tipos     = filterVal ? filterVal.split(',').map(s => s.trim()) : [];
+      const { nodes: useNodes, edges: useEdges } = applyFilter(nodes, edges, tipos, relVal || null);
+
+      const visNodes = useNodes.map(n => ({
+        id: n.id,
+        label: n.label.length > 35 ? n.label.slice(0, 32) + '…' : n.label,
+        title: (n.tipo + ': ' + (n.titulo || n.label)).slice(0, 120),
+        tipo: n.tipo,
+        color: { background: colorFor(n.tipo), border: '#1e293b' },
+        font: { color: '#e2e8f0', size: 14 },
+      }));
+      const visEdges = useEdges.map(e => ({
+        from: e.from, to: e.to, label: e.label,
+        arrows: 'to',
+        color: { color: '#64748b' },
+        font: { color: '#94a3b8', size: 10 },
+      }));
+
+      const container = document.getElementById('graph');
+      const data = { nodes: visNodes, edges: visEdges };
+      const options = {
+        nodes: { shape: 'dot', size: tipos.length ? 18 : 14 },
+        edges: { width: 1.2 },
+        physics: {
+          enabled: true,
+          forceAtlas2Based: { gravitationalConstant: -40, centralGravity: 0.01, springLength: tipos.length ? 80 : 120 },
+          solver: 'forceAtlas2Based',
+          stabilization: { iterations: 200 },
+        },
+        interaction: { hover: true, tooltipDelay: 200, zoomView: true, dragView: true },
+      };
+      if (currentNetwork) currentNetwork.destroy();
+      currentNetwork = new vis.Network(container, data, options);
+
+      currentNetwork.on('click', function (params) {
+        if (params.nodes.length > 0) {
+          selectNode(params.nodes[0]);
+        }
+      });
+
+      return currentNetwork;
+    }
+
+    // ── Selecionar e exibir nó ───────────────────────────────────────────────
+    function selectNode(nodeId) {
+      selectedNodeId = nodeId;
+
+      const node = fullNodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      // Highlight no grafo
+      if (currentNetwork) {
+        currentNetwork.selectNodes([nodeId]);
+        currentNetwork.focus(nodeId, { scale: 1.2, animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+      }
+
+      // Preencher painel
+      showNodePanel(node);
+    }
+
+    function showNodePanel(node) {
+      document.getElementById('panelEmpty').style.display = 'none';
+      const content = document.getElementById('panelContent');
+      content.classList.add('show');
+
+      // Nó central
+      const nomeDisplay = node.titulo || node.label;
+      const tipoLabel = node.tipo || 'desconhecido';
+      const tipoColor = colorFor(tipoLabel);
+
+      // Separar saídas (de nodeId para outro) e entradas (de outro para nodeId)
+      const outEdges = fullEdges.filter(e => e.from === node.id);
+      const inEdges  = fullEdges.filter(e => e.to === node.id);
+
+      // Agrupar por relação
+      const groupBy = (arr, key) => arr.reduce((acc, e) => {
+        (acc[e[key]] = acc[e[key]] || []).push(e);
+        return acc;
+      }, {});
+
+      const outByRel = groupBy(outEdges, 'label');
+      const inByRel  = groupBy(inEdges, 'label');
+
+      const nodeById = id => fullNodes.find(n => n.id === id);
+
+      function renderRelGroup(relMap, direction) {
+        if (Object.keys(relMap).length === 0) return '<div class="rel-empty">Nenhuma</div>';
+        return Object.entries(relMap).map(([rel, edges]) => {
+          const items = edges.map(e => {
+            const otherId = direction === 'out' ? e.to : e.from;
+            const other = nodeById(otherId);
+            const otherNome = other ? (other.titulo || other.label) : otherId.replace(/^[A-Z]+:/, '');
+            const otherTipo = other ? other.tipo : '';
+            const dotColor = colorFor(otherTipo);
+            return `<div class="rel-item" onclick="selectNode('${otherId}')">
+              <span class="dot" style="background:${dotColor}"></span>
+              <div class="rel-item-info">
+                <div class="rel-node-name">${escHtml(otherNome)}</div>
+              </div>
+            </div>`;
+          }).join('');
+          const arrow = direction === 'out' ? '→' : '←';
+          return `<div class="rel-section">
+            <div class="rel-section-title">
+              <span>${arrow} ${escHtml(rel)}</span>
+              <span class="count">${edges.length}</span>
+            </div>
+            ${items}
+          </div>`;
+        }).join('');
+      }
+
+      content.innerHTML = `
+        <div id="nodeTitle">
+          <div class="node-tipo" style="color:${tipoColor}">${escHtml(tipoLabel)}</div>
+          <div class="node-nome">${escHtml(nomeDisplay)}</div>
+          <div class="node-meta">ID: ${escHtml(node.id)}</div>
+        </div>
+
+        <div style="padding:10px 16px 4px">
+          <div class="rel-section-title" style="color:#94a3b8; margin-bottom:2px">
+            SAÍDAS
+            <span class="count">${outEdges.length}</span>
+          </div>
+        </div>
+        ${renderRelGroup(outByRel, 'out')}
+
+        <div style="padding:10px 16px 4px; border-top:1px solid #334155; margin-top:4px">
+          <div class="rel-section-title" style="color:#94a3b8; margin-bottom:2px">
+            ENTRADAS
+            <span class="count">${inEdges.length}</span>
+          </div>
+        </div>
+        ${renderRelGroup(inByRel, 'in')}
+      `;
+    }
+
+    function escHtml(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Busca ────────────────────────────────────────────────────────────────
+    const searchInput    = document.getElementById('searchInput');
+    const searchDropdown = document.getElementById('searchDropdown');
+
+    function normalizeSearch(s) {
+      return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    searchInput.addEventListener('input', function () {
+      const q = this.value.trim();
+      if (!q || q.length < 2 || !fullNodes.length) {
+        searchDropdown.classList.remove('show');
+        return;
+      }
+      const qn = normalizeSearch(q);
+      const matches = fullNodes.filter(n => {
+        const nome = normalizeSearch(n.titulo || n.label || '');
+        const id   = normalizeSearch(n.id || '');
+        return nome.includes(qn) || id.includes(qn);
+      }).slice(0, 30);
+
+      if (!matches.length) {
+        searchDropdown.innerHTML = '<div class="search-empty">Nenhum resultado</div>';
+      } else {
+        searchDropdown.innerHTML = matches.map(n => {
+          const nomeDisplay = escHtml(n.titulo || n.label);
+          const tipoColor   = colorFor(n.tipo);
+          return `<div class="search-item" data-id="${escHtml(n.id)}">
+            <span class="dot" style="background:${tipoColor}"></span>
+            <span class="item-name">${nomeDisplay}</span>
+            <span class="item-type">${escHtml(n.tipo || '')}</span>
+          </div>`;
+        }).join('');
+        searchDropdown.querySelectorAll('.search-item').forEach(el => {
+          el.addEventListener('click', () => {
+            const id = el.dataset.id;
+            searchInput.value = el.querySelector('.item-name').textContent;
+            searchDropdown.classList.remove('show');
+            // Se o nó não está no grafo atual (filtro ativo), mostrar apenas no painel
+            const node = fullNodes.find(n => n.id === id);
+            if (node) selectNode(id);
+          });
+        });
+      }
+      searchDropdown.classList.add('show');
+    });
+
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') searchDropdown.classList.remove('show');
+      if (e.key === 'Enter') {
+        const first = searchDropdown.querySelector('.search-item');
+        if (first) first.click();
+      }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!document.getElementById('searchWrapper').contains(e.target)) {
+        searchDropdown.classList.remove('show');
+      }
+    });
+
+    // ── Carregamento ─────────────────────────────────────────────────────────
+    document.getElementById('btnLoad').onclick = async function () {
+      let apiUrl = document.getElementById('apiUrl').value.trim().replace(/\/$/, '');
+      if (!apiUrl) apiUrl = window.location.origin;
+      const statsEl = document.getElementById('stats');
+      const btn = this;
+      btn.disabled = true;
+      statsEl.textContent = 'Carregando...';
+      try {
+        const res = await fetch(apiUrl + '/graph');
+        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+        const data = await res.json();
+        fullNodes = data.nodes || [];
+        fullEdges = data.edges || [];
+        buildNetwork(fullNodes, fullEdges);
+        statsEl.textContent = fullNodes.length + ' nós · ' + fullEdges.length + ' arestas';
+      } catch (e) {
+        statsEl.textContent = '';
+        document.getElementById('graph').innerHTML =
+          '<div class="error">Erro ao carregar: ' + e.message +
+          '. Confira a URL da API e se o backend está rodando.</div>';
+      }
+      btn.disabled = false;
+    };
+
+    function refreshStats() {
+      if (!fullNodes.length) return;
+      const filterVal = document.getElementById('filterTipo').value || '';
+      const relVal    = document.getElementById('filterRelação').value || '';
+      const tipos     = filterVal ? filterVal.split(',').map(s => s.trim()) : [];
+      const { nodes: n, edges: e } = applyFilter(fullNodes, fullEdges, tipos, relVal || null);
+      document.getElementById('stats').textContent = n.length + ' nós · ' + e.length + ' arestas';
+    }
+
+    document.getElementById('filterTipo').onchange = function () {
+      if (fullNodes.length) { buildNetwork(fullNodes, fullEdges); refreshStats(); }
+    };
+    document.getElementById('filterRelação').onchange = function () {
+      if (fullNodes.length) { buildNetwork(fullNodes, fullEdges); refreshStats(); }
+    };
+
+    if (window.location.protocol.startsWith('http')) {
+      document.getElementById('btnLoad').click();
+    }
+  </script>
+</body>
+</html>

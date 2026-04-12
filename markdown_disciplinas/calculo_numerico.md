@@ -13,11 +13,11 @@
 
 ## Docentes
 
-- Thadeu Senne
-- Tiago Macedo
-- Luiz Felipe
+- Thadeu Alves Senne
+- Tiago Rodrigues Macedo
+- Luis Felipe Cesar da Rocha Bueno
 - Erwin Doescher
-- Luiz Leduíno
+- Luiz Leduíno de Salles Neto
 
 ## Pré-requisitos
 

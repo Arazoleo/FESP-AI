@@ -13,11 +13,11 @@
 
 ## Docentes
 
-- Dayane Tada
-- Elias Santos
-- Marli Moraes
-- Raquel Domingues
-- Hugo Braga
+- Dayane Batista Tada
+- Elias de Barros Santos
+- Marli Leite de Moraes
+- Raquel Aparecida Domingues
+- Hugo de Campos Braga
 
 ## Pré-requisitos
 

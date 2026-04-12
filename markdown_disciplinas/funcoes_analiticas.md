@@ -12,8 +12,8 @@
 
 ## Docentes
 
-- Thiago Castilho
-- Leandro Batista
+- Thiago Castilho de Mello
+- Leandro Candido
 
 ## Pré-requisitos
 

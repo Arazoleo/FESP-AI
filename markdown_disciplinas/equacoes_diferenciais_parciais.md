@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Marcelo Gama
+- Marcelo Cristino Gama
 
 ## Pré-requisitos
 

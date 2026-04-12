@@ -13,9 +13,9 @@
 
 ## Docentes
 
-- Nirton Vieira
+- Nirton Cristi Silva Vieira
 - Eduardo Antonelli
-- Thaciana Malaspina
+- Thaciana Valentina Malaspina Fileti
 - Rossano Lang
 
 ## Pré-requisitos

@@ -16,8 +16,8 @@
 
 ## Pré-requisitos
 
-- 2615 – Compiladores
-- 6095 – Laboratório de Sistemas Computacionais: Engenharia de Sistemas
+- Compiladores (Código: 2615)
+- Laboratório de Sistemas Computacionais: Engenharia de Sistemas (Código: 6095)
 
 ## Carga Horária
 

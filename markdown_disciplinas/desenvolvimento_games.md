@@ -12,8 +12,8 @@
 
 ## Docentes
 
-- Vanessa Pereira
-- Fábio Cappabianco
+- Vanessa Andrade Pereira
+- Fábio Augusto Menocci Cappabianco
 
 ## Pré-requisitos
 

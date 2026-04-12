@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Sérgio Ronaldo
+- Sérgio Ronaldo Barros dos Santos
 
 ## Pré-requisitos
 

@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Eliandra Trichês
+- Eliandra de Sousa Trichês
 
 ## Pré-requisitos
 

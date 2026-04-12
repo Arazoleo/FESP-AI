@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Fábio Aoki
+- Fabio Gava Aoki
 
 ## Pré-requisitos
 

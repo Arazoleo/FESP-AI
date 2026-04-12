@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Karina Casali
-- Mateus Urban
+- Karina Rabello Casali
+- Mateus Fernandes Réu Urban
 
 ## Pré-requisitos
 

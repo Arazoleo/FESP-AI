@@ -13,10 +13,10 @@
 
 ## Docentes
 
-- Robson da Silva
-- Thiago Castilho
-- Tiago Macedo
-- Ângelo Bianchi
+- Robson Oliveira da Silva
+- Thiago Castilho de Mello
+- Tiago Rodrigues Macedo
+- Angelo Calil Bianchi
 
 ## Pré-requisitos
 

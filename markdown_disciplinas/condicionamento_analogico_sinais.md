@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Carlos Gurjão
+- Carlos Marcelo Gurjão de Godoy
 
 ## Pré-requisitos
 

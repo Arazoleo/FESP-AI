@@ -12,9 +12,17 @@ services:
       - ./chroma_db_unifesp:/app/chroma_db_unifesp
       - ./jsons_disciplinas:/app/jsons_disciplinas
       - ./jsons_regimentos:/app/jsons_regimentos
+      - ./markdown_disciplinas:/app/markdown_disciplinas
+      - ./markdown_regimentos:/app/markdown_regimentos
+      - ./markdown_docentes:/app/markdown_docentes
+      - ./markdown_cursos:/app/markdown_cursos
     environment:
-      # Conecta ao Ollama rodando nativamente no Mac (com Metal)
-      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      # Ollama: local (Mac) ou na nuvem — para nuvem, defina a URL abaixo
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      # Modelo de geração — para testar modelo grande na nuvem: MODEL_NAME=llama3.1:70b (ou qwen2.5:72b, etc.)
+      - MODEL_NAME=${MODEL_NAME:-ministral-3:8b}
+      # Embeddings (recomendado manter mxbai-embed-large; na nuvem deve estar no mesmo Ollama)
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-mxbai-embed-large}
       - PYTHONUNBUFFERED=1
       - PYTHONWARNINGS=ignore
     extra_hosts:

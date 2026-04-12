@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Prof. Dr. Rodrigo Colnago Contreras / Departamento de Ciência e Tecnologia (rodrigo.contreras@unesp.br)
+- Rodrigo Colnago Contreras
 
 ## Pré-requisitos
 

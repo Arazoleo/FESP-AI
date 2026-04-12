@@ -13,9 +13,9 @@
 
 ## Docentes
 
-- Luzia Oliveira
-- Sâmia Calheiros
-- Flávia Queiroz
+- Luzia Pedroso de Oliveira
+- Sâmia Regina Garcia Calheiros
+- Flávia Cristina Martins Queiroz Mariano
 
 ## Pré-requisitos
 

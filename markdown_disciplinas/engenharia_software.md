@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Fábio Silveira
-- Otávio Lemos
+- Fábio Fagundes Silveira
+- Otavio Augusto Lazzarini Lemos
 
 ## Pré-requisitos
 

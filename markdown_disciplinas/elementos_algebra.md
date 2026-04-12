@@ -12,8 +12,8 @@
 
 ## Docentes
 
-- Ângelo Bianchi
-- Thiago Castilho
+- Angelo Calil Bianchi
+- Thiago Castilho de Mello
 
 ## Pré-requisitos
 

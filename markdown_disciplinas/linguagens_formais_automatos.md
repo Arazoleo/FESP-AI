@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Luís Pereira
-- Antônio Chaves
+- Luis Augusto Martins Pereira
+- Antônio Augusto Chaves
 
 ## Pré-requisitos
 

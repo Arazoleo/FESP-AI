@@ -13,7 +13,7 @@
 
 ## Docentes
 
-- Antonio Augusto Chaves
+- Antônio Augusto Chaves
 
 ## Pré-requisitos
 

@@ -14,7 +14,7 @@
 ## Docentes
 
 - Roberson Saraiva
-- Edson Fernandes
+- Edson Giuliani Ramos Fernandes
 
 ## Pré-requisitos
 

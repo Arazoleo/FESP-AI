@@ -3,10 +3,12 @@ from pathlib import Path
 
 
 class Config:
-    # Modelo mais leve e rápido (3B vs 7B = ~2x mais rápido)
-    MODEL_NAME = "qwen2.5:7b"
-    EMBEDDING_MODEL = "mxbai-embed-large"
+    # Modelo de geração: use MODEL_NAME no .env ou docker para testar outro (ex.: llama3.1:70b na nuvem)
+    MODEL_NAME = os.getenv("MODEL_NAME", "ministral-3:8b")
+    # Embeddings: mxbai-embed-large é ótimo para RAG; para multilíngue/PT-BR pode testar bge-m3 (ollama pull bge-m3)
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "mxbai-embed-large")
     PERSIST_DIR = "./chroma_db_unifesp"
+    # URL do Ollama: local ou na nuvem (ex.: https://sua-instancia-ollama.com ou http://IP:11434)
     OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", None)
     
     SOURCES = {

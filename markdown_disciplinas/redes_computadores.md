@@ -12,9 +12,9 @@
 
 ## Docentes
 
-- Bruno Kimura
-- Joahannes Costa
-- Arlindo da Conceição
+- Bruno Yuji Lino Kimura
+- Joahannes Bruno Dias da Costa
+- Arlindo Flávio da Conceição
 
 ## Pré-requisitos
 

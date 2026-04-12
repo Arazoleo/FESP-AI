@@ -13,8 +13,8 @@
 
 ## Docentes
 
-- Luiz Leduíno
-- Horácio Hideki
+- Luiz Leduíno de Salles Neto
+- Horacio Hideki Yanasse
 
 ## Pré-requisitos
 

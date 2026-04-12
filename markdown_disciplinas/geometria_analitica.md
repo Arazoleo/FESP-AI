@@ -13,12 +13,12 @@
 
 ## Docentes
 
-- Thiago Castilho
-- Ângelo Bianchi
-- Vanessa Paschoa
-- Ana Moreira
-- Marcelo Gama
-- Luzia Oliveira
+- Thiago Castilho de Mello
+- Angelo Calil Bianchi
+- Vanessa Gonçalves Paschoa Ferraz
+- Ana Cláudia da Silva Moreira
+- Marcelo Cristino Gama
+- Luzia Pedroso de Oliveira
 
 ## Pré-requisitos
 

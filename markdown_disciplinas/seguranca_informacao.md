@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Fábio Cappabianco
+- Fábio Augusto Menocci Cappabianco
 
 ## Pré-requisitos
 

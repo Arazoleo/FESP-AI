@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Cláudia Campos
+- Cláudia Barbosa Ladeira de Campos
 
 ## Pré-requisitos
 

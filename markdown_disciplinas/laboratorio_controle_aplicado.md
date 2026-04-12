@@ -14,7 +14,7 @@
 ## Docentes
 
 - André Marcorin de Oliveira
-- Sérgio Ronaldo
+- Sérgio Ronaldo Barros dos Santos
 
 ## Pré-requisitos
 

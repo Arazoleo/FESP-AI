@@ -13,9 +13,9 @@
 
 ## Docentes
 
-- Luís Pereira
-- Álvaro Fazenda
-- Reginaldo Kuroshu
+- Luis Augusto Martins Pereira
+- Álvaro Luiz Fazenda
+- Reginaldo Massanobu Kuroshu
 
 ## Pré-requisitos
 

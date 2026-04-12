@@ -13,9 +13,9 @@
 
 ## Docentes
 
-- Fabio Roberto Passador
-- Ana Paula F. Albers
-- Leonardo Wendler
+- Fábio Roberto Passador
+- Ana Paula Fonseca Albers
+- Leonardo Pacheco Wendler
 
 ## Pré-requisitos
 

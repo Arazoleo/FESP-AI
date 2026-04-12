@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Juliana Scriptore
+- Juliana Souza Scriptore Moreira
 
 ## Pré-requisitos
 

@@ -12,7 +12,7 @@
 
 ## Docentes
 
-- Maurício Pinheiro
+- Maurício Pinheiro de Oliveira
 
 ## Pré-requisitos
 
