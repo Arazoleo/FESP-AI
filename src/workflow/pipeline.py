@@ -109,6 +109,8 @@ def build_pipeline(rag_instance):
                             "term": detected_term,
                             "confidence": 1.0,
                             "active_agent": "symbolic_kg",
+                            "context": kg_response,
+                            "sources": ["Knowledge Graph"],
                         }
                 # ── Roteamento normal para agentes ───────────────────────────
                 routed = route_intent(detected_intent, question_lower)
@@ -141,7 +143,13 @@ def build_pipeline(rag_instance):
         result = agents["disciplinas"].answer(
             question, state.get("intent", ""), state.get("term", "")
         )
-        return {**state, "response": result["response"], "active_agent": "disciplinas"}
+        return {
+            **state,
+            "response": result["response"],
+            "active_agent": "disciplinas",
+            "context": result.get("context", ""),
+            "sources": result.get("sources", []),
+        }
 
     # ── Nó: Agente de Docentes ────────────────────────────────────────────────
     def docentes_node(state: AgentState) -> AgentState:
@@ -149,7 +157,13 @@ def build_pipeline(rag_instance):
         result = agents["docentes"].answer(
             question, state.get("intent", ""), state.get("term", "")
         )
-        return {**state, "response": result["response"], "active_agent": "docentes"}
+        return {
+            **state,
+            "response": result["response"],
+            "active_agent": "docentes",
+            "context": result.get("context", ""),
+            "sources": result.get("sources", []),
+        }
 
     # ── Nó: Agente de Cursos ──────────────────────────────────────────────────
     def cursos_node(state: AgentState) -> AgentState:
@@ -157,7 +171,13 @@ def build_pipeline(rag_instance):
         result = agents["cursos"].answer(
             question, state.get("intent", ""), state.get("term", "")
         )
-        return {**state, "response": result["response"], "active_agent": "cursos"}
+        return {
+            **state,
+            "response": result["response"],
+            "active_agent": "cursos",
+            "context": result.get("context", ""),
+            "sources": result.get("sources", []),
+        }
 
     # ── Nó: Agente de Regimentos ──────────────────────────────────────────────
     def regimentos_node(state: AgentState) -> AgentState:
@@ -165,7 +185,13 @@ def build_pipeline(rag_instance):
         result = agents["regimentos"].answer(
             question, state.get("intent", ""), state.get("term", "")
         )
-        return {**state, "response": result["response"], "active_agent": "regimentos"}
+        return {
+            **state,
+            "response": result["response"],
+            "active_agent": "regimentos",
+            "context": result.get("context", ""),
+            "sources": result.get("sources", []),
+        }
 
     # ── Nó: Fallback (RAG genérico) ───────────────────────────────────────────
     def fallback_node(state: AgentState) -> AgentState:

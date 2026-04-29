@@ -1,0 +1,1151 @@
+id,pergunta,agente_esperado,agente_obtido,categoria,tipo_query,latencia_s,resposta,resposta_sem_validacao,judge_groundedness,judge_correctness,judge_completeness,judge_clarity,judge_unsupported_claims,judge_rationale,sources,erro
+1,O que é Teoria dos Grafos?,disciplinas,disciplinas,ementa,factual_simples,35.82,"**Teoria dos Grafos (Código 2975)**  
+- **Campus:** São José dos Campos  
+- **Curso:** Ciência da Computação / Bacharelado Interdisciplinar em Ciência e Tecnologia  
+- **Termo:** 5 º  
+- **Turno:** Integral  
+- **Tipo:** Fixa  
+- **Carga horária total:** 72 h (Teóricas 62 h + Práticas 10 h)  
+- **Docentes responsáveis:** Elbert Einstein Nehrer Macau, Reginaldo Massanobu Kuroshu, Luis Augusto Martins Pereira, Sanderson Lincohn Gonzaga de Oliveira  
+
+### O que é Teoria dos Grafos?
+É a disciplina que estuda os conceitos, propriedades e algoritmos relacionados a grafos – estruturas compostas por vértices e arestas – e suas aplicações em problemas computacionais.
+
+### Ementa / Conteúdo programático
+- Definições e conceitos básicos  
+- Isomorfismo  
+- Árvores  
+- Conexidade  
+- Problema do caminho mínimo  
+- Trilhas eulerianas e ciclos hamiltonianos  
+- Emparelhamentos  
+- Problema do fluxo máximo  
+- Planaridade  
+- Coloração  
+- Tópicos selecionados  
+
+### Tópicos abordados
+- Definições e conceitos básicos  
+- Isomorfismo  
+- Árvores  
+- Conexidade  
+- Problema do caminho mínimo  
+- Trilhas eulerianas e ciclos hamiltonianos  
+- Emparelhamentos  
+- Problema do fluxo máximo  
+- Planaridade  
+- Coloração  
+- Tópicos selecionados  
+
+### Cadeia completa de pré‑requisitos
+1. **Pré‑requisitos diretos** (conforme Knowledge Graph)  
+   - Projeto e Análise de Algoritmos (Código 3579)  
+   - Matemática Discreta (Código 2201)  
+   - Algoritmos e Estruturas de Dados II  
+
+2. **Pré‑requisitos transitivos (indiretos)**  
+   - Lógica de Programação  
+   - Algoritmos e Estruturas de Dados I  
+
+**Resumo da dependência:**  
+Teoria dos Grafos → Projeto e Análise de Algoritmos, Matemática Discreta, Algoritmos e Estruturas de Dados II → (indiretamente) Lógica de Programação e Algoritmos e Estruturas de Dados I.
+
+---
+*Verificado no Knowledge Graph:* 6 disciplina(s) e 4 docente(s) verificados no KG","**Teoria dos Grafos (Código 2975)**  
+- **Campus:** São José dos Campos  
+- **Curso:** Ciência da Computação / Bacharelado Interdisciplinar em Ciência e Tecnologia  
+- **Termo:** 5 º  
+- **Turno:** Integral  
+- **Tipo:** Fixa  
+- **Carga horária total:** 72 h (Teóricas 62 h + Práticas 10 h)  
+- **Docentes responsáveis:** Elbert Einstein Nehrer Macau, Reginaldo Massanobu Kuroshu, Luis Augusto Martins Pereira, Sanderson Lincohn Gonzaga de Oliveira  
+
+### O que é Teoria dos Grafos?
+É a disciplina que estuda os conceitos, propriedades e algoritmos relacionados a grafos – estruturas compostas por vértices e arestas – e suas aplicações em problemas computacionais.
+
+### Ementa / Conteúdo programático
+- Definições e conceitos básicos  
+- Isomorfismo  
+- Árvores  
+- Conexidade  
+- Problema do caminho mínimo  
+- Trilhas eulerianas e ciclos hamiltonianos  
+- Emparelhamentos  
+- Problema do fluxo máximo  
+- Planaridade  
+- Coloração  
+- Tópicos selecionados  
+
+### Tópicos abordados
+- Definições e conceitos básicos  
+- Isomorfismo  
+- Árvores  
+- Conexidade  
+- Problema do caminho mínimo  
+- Trilhas eulerianas e ciclos hamiltonianos  
+- Emparelhamentos  
+- Problema do fluxo máximo  
+- Planaridade  
+- Coloração  
+- Tópicos selecionados  
+
+### Cadeia completa de pré‑requisitos
+1. **Pré‑requisitos diretos** (conforme Knowledge Graph)  
+   - Projeto e Análise de Algoritmos (Código 3579)  
+   - Matemática Discreta (Código 2201)  
+   - Algoritmos e Estruturas de Dados II  
+
+2. **Pré‑requisitos transitivos (indiretos)**  
+   - Lógica de Programação  
+   - Algoritmos e Estruturas de Dados I  
+
+**Resumo da dependência:**  
+Teoria dos Grafos → Projeto e Análise de Algoritmos, Matemática Discreta, Algoritmos e Estruturas de Dados II → (indiretamente) Lógica de Programação e Algoritmos e Estruturas de Dados I.",5,5,4,5,1,"A resposta é quase inteiramente extraída das evidências, com alta correção e clareza. A única afirmação não suportada é a definição inicial de 'estruturas compostas por vértices e arestas – e suas aplicações em problemas computacionais', que não está explícita nas evidências fornecidas (que listam apenas os tópicos da ementa). A completude é boa, mas a definição extrapola ligeiramente o conteúdo estritamente baseado nas evidências.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — teoria dos grafos; Disciplina: Teoria dos Grafos - info_geral; Disciplina: Teoria dos Grafos - ementa; Disciplina: Teoria dos Números e Criptografia - info_geral,
+2,O que é Matemática Discreta?,disciplinas,disciplinas,ementa,factual_simples,30.65,"**Matemática Discreta**  
+
+- **Disciplina:** Matemática Discreta  
+- **Código:** 2201  
+- **Sigla:** MD  
+- **Campus:** São José dos Campos  
+- **Curso:** Bacharelado em Matemática Computacional  
+- **Termo:** 2  
+- **Tipo:** Fixa  
+- **Carga horária total:** 72 h (teóricas)  
+- **Docentes responsáveis:** Renato Alessandro Martins, Erwin Doescher, Tiago Rodrigues Macedo, Grasiele Cristiane Jorge, Pedro Levit Kaufmann, Robson Oliveira da Silva, Leandro Candido  
+
+### Ementa / Conteúdo programático  
+A disciplina aborda **técnicas de demonstração**, com foco em demonstrações envolvendo **inteiros** e **conjuntos**, além de **princípios de contagem** e suas **aplicações**.
+
+### Tópicos abordados  
+- Técnicas de demonstração  
+- Demonstrações com inteiros  
+- Demonstrações com conjuntos  
+- Princípios de contagem  
+- Aplicações  
+
+### Pré‑requisitos  
+- **Nenhum** (não há dependências).  
+
+**Cadeia completa de dependências:** não há pré‑requisitos, portanto a disciplina pode ser cursada independentemente de outras disciplinas.
+
+---
+*Verificado no Knowledge Graph:* 1 disciplina(s) e 7 docente(s) verificados no KG","**Matemática Discreta**  
+
+- **Disciplina:** Matemática Discreta  
+- **Código:** 2201  
+- **Sigla:** MD  
+- **Campus:** São José dos Campos  
+- **Curso:** Bacharelado em Matemática Computacional  
+- **Termo:** 2  
+- **Tipo:** Fixa  
+- **Carga horária total:** 72 h (teóricas)  
+- **Docentes responsáveis:** Renato Alessandro Martins, Erwin Doescher, Tiago Rodrigues Macedo, Grasiele Cristiane Jorge, Pedro Levit Kaufmann, Robson Oliveira da Silva, Leandro Candido  
+
+### Ementa / Conteúdo programático  
+A disciplina aborda **técnicas de demonstração**, com foco em demonstrações envolvendo **inteiros** e **conjuntos**, além de **princípios de contagem** e suas **aplicações**.
+
+### Tópicos abordados  
+- Técnicas de demonstração  
+- Demonstrações com inteiros  
+- Demonstrações com conjuntos  
+- Princípios de contagem  
+- Aplicações  
+
+### Pré‑requisitos  
+- **Nenhum** (não há dependências).  
+
+**Cadeia completa de dependências:** não há pré‑requisitos, portanto a disciplina pode ser cursada independentemente de outras disciplinas.",5,5,5,5,0,"A resposta é perfeitamente fundamentada, correta e completa, pois se limita estritamente às informações administrativas e de conteúdo programático fornecidas nas evidências, sem adicionar nenhuma afirmação não suportada. A estrutura é clara e direta, organizando os dados de forma acessível.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — matemática discreta; Disciplina: Matemática Discreta - info_geral; Disciplina: Matemática Discreta - ementa; Disciplina: Matemática Geral - info_geral,
+3,Descreva a disciplina Banco de Dados.,disciplinas,disciplinas,ementa,factual_simples,21.35,"**Disciplina:** Banco de Dados  
+**Código:** 2831  
+**Campus:** São José dos Campos  
+**Curso(s):** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  
+**Termo:** 6 º  
+**Turno:** Integral  
+**Tipo:** Fixa  
+
+**Docente responsável:** Daniela Leal Musa  
+
+**Carga horária:**  
+- Total: 72 h  
+- Teórica: 36 h  
+- Prática: 20 h  
+- Extensão: 16 h  
+
+**Pré‑requisitos (cadeia completa de dependências):**  
+1. **Algoritmos e Estruturas de Dados I** – Código 2832  
+2. **Lógica de Programação** (código não informado)  
+
+**Ementa / Conteúdo programático:**  
+Conceitos básicos de banco de dados. Modelos de dados e linguagens. Projeto de bancos de dados. Novas tecnologias e aplicações de banco de dados.
+
+**Tópicos abordados:**  
+- Conceitos básicos de banco de dados  
+- Modelos de dados e linguagens  
+- Projeto de bancos de dados  
+- Novas tecnologias e aplicações de banco de dados  
+
+**Resumo do que é estudado:**  
+A disciplina aborda os fundamentos de bancos de dados, incluindo os princípios e conceitos essenciais, os diferentes modelos de dados e as linguagens utilizadas para manipulação e definição de dados, o processo de projeto de bancos de dados e as tecnologias emergentes e aplicações atuais na área.
+
+---
+*Verificado no Knowledge Graph:* 3 disciplina(s) e 1 docente(s) verificados no KG","**Disciplina:** Banco de Dados  
+**Código:** 2831  
+**Campus:** São José dos Campos  
+**Curso(s):** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  
+**Termo:** 6 º  
+**Turno:** Integral  
+**Tipo:** Fixa  
+
+**Docente responsável:** Daniela Leal Musa  
+
+**Carga horária:**  
+- Total: 72 h  
+- Teórica: 36 h  
+- Prática: 20 h  
+- Extensão: 16 h  
+
+**Pré‑requisitos (cadeia completa de dependências):**  
+1. **Algoritmos e Estruturas de Dados I** – Código 2832  
+2. **Lógica de Programação** (código não informado)  
+
+**Ementa / Conteúdo programático:**  
+Conceitos básicos de banco de dados. Modelos de dados e linguagens. Projeto de bancos de dados. Novas tecnologias e aplicações de banco de dados.
+
+**Tópicos abordados:**  
+- Conceitos básicos de banco de dados  
+- Modelos de dados e linguagens  
+- Projeto de bancos de dados  
+- Novas tecnologias e aplicações de banco de dados  
+
+**Resumo do que é estudado:**  
+A disciplina aborda os fundamentos de bancos de dados, incluindo os princípios e conceitos essenciais, os diferentes modelos de dados e as linguagens utilizadas para manipulação e definição de dados, o processo de projeto de bancos de dados e as tecnologias emergentes e aplicações atuais na área.",5,5,5,5,0,"A resposta é totalmente fundamentada nas evidências fornecidas, reproduzindo fielmente todas as informações sobre código, campus, cursos, termo, turno, tipo, docente, carga horária, pré-requisitos e ementa. Não há afirmações não suportadas ou extrapolações, cobrindo integralmente o que foi solicitado na pergunta.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — banco de dados; Disciplina: Banco de Dados - info_geral; Disciplina: Banco de Dados - ementa; Disciplina: Aspectos de Implementação de Banco de Dados - info_geral,
+4,O que é Redes de Computadores?,disciplinas,disciplinas,ementa,factual_simples,31.04,"**Disciplina:** Redes de Computadores  
+**Código:** 2617  
+**Campus:** São José dos Campos  
+**Curso(s):** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  
+**Termo:** 8 º  
+**Turno:** Integral  
+**Tipo:** Fixa  
+**Docentes:** Bruno Yuji Lino Kimura, Joahannes Bruno Dias da Costa, Arlindo Flávio da Conceição  
+
+**Carga horária**  
+- Total: 72 h  
+- Teórica: 52 h  
+- Prática: 20 h  
+- Extensão: 0 h  
+
+---
+
+### O que é Redes de Computadores?
+
+Redes de Computadores é a disciplina que estuda os princípios, protocolos e tecnologias que permitem a interconexão de dispositivos para a troca de informações. Seu conteúdo programático abrange desde os conceitos fundamentais até as técnicas avançadas de gerenciamento e operação de redes.
+
+#### Ementa / Conteúdo programático
+- **Introdução às Redes de Computadores:** Conceitos gerais, medidas de desempenho, camadas de protocolos e serviços; histórico das redes de computadores e da Internet.  
+- **Camada Física:** Características do meio de transmissão e técnicas de transmissão.  
+- **Camada de Aplicação:** Fundamentos das aplicações de rede e principais protocolos da camada de aplicação.  
+- **Camada de Transporte:** Introdução e serviços da camada de transporte, protocolos TCP e UDP, princípios do controle de congestionamento.  
+- **Camada de Rede:** Introdução, protocolos IPv4 e IPv6, algoritmos de roteamento.  
+- **Camada de Enlace e Redes Locais:** Serviços oferecidos pela camada de enlace, protocolos de acesso múltiplo, endereçamento na camada de enlace, redes Ethernet.  
+- **Redes sem fio** e **Redes móveis.**  
+- **Princípios da Gerência de Redes.**
+
+#### Tópicos abordados (listados no contexto)
+- Conceitos gerais e medidas de desempenho; camadas de protocolos e serviços.  
+- Histórico das redes de computadores e Internet.  
+- Características do meio de transmissão e técnicas de transmissão (Camada Física).  
+- Fundamentos das aplicações de rede e principais protocolos da camada de aplicação.  
+- Serviços da camada de transporte, protocolos TCP e UDP, controle de congestionamento.  
+- Introdução à camada de rede, protocolos IPv4 e IPv6, algoritmos de roteamento.  
+- Serviços da camada de enlace, protocolos de acesso múltiplo, endereçamento, redes Ethernet.  
+- Redes sem fio e redes móveis.  
+- Princípios da gerência de redes.
+
+---
+
+### Pré‑requisitos (cadeia completa de dependências)
+
+1. **Lógica de Programação** – pré‑requisito transitive (indireto).  
+2. **Algoritmos e Estruturas de Dados I** – pré‑requisito direto que depende de Lógica de Programação.  
+3. **Sistemas Operacionais** (código 2612) – pré‑requisito direto que depende de Algoritmos e Estruturas de Dados I.  
+4. **Redes de Computadores** (código 2617) – depende de Sistemas Operacionais.
+
+Portanto, a sequência completa é:  
+**Lógica de Programação → Algoritmos e Estruturas de Dados I → Sistemas Operacionais → Redes de Computadores**.
+
+---
+*Verificado no Knowledge Graph:* 4 disciplina(s) e 3 docente(s) verificados no KG","**Disciplina:** Redes de Computadores  
+**Código:** 2617  
+**Campus:** São José dos Campos  
+**Curso(s):** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  
+**Termo:** 8 º  
+**Turno:** Integral  
+**Tipo:** Fixa  
+**Docentes:** Bruno Yuji Lino Kimura, Joahannes Bruno Dias da Costa, Arlindo Flávio da Conceição  
+
+**Carga horária**  
+- Total: 72 h  
+- Teórica: 52 h  
+- Prática: 20 h  
+- Extensão: 0 h  
+
+---
+
+### O que é Redes de Computadores?
+
+Redes de Computadores é a disciplina que estuda os princípios, protocolos e tecnologias que permitem a interconexão de dispositivos para a troca de informações. Seu conteúdo programático abrange desde os conceitos fundamentais até as técnicas avançadas de gerenciamento e operação de redes.
+
+#### Ementa / Conteúdo programático
+- **Introdução às Redes de Computadores:** Conceitos gerais, medidas de desempenho, camadas de protocolos e serviços; histórico das redes de computadores e da Internet.  
+- **Camada Física:** Características do meio de transmissão e técnicas de transmissão.  
+- **Camada de Aplicação:** Fundamentos das aplicações de rede e principais protocolos da camada de aplicação.  
+- **Camada de Transporte:** Introdução e serviços da camada de transporte, protocolos TCP e UDP, princípios do controle de congestionamento.  
+- **Camada de Rede:** Introdução, protocolos IPv4 e IPv6, algoritmos de roteamento.  
+- **Camada de Enlace e Redes Locais:** Serviços oferecidos pela camada de enlace, protocolos de acesso múltiplo, endereçamento na camada de enlace, redes Ethernet.  
+- **Redes sem fio** e **Redes móveis.**  
+- **Princípios da Gerência de Redes.**
+
+#### Tópicos abordados (listados no contexto)
+- Conceitos gerais e medidas de desempenho; camadas de protocolos e serviços.  
+- Histórico das redes de computadores e Internet.  
+- Características do meio de transmissão e técnicas de transmissão (Camada Física).  
+- Fundamentos das aplicações de rede e principais protocolos da camada de aplicação.  
+- Serviços da camada de transporte, protocolos TCP e UDP, controle de congestionamento.  
+- Introdução à camada de rede, protocolos IPv4 e IPv6, algoritmos de roteamento.  
+- Serviços da camada de enlace, protocolos de acesso múltiplo, endereçamento, redes Ethernet.  
+- Redes sem fio e redes móveis.  
+- Princípios da gerência de redes.
+
+---
+
+### Pré‑requisitos (cadeia completa de dependências)
+
+1. **Lógica de Programação** – pré‑requisito transitive (indireto).  
+2. **Algoritmos e Estruturas de Dados I** – pré‑requisito direto que depende de Lógica de Programação.  
+3. **Sistemas Operacionais** (código 2612) – pré‑requisito direto que depende de Algoritmos e Estruturas de Dados I.  
+4. **Redes de Computadores** (código 2617) – depende de Sistemas Operacionais.
+
+Portanto, a sequência completa é:  
+**Lógica de Programação → Algoritmos e Estruturas de Dados I → Sistemas Operacionais → Redes de Computadores**.",4,5,4,5,1,"A resposta é majoritariamente baseada nas evidências, reproduzindo fielmente os dados da disciplina, ementa e pré-requisitos. No entanto, a definição inicial 'estuda os princípios, protocolos e tecnologias que permitem a interconexão de dispositivos...' é uma interpretação geral não explicitamente fornecida nas evidências, constituindo uma afirmação não suportada. As evidências descrevem a disciplina e seu conteúdo, mas não definem o conceito teórico de 'Redes de Computadores'.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — redes de computadores; Disciplina: Redes de Computadores - info_geral; Disciplina: Redes de Computadores - ementa; Continuacao - Redes de Computadores (2617) - ementa,
+5,O que é Inteligência Artificial?,disciplinas,disciplinas,ementa,factual_simples,24.93,"**Inteligência Artificial (IA)**  
+- **Código:** 3490  
+- **Nome:** Inteligência Artificial  
+- **Campus:** São José dos Campos  
+- **Curso:** Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  
+- **Termo:** 5 º  
+- **Turno:** Integral  
+- **Tipo:** Fixa  
+- **Docentes:** Lilian Berton, Didier Vega‑Oliveros, Fábio Faria  
+- **Carga horária total:** 72 h (Teóricas: 48 h, Práticas: 16 h, Extensão: 8 h)  
+
+### Pré‑requisitos
+- **Algoritmos e Estrutura de Dados I** (Código: 2832)  
+
+*Cadeia completa de dependências:*  
+Inteligência Artificial → Algoritmos e Estrutura de Dados I  
+
+### Ementa / Conteúdo programático
+A disciplina aborda:
+
+1. **História e fundamentos da Inteligência Artificial (IA)** – panorama histórico e princípios básicos que sustentam a área.  
+2. **Métodos de busca para resolução de problemas** – técnicas de busca cega, busca heurística e busca competitiva.  
+3. **Representação do conhecimento** – formas de modelar e armazenar informações para que sistemas de IA possam utilizá‑las.  
+4. **Conceitos de aprendizado de máquina** – aprendizado supervisionado e não‑supervisionado.  
+5. **Aplicações de IA** – uso da IA em Processamento de Linguagens Naturais, Jogos, Robótica e Mineração de Dados.  
+
+### Tópicos abordados
+- História e fundamentos da Inteligência Artificial (IA)  
+- Métodos de busca para resolução de problemas: busca cega, busca heurística e busca competitiva  
+- Representação do conhecimento  
+- Conceitos de aprendizado de máquina: aprendizado supervisionado e não‑supervisionado  
+- Aplicações de IA: Processamento de Linguagens Naturais, Jogos, Robótica e Mineração de Dados  
+
+**Definição (conforme a ementa):**  
+Inteligência Artificial é o campo de estudo que engloba a história, os fundamentos e as técnicas para criar sistemas capazes de buscar soluções para problemas (por meio de buscas cega, heurística e competitiva), representar conhecimento, aprender a partir de dados (supervisionado e não‑supervisionado) e aplicar esses recursos em áreas como processamento de linguagem natural, jogos, robótica e mineração de dados.
+
+---
+*Verificado no Knowledge Graph:* 2 disciplina(s) e 3 docente(s) verificados no KG","**Inteligência Artificial (IA)**  
+- **Código:** 3490  
+- **Nome:** Inteligência Artificial  
+- **Campus:** São José dos Campos  
+- **Curso:** Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  
+- **Termo:** 5 º  
+- **Turno:** Integral  
+- **Tipo:** Fixa  
+- **Docentes:** Lilian Berton, Didier Vega‑Oliveros, Fábio Faria  
+- **Carga horária total:** 72 h (Teóricas: 48 h, Práticas: 16 h, Extensão: 8 h)  
+
+### Pré‑requisitos
+- **Algoritmos e Estrutura de Dados I** (Código: 2832)  
+
+*Cadeia completa de dependências:*  
+Inteligência Artificial → Algoritmos e Estrutura de Dados I  
+
+### Ementa / Conteúdo programático
+A disciplina aborda:
+
+1. **História e fundamentos da Inteligência Artificial (IA)** – panorama histórico e princípios básicos que sustentam a área.  
+2. **Métodos de busca para resolução de problemas** – técnicas de busca cega, busca heurística e busca competitiva.  
+3. **Representação do conhecimento** – formas de modelar e armazenar informações para que sistemas de IA possam utilizá‑las.  
+4. **Conceitos de aprendizado de máquina** – aprendizado supervisionado e não‑supervisionado.  
+5. **Aplicações de IA** – uso da IA em Processamento de Linguagens Naturais, Jogos, Robótica e Mineração de Dados.  
+
+### Tópicos abordados
+- História e fundamentos da Inteligência Artificial (IA)  
+- Métodos de busca para resolução de problemas: busca cega, busca heurística e busca competitiva  
+- Representação do conhecimento  
+- Conceitos de aprendizado de máquina: aprendizado supervisionado e não‑supervisionado  
+- Aplicações de IA: Processamento de Linguagens Naturais, Jogos, Robótica e Mineração de Dados  
+
+**Definição (conforme a ementa):**  
+Inteligência Artificial é o campo de estudo que engloba a história, os fundamentos e as técnicas para criar sistemas capazes de buscar soluções para problemas (por meio de buscas cega, heurística e competitiva), representar conhecimento, aprender a partir de dados (supervisionado e não‑supervisionado) e aplicar esses recursos em áreas como processamento de linguagem natural, jogos, robótica e mineração de dados.",5,5,5,5,0,"A resposta é perfeitamente fundamentada nas evidências fornecidas, que descrevem exclusivamente a disciplina 'Inteligência Artificial' de um curso específico. Todas as informações (código, docentes, pré-requisitos, carga horária, ementa e tópicos) são extraídas diretamente e corretamente das evidências, sem acréscimos externos. A resposta cobre integralmente o que as evidências permitem sobre o tema, que é uma descrição da disciplina, e é apresentada de forma clara e bem estruturada.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — inteligência artificial; Disciplina: Inteligência Artificial - info_geral; Disciplina: Inteligência Artificial - ementa,
+6,O que se estuda em Compiladores?,disciplinas,disciplinas,ementa,factual_simples,69.18,"**Compiladores – Código 2615**  
+- **Campus:** São José dos Campos/ICT  
+- **Curso:** Engenharia de Computação, Ciência da Computação  
+- **Turno:** Integral (6º termo)  
+- **Tipo:** Fixa  
+- **Docentes:** Rodrigo Colnago Contreras, Luiz Eduardo Galvão Martins  
+- **Carga horária total:** 72 h (36 h teóricas + 36 h práticas)  
+
+### Pré‑requisitos (cadeia completa de dependências)  
+1. **Linguagens Formais e Autômatos** – Código 2616  
+2. **Matemática Discreta**  
+3. **Lógica de Programação**  
+
+*(Essas três disciplinas são pré‑requisitos diretos para Compiladores, conforme o Knowledge Graph.)*  
+
+### O que se estuda em **Compiladores**  
+
+#### Ementa / Conteúdo programático  
+- **Sistema de Varredura – Análise Léxica**  
+- **Gerador de Analisador Léxico**  
+- **Análise Sintática Descendente**  
+- **Análise Sintática Ascendente**  
+- **Gerador de Analisador Sintático**  
+- **Análise Semântica**  
+- **Geração de Código**  
+- **Otimização de Código**  
+
+#### Tópicos abordados  
+
+1. **Introdução** – importância dos compiladores, histórico e evolução, visão geral do processo de compilação.  
+2. **Partida rápida e transposição**.  
+3. **Análise Léxica** – uso de expressões regulares para descrição de padrões de tokens; algoritmo de Thompson; construção de subconjuntos; otimização de autômatos finitos determinísticos; transformação de autômatos finitos em programas de reconhecimento de cadeias; gerador de analisadores léxicos (Flex).  
+4. **Análise Sintática** – árvores sintáticas; análise sintática descendente; análise sintática ascendente; gerador de analisadores sintáticos (YACC‑Bison).  
+5. **Análise Semântica** – algoritmos para computação de atributos; tabela de símbolos; tipos de dados e verificação de tipos.  
+6. **Geração de Código** – código intermediário (código de três endereços); geração de código para referências e estruturas de dados; geração de código para declarações de controle e expressões lógicas; geração de código para chamadas de procedimentos e funções.  
+7. **Otimização de Código** – escolha de modos de endereçamento; substituição de instruções; eliminação de operações redundantes.  
+
+---
+*Verificado no Knowledge Graph:* 4 disciplina(s) e 2 docente(s) verificados no KG","**Compiladores – Código 2615**  
+- **Campus:** São José dos Campos/ICT  
+- **Curso:** Engenharia de Computação, Ciência da Computação  
+- **Turno:** Integral (6º termo)  
+- **Tipo:** Fixa  
+- **Docentes:** Rodrigo Colnago Contreras, Luiz Eduardo Galvão Martins  
+- **Carga horária total:** 72 h (36 h teóricas + 36 h práticas)  
+
+### Pré‑requisitos (cadeia completa de dependências)  
+1. **Linguagens Formais e Autômatos** – Código 2616  
+2. **Matemática Discreta**  
+3. **Lógica de Programação**  
+
+*(Essas três disciplinas são pré‑requisitos diretos para Compiladores, conforme o Knowledge Graph.)*  
+
+### O que se estuda em **Compiladores**  
+
+#### Ementa / Conteúdo programático  
+- **Sistema de Varredura – Análise Léxica**  
+- **Gerador de Analisador Léxico**  
+- **Análise Sintática Descendente**  
+- **Análise Sintática Ascendente**  
+- **Gerador de Analisador Sintático**  
+- **Análise Semântica**  
+- **Geração de Código**  
+- **Otimização de Código**  
+
+#### Tópicos abordados  
+
+1. **Introdução** – importância dos compiladores, histórico e evolução, visão geral do processo de compilação.  
+2. **Partida rápida e transposição**.  
+3. **Análise Léxica** – uso de expressões regulares para descrição de padrões de tokens; algoritmo de Thompson; construção de subconjuntos; otimização de autômatos finitos determinísticos; transformação de autômatos finitos em programas de reconhecimento de cadeias; gerador de analisadores léxicos (Flex).  
+4. **Análise Sintática** – árvores sintáticas; análise sintática descendente; análise sintática ascendente; gerador de analisadores sintáticos (YACC‑Bison).  
+5. **Análise Semântica** – algoritmos para computação de atributos; tabela de símbolos; tipos de dados e verificação de tipos.  
+6. **Geração de Código** – código intermediário (código de três endereços); geração de código para referências e estruturas de dados; geração de código para declarações de controle e expressões lógicas; geração de código para chamadas de procedimentos e funções.  
+7. **Otimização de Código** – escolha de modos de endereçamento; substituição de instruções; eliminação de operações redundantes.",4,4,5,5,2,"A resposta é amplamente fundamentada e correta, reproduzindo fielmente a ementa e informações gerais das evidências. No entanto, afirma que 'Matemática Discreta' e 'Lógica de Programação' são pré-requisitos diretos conforme o Knowledge Graph, mas a evidência específica da disciplina lista apenas 'Linguagens Formais e Autômatos' como pré-requisito, gerando duas afirmações não totalmente suportadas.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — compiladores; Disciplina: Compiladores - info_geral; Disciplina: Compiladores - ementa; Continuacao - Compiladores (2615) - ementa,
+7,Qual a ementa de Álgebra Linear?,disciplinas,disciplinas,ementa,factual_simples,13.0,"**Disciplina:** Álgebra Linear  
+**Código:** 2475  
+
+**Ementa / Conteúdo Programático:**  
+Espaços vetoriais. Transformações lineares. Operadores lineares. Funcionais lineares. Autovalores e autovetores. Diagonalização. Produto interno.
+
+**Tópicos abordados:**  
+- Espaços vetoriais  
+- Transformações lineares  
+- Operadores lineares  
+- Funcionais lineares  
+- Autovalores e autovetores  
+- Diagonalização  
+- Produto interno  
+
+---
+*Verificado no Knowledge Graph:* 1 disciplina(s) e 0 docente(s) verificados no KG","**Disciplina:** Álgebra Linear  
+**Código:** 2475  
+
+**Ementa / Conteúdo Programático:**  
+Espaços vetoriais. Transformações lineares. Operadores lineares. Funcionais lineares. Autovalores e autovetores. Diagonalização. Produto interno.
+
+**Tópicos abordados:**  
+- Espaços vetoriais  
+- Transformações lineares  
+- Operadores lineares  
+- Funcionais lineares  
+- Autovalores e autovetores  
+- Diagonalização  
+- Produto interno",5,5,5,5,0,"A resposta do assistente reproduz exatamente a ementa da disciplina 'Álgebra Linear' (código 2475) fornecida nas evidências, sem adicionar ou alterar informações.",Disciplina: Álgebra Linear II - ementa; Disciplina: Álgebra Linear Computacional - ementa; Disciplina: Álgebra Linear - ementa,
+8,Me fale sobre a disciplina de Programação Orientada a Objetos.,disciplinas,symbolic_kg,ementa,factual_simples,23.33,**programação orientada objetos.** não possui pré-requisitos ou não foi encontrada no sistema.,**programação orientada objetos.** não possui pré-requisitos ou não foi encontrada no sistema.,5,5,2,3,0,"A resposta é idêntica às evidências, portanto totalmente fundamentada e correta, mas não aborda a pergunta sobre a disciplina, limitando-se a indicar falta de informações, o que a torna incompleta.",Knowledge Graph,
+9,Do que trata Lógica de Programação?,disciplinas,disciplinas,ementa,factual_simples,21.01,"**Disciplina:** Lógica de Programação  
+**Código:** 9394  
+**Sigla:** LP  
+**Campus:** São José dos Campos  
+**Curso(s):** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  
+**Termo:** 1 – Integral  
+**Tipo:** Fixa  
+
+**Docentes responsáveis:** Lilian Berton, Arlindo Flávio da Conceição, Rodrigo Colnago Contreras, Ana Luísa Dine Martins Lemos, Marcos Gonçalves Quiles, Bruno Yuji Lino Kimura, Ezequiel Roberto Zorzal, Márcio Basgalupp, Daniela Leal Musa, Otávio Augusto Lazzarini Lemos  
+
+**Carga horária:**  
+- Total: **72 h**  
+- Teórica: **42 h**  
+- Prática: **30 h**  
+- Extensão: **0 h**  
+
+**Pré‑requisitos:** Nenhum (cadeia de dependências completa: **não há pré‑requisitos**).
+
+---
+
+### Ementa / Conteúdo programático
+- Introdução à computação  
+- Noções de lógica  
+- Conceitos e representação de algoritmos  
+- Constantes e variáveis  
+- Estruturas de controle  
+- Vetores  
+- Matrizes  
+- Registros  
+- Procedimentos e funções com passagem de parâmetros por valor e referência  
+- Recursividade  
+- Introdução à linguagem de programação  
+
+### Tópicos abordados
+- Introdução à computação  
+- Noções de lógica  
+- Conceitos e representação de algoritmos  
+- Constantes e variáveis  
+- Estruturas de controle  
+- Vetores  
+- Matrizes  
+- Registros  
+- Procedimentos, funções com passagem de parâmetros por valor e referência  
+- Recursividade  
+- Introdução à linguagem de programação  
+
+**Resumo:** A disciplina de Lógica de Programação trata dos fundamentos da computação e da lógica, abordando a construção e representação de algoritmos, manipulação de dados (variáveis, vetores, matrizes, registros) e controle de fluxo, além de introduzir procedimentos, funções (com diferentes formas de passagem de parâmetros) e recursividade, culminando na primeira exposição a uma linguagem de programação.
+
+---
+*Verificado no Knowledge Graph:* 1 disciplina(s) e 10 docente(s) verificados no KG","**Disciplina:** Lógica de Programação  
+**Código:** 9394  
+**Sigla:** LP  
+**Campus:** São José dos Campos  
+**Curso(s):** Engenharia de Computação, Ciência da Computação, Bacharelado Interdisciplinar em Ciência e Tecnologia  
+**Termo:** 1 – Integral  
+**Tipo:** Fixa  
+
+**Docentes responsáveis:** Lilian Berton, Arlindo Flávio da Conceição, Rodrigo Colnago Contreras, Ana Luísa Dine Martins Lemos, Marcos Gonçalves Quiles, Bruno Yuji Lino Kimura, Ezequiel Roberto Zorzal, Márcio Basgalupp, Daniela Leal Musa, Otávio Augusto Lazzarini Lemos  
+
+**Carga horária:**  
+- Total: **72 h**  
+- Teórica: **42 h**  
+- Prática: **30 h**  
+- Extensão: **0 h**  
+
+**Pré‑requisitos:** Nenhum (cadeia de dependências completa: **não há pré‑requisitos**).
+
+---
+
+### Ementa / Conteúdo programático
+- Introdução à computação  
+- Noções de lógica  
+- Conceitos e representação de algoritmos  
+- Constantes e variáveis  
+- Estruturas de controle  
+- Vetores  
+- Matrizes  
+- Registros  
+- Procedimentos e funções com passagem de parâmetros por valor e referência  
+- Recursividade  
+- Introdução à linguagem de programação  
+
+### Tópicos abordados
+- Introdução à computação  
+- Noções de lógica  
+- Conceitos e representação de algoritmos  
+- Constantes e variáveis  
+- Estruturas de controle  
+- Vetores  
+- Matrizes  
+- Registros  
+- Procedimentos, funções com passagem de parâmetros por valor e referência  
+- Recursividade  
+- Introdução à linguagem de programação  
+
+**Resumo:** A disciplina de Lógica de Programação trata dos fundamentos da computação e da lógica, abordando a construção e representação de algoritmos, manipulação de dados (variáveis, vetores, matrizes, registros) e controle de fluxo, além de introduzir procedimentos, funções (com diferentes formas de passagem de parâmetros) e recursividade, culminando na primeira exposição a uma linguagem de programação.",5,5,4,5,0,"A resposta é totalmente fundamentada nas evidências, reproduzindo fielmente a ementa, informações gerais e docentes. No entanto, é incompleta por não mencionar as disciplinas para as quais a Lógica de Programação é pré-requisito (ex: Algoritmos e Estruturas de Dados I), informação presente nas evidências.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — lógica de programação; Disciplina: Lógica de Programação - info_geral; Disciplina: Lógica de Programação - ementa; Disciplina: Programação Concorrente e Distribuída - info_geral,
+10,Me fale sobre Matemática Discreta.,disciplinas,disciplinas,ementa,factual_simples,19.06,"**Disciplina:** Matemática Discreta  
+**Código:** 2201  
+**Sigla:** MD  
+**Campus:** São José dos Campos  
+**Curso:** Bacharelado em Matemática Computacional  
+**Termo:** 2  
+**Turno:** N/A  
+**Tipo:** Fixa  
+
+**Docentes:** Renato Alessandro Martins, Erwin Doescher, Tiago Rodrigues Macedo, Grasiele Cristiane Jorge, Pedro Levit Kaufmann, Robson Oliveira da Silva, Leandro Candido  
+
+**Carga horária:**  
+- Total: 72 h  
+- Teórica: 72 h  
+- Prática: 0 h  
+- Extensão: 0 h  
+
+**Pré‑requisitos:** Nenhum (não há dependências).
+
+---
+
+### Ementa / Conteúdo programático
+- Técnicas de demonstração.  
+- Demonstrações com inteiros.  
+- Demonstrações com conjuntos.  
+- Princípios de contagem.  
+- Aplicações.
+
+### Tópicos abordados
+- Técnicas de demonstração  
+- Demonstrações com inteiros  
+- Demonstrações com conjuntos  
+- Princípios de contagem  
+- Aplicações  
+
+Essas informações resumem o que é estudado em **Matemática Discreta** segundo a base de dados da UNIFESP ICT.","**Disciplina:** Matemática Discreta  
+**Código:** 2201  
+**Sigla:** MD  
+**Campus:** São José dos Campos  
+**Curso:** Bacharelado em Matemática Computacional  
+**Termo:** 2  
+**Turno:** N/A  
+**Tipo:** Fixa  
+
+**Docentes:** Renato Alessandro Martins, Erwin Doescher, Tiago Rodrigues Macedo, Grasiele Cristiane Jorge, Pedro Levit Kaufmann, Robson Oliveira da Silva, Leandro Candido  
+
+**Carga horária:**  
+- Total: 72 h  
+- Teórica: 72 h  
+- Prática: 0 h  
+- Extensão: 0 h  
+
+**Pré‑requisitos:** Nenhum (não há dependências).
+
+---
+
+### Ementa / Conteúdo programático
+- Técnicas de demonstração.  
+- Demonstrações com inteiros.  
+- Demonstrações com conjuntos.  
+- Princípios de contagem.  
+- Aplicações.
+
+### Tópicos abordados
+- Técnicas de demonstração  
+- Demonstrações com inteiros  
+- Demonstrações com conjuntos  
+- Princípios de contagem  
+- Aplicações  
+
+Essas informações resumem o que é estudado em **Matemática Discreta** segundo a base de dados da UNIFESP ICT.",5,5,5,5,0,"A resposta do assistente é uma transcrição direta e completa das informações contidas nas evidências fornecidas, cobrindo todos os aspectos administrativos e de conteúdo da disciplina. Não há nenhuma afirmação que extrapole ou adicione conteúdo não presente nas evidências.",Disciplina: Matemática Discreta - info_geral; Disciplina: Matemática Discreta - ementa; Disciplina: Matemática Geral - info_geral,
+11,Quais são os pré-requisitos de Inteligência Artificial?,disciplinas,symbolic_kg,prereq,composicional,8.07,"**Cadeia de pré-requisitos de inteligência artificial:**
+inteligência artificial ← Algoritmos e Estrutura de Dados I
+
+Para cursar **inteligência artificial**, você precisa ter cursado anteriormente:
+- Algoritmos e Estrutura de Dados I
+
+Total: 1 pré-requisito(s) na cadeia.","**Cadeia de pré-requisitos de inteligência artificial:**
+inteligência artificial ← Algoritmos e Estrutura de Dados I
+
+Para cursar **inteligência artificial**, você precisa ter cursado anteriormente:
+- Algoritmos e Estrutura de Dados I
+
+Total: 1 pré-requisito(s) na cadeia.",5,5,5,5,0,"A resposta do assistente é uma reprodução exata e integral das evidências fornecidas, não contendo nenhuma informação adicional ou não suportada.",Knowledge Graph,
+12,Pré-requisitos de Banco de Dados?,disciplinas,symbolic_kg,prereq,composicional,12.09,"**Cadeia de pré-requisitos de banco de dados:**
+banco de dados ← Algoritmos e Estruturas de Dados I ← Lógica de Programação
+
+Para cursar **banco de dados**, você precisa ter cursado anteriormente:
+- Algoritmos e Estruturas de Dados I
+- Lógica de Programação
+
+Total: 2 pré-requisito(s) na cadeia.","**Cadeia de pré-requisitos de banco de dados:**
+banco de dados ← Algoritmos e Estruturas de Dados I ← Lógica de Programação
+
+Para cursar **banco de dados**, você precisa ter cursado anteriormente:
+- Algoritmos e Estruturas de Dados I
+- Lógica de Programação
+
+Total: 2 pré-requisito(s) na cadeia.",5,5,5,5,0,"A resposta do assistente é uma reprodução exata e integral das evidências fornecidas, sem adicionar, omitir ou distorcer qualquer informação. Portanto, todas as afirmações são totalmente suportadas e a resposta é completa e clara.",Knowledge Graph,
+13,O que preciso fazer antes de Compiladores?,disciplinas,symbolic_kg,prereq,composicional,10.5,"**Cadeia de pré-requisitos de compiladores:**
+compiladores ← Linguagens Formais e Autômatos ← Matemática Discreta ← Lógica de Programação
+
+Para cursar **compiladores**, você precisa ter cursado anteriormente:
+- Linguagens Formais e Autômatos
+- Matemática Discreta
+- Lógica de Programação
+
+Total: 3 pré-requisito(s) na cadeia.","**Cadeia de pré-requisitos de compiladores:**
+compiladores ← Linguagens Formais e Autômatos ← Matemática Discreta ← Lógica de Programação
+
+Para cursar **compiladores**, você precisa ter cursado anteriormente:
+- Linguagens Formais e Autômatos
+- Matemática Discreta
+- Lógica de Programação
+
+Total: 3 pré-requisito(s) na cadeia.",5,5,5,5,0,"A resposta do assistente é uma reprodução exata e integral das evidências fornecidas, portanto todas as afirmações são totalmente suportadas, corretas, completas e apresentadas de forma clara.",Knowledge Graph,
+14,Pré-requisitos para cursar Algoritmos 2?,disciplinas,symbolic_kg,prereq,composicional,14.36,**cursar algoritmos 2** não possui pré-requisitos ou não foi encontrada no sistema.,**cursar algoritmos 2** não possui pré-requisitos ou não foi encontrada no sistema.,5,5,5,5,0,"A resposta do assistente é uma reprodução exata do conteúdo das evidências fornecidas, portanto todas as afirmações estão totalmente suportadas e a pergunta é respondida de forma completa e correta dentro do escopo disponível.",Knowledge Graph,
+15,Quais disciplinas dependem de Cálculo 1?,disciplinas,symbolic_kg,dependentes,composicional,10.27,Nenhuma disciplina encontrada que tenha **cálculo 1** como pré-requisito.,Nenhuma disciplina encontrada que tenha **cálculo 1** como pré-requisito.,5,5,5,5,0,"A resposta do assistente é uma transcrição exata das evidências fornecidas, portanto está totalmente fundamentada, correta, completa dentro do escopo das evidências e é clara. Não há afirmações não suportadas.",Knowledge Graph,
+16,O que posso cursar depois de Algoritmos?,disciplinas,symbolic_kg,dependentes,composicional,18.81,Não encontrei matriz curricular para **algoritmos**.,Não encontrei matriz curricular para **algoritmos**.,0,0,0,0,0,,Knowledge Graph,
+17,Cadeia de pré-requisitos de Estrutura de Dados?,disciplinas,symbolic_kg,prereq,composicional,10.24,**estrutura de dados** não possui pré-requisitos ou não foi encontrada no sistema.,**estrutura de dados** não possui pré-requisitos ou não foi encontrada no sistema.,5,5,5,5,0,"A resposta do assistente é uma citação exata e completa das evidências fornecidas, portanto todas as afirmações são totalmente suportadas e corretas, cobrindo integralmente a pergunta com clareza máxima.",Knowledge Graph,
+18,Disciplinas necessárias para fazer Cálculo 2?,disciplinas,symbolic_kg,prereq,composicional,10.29,**cálculo 2** não possui pré-requisitos ou não foi encontrada no sistema.,**cálculo 2** não possui pré-requisitos ou não foi encontrada no sistema.,5,5,5,5,0,"A resposta do assistente é uma citação exata das evidências fornecidas, portanto está totalmente fundamentada, correta, responde completamente à pergunta dentro do limite das evidências e é clara.",Knowledge Graph,
+19,Quem leciona Redes de Computadores?,docentes,symbolic_kg,quem_leciona,relacional,8.73,"**Docentes de redes de computadores:**
+
+- Bruno Yuji Lino Kimura
+- Joahannes Bruno Dias da Costa
+- Arlindo Flávio da Conceição","**Docentes de redes de computadores:**
+
+- Bruno Yuji Lino Kimura
+- Joahannes Bruno Dias da Costa
+- Arlindo Flávio da Conceição",5,5,5,5,0,"A resposta do assistente replica exatamente a lista de docentes fornecida nas evidências, sem adicionar, omitir ou distorcer qualquer informação. Portanto, está totalmente fundamentada, correta, completa e clara.",Knowledge Graph,
+20,Quem leciona Cálculo Numérico?,docentes,symbolic_kg,quem_leciona,relacional,6.95,"**Docentes de cálculo numérico:**
+
+- Thadeu Alves Senne
+- Tiago Rodrigues Macedo
+- Luis Felipe Cesar da Rocha Bueno
+- Erwin Doescher
+- Luiz Leduíno de Salles Neto","**Docentes de cálculo numérico:**
+
+- Thadeu Alves Senne
+- Tiago Rodrigues Macedo
+- Luis Felipe Cesar da Rocha Bueno
+- Erwin Doescher
+- Luiz Leduíno de Salles Neto",5,5,5,5,0,"A resposta do assistente é uma transcrição exata das evidências fornecidas, listando todos os cinco docentes mencionados. Portanto, está totalmente fundamentada, correta, completa e clara.",Knowledge Graph,
+21,Quem dá aula de Sistemas Operacionais?,docentes,symbolic_kg,quem_leciona,relacional,14.34,"**Docentes de sistemas operacionais:**
+
+- Joahannes Bruno Dias da Costa
+- Thaína Aparecida Azevedo Tosta
+- Ezequiel Roberto Zorzal
+- Bruno Yuji Lino Kimura","**Docentes de sistemas operacionais:**
+
+- Joahannes Bruno Dias da Costa
+- Thaína Aparecida Azevedo Tosta
+- Ezequiel Roberto Zorzal
+- Bruno Yuji Lino Kimura",5,5,5,5,0,"A resposta do assistente replica exatamente a lista de docentes fornecida nas evidências, sem adicionar, omitir ou alterar qualquer informação, portanto está totalmente fundamentada, correta e completa.",Knowledge Graph,
+22,Quais professores lecionam Banco de Dados?,docentes,symbolic_kg,quem_leciona,relacional,6.7,"**Docentes de banco dados?:**
+
+- Daniela Leal Musa","**Docentes de banco dados?:**
+
+- Daniela Leal Musa",5,5,5,5,0,"A resposta do assistente é idêntica às evidências fornecidas, portanto está totalmente fundamentada, correta, completa dentro do escopo das evidências e apresentada de forma clara e direta.",Knowledge Graph,
+23,Docentes de Teoria dos Grafos?,docentes,symbolic_kg,quem_leciona,relacional,8.98,"**Docentes de teoria dos grafos:**
+
+- Elbert Einstein Nehrer Macau
+- Reginaldo Massanobu Kuroshu
+- Luis Augusto Martins Pereira
+- Sanderson Lincohn Gonzaga de Oliveira","**Docentes de teoria dos grafos:**
+
+- Elbert Einstein Nehrer Macau
+- Reginaldo Massanobu Kuroshu
+- Luis Augusto Martins Pereira
+- Sanderson Lincohn Gonzaga de Oliveira",5,5,5,5,0,"A resposta do assistente replica exatamente a lista de nomes fornecida nas evidências, sem adicionar, omitir ou alterar qualquer informação. Portanto, todas as afirmações são totalmente suportadas e corretas.",Knowledge Graph,
+24,Quem ensina Projeto e Análise de Algoritmos?,docentes,symbolic_kg,quem_leciona,relacional,7.89,"**Docentes de projeto e análise de algoritmos:**
+
+- Sanderson Lincohn Gonzaga de Oliveira
+- Reginaldo Massanobu Kuroshu","**Docentes de projeto e análise de algoritmos:**
+
+- Sanderson Lincohn Gonzaga de Oliveira
+- Reginaldo Massanobu Kuroshu",5,5,5,5,0,"A resposta do assistente repete exatamente as evidências fornecidas, listando os dois docentes mencionados, sem adicionar ou alterar qualquer informação. Portanto, está totalmente fundamentada, correta, completa e clara.",Knowledge Graph,
+25,Quem é o professor Sanderson?,docentes,symbolic_kg,info,factual_simples,12.31,Não encontrei docentes para **sanderson?**.,Não encontrei docentes para **sanderson?**.,5,5,5,5,0,"A resposta do assistente é uma reprodução exata das evidências fornecidas, portanto está totalmente fundamentada, correta, completa dentro do escopo disponível e clara, sem fazer afirmações não suportadas.",Knowledge Graph,
+26,Qual o email do professor Álvaro?,docentes,docentes,email,factual_simples,7.53,alvaro.fazenda@unifesp.br,alvaro.fazenda@unifesp.br,5,5,5,5,0,"A resposta do assistente corresponde exatamente ao email fornecido nas evidências, sem adicionar nenhuma informação extra ou não suportada.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — álvaro,
+27,Sala do professor Didier Vega?,docentes,docentes,sala,factual_simples,7.87,Sala: 5 do Parque Tecnológico,Sala: 5 do Parque Tecnológico,5,5,5,5,0,"A resposta é totalmente suportada pelas evidências, que indicam explicitamente 'Sala: 5 do Parque Tecnológico'. É correta, completa para a pergunta feita e apresentada de forma clara e direta.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — didier vega,
+28,Áreas de pesquisa do professor Rodrigo Colnago?,docentes,docentes,areas,factual_simples,15.97,Não tenho essa informação na base de dados da UNIFESP ICT.,Não tenho essa informação na base de dados da UNIFESP ICT.,5,5,5,5,0,"A resposta do assistente está perfeitamente alinhada com as evidências fornecidas, que afirmam explicitamente a ausência de informações sobre o tópico. Não há nenhuma afirmação adicional ou não suportada, sendo direta e precisa.",,
+29,Me fale sobre a professora Lilian Berton.,docentes,disciplinas,info,factual_simples,16.58,"**Professora:** Lilian Berton  
+
+**E‑mail:** lberton@unifesp.br  
+**Sala:** 102 do Parque Tecnológico  
+
+**Disciplinas lecionadas**
+
+| Código | Disciplina | Docentes (incluindo Lilian Berton) |
+|--------|------------|------------------------------------|
+| 3490   | Inteligência Artificial | Lilian Berton, Didier Vega‑Oliveros, Fábio Faria |
+| 9394   | Lógica de Programação | Lilian Berton, Arlindo Flávio da Conceição, Rodrigo Colnago Contreras, Ana Luísa Dine Martins Lemos, Marcos Gonçalves Quiles, Bruno Yuji Lino Kimura, Ezequiel Roberto Zorzal, Márcio Basgalupp, Daniela Leal Musa, Otavio Augusto Lazzarini Lemos |
+
+**Áreas de pesquisa**  
+- Mineração de Dados  
+- Aprendizado de Máquina  
+- Redes Complexas  
+
+Essas são todas as informações disponíveis na base de dados da UNIFESP ICT sobre a professora Lilian Berton.
+
+---
+*Verificado no Knowledge Graph:* 2 disciplina(s) e 12 docente(s) verificados no KG","**Professora:** Lilian Berton  
+
+**E‑mail:** lberton@unifesp.br  
+**Sala:** 102 do Parque Tecnológico  
+
+**Disciplinas lecionadas**
+
+| Código | Disciplina | Docentes (incluindo Lilian Berton) |
+|--------|------------|------------------------------------|
+| 3490   | Inteligência Artificial | Lilian Berton, Didier Vega‑Oliveros, Fábio Faria |
+| 9394   | Lógica de Programação | Lilian Berton, Arlindo Flávio da Conceição, Rodrigo Colnago Contreras, Ana Luísa Dine Martins Lemos, Marcos Gonçalves Quiles, Bruno Yuji Lino Kimura, Ezequiel Roberto Zorzal, Márcio Basgalupp, Daniela Leal Musa, Otavio Augusto Lazzarini Lemos |
+
+**Áreas de pesquisa**  
+- Mineração de Dados  
+- Aprendizado de Máquina  
+- Redes Complexas  
+
+Essas são todas as informações disponíveis na base de dados da UNIFESP ICT sobre a professora Lilian Berton.",5,5,5,5,0,"A resposta do assistente é totalmente baseada nas evidências fornecidas, reproduzindo fielmente o e-mail, sala, disciplinas lecionadas e áreas de pesquisa da professora Lilian Berton, sem adicionar informações externas.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — lilian berton; Disciplina: Inteligência Artificial - docentes; Disciplina: Lógica de Programação - docentes; Disciplina: Cálculo em Uma Variável - docentes; Disciplina: Reologia dos Materiais - docentes; Disciplina: Fenômenos do Contínuo Experimental - docentes; Disciplina: Fenômenos do Contínuo - docentes; Disciplina: Bioquímica II - docentes; Disciplina: Engenharia Bioquímica 2 - docentes; Disciplina: Álgebra Linear Computacional - docentes; Disciplina: Geometria Analítica - docentes,
+30,Contato do professor Elbert Macau?,docentes,docentes,email,factual_simples,12.64,"**Contato do professor Elbert Macau**
+
+- **E‑mail:** elbert.macau@unifesp.br  
+- **Sala:** 06 do Parque Tecnológico","**Contato do professor Elbert Macau**
+
+- **E‑mail:** elbert.macau@unifesp.br  
+- **Sala:** 06 do Parque Tecnológico",5,5,5,5,0,"A resposta do assistente é totalmente suportada pelas evidências fornecidas, listando corretamente o e-mail e a sala do professor, que são as informações de contato solicitadas. Não há afirmações não suportadas.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — elbert macau,
+31,Em que o Álvaro é especialista?,docentes,docentes,areas,factual_simples,14.68,Nao tenho essa informacao na base de dados da UNIFESP ICT.,Nao tenho essa informacao na base de dados da UNIFESP ICT.,3,4,5,5,1,"A resposta corretamente indica a falta de informação, alinhada com as evidências, mas introduz o detalhe não suportado sobre 'base de dados da UNIFESP ICT', que não está presente nas evidências fornecidas.",,
+32,Professores que trabalham com inteligência artificial?,docentes,symbolic_kg,por_area,relacional,10.55,"**Professores especialistas em inteligência artificial:**
+
+- Elbert Einstein Nehrer Macau
+- Matheus Cardoso Moraes
+- Sérgio Ronaldo Barros dos Santos
+
+Total: 3 docente(s) trabalham com **inteligência artificial**.","**Professores especialistas em inteligência artificial:**
+
+- Elbert Einstein Nehrer Macau
+- Matheus Cardoso Moraes
+- Sérgio Ronaldo Barros dos Santos
+
+Total: 3 docente(s) trabalham com **inteligência artificial**.",5,5,5,5,0,"A resposta é uma reprodução exata e integral das evidências fornecidas, listando todos os três professores e o total informado, sem adicionar qualquer informação externa ou não suportada.",Knowledge Graph,
+33,Quem pesquisa machine learning?,docentes,symbolic_kg,por_area,relacional,16.12,Não encontrei docentes especialistas em **pesquisa machine learning?**.,Não encontrei docentes especialistas em **pesquisa machine learning?**.,5,5,4,5,0,"A resposta repete fielmente o conteúdo das evidências, sem adicionar informações não suportadas. No entanto, a pergunta 'Quem pesquisa machine learning?' não é diretamente respondida, pois as evidências apenas afirmam que não foram encontrados docentes especialistas, o que limita a completude.",Knowledge Graph,
+34,Docentes especialistas em redes?,docentes,symbolic_kg,por_area,relacional,8.9,"**Professores especialistas em redes:**
+
+- Bruno Yuji Lino Kimura
+- Joahannes Bruno Dias da Costa
+- Lilian Berton
+
+Total: 3 docente(s) trabalham com **redes**.","**Professores especialistas em redes:**
+
+- Bruno Yuji Lino Kimura
+- Joahannes Bruno Dias da Costa
+- Lilian Berton
+
+Total: 3 docente(s) trabalham com **redes**.",5,5,5,5,0,"A resposta do assistente é uma reprodução fiel e integral das evidências fornecidas, sem adicionar, omitir ou distorcer qualquer informação.",Knowledge Graph,
+35,Quais disciplinas o professor Sanderson leciona?,docentes,docentes,disciplinas_docente,relacional,10.79,"O professor Sanderson leciona as seguintes disciplinas:
+
+- Teoria dos Grafos  
+- Projeto e Análise de Algoritmos","O professor Sanderson leciona as seguintes disciplinas:
+
+- Teoria dos Grafos  
+- Projeto e Análise de Algoritmos",5,5,5,5,0,"A resposta do assistente lista exatamente as duas disciplinas ('Teoria dos Grafos' e 'Projeto e Análise de Algoritmos') que constam explicitamente nas evidências fornecidas, sem adicionar ou inferir qualquer informação não suportada.",FATOS VERIFICADOS NO KNOWLEDGE GRAPH — sanderson,
+36,Quais matérias o Sanderson dá?,docentes,disciplinas,disciplinas_docente,relacional,21.8,Não tenho essa informação na base de dados da UNIFESP ICT.,Não tenho essa informação na base de dados da UNIFESP ICT.,5,5,5,5,0,"A resposta está perfeitamente alinhada com as evidências, pois nenhum dos documentos fornecidos menciona o nome 'Sanderson' ou associa qualquer disciplina a esse nome. Portanto, a afirmação de que a informação não está disponível é totalmente suportada.",Disciplina: Fenômenos mecânicos - bibliografia_basica; Disciplina: Funções Analíticas - ementa; Disciplina: Computação Gráfica - bibliografia_basica; Disciplina: Síntese de Polímeros - ementa; Regimento Interno - artigo; Disciplina: Química Orgânica - ementa; Continuacao - Química Orgânica (4350) - ementa; Disciplina: Funções Analíticas - bibliografia_basica; Disciplina: Materiais Compósitos - ementa; Documento Institucional - faq,
+37,O Sanderson dá aula de quê?,docentes,symbolic_kg,disciplinas_docente,relacional,15.93,Formato de consulta inválido.,Formato de consulta inválido.,5,5,5,5,0,"A resposta do assistente é idêntica às evidências fornecidas, não fazendo nenhuma afirmação adicional sobre o Sanderson, portanto totalmente suportada e correta dentro das limitações apresentadas.",Knowledge Graph,
+38,Disciplinas que o Rodrigo Colnago leciona?,docentes,regimentos,disciplinas_docente,relacional,12.2,Nao tenho essa informacao na base de dados da UNIFESP ICT.,Nao tenho essa informacao na base de dados da UNIFESP ICT.,5,5,5,5,0,"A resposta do assistente está perfeitamente alinhada com as evidências fornecidas, que explicitamente indicam que não há informações sobre as disciplinas lecionadas por Rodrigo Colnago ('Não encontrei artigos sobre **rodrigo colnago leciona?**.'). Portanto, a afirmação de que a informação não está disponível é totalmente suportada e correta.",Documento - resumo; Proposta de Perfil Academico e Identidade - faq; Cursos Sequenciais - Normas e Propostas - faq,
+39,O professor Fabrício Olivetti leciona Banco de Dados?,docentes,symbolic_kg,sim_nao,relacional,20.1,Não encontrei informações sobre as disciplinas de **Fabrício Olivetti**.,Não encontrei informações sobre as disciplinas de **Fabrício Olivetti**.,5,5,5,5,0,"A resposta do assistente é uma citação direta e integral das evidências fornecidas, portanto está totalmente fundamentada, correta, cobre a pergunta dentro das limitações das evidências e é clara.",Knowledge Graph,
+40,Quais disciplinas do termo 3 de BCC?,cursos,symbolic_kg,termo,composicional,7.48,"**Disciplinas do Termo 3 de BCC:**
+
+- Interdisciplinar Extensionista (2 créditos)
+- Probabilidade e Estatística (4 créditos)
+- Cálculo em Várias Variáveis (4 créditos)
+- Circuitos Digitais (4 créditos)
+- Algoritmos e Estruturas de Dados II (4 créditos)
+- Álgebra Linear (4 créditos)","**Disciplinas do Termo 3 de BCC:**
+
+- Interdisciplinar Extensionista (2 créditos)
+- Probabilidade e Estatística (4 créditos)
+- Cálculo em Várias Variáveis (4 créditos)
+- Circuitos Digitais (4 créditos)
+- Algoritmos e Estruturas de Dados II (4 créditos)
+- Álgebra Linear (4 créditos)",5,5,5,5,0,"A resposta do assistente é idêntica à lista fornecida nas evidências, reproduzindo fielmente todas as disciplinas e seus respectivos créditos, sem adicionar, omitir ou alterar qualquer informação.",Knowledge Graph,
+41,Disciplinas do termo 5 de Ciência da Computação?,cursos,symbolic_kg,termo,composicional,5.86,"**Disciplinas do Termo 5 de CIÊNCIA DA COMPUTAÇÃO:**
+
+- Interdisciplinar Extensionista (4 créditos)
+- Inteligência Artificial (4 créditos)
+- Projeto Orientado a Objetos (4 créditos)
+- Linguagens Formais e Autômatos (4 créditos)
+- Teoria dos Grafos (4 créditos)
+- Sistemas Operacionais (4 créditos)","**Disciplinas do Termo 5 de CIÊNCIA DA COMPUTAÇÃO:**
+
+- Interdisciplinar Extensionista (4 créditos)
+- Inteligência Artificial (4 créditos)
+- Projeto Orientado a Objetos (4 créditos)
+- Linguagens Formais e Autômatos (4 créditos)
+- Teoria dos Grafos (4 créditos)
+- Sistemas Operacionais (4 créditos)",5,5,5,5,0,"A resposta do assistente é uma reprodução exata e completa da lista de disciplinas fornecida nas evidências, sem adicionar, omitir ou alterar qualquer informação.",Knowledge Graph,
+42,Quais disciplinas tem no termo 1 de BCC?,cursos,symbolic_kg,termo,composicional,8.43,"**Disciplinas do Termo 1 de BCC:**
+
+- Cálculo em Uma Variável (6 créditos)
+- Ciência, Tecnologia e Sociedade (2 créditos)
+- Lógica de Programação (4 créditos)
+- Química Geral (4 créditos)
+- Fundamentos da Biologia Moderna (4 créditos)","**Disciplinas do Termo 1 de BCC:**
+
+- Cálculo em Uma Variável (6 créditos)
+- Ciência, Tecnologia e Sociedade (2 créditos)
+- Lógica de Programação (4 créditos)
+- Química Geral (4 créditos)
+- Fundamentos da Biologia Moderna (4 créditos)",5,5,5,5,0,"A resposta do assistente é uma reprodução exata e completa das evidências fornecidas, listando todas as disciplinas e seus respectivos créditos sem adicionar ou alterar qualquer informação.",Knowledge Graph,
+43,Grade curricular de BCC?,cursos,symbolic_kg,matriz,composicional,10.97,Não encontrei disciplinas para o curso **curricular de bcc**.,Não encontrei disciplinas para o curso **curricular de bcc**.,5,5,5,5,0,"A resposta do assistente é uma transcrição exata das evidências fornecidas, portanto está totalmente fundamentada, correta, completa dentro do limite das evidências (que afirmam não ter encontrado as disciplinas) e é clara e direta.",Knowledge Graph,
+44,Grade completa de Ciência da Computação?,cursos,symbolic_kg,matriz,composicional,9.02,Não encontrei disciplinas para o curso **completa de ciência da computação**.,Não encontrei disciplinas para o curso **completa de ciência da computação**.,5,5,5,5,0,"A resposta do assistente é idêntica ao conteúdo das evidências fornecidas, não apresentando nenhuma informação adicional ou não suportada, sendo portanto totalmente fundamentada, correta, completa e clara.",Knowledge Graph,
+45,Quais cursos a UNIFESP oferece?,cursos,cursos,listar,factual_simples,10.4,"A UNIFESP ICT oferece os seguintes cursos de graduação:
+
+1. Bacharelado Interdisciplinar em Ciência e Tecnologia (BCT)  
+2. Engenharia de Materiais (EM)  
+3. Bacharelado em Biotecnologia (BBT)  
+4. Engenharia Biomédica (EB)  
+5. Bacharelado em Ciência da Computação (BCC)  
+6. Engenharia de Computação (EC)  
+7. Bacharelado em Matemática Computacional (BMC)","A UNIFESP ICT oferece os seguintes cursos de graduação:
+
+1. Bacharelado Interdisciplinar em Ciência e Tecnologia (BCT)  
+2. Engenharia de Materiais (EM)  
+3. Bacharelado em Biotecnologia (BBT)  
+4. Engenharia Biomédica (EB)  
+5. Bacharelado em Ciência da Computação (BCC)  
+6. Engenharia de Computação (EC)  
+7. Bacharelado em Matemática Computacional (BMC)",5,5,5,5,0,"A resposta do assistente lista exatamente os sete cursos de graduação apresentados nas evidências, sem adicionar, omitir ou distorcer qualquer informação. Portanto, é totalmente fundamentada, correta, completa e clara.",,
+46,Matérias do primeiro semestre de computação?,cursos,symbolic_kg,termo,composicional,18.83,Formato inválido para consulta de termo.,Formato inválido para consulta de termo.,5,5,1,5,0,"A resposta do assistente reflete fielmente as evidências fornecidas, mas não atende à pergunta sobre as matérias, pois estas indicam apenas um erro de formatação. Isso resulta em baixa completude, embora a clareza seja alta por ser direta.",Knowledge Graph,
+47,Quantos termos tem o curso de BCC?,cursos,symbolic_kg,matriz,factual_simples,10.43,"**Matriz Curricular - Bacharelado em Ciência da Computação (BCC):**
+
+- **Sigla:** BCC
+- **Duração:** 8 termos (semestres)
+- **Carga Horária Total:** 3204 horas
+- **Coordenador(a):** Prof. Dr. Tiago Silva da Silva
+- **Vice-Coordenador(a):** Prof. Dr. Marcos G. Quiles
+
+O curso possui disciplinas obrigatórias organizadas por termo, além de eletivas nos Grupos 1, 2, 3 e eletivas extensionistas.","**Matriz Curricular - Bacharelado em Ciência da Computação (BCC):**
+
+- **Sigla:** BCC
+- **Duração:** 8 termos (semestres)
+- **Carga Horária Total:** 3204 horas
+- **Coordenador(a):** Prof. Dr. Tiago Silva da Silva
+- **Vice-Coordenador(a):** Prof. Dr. Marcos G. Quiles
+
+O curso possui disciplinas obrigatórias organizadas por termo, além de eletivas nos Grupos 1, 2, 3 e eletivas extensionistas.",5,5,5,5,0,"A resposta repete exatamente as evidências fornecidas, onde a duração de 8 termos é explicitamente declarada, atendendo perfeitamente à pergunta sem adicionar informações não suportadas.",Knowledge Graph,
+48,Estrutura do curso de Engenharia de Computação?,cursos,symbolic_kg,matriz,composicional,19.09,"**Matriz Curricular - Engenharia de Computação (EC):**
+
+- **Sigla:** EC
+- **Duração:** 10 termos (semestres)
+- **Carga Horária Total:** 3960 horas
+- **Coordenador(a):** Prof. Dr. Lauro Paulo da Silva Neto
+- **Vice-Coordenador(a):** Profa. Dra. Fernanda Quelho Rossi
+
+O curso possui disciplinas obrigatórias organizadas por termo, além de eletivas nos Grupos 1, 2, 3 e eletivas extensionistas.","**Matriz Curricular - Engenharia de Computação (EC):**
+
+- **Sigla:** EC
+- **Duração:** 10 termos (semestres)
+- **Carga Horária Total:** 3960 horas
+- **Coordenador(a):** Prof. Dr. Lauro Paulo da Silva Neto
+- **Vice-Coordenador(a):** Profa. Dra. Fernanda Quelho Rossi
+
+O curso possui disciplinas obrigatórias organizadas por termo, além de eletivas nos Grupos 1, 2, 3 e eletivas extensionistas.",5,5,5,5,0,"A resposta é uma reprodução exata das evidências fornecidas, não contendo nenhuma informação não suportada e cobrindo todos os aspectos presentes nas evidências.",Knowledge Graph,
+49,Quem é o coordenador de BCC?,cursos,symbolic_kg,coordenador,relacional,10.08,"**Coordenação do curso Bacharelado em Ciência da Computação (BCC)** (BCC):
+
+- **Coordenador(a):** Prof. Dr. Tiago Silva da Silva
+- **Vice-Coordenador(a):** Prof. Dr. Marcos G. Quiles","**Coordenação do curso Bacharelado em Ciência da Computação (BCC)** (BCC):
+
+- **Coordenador(a):** Prof. Dr. Tiago Silva da Silva
+- **Vice-Coordenador(a):** Prof. Dr. Marcos G. Quiles",5,5,5,5,0,"A resposta do assistente é totalmente baseada nas evidências fornecidas, repetindo exatamente as informações sobre o coordenador e vice-coordenador. Não há acréscimos ou afirmações não suportadas, e a pergunta é respondida de forma completa e clara.",Knowledge Graph,
+50,Coordenador do curso de Ciência da Computação?,cursos,symbolic_kg,coordenador,relacional,6.52,Não encontrei informações de coordenação para **curso de ciência da computação**.,Não encontrei informações de coordenação para **curso de ciência da computação**.,5,5,5,5,0,"A resposta do assistente é uma transcrição exata das evidências fornecidas, portanto, todas as afirmações são totalmente suportadas, corretas e completas dentro do escopo das evidências, além de ser clara e direta.",Knowledge Graph,
+51,Eletivas de Engenharia de Computação?,cursos,symbolic_kg,eletivas,composicional,10.58,Não encontrei eletivas para **engenharia de computação**.,Não encontrei eletivas para **engenharia de computação**.,5,5,5,5,0,"A resposta do assistente é idêntica ao conteúdo das evidências fornecidas, portanto está totalmente fundamentada, correta, completa e clara.",Knowledge Graph,
+52,Quais são as eletivas de BCC?,cursos,symbolic_kg,eletivas,composicional,9.1,"**Eletivas disponíveis para BCC:**
+
+**Grupo 1 - Eletivas Limitadas de Ciência da Computação:**
+- Aprendizado de Máquina e Reconhecimento de Padrões
+- Aspectos de Implementação de Banco de Dados
+- Fenômenos Eletromagnéticos
+- Introdução a Pesquisa Operacional
+- Introdução às Redes Neurais Artificiais
+- Paradigmas de Programação
+- Processamento de Imagens
+- Programação Paralela e Processamento de Alto Desempenho
+- Realidade Virtual e Aumentada
+- Segurança Computacional
+- Sistemas Distribuídos
+- Validação e Verificação de Software
+
+**Grupo 2 - Eletivas de Matemática e Computação:**
+- Álgebra Linear Computacional
+- Álgebra Linear II
+- Algoritmos Avançados
+- Algoritmos em Bioinformática
+- Análise de Sinais
+- Análise Real I
+- Bioinformática Avançada
+- Computação Bioinspirada
+- Desenvolvimento de Aplicações Robóticas
+- Introdução à Lógica Fuzzy
+- Laboratório de Eletrônica Digital
+- Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores
+- Laboratório de Sistemas Computacionais: Circuitos Digitais
+- Laboratório de Sistemas Computacionais: Compiladores
+- Laboratório de Sistemas Computacionais: Engenharia de Sistemas
+- Laboratório de Sistemas Computacionais: Sistemas de Comunicação Digital
+- Laboratório de Sistemas Computacionais: Sistemas Operacionais
+- Laboratório de Sistemas de Comunicação
+- Laboratório de Usabilidade Web
+- Métodos Numéricos para Equações Diferenciais
+- Processamento de Sinais
+- Projeto de Sistemas Digitais
+- Séries Temporais e Previsões
+- Simulação de Sistemas
+- Sistemas Embarcados
+- Sistemas Robóticos
+- Teoria dos Números e Criptografia
+- Tópicos em Fundamentos da Computação I, II, III, IV e V
+- Tópicos em Tecnologia da Computação I, II, III, IV e V
+- Tópicos Interdisciplinares em Computação I, II, III e IV
+
+**Grupo 3 - Eletivas de Ciências Humanas, Econômicas e Sociais:**
+- Alteridade e Diversidade no Brasil: Implicações para Política de Ciência e Tecnologia
+- Análise de Investimentos e Riscos
+- Cidadania, Ciência e Polêmica
+- Cultura Digital
+- Cultura dos Jogos Digitais
+- Direitos Humanos, Multiculturalismo e C&T
+- Ecologia Avançada
+- Econometria
+- Economia Monetária e Bancos
+- Empreendedorismo
+- Gestão da Inovação
+- Gestão de Projetos
+- Introdução à Ecologia
+- Introdução à Economia Global
+- Introdução à Engenharia Financeira
+- Legislação Ambiental e Políticas Públicas
+- Macroeconomia
+- Marketing Estratégico
+- Metodologia da Pesquisa e Comunicação Científica
+- Microeconomia
+- Mudança do Clima e Sociedade
+- Organização Industrial
+- Política Científica e Tecnológica
+- Qualidade
+- Relações Étnico-Raciais e Cultura Afro-Brasileira e Indígena
+- Tecnologia e Meio Ambiente
+- Tecnologia Social: Práxis e Contrahegemonia
+- Teorias Administrativas
+- Teoria das Finanças
+- Trajetórias da Inovação
+
+**Eletivas Extensionistas:**
+- Sistemas Embarcados
+- Internet das Coisas
+- Desenvolvimento de Games
+
+
+**Total:** 75 eletivas disponíveis.","**Eletivas disponíveis para BCC:**
+
+**Grupo 1 - Eletivas Limitadas de Ciência da Computação:**
+- Aprendizado de Máquina e Reconhecimento de Padrões
+- Aspectos de Implementação de Banco de Dados
+- Fenômenos Eletromagnéticos
+- Introdução a Pesquisa Operacional
+- Introdução às Redes Neurais Artificiais
+- Paradigmas de Programação
+- Processamento de Imagens
+- Programação Paralela e Processamento de Alto Desempenho
+- Realidade Virtual e Aumentada
+- Segurança Computacional
+- Sistemas Distribuídos
+- Validação e Verificação de Software
+
+**Grupo 2 - Eletivas de Matemática e Computação:**
+- Álgebra Linear Computacional
+- Álgebra Linear II
+- Algoritmos Avançados
+- Algoritmos em Bioinformática
+- Análise de Sinais
+- Análise Real I
+- Bioinformática Avançada
+- Computação Bioinspirada
+- Desenvolvimento de Aplicações Robóticas
+- Introdução à Lógica Fuzzy
+- Laboratório de Eletrônica Digital
+- Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores
+- Laboratório de Sistemas Computacionais: Circuitos Digitais
+- Laboratório de Sistemas Computacionais: Compiladores
+- Laboratório de Sistemas Computacionais: Engenharia de Sistemas
+- Laboratório de Sistemas Computacionais: Sistemas de Comunicação Digital
+- Laboratório de Sistemas Computacionais: Sistemas Operacionais
+- Laboratório de Sistemas de Comunicação
+- Laboratório de Usabilidade Web
+- Métodos Numéricos para Equações Diferenciais
+- Processamento de Sinais
+- Projeto de Sistemas Digitais
+- Séries Temporais e Previsões
+- Simulação de Sistemas
+- Sistemas Embarcados
+- Sistemas Robóticos
+- Teoria dos Números e Criptografia
+- Tópicos em Fundamentos da Computação I, II, III, IV e V
+- Tópicos em Tecnologia da Computação I, II, III, IV e V
+- Tópicos Interdisciplinares em Computação I, II, III e IV
+
+**Grupo 3 - Eletivas de Ciências Humanas, Econômicas e Sociais:**
+- Alteridade e Diversidade no Brasil: Implicações para Política de Ciência e Tecnologia
+- Análise de Investimentos e Riscos
+- Cidadania, Ciência e Polêmica
+- Cultura Digital
+- Cultura dos Jogos Digitais
+- Direitos Humanos, Multiculturalismo e C&T
+- Ecologia Avançada
+- Econometria
+- Economia Monetária e Bancos
+- Empreendedorismo
+- Gestão da Inovação
+- Gestão de Projetos
+- Introdução à Ecologia
+- Introdução à Economia Global
+- Introdução à Engenharia Financeira
+- Legislação Ambiental e Políticas Públicas
+- Macroeconomia
+- Marketing Estratégico
+- Metodologia da Pesquisa e Comunicação Científica
+- Microeconomia
+- Mudança do Clima e Sociedade
+- Organização Industrial
+- Política Científica e Tecnológica
+- Qualidade
+- Relações Étnico-Raciais e Cultura Afro-Brasileira e Indígena
+- Tecnologia e Meio Ambiente
+- Tecnologia Social: Práxis e Contrahegemonia
+- Teorias Administrativas
+- Teoria das Finanças
+- Trajetórias da Inovação
+
+**Eletivas Extensionistas:**
+- Sistemas Embarcados
+- Internet das Coisas
+- Desenvolvimento de Games
+
+
+**Total:** 75 eletivas disponíveis.",5,5,5,5,0,"A resposta é uma reprodução completa e exata das evidências fornecidas, listando todos os grupos e disciplinas sem adicionar, omitir ou alterar qualquer informação.",Knowledge Graph,
+53,Quais artigos falam sobre matrícula?,regimentos,symbolic_kg,artigos,factual_simples,15.96,**falam sobre matrícula?** não possui pré-requisitos ou não foi encontrada no sistema.,**falam sobre matrícula?** não possui pré-requisitos ou não foi encontrada no sistema.,5,5,2,3,0,"A resposta é totalmente baseada nas evidências, que indicam que a consulta 'não possui pré-requisitos ou não foi encontrada no sistema', mas não atende à pergunta, que pedia uma lista de artigos específicos.",Knowledge Graph,
+54,O que diz o regimento sobre estágio?,regimentos,regimentos,artigos,factual_simples,25.3,Nao tenho essa informacao na base de dados da UNIFESP ICT.,Nao tenho essa informacao na base de dados da UNIFESP ICT.,5,5,5,5,0,"A resposta do assistente está perfeitamente alinhada com as evidências fornecidas, que explicitamente afirmam não conter artigos sobre estágio no regimento. Portanto, a declaração de falta de informação é totalmente suportada, correta, completa e clara.",Regimento Interno - faq,
+55,Perguntas frequentes sobre TCC?,regimentos,regimentos,faq,factual_simples,65.44,Nao tenho essa informacao na base de dados da UNIFESP ICT.,Nao tenho essa informacao na base de dados da UNIFESP ICT.,5,5,5,5,0,"A resposta do assistente está perfeitamente alinhada com a primeira evidência fornecida, que afirma explicitamente 'Não encontrei FAQs sobre **frequentes sobre tcc?**.' Portanto, a resposta é totalmente fundamentada, correta, completa e clara, sem fazer afirmações não suportadas.",Proposta de Perfil Academico e Identidade - faq,
+56,Artigos sobre trancamento?,regimentos,regimentos,artigos,factual_simples,21.77,Não tenho essa informação na base de dados da UNIFESP ICT.,Não tenho essa informação na base de dados da UNIFESP ICT.,5,5,5,5,0,"A resposta do assistente está perfeitamente alinhada com as evidências, que afirmam explicitamente não ter encontrado artigos sobre trancamento, sendo portanto totalmente suportada, correta, completa e clara.",Regimento Interno - faq,
+57,O que o regimento fala sobre diploma?,regimentos,symbolic_kg,artigos,factual_simples,30.6,Não encontrei disciplinas para o curso **fala sobre diploma?**.,Não encontrei disciplinas para o curso **fala sobre diploma?**.,0,0,0,0,0,,Knowledge Graph,
