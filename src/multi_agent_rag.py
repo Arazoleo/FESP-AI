@@ -143,6 +143,8 @@ class MultiAgentRAG:
                 "intent": final_state.get("intent", "unknown"),
                 "term": final_state.get("term", ""),
                 "confidence": final_state.get("confidence", 0.0),
+                "context": final_state.get("context", ""),
+                "sources": final_state.get("sources", []),
                 "agent_metadata": self.AGENT_METADATA.get(
                     active_agent, self.AGENT_METADATA["fallback"]
                 ),

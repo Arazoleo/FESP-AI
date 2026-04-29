@@ -24,6 +24,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from .multi_agent_rag import MultiAgentRAG
 from .context_resolver import context_resolver
+from .llm_judge import judge_answer
+from langchain_ollama import OllamaLLM
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -47,6 +49,34 @@ app.add_middleware(
 )
 
 rag: MultiAgentRAG = None
+
+# ── Ollama helpers ────────────────────────────────────────────────────────────
+
+def ensure_ollama_model(ollama_url: str, model: str):
+    """
+    Garante que o modelo exista no Ollama.
+    Se não existir, tenta fazer pull automaticamente.
+    """
+    if not model:
+        return
+    import requests
+
+    try:
+        show = requests.post(f"{ollama_url}/api/show", json={"name": model}, timeout=30)
+        if show.status_code == 200:
+            return
+    except Exception:
+        # Se show falhar, ainda tentamos pull.
+        pass
+
+    print(f"  - Baixando modelo no Ollama: {model}")
+    r = requests.post(
+        f"{ollama_url}/api/pull",
+        json={"name": model, "stream": False},
+        timeout=60 * 30,
+    )
+    r.raise_for_status()
+
 
 # Configurações de gerenciamento de memória para conversas
 MAX_CONVERSATIONS = 1000  # Máximo de conversas simultâneas
@@ -92,6 +122,40 @@ class ChatRequest(BaseModel):
     max_history: int = 10  # Número máximo de mensagens anteriores a incluir
 
 
+class ChatEvalRequest(BaseModel):
+    message: str
+    include_history: bool = False
+    max_history: int = 0
+    include_context: bool = True
+    include_sources: bool = True
+
+
+class ChatEvalResponse(BaseModel):
+    response: str
+    active_agent: str
+    intent: str = "unknown"
+    term: str = ""
+    confidence: float = 0.0
+    context: Optional[str] = None
+    sources: Optional[List[str]] = None
+
+
+class JudgeRequest(BaseModel):
+    question: str
+    answer: str
+    evidence: str = ""
+    judge_model: Optional[str] = None
+
+
+class JudgeResponse(BaseModel):
+    groundedness: int
+    correctness: int
+    completeness: int
+    clarity: int
+    unsupported_claims: int
+    rationale: str
+
+
 class AgentInfo(BaseModel):
     label: str
     description: str
@@ -114,16 +178,29 @@ class ConversationResponse(BaseModel):
 
 @app.on_event("startup")
 async def startup_event():
+    import requests
     import threading
     global rag
     print("Inicializando Multi-Agent RAG...")
     rag = MultiAgentRAG()
+
+    # Antes de indexar/criar embeddings, garantir que os modelos existem.
+    try:
+        ollama_url = rag.config.OLLAMA_BASE_URL or "http://ollama:11434"
+        ensure_ollama_model(ollama_url, rag.config.EMBEDDING_MODEL)
+        ensure_ollama_model(ollama_url, rag.config.MODEL_NAME)
+    except Exception as e:
+        # Se não conseguir baixar, falha com mensagem clara (evita loop de restart sem contexto)
+        raise RuntimeError(
+            f"Falha ao garantir modelos no Ollama ({rag.config.OLLAMA_BASE_URL}). "
+            f"Verifique se o Ollama está acessível e faça pull do modelo. Erro: {e}"
+        )
+
     rag.sync()
     print("Multi-Agent RAG inicializado e pronto!")
     
     def warmup_models():
         import time
-        import requests
         time.sleep(1)
         print("Pre-carregando modelos (warmup)...")
         try:
@@ -266,6 +343,68 @@ async def chat(request: ChatRequest):
         active_agent=active_agent,
         agent_info=agent_info,
     )
+
+
+@app.post("/chat_eval", response_model=ChatEvalResponse)
+async def chat_eval(request: ChatEvalRequest):
+    """
+    Endpoint voltado para avaliação offline.
+    Retorna (opcionalmente) contexto e fontes para permitir métricas de fidelidade/grounding.
+    """
+    if rag is None:
+        raise HTTPException(status_code=503, detail="RAG nao inicializado")
+
+    enhanced_question = request.message
+    try:
+        result = rag.query_with_metadata(enhanced_question)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao processar pergunta: {str(e)}")
+
+    return ChatEvalResponse(
+        response=(result.get("response") or "").strip(),
+        active_agent=result.get("active_agent", "fallback"),
+        intent=result.get("intent", "unknown"),
+        term=result.get("term", ""),
+        confidence=float(result.get("confidence", 0.0) or 0.0),
+        context=result.get("context") if request.include_context else None,
+        sources=result.get("sources") if request.include_sources else None,
+    )
+
+
+@app.post("/llm_judge", response_model=JudgeResponse)
+async def llm_judge(request: JudgeRequest):
+    """Executa LLM-as-a-Judge (opcionalmente com um modelo cloud alternativo)."""
+    if rag is None or rag.llm is None:
+        raise HTTPException(status_code=503, detail="LLM nao inicializado")
+
+    try:
+        llm = rag.llm
+        if request.judge_model and request.judge_model.strip():
+            ollama_url = rag.config.OLLAMA_BASE_URL or "http://ollama:11434"
+            # garantir que o modelo do juiz existe (pull se necessário)
+            # reusar a função do startup (está no escopo do módulo)
+            try:
+                ensure_ollama_model(ollama_url, request.judge_model.strip())
+            except Exception:
+                # não bloquear; se o modelo já existir e show falhou, seguimos
+                pass
+            llm = OllamaLLM(
+                model=request.judge_model.strip(),
+                base_url=ollama_url,
+                temperature=0.0,
+                num_predict=1024,
+            )
+        res = judge_answer(
+            llm=llm,
+            question=request.question,
+            answer=request.answer,
+            evidence=request.evidence,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro no judge: {str(e)}")
+
+    d = res.to_dict()
+    return JudgeResponse(**d)
 
 
 class BaselineRequest(BaseModel):

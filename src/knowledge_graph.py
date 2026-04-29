@@ -24,7 +24,15 @@ class KnowledgeGraph:
         # NFD decompõe caracteres acentuados
         normalized = unicodedata.normalize('NFD', text.lower().strip())
         # Remove marcas diacríticas (acentos)
-        return ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+        normalized = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+        # Remover pontuação simples e normalizar espaços
+        normalized = re.sub(r"[^\w\s]", " ", normalized, flags=re.UNICODE)
+        normalized = re.sub(r"\s+", " ", normalized).strip()
+        # Remover stopwords muito comuns que atrapalham matching (ex.: "Banco de Dados" vs "Banco Dados")
+        # Mantemos uma lista pequena para evitar colapsar demais os nomes.
+        normalized = re.sub(r"\b(de|da|do|das|dos|e)\b", " ", normalized)
+        normalized = re.sub(r"\s+", " ", normalized).strip()
+        return normalized
     
     def _index_node(self, node_id: str, data: dict):
         """Adiciona nó aos índices para busca rápida."""
@@ -129,7 +137,7 @@ class KnowledgeGraph:
             if docente:
                 doc_id = f"DOC:{docente}"
                 self.graph.add_node(doc_id, tipo="docente", nome=docente)
-                self.graph.add_edge(doc_id, disc_id, relacao="LECIONA")
+                self.graph.add_edge(doc_id, disc_id, relacao="LECIONA", confidence=1.0)
         
 
         # ICT é instituto, não curso — não criar nó CURSO:ICT
@@ -143,18 +151,18 @@ class KnowledgeGraph:
                 curso_id = f"CURSO:{sigla}"
                 if not self.graph.has_node(curso_id):
                     self.graph.add_node(curso_id, tipo="curso", nome=curso, sigla=sigla)
-                self.graph.add_edge(curso_id, disc_id, relacao="OFERECE")
+                self.graph.add_edge(curso_id, disc_id, relacao="OFERECE", confidence=1.0)
             else:
                 curso_id = f"CURSO:{curso}"
                 self.graph.add_node(curso_id, tipo="curso", nome=curso)
-                self.graph.add_edge(curso_id, disc_id, relacao="OFERECE")
+                self.graph.add_edge(curso_id, disc_id, relacao="OFERECE", confidence=1.0)
         
         for prereq_nome, prereq_codigo in prereqs:
             prereq_id = f"DISC:{prereq_nome}"
             if not self.graph.has_node(prereq_id):
                 self.graph.add_node(prereq_id, tipo="disciplina", nome=prereq_nome, codigo=prereq_codigo)
                 self._index_node(prereq_id, {"nome": prereq_nome, "codigo": prereq_codigo})
-            self.graph.add_edge(prereq_id, disc_id, relacao="PREREQUISITO_DE")
+            self.graph.add_edge(prereq_id, disc_id, relacao="PREREQUISITO_DE", confidence=1.0)
 
     def _process_regimento_file(self, filepath: Path):
         """Processa um arquivo de regimento/documento institucional."""
@@ -276,7 +284,7 @@ class KnowledgeGraph:
                     area_id = f"AREA:{area}"
                     if not self.graph.has_node(area_id):
                         self.graph.add_node(area_id, tipo="area", nome=area)
-                    self.graph.add_edge(doc_id, area_id, relacao="ESPECIALISTA_EM")
+                    self.graph.add_edge(doc_id, area_id, relacao="ESPECIALISTA_EM", confidence=1.0)
     
     def _build_curso_name_mapping(self):
         """Preenche _curso_name_to_sigla a partir dos nós curso já no grafo (sigla canônica)."""
@@ -432,7 +440,7 @@ class KnowledgeGraph:
                     # Conectar disciplina com a matriz
                     # A informação do termo fica na ARESTA, não no nó
                     # Assim a mesma disciplina pode estar em múltiplos termos
-                    self.graph.add_edge(matriz_id, disc_id, relacao="INCLUI", termo=termo_num, creditos=creditos)
+                    self.graph.add_edge(matriz_id, disc_id, relacao="INCLUI", termo=termo_num, creditos=creditos, confidence=1.0)
         
         # Extrair eletivas - usando padrões mais flexíveis para os títulos
         # Procurar todas as seções de eletivas no documento
@@ -459,32 +467,35 @@ class KnowledgeGraph:
                         eletiva_id = f"DISC:{eletiva}"
                         if not self.graph.has_node(eletiva_id):
                             self.graph.add_node(eletiva_id, tipo="disciplina", nome=eletiva, tipo_eletiva=eletiva_tipo)
-                        self.graph.add_edge(matriz_id, eletiva_id, relacao="ELETIVA_DE", grupo=eletiva_tipo)
+                        self.graph.add_edge(matriz_id, eletiva_id, relacao="ELETIVA_DE", grupo=eletiva_tipo, confidence=1.0)
 
     
-    def get_prerequisite_chain(self, disciplina: str, max_depth: int = 10) -> List[str]:
-        """Retorna a cadeia completa de pré-requisitos."""
+    def get_prerequisite_chain(self, disciplina: str, max_depth: int = 10, min_confidence: float = 0.0) -> List[str]:
+        """Retorna a cadeia completa de pré-requisitos, filtrando por confiança mínima."""
         disc_id = self._find_node(disciplina, "disciplina")
         if not disc_id:
             return []
-        
+
         chain = []
         visited = set()
-        
+
         def dfs(node, depth):
             if depth > max_depth or node in visited:
                 return
             visited.add(node)
-            
             for predecessor in self.graph.predecessors(node):
                 edge_data = self.graph.get_edge_data(predecessor, node)
-                # MultiDiGraph: iterar sobre todas as arestas
-                if self._has_edge_relation(edge_data, 'PREREQUISITO_DE'):
-                    node_data = self.graph.nodes[predecessor]
-                    if node_data.get('tipo') == 'disciplina':
-                        chain.append(node_data.get('nome'))
-                        dfs(predecessor, depth + 1)
-        
+                if not edge_data:
+                    continue
+                for edge in edge_data.values():
+                    if (edge.get('relacao') == 'PREREQUISITO_DE' and
+                            edge.get('confidence', 1.0) >= min_confidence):
+                        node_data = self.graph.nodes[predecessor]
+                        if node_data.get('tipo') == 'disciplina':
+                            chain.append(node_data.get('nome'))
+                            dfs(predecessor, depth + 1)
+                        break
+
         dfs(disc_id, 0)
         return chain
     
@@ -1103,23 +1114,19 @@ class KnowledgeGraph:
 
     # ── Métodos Neurossimbólicos ──────────────────────────────────────────────
 
-    def get_all_ancestors(self, disciplina: str) -> List[str]:
+    def get_all_ancestors(self, disciplina: str, min_confidence: float = 0.0) -> List[str]:
         """
-        Retorna TODOS os pré-requisitos transitivos (diretos + indiretos) usando
-        inferência transitiva via nx.ancestors() — núcleo da abordagem neurossimbólica.
-
-        Diferença em relação a get_prerequisite_chain():
-          - get_prerequisite_chain usa DFS até max_depth
-          - get_all_ancestors usa nx.ancestors() = fechamento transitivo completo do DAG
+        Retorna TODOS os pré-requisitos transitivos via nx.ancestors().
+        Suporta filtragem por confiança mínima da aresta.
         """
         disc_id = self._find_node(disciplina, "disciplina")
         if not disc_id:
             return []
 
-        # Construir subgrafo apenas com arestas PREREQUISITO_DE
         prereq_graph = nx.DiGraph()
         for u, v, data in self.graph.edges(data=True):
-            if data.get('relacao') == 'PREREQUISITO_DE':
+            if (data.get('relacao') == 'PREREQUISITO_DE' and
+                    data.get('confidence', 1.0) >= min_confidence):
                 prereq_graph.add_edge(u, v)
 
         if disc_id not in prereq_graph:
@@ -1160,6 +1167,52 @@ class KnowledgeGraph:
             docente_norm in self._normalize_text(d) or self._normalize_text(d) in docente_norm
             for d in docentes
         )
+
+    def get_prerequisite_confidence(self, disc_a: str, disc_b: str) -> float:
+        """Retorna a confiança da aresta PREREQUISITO_DE entre disc_a e disc_b."""
+        id_a = self._find_node(disc_a, "disciplina")
+        id_b = self._find_node(disc_b, "disciplina")
+        if not id_a or not id_b:
+            return 0.0
+        edge_data = self.graph.get_edge_data(id_a, id_b)
+        if not edge_data:
+            return 0.0
+        for edge in edge_data.values():
+            if edge.get('relacao') == 'PREREQUISITO_DE':
+                return edge.get('confidence', 1.0)
+        return 0.0
+
+    def get_unlocked_disciplines(self, completed: List[str]) -> List[str]:
+        """
+        Dado um conjunto de disciplinas já cursadas, retorna todas as disciplinas
+        cujos pré-requisitos diretos estão inteiramente satisfeitos.
+        """
+        completed_ids = set()
+        for disc in completed:
+            node_id = self._find_node(disc, "disciplina")
+            if node_id:
+                completed_ids.add(node_id)
+
+        if not completed_ids:
+            return []
+
+        unlocked = []
+        for node_id, data in self.graph.nodes(data=True):
+            if data.get('tipo') != 'disciplina' or node_id in completed_ids:
+                continue
+
+            direct_prereqs = [
+                pred for pred in self.graph.predecessors(node_id)
+                if (self._has_edge_relation(self.graph.get_edge_data(pred, node_id), 'PREREQUISITO_DE')
+                    and self.graph.nodes[pred].get('tipo') == 'disciplina')
+            ]
+
+            if direct_prereqs and all(p in completed_ids for p in direct_prereqs):
+                nome = data.get('nome')
+                if nome:
+                    unlocked.append(nome)
+
+        return sorted(unlocked)
 
     def get_symbolic_facts(self, disciplina: str) -> Dict:
         """

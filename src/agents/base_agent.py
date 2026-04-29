@@ -4,6 +4,7 @@ Classe base para todos os agentes especializados do FESP-AI.
 
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional
+import re
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -33,7 +34,7 @@ class BaseAgent(ABC):
         if self.knowledge_graph is not None:
             try:
                 from ..neurosymbolic_validator import SymbolicValidator
-                self.validator = SymbolicValidator(self.knowledge_graph)
+                self.validator = SymbolicValidator(self.knowledge_graph, llm=self.llm)
             except Exception:
                 pass  # Não bloquear inicialização se validator falhar
 
@@ -68,6 +69,8 @@ class BaseAgent(ABC):
                 "agent": self.name,
                 "agent_description": self.description,
                 "context_length": 0,
+                "context": "",
+                "sources": [],
             }
 
         # ── Simbólico → Neural: enriquecer contexto com fatos verificados do KG ──
@@ -90,11 +93,14 @@ class BaseAgent(ABC):
             if annotation:
                 response += annotation
 
+        sources = self._extract_sources_from_context(enriched_context)
         return {
             "response": response,
             "agent": self.name,
             "agent_description": self.description,
             "context_length": len(enriched_context),
+            "context": enriched_context,
+            "sources": sources,
         }
 
     def _format_docs(self, docs) -> str:
@@ -117,3 +123,29 @@ class BaseAgent(ABC):
             return self.graph_rag.query_graph(intent, term)
         except Exception:
             return None
+
+    def _extract_sources_from_context(self, context: str) -> List[str]:
+        """
+        Extrai "sources" do contexto formatado.
+
+        Convenção atual do projeto:
+        - trechos do vector store vêm com headers entre colchetes: `[Disciplina: ... - secao]` ou `[Documento - secao]`
+        - trechos do KG normalmente incluem blocos textuais sem header padronizado
+        """
+        if not context:
+            return []
+        headers = re.findall(r"^\[([^\]]+)\]\s*$", context, flags=re.MULTILINE)
+        cleaned = []
+        for h in headers:
+            s = re.sub(r"\s+", " ", h).strip()
+            if s:
+                cleaned.append(s)
+        # manter ordem e remover duplicatas
+        seen = set()
+        uniq = []
+        for s in cleaned:
+            if s in seen:
+                continue
+            seen.add(s)
+            uniq.append(s)
+        return uniq

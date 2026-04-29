@@ -4,7 +4,7 @@ from pathlib import Path
 
 class Config:
     # Modelo de geração: use MODEL_NAME no .env ou docker para testar outro (ex.: llama3.1:70b na nuvem)
-    MODEL_NAME = os.getenv("MODEL_NAME", "ministral-3:8b")
+    MODEL_NAME = os.getenv("MODEL_NAME", "gpt-oss:120b-cloud")
     # Embeddings: mxbai-embed-large é ótimo para RAG; para multilíngue/PT-BR pode testar bge-m3 (ollama pull bge-m3)
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "mxbai-embed-large")
     PERSIST_DIR = "./chroma_db_unifesp"

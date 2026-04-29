@@ -44,6 +44,26 @@ class DocentesAgent(BaseAgent):
         cleaned = re.sub(r'\s+', ' ', cleaned).strip()
         return cleaned
 
+    def _detect_discipline_docentes(self, question: str) -> str:
+        """
+        Extrai o nome da disciplina de perguntas 'quais professores dão X?'.
+        Fallback para quando o intent chegou classificado incorretamente.
+        """
+        patterns = [
+            r'(?:professore?s?|docentes?)\s+(?:d[aã]o|que\s+(?:d[aã]o|leciona[m]?|ensina[m]?|ministra[m]?)|de|da|do)\s+(.+?)(?:\?|$)',
+            r'd[aã]o\s+([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
+            r'(?:quem\s+)?(?:leciona[m]?|ensina[m]?|ministra[m]?)\s+(.+?)(?:\?|$)',
+        ]
+        q_lower = question.lower().strip()
+        for pattern in patterns:
+            m = re.search(pattern, q_lower, re.IGNORECASE)
+            if m:
+                t = m.group(1).strip()
+                t = re.sub(r'[\?.,!]+$', '', t).strip()
+                if len(t) > 3:
+                    return t
+        return ""
+
     def retrieve(self, question: str, intent: str, term: str) -> str:
         parts = []
 
@@ -69,6 +89,17 @@ class DocentesAgent(BaseAgent):
                         "docente_leciona_disciplina",
                     ):
                         return "\n\n".join(parts)
+
+        # 1b. Fallback: intent classificado errado mas pergunta é "quais professores dão X?"
+        #     Acontece quando o classificador semântico retorna intent errado (ex: ementa_disciplina)
+        #     mas o roteador ainda enviou a pergunta para o Agente Docentes.
+        if intent not in self.GRAPH_INTENTS and not parts and self.graph_rag:
+            disc_from_q = self._detect_discipline_docentes(question)
+            if disc_from_q:
+                graph_result = self._get_graph_context("discipline_docentes", disc_from_q)
+                if graph_result and "Não encontrei" not in graph_result:
+                    parts.append(graph_result)
+                    return "\n\n".join(parts)
 
         # 2. Para "quem leciona X?" o term é o nome da DISCIPLINA
         #    → buscar seção "docentes" do documento da disciplina no vector store
