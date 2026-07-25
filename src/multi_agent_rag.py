@@ -44,6 +44,30 @@ class MultiAgentRAG:
             "color": "#ef4444",
             "icon": "FileText",
         },
+        "conversa": {
+            "label": "Assistente Conversacional",
+            "description": "Saudações, agradecimentos e conversa do dia a dia",
+            "color": "#22c55e",
+            "icon": "MessageCircle",
+        },
+        "montar_grade": {
+            "label": "Planejador de Trajetória",
+            "description": "Monta sua grade semestre a semestre respeitando pré-requisitos",
+            "color": "#a855f7",
+            "icon": "Route",
+        },
+        "noticias": {
+            "label": "Notícias UNIFESP",
+            "description": "Notícias e novidades oficiais do campus (ao vivo)",
+            "color": "#eab308",
+            "icon": "Newspaper",
+        },
+        "web_sjc": {
+            "label": "Site do Campus",
+            "description": "Busca em qualquer página do site do campus SJC",
+            "color": "#0ea5e9",
+            "icon": "Globe",
+        },
         "fallback": {
             "label": "Assistente Geral",
             "description": "Assistente geral UNIFESP ICT",
@@ -83,6 +107,13 @@ class MultiAgentRAG:
         self.relation_extractor = self._rag.relation_extractor
         self.graph_enricher = self._rag.graph_enricher
 
+        # B5: KGC combina similaridade estrutural + embeddings semânticos
+        if self.knowledge_graph is not None and getattr(self._rag, "embeddings", None):
+            try:
+                self.knowledge_graph.kgc.set_embeddings(self._rag.embeddings)
+            except Exception:
+                pass
+
         # Construir pipeline LangGraph
         self._build_pipeline()
 
@@ -98,17 +129,20 @@ class MultiAgentRAG:
             print(f"[MultiAgentRAG] Erro ao construir pipeline: {e}")
             self._pipeline = None
 
-    def query(self, question: str) -> str:
+    def query(self, question: str, history: str = "") -> str:
         """
         Processa a pergunta pelo sistema multi-agente.
         Retorna apenas o texto da resposta (compatibilidade com api.py).
         """
-        result = self.query_with_metadata(question)
+        result = self.query_with_metadata(question, history=history)
         return result["response"]
 
-    def query_with_metadata(self, question: str) -> Dict:
+    def query_with_metadata(self, question: str, history: str = "") -> Dict:
         """
         Processa a pergunta e retorna resposta + metadados do agente ativo.
+
+        `history`: últimas trocas formatadas ("Aluno: ...\nAssistente: ...") para
+        continuidade de diálogo nos prompts dos agentes.
         """
         if not self._pipeline:
             # Fallback para RAG original se pipeline não disponível
@@ -123,6 +157,7 @@ class MultiAgentRAG:
         initial_state = {
             "question": question,
             "enhanced_question": question,
+            "history": history,
             "active_agent": "fallback",
             "intent": "unknown",
             "term": "",
@@ -145,6 +180,7 @@ class MultiAgentRAG:
                 "confidence": final_state.get("confidence", 0.0),
                 "context": final_state.get("context", ""),
                 "sources": final_state.get("sources", []),
+                "plan_request": final_state.get("plan_request"),
                 "agent_metadata": self.AGENT_METADATA.get(
                     active_agent, self.AGENT_METADATA["fallback"]
                 ),

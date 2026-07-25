@@ -49,13 +49,38 @@ class DisciplinasAgent(BaseAgent):
             docs = self.rag.retriever.invoke(question)
             parts.append(self._format_docs(docs))
 
+        # 4. As duas bases "conversam": seções do site do campus complementam
+        #    perguntas abertas — mas NUNCA os intents estruturados de grafo
+        #    (prereqs/dependents/docentes), para não poluir dados verificados.
+        if intent not in self.GRAPH_INTENTS:
+            site_ctx = self._site_supplement(question)
+            if site_ctx:
+                parts.append(site_ctx)
+
         return "\n\n".join(parts) if parts else ""
+
+    def _site_supplement(self, question: str) -> str:
+        """Top seções do site do campus relevantes à pergunta, com link."""
+        try:
+            from .web_sjc_agent import search_site_sections
+            secoes = search_site_sections(question, top_k=2)
+        except Exception:
+            return ""
+        if not secoes:
+            return ""
+        partes = ["[PAGINAS DO SITE DO CAMPUS — complemento; cite o link ao usar]"]
+        for p in secoes:
+            partes.append(f"[{p['titulo']}]\nLink: {p['url']}\n{p['texto'][:1200]}")
+        return "\n\n".join(partes)
 
     def _resolve_discipline_name(self, question: str, term: str) -> Optional[str]:
         """Determina o nome da disciplina a partir da pergunta ou do termo extraído."""
         if term and term not in ("", "unknown"):
-            return term
-        # Tentar extração pelo método do RAG original
+            words = set(term.lower().split())
+            if not words.issubset(self._PRONOUN_WORDS):
+                # Tentar expansão de sigla/código pelo KG antes de usar o termo bruto
+                expanded = self._expand_via_kg(term)
+                return expanded if expanded else term
         return self.rag._extract_discipline_name(question)
 
     def _normalize_discipline_name(self, name: str) -> str:
@@ -139,8 +164,9 @@ class DisciplinasAgent(BaseAgent):
             return []
 
     def get_prompt_template(self) -> str:
-        return """Voce e o Assistente UNIFESP ICT especializado em DISCIPLINAS e PRE-REQUISITOS.
-Responda APENAS em PORTUGUES BRASILEIRO.
+        return """Voce e o assistente virtual da UNIFESP ICT, especialista em DISCIPLINAS e PRE-REQUISITOS — simpatico e acolhedor, como um colega que ajuda os alunos. Fale sempre em PORTUGUES BRASILEIRO, de forma natural e conversacional.
+
+""" + self.GOLDEN_RULE + """
 
 CONTEXTO DA BASE DE DADOS:
 {context}
@@ -148,14 +174,15 @@ CONTEXTO DA BASE DE DADOS:
 Pergunta: {question}
 
 INSTRUCOES:
-1. Use SOMENTE as informacoes presentes no CONTEXTO acima.
-2. Para pré-requisitos: apresente a cadeia completa de dependências.
-3. Para disciplinas ("o que é X?", "descreva X", "o que estuda em X?"): descreva a ementa,
-   o conteúdo programático e os tópicos abordados presentes no contexto.
-4. Para informações gerais: cite nome, código, carga horária e docentes quando disponíveis.
+1. Responda com base EXCLUSIVAMENTE no CONTEXTO acima — nenhuma palavra inventada.
+2. Para pré-requisitos: apresente a cadeia completa de dependencias que aparece no contexto.
+3. Para ementas/conteudo: descreva os topicos presentes no contexto, sem adicionar topicos extras.
+4. Para informacoes gerais: cite somente nome, codigo, carga horaria e docentes que aparecem no contexto.
+5. Se algum campo pedido nao estiver no contexto, omita-o ou diga que nao ha informacao.
+6. O bloco [PAGINAS DO SITE DO CAMPUS], quando presente, e complemento: ao usar
+   informacao dele, SEMPRE cite o link. Se divergir dos dados verificados da
+   base, prefira os dados verificados e mencione a divergencia.
 
-REGRA ABSOLUTA: Se a informacao pedida NAO estiver no CONTEXTO acima, responda:
-"Nao tenho essa informacao na base de dados da UNIFESP ICT."
-NAO invente, suponha ou extrapole NENHUM dado (nome, código, carga horária, etc.).
+TOM: caloroso e direto, como num bate-papo. Pode abrir com uma frase amigavel e fechar se colocando a disposicao; no maximo 1 emoji. A precisao dos fatos vem sempre em primeiro lugar.
 
-Resposta (baseada SOMENTE no contexto acima):"""
+Resposta:"""

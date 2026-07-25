@@ -6,13 +6,13 @@ from .intent_classifier import IntentClassifier, ClassificationResult
 class GraphRAGEngine:
     """Metodologia híbrida GraphRAG + RAG"""
 
-    def __init__(self, knowledge_graph: KnowledgeGraph, embeddings_model=None):
+    def __init__(self, knowledge_graph: KnowledgeGraph, embeddings_model=None, llm=None):
         self.kg = knowledge_graph
-        
-        # Novo classificador de intenção baseado em embeddings
-        self.intent_classifier = IntentClassifier(embeddings_model)
+
+        # Classificador de intenção: embeddings + LLM fallback
+        self.intent_classifier = IntentClassifier(embeddings_model, llm=llm)
         self._use_semantic_classification = embeddings_model is not None
-        
+
         # Patterns regex legados (fallback)
         self.graph_patterns = {
             'prerequisite_chain': [
@@ -93,13 +93,31 @@ class GraphRAGEngine:
                 r'eletivas?\s+(?:dispon[ií]veis?\s+)?(?:para|no|na|do|da|de)\s+(.+?)(?:\?|$)',
                 r'(?:liste|mostre|quero\s+ver)\s+(?:as?\s+)?eletivas?\s+(?:de|do|da)\s+(.+?)(?:\?|$)',
             ],
+            # trajectory_planning ANTES de matriz_info/todos_termos_curso: os
+            # pega-tudo desses intents casam com o "de" de "Banco de Dados" ou
+            # de "onde" e roubam queries de planejamento de trajetória.
+            'trajectory_planning': [
+                # 2-group: "já cursei/fiz X, Y: como chego em Z"
+                r'(?:j[aá]\s+)?(?:cursei|fiz|conclui|conclu[ií])\s+(.+?)[,:]\s+(?:como\s+)?(?:chego|chegar|fica)\s+(?:em\s+)?([^.!?]+?)(?:[.!?]|$)',
+                # "já fiz X, Y, como fica?" — completed only
+                r'(?:j[aá]\s+)?(?:fiz|conclui|conclu[ií])\s+(.+?)[,.]?\s+(?:como\s+fica|o\s+que\s+falta)\s*\??',
+                # "quero chegar em TARGET, já fiz COMPLETED" — target first
+                r'quero\s+chegar\s+em\s+([^,.!?]+?),\s+(?:j[aá]\s+)?(?:fiz|cursei|conclui|conclu[ií])\s+([^.!?]+?)(?:[.!?]|$)',
+                # "quero chegar em X" — para em qualquer pontuação
+                r'quero\s+chegar\s+em\s+([^,.!?]+?)(?:[,.!?]|$)',
+                r'caminho\s+(?:m[ií]nimo\s+)?para\s+(?:chegar\s+(?:em|at[eé])\s+)?([^.!?]+?)(?:[.!?]|$)',
+                r'como\s+cheg(?:o|ar)\s+(?:em|at[eé])\s+([^.!?]+?)(?:[.!?]|$)',
+                r'sequência\s+(?:de\s+disciplinas?\s+)?para\s+(?:cursar\s+)?([^.!?]+?)(?:[.!?]|$)',
+                r'planejamento\s+para\s+cursar\s+([^.!?]+?)(?:[.!?]|$)',
+                r'(?:chegar?\s+(?:em|at[eé])|at[eé])\s+([^.!?]+?)(?:[.!?]|$)',
+            ],
             'matriz_info': [
                 r'(?:qual|como\s+[eé])\s+(?:a\s+)?matriz\s+(?:curricular\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
                 r'(?:qual|como\s+[eé])\s+(?:a\s+)?estrutura\s+(?:do\s+curso\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
                 r'estrutura\s+(?:curricular\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
                 r'quantos?\s+termos?\s+(?:tem|possui|dura)\s+(?:o\s+)?(?:curso\s+)?(?:de\s+)?(.+?)(?:\?|$)',
                 r'dura[çc][aã]o\s+(?:do\s+curso\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
-                r'(?:carga\s+hor[aá]ria\s+)?(?:total\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
+                r'carga\s+hor[aá]ria\s+(?:total\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
                 r'(?:quantas?\s+)?horas?\s+(?:tem|precisa|possui)\s+(?:o\s+)?(?:curso\s+)?(?:de\s+)?(.+?)(?:\?|$)',
                 # Padrões conversacionais
                 r'(?:me\s+)?fale\s+(?:sobre\s+)?(?:a\s+)?(?:matriz\s+)?(?:do|da|de)\s+(.+?)(?:\?|$)',
@@ -126,7 +144,11 @@ class GraphRAGEngine:
                 r'cursos?\s+(?:de\s+)?gradua[çc][aã]o\s+(?:do|da|no|na)\s+(?:unifesp|ict)(?:\?|$)',
             ],
         }
-    
+
+    def set_llm(self, llm) -> None:
+        """Injeta o LLM após a construção (chamado em rag.py após inicializar o LLM)."""
+        self.intent_classifier.set_llm(llm)
+
     def initialize_classifier(self):
         """Inicializa o classificador de intenção com embeddings."""
         if self._use_semantic_classification:
@@ -144,14 +166,100 @@ class GraphRAGEngine:
         # 1. Tentar classificação semântica primeiro
         if self._use_semantic_classification and self.intent_classifier._initialized:
             result = self.intent_classifier.classify(question)
-            
+
             if result.intent != 'unknown' and result.confidence >= 0.45:
                 # Pós-processamento para casos especiais
                 termo = self._post_process_term(question, result.intent, result.term)
+                termo = self._ground_discipline_term(question, result.intent, termo)
+                termo = self._ground_curso_term(question, result.intent, termo)
                 return True, result.intent, termo
-        
+
         # 2. Fallback para regex (mantém compatibilidade)
-        return self._regex_fallback(question)
+        use, intent, termo = self._regex_fallback(question)
+        if use and intent and termo:
+            termo = self._ground_discipline_term(question, intent, termo)
+            termo = self._ground_curso_term(question, intent, termo)
+        return use, intent, termo
+
+    # Intents cujo termo é nome/sigla de curso
+    _CURSO_TERM_INTENTS = {
+        'eletivas_curso', 'matriz_info', 'coordenador_curso', 'todos_termos_curso',
+    }
+
+    def _ground_curso_term(self, question: str, intent: str, termo: str) -> str:
+        """
+        Garante que o termo de intents de curso resolve no KG; se a extração
+        capturou lixo (ex.: "algumas dessas eletivas"), procura um curso citado
+        literalmente na pergunta.
+        """
+        if intent not in self._CURSO_TERM_INTENTS or not termo:
+            return termo
+        if self.kg._find_node(termo.strip(), "curso") or \
+           self.kg._find_node(termo.strip(), "matriz_curricular"):
+            return termo
+        grounded = self._find_curso_in_text(question)
+        if grounded:
+            from .telemetry import incr
+            incr("grounding_curso")
+            return grounded
+        return termo
+
+    def _find_curso_in_text(self, text: str) -> str:
+        """Retorna o nome do curso/matriz do KG citado no texto (match mais longo)."""
+        text_norm = f" {self.kg._normalize_text(text)} "
+        best_nome, best_len = "", 0
+        for _, data in self.kg.graph.nodes(data=True):
+            if data.get("tipo") not in ("curso", "matriz_curricular"):
+                continue
+            for chave in (data.get("nome", ""), data.get("sigla") or ""):
+                chave_norm = self.kg._normalize_text(chave)
+                if chave_norm and len(chave_norm) > best_len and f" {chave_norm} " in text_norm:
+                    best_nome, best_len = data.get("nome", ""), len(chave_norm)
+        return best_nome
+
+    # Intents cujo termo (ou alvo, no caso de trajectory) é nome de disciplina
+    _DISCIPLINE_TERM_INTENTS = {
+        'prerequisite_chain', 'dependents', 'discipline_docentes',
+        'ementa_disciplina', 'co_prerequisite', 'trajectory_planning',
+    }
+
+    def _ground_discipline_term(self, question: str, intent: str, termo: str) -> str:
+        """
+        Garante que o termo extraído resolve para uma disciplina do KG.
+        A extração por regex/stopwords pode capturar lixo (ex.: "feito
+        disciplinas total"); nesse caso, procura uma disciplina do KG citada
+        literalmente na pergunta e usa o match mais longo.
+        """
+        if intent not in self._DISCIPLINE_TERM_INTENTS or not termo:
+            return termo
+        completed = ""
+        target = termo
+        if intent == 'trajectory_planning' and ':' in termo:
+            completed, target = termo.rsplit(':', 1)
+            if not target.strip():
+                # formato "cursadas:" (sem alvo) é intencional
+                return termo
+        if self.kg._find_node(target.strip(), "disciplina"):
+            return termo
+        grounded = self._find_discipline_in_text(question)
+        if not grounded:
+            return termo
+        from .telemetry import incr
+        incr("grounding_disciplina")
+        return f"{completed}:{grounded}" if completed else grounded
+
+    def _find_discipline_in_text(self, text: str) -> str:
+        """Retorna o nome da disciplina do KG citada no texto (match mais longo)."""
+        text_norm = f" {self.kg._normalize_text(text)} "
+        best_nome, best_len = "", 0
+        for _, data in self.kg.graph.nodes(data=True):
+            if data.get("tipo") != "disciplina":
+                continue
+            for chave in (data.get("nome", ""), data.get("sigla") or ""):
+                chave_norm = self.kg._normalize_text(chave)
+                if chave_norm and len(chave_norm) > best_len and f" {chave_norm} " in text_norm:
+                    best_nome, best_len = data.get("nome", ""), len(chave_norm)
+        return best_nome
     
     def _post_process_term(self, question: str, intent: str, term: str) -> str:
         """Pós-processamento do termo extraído para casos especiais."""
@@ -187,7 +295,28 @@ class GraphRAGEngine:
                 curso = re.sub(r'\d+\s*', '', term).strip()
                 if curso:
                     return f"{numero}:{curso}"
-        
+
+        # Caso especial: trajectory_planning com completed+target
+        if intent == 'trajectory_planning' and ':' not in term:
+            # "quero chegar em TARGET, já fiz COMPLETED"
+            inv = re.search(
+                r'quero\s+chegar\s+em\s+(.+?),\s+(?:j[aá]\s+)?(?:fiz|cursei|conclui|conclu[ií])\s+(.+?)(?:\?|$)',
+                question_lower
+            )
+            if inv:
+                target = re.sub(r'[\?.,!]+$', '', inv.group(1)).strip()
+                completed = re.sub(r'[\?.,!]+$', '', inv.group(2)).strip()
+                return f"{completed}:{target}"
+            # "já cursei/fiz X: como chego em Y"
+            fwd = re.search(
+                r'(?:j[aá]\s+)?(?:cursei|fiz|conclui|conclu[ií])\s+(.+?)[,:]\s+(?:como\s+)?(?:chego|chegar|fica)\s+(?:em\s+)?(.+?)(?:\?|$)',
+                question_lower
+            )
+            if fwd:
+                completed = re.sub(r'[\?.,!]+$', '', fwd.group(1)).strip()
+                target = re.sub(r'[\?.,!]+$', '', fwd.group(2)).strip()
+                return f"{completed}:{target}"
+
         return term
     
     def _regex_fallback(self, question: str) -> Tuple[bool, Optional[str], Optional[str]]:
@@ -233,6 +362,15 @@ class GraphRAGEngine:
                         docente = re.sub(r'[\?.,!]+$', '', docente).strip()
                         disciplina = re.sub(r'[\?.,!]+$', '', disciplina).strip()
                         termo = f"{docente}:{disciplina}"
+                    # Caso especial para trajectory_planning com completed+target
+                    elif query_type == 'trajectory_planning' and len(match.groups()) >= 2:
+                        g1 = re.sub(r'[\?.,!]+$', '', match.group(1)).strip()
+                        g2 = re.sub(r'[\?.,!]+$', '', match.group(2)).strip()
+                        # "quero chegar em TARGET, já fiz COMPLETED" → grupos invertidos
+                        if re.match(r'quero\s+chegar\s+em\b', question_lower):
+                            termo = f"{g2}:{g1}"
+                        else:
+                            termo = f"{g1}:{g2}"
                     elif match.groups():
                         termo = match.group(1).strip()
                         termo = re.sub(r'[\?.,!]+$', '', termo).strip()
@@ -243,10 +381,23 @@ class GraphRAGEngine:
         
         return False, None, None
     
+    def _resolve_discipline_term(self, termo: str) -> str:
+        """Expande sigla/código para o nome completo da disciplina no KG."""
+        node_id = self.kg._find_node(termo, "disciplina")
+        if node_id:
+            nome = self.kg.graph.nodes[node_id].get("nome", "")
+            if nome:
+                return nome
+        return termo
+
     def query_graph(self, query_type: str, termo: str) -> Optional[str]:
         """
         Executa uma query no Knowledge Graph e formata a resposta.
         """
+        # Normalizar termos de disciplina (expande siglas, corrige casing)
+        if query_type in ('prerequisite_chain', 'dependents', 'discipline_docentes'):
+            termo = self._resolve_discipline_term(termo)
+
         if query_type == 'prerequisite_chain':
             chain = self.kg.get_prerequisite_chain(termo)
             if chain:
@@ -258,7 +409,9 @@ class GraphRAGEngine:
 Para cursar **{termo}**, você precisa ter cursado anteriormente:
 {chr(10).join(f'- {d}' for d in chain)}
 
-Total: {len(chain)} pré-requisito(s) na cadeia."""
+Total: {len(chain)} pré-requisito(s) na cadeia.
+
+*Regras aplicadas: `prereq_transitivity` (fecho transitivo verificado em {len(chain)} aresta(s) do Knowledge Graph)*"""
             else:
                 return f"**{termo}** não possui pré-requisitos ou não foi encontrada no sistema."
         
@@ -544,8 +697,189 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                 resultado += f"\n**Total:** {len(eletivas)} eletivas disponíveis."
                 return resultado
             else:
-                return f"Não encontrei eletivas para **{curso_limpo}**."
-        
+                # Distinguir "curso desconhecido" de "curso sem lista de eletivas na base"
+                curso_node = self.kg._find_node(curso_limpo, "curso") or \
+                             self.kg._find_node(curso_limpo, "matriz_curricular")
+                if curso_node:
+                    nome_curso = self.kg.graph.nodes[curso_node].get("nome", curso_limpo)
+                    return (
+                        f"A base de dados não lista eletivas específicas para **{nome_curso}**. "
+                        "A matriz curricular prevê vagas de eletivas (Eletiva I, II, ...), mas o "
+                        "detalhamento dos grupos de eletivas desse curso não está disponível — "
+                        "consulte a coordenação ou o portal da UNIFESP."
+                    )
+                # Termo pode ser lixo de extração ("algumas dessas eletivas") —
+                # tentar achar um curso citado nele antes de desistir
+                grounded = self._find_curso_in_text(curso_limpo)
+                if grounded:
+                    return self.query_graph('eletivas_curso', grounded)
+                return (
+                    "De qual curso você quer ver as eletivas? "
+                    "Por exemplo: *eletivas de BCC* ou *eletivas do BCT*. 😊"
+                )
+
+        elif query_type == 'critical_disciplines':
+            from .neurosymbolic_validator import InferenceEngine
+            engine = InferenceEngine(self.kg)
+            critical = engine.critical_disciplines(min_dependents=2)
+            if not critical:
+                return "Não encontrei disciplinas com dependentes suficientes no grafo."
+
+            # Filtrar por curso se fornecido — com grounding do termo
+            # (o termo pode vir sujo, ex.: "disciplinas críticas do bcc")
+            nome_curso_filtro = None
+            if termo.strip():
+                curso_node = self.kg._find_node(termo.strip(), "curso") or \
+                             self.kg._find_node(termo.strip().upper(), "curso")
+                if not curso_node:
+                    grounded = self._find_curso_in_text(termo)
+                    if grounded:
+                        curso_node = self.kg._find_node(grounded, "curso")
+                if curso_node:
+                    nome_curso_filtro = self.kg.graph.nodes[curso_node].get("nome", termo)
+                    discs_do_curso = {
+                        self.kg.graph.nodes[v].get("nome", "").lower()
+                        for _, v, d in self.kg.graph.out_edges(curso_node, data=True)
+                        if d.get("relacao") in ("INCLUI", "OFERECE")
+                    }
+                    critical = [(nome, n) for nome, n in critical if nome.lower() in discs_do_curso]
+
+            # Dedupe por nome normalizado (o KG tem variantes tipo
+            # "Fundamentos de/da Biologia Moderna")
+            vistos, unicos = set(), []
+            for nome, n_deps in critical:
+                chave = self.kg._normalize_text(nome)
+                if chave not in vistos:
+                    vistos.add(chave)
+                    unicos.append((nome, n_deps))
+            critical = unicos
+
+            if nome_curso_filtro:
+                resultado = (
+                    f"**Disciplinas mais críticas de {nome_curso_filtro}** "
+                    "(pela regra `critical_discipline`: ∀x: |dependentes(x)| ≥ θ)\n\n"
+                )
+            else:
+                resultado = (
+                    "**Disciplinas mais críticas do currículo** "
+                    "(pela regra `critical_discipline`: ∀x: |dependentes(x)| ≥ θ)\n\n"
+                    "*Considerando todos os cursos do ICT — cite um curso para filtrar "
+                    "(ex.: \"disciplinas críticas de BCC\").*\n\n"
+                )
+            resultado += "| Disciplina | Dependentes |\n|---|---|\n"
+            for nome, n_deps in critical[:12]:
+                resultado += f"| {nome} | {n_deps} |\n"
+            resultado += f"\n*Critério: mínimo {2} disciplinas que dependem direta ou indiretamente.*"
+            return resultado
+
+        elif query_type == 'co_prerequisite':
+            from .neurosymbolic_validator import InferenceEngine
+            engine = InferenceEngine(self.kg)
+            co_prereqs = engine.find_co_prerequisites(termo)
+            if not co_prereqs:
+                node_id = self.kg._find_node(termo, "disciplina")
+                if node_id:
+                    nome = self.kg.graph.nodes[node_id].get("nome", termo)
+                    return f"**{nome}** não compartilha pré-requisitos com nenhuma outra disciplina."
+                return f"Não encontrei **{termo}** na base de dados."
+            node_id = self.kg._find_node(termo, "disciplina")
+            nome_disc = self.kg.graph.nodes[node_id].get("nome", termo) if node_id else termo
+            resultado = f"**Disciplinas com pré-requisitos em comum com {nome_disc}** (co-pré-requisitos):\n\n"
+            for d in co_prereqs:
+                resultado += f"- {d}\n"
+            resultado += f"\n*Essas disciplinas compartilham ao menos um pré-requisito com {nome_disc}.*"
+            return resultado
+
+        elif query_type == 'trajectory_planning':
+            from .neurosymbolic_validator import _parse_trajectory_term, InferenceEngine
+            # Strip sentence-level noise that regex may have captured (e.g. "Compiladores. por onde começo")
+            termo_clean = re.split(r'[.!]', termo)[0].strip()
+            termo_clean = re.sub(
+                r'\s+(?:por\s+onde|como\s+fica|começo|inicio|inicio\.?|começo\.?)\b.*',
+                '', termo_clean, flags=re.IGNORECASE
+            ).strip()
+            # Se o termo completo é encontrado no KG como disciplina, é target puro (sem completed).
+            # Isso evita que ":" em nomes como "Lab X: Y" seja confundido com separador completed:target.
+            if self.kg._find_node(termo_clean, "disciplina"):
+                completed, target = [], termo_clean
+            else:
+                completed, target = _parse_trajectory_term(termo_clean)
+            if not target:
+                return "Por favor, informe a disciplina alvo (ex: 'Compiladores')."
+
+            # Resolve target to proper-cased name from KG
+            node_id = self.kg._find_node(target, "disciplina")
+            if node_id is None:
+                # Extração pode ter capturado frase inteira — procurar uma
+                # disciplina conhecida citada dentro do termo bruto
+                grounded = self._find_discipline_in_text(target)
+                if grounded:
+                    node_id = self.kg._find_node(grounded, "disciplina")
+            if node_id:
+                target = self.kg.graph.nodes[node_id].get("nome", target)
+            else:
+                return (
+                    "Não consegui identificar a disciplina alvo na sua pergunta. "
+                    "Me diga qual disciplina você quer alcançar — por exemplo: "
+                    "\"Quero chegar em Compiladores, já fiz Matemática Discreta\"."
+                )
+
+            engine = InferenceEngine(self.kg)
+            phases = engine.plan_minimal_path(target, completed)
+
+            if phases is None:
+                return (
+                    f"Não encontrei **{target}** na base de dados da UNIFESP ICT, "
+                    "ou há uma inconsistência no grafo de pré-requisitos."
+                )
+
+            if len(phases) == 1 and phases[0] == [target]:
+                msg = f"Você já pode cursar **{target}**"
+                if completed:
+                    msg += f" com as disciplinas que já cursou ({', '.join(completed)})"
+                msg += " — todos os pré-requisitos estão atendidos."
+                return msg
+
+            total = sum(len(p) for p in phases)
+            # B2: propagação de incerteza — anotar elos com confiança parcial
+            conf_por_disc, path_bound = engine.path_confidence(phases)
+
+            resultado = f"**Caminho mínimo para {target}**"
+            if completed:
+                resultado += f"\n*Cursadas: {', '.join(completed)}*"
+            resultado += f"\n*{len(phases)} fase(s) · {total} disciplina(s) a cursar*\n\n"
+
+            for i, phase in enumerate(phases, 1):
+                plural = "s" if len(phase) > 1 else ""
+                resultado += f"**Fase {i}** *(em paralelo)*\n"
+                for disc in phase:
+                    conf = conf_por_disc.get(disc)
+                    if conf is not None:
+                        resultado += f"- {disc} *(confiança {conf:.0%})*\n"
+                    else:
+                        resultado += f"- {disc}\n"
+                resultado += "\n"
+
+            resultado += (
+                "*Disciplinas na mesma fase podem ser cursadas simultaneamente. "
+                "Verifique a oferta semestral no portal da UNIFESP.*"
+            )
+            if path_bound < 1.0:
+                resultado += (
+                    f"\n\n*Confiança do caminho (bound inferior): {path_bound:.0%} — "
+                    "alguns elos de pré-requisito têm confiança parcial no grafo.*"
+                )
+            resultado += (
+                "\n\n*Regras aplicadas: `minimal_path` (BFS topológico) + "
+                "`unlock_condition` (verificação de pré-requisitos por fase)*"
+            )
+            if not completed:
+                resultado += (
+                    "\n\n*💡 Dica: informe disciplinas já cursadas separadas por vírgula para "
+                    "um caminho personalizado. Ex: \"já cursei Cálculo 1, AED I: como chego em Compiladores?\"*"
+                )
+            return resultado
+
         return None
     
     def get_graph_context(self, question: str) -> Optional[str]:
