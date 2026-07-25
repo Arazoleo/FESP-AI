@@ -72,7 +72,9 @@ class DocentesAgent(BaseAgent):
             # Para discipline_docentes, term é disciplina → limpar ruído antes do lookup
             # Para outros, term é docente → sanitizar (remover lixo do extrator)
             if intent == "discipline_docentes":
-                lookup_term = self._clean_discipline_term(term)
+                cleaned = self._clean_discipline_term(term)
+                # Expansão de sigla/código (ex.: "IHC" → "Interação Humano-Computador")
+                lookup_term = self._expand_via_kg(cleaned) or cleaned
             else:
                 # Sanitizar: extrator pode capturar "Didier Vega, como faço?"
                 lookup_term = self._resolve_docente_name(term, question)
@@ -104,8 +106,9 @@ class DocentesAgent(BaseAgent):
         # 2. Para "quem leciona X?" o term é o nome da DISCIPLINA
         #    → buscar seção "docentes" do documento da disciplina no vector store
         if intent == "discipline_docentes" and self.db:
+            cleaned = self._clean_discipline_term(term)
             disciplina_docs = self._fetch_discipline_docentes_section(
-                self._clean_discipline_term(term)
+                self._expand_via_kg(cleaned) or cleaned
             )
             if disciplina_docs:
                 parts.append(self._format_docs(disciplina_docs))
@@ -161,7 +164,8 @@ class DocentesAgent(BaseAgent):
         # Tentar extrair nome da pergunta diretamente (mais confiável)
         extracted = self._extract_docente_name(question)
         if extracted:
-            return extracted
+            # Canonicalizar via KG: "Didier" → "Didier Vega-Oliveros"
+            return self._expand_via_kg(extracted, "docente") or extracted
 
         # Limpar o term: manter apenas sequência de palavras capitalizadas
         if term:
@@ -169,7 +173,7 @@ class DocentesAgent(BaseAgent):
             clean = re.split(r'[,?.]|(?:\bcomo\b|\bqual\b|\bonde\b|\bquem\b)', term, flags=re.IGNORECASE)[0]
             clean = clean.strip()
             if len(clean) >= 3:
-                return clean
+                return self._expand_via_kg(clean, "docente") or clean
 
         return term or ""
 
@@ -381,8 +385,9 @@ class DocentesAgent(BaseAgent):
             return []
 
     def get_prompt_template(self) -> str:
-        return """Voce e o Assistente UNIFESP ICT especializado em DOCENTES e CORPO DOCENTE.
-Responda APENAS em PORTUGUES BRASILEIRO.
+        return """Voce e o assistente virtual da UNIFESP ICT, especialista no CORPO DOCENTE — simpatico e prestativo, como um colega que conhece bem os professores do instituto. Fale sempre em PORTUGUES BRASILEIRO, de forma natural e conversacional.
+
+""" + self.GOLDEN_RULE + """
 
 CONTEXTO DA BASE DE DADOS:
 {context}
@@ -398,9 +403,11 @@ INSTRUCOES:
 5. Para "fale sobre o professor X" ou "quem é X": combine todas as informações disponíveis no
    contexto: email, sala, áreas de pesquisa e disciplinas lecionadas.
 
-REGRA ABSOLUTA: Se a informacao pedida NAO estiver no CONTEXTO acima, responda:
-"Nao tenho essa informacao na base de dados da UNIFESP ICT."
+REGRA ABSOLUTA: Se a informacao pedida NAO estiver no CONTEXTO acima, diga com gentileza que nao
+tem esse dado na base da UNIFESP ICT.
 NAO invente, suponha ou extrapole NENHUM dado (email, sala, area de pesquisa, disciplina, etc.).
 NUNCA fabrique um endereco de email ou numero de sala.
 
-Resposta (baseada SOMENTE no contexto acima):"""
+TOM: caloroso e direto, como num bate-papo. Pode abrir com uma frase amigavel e fechar se colocando a disposicao; no maximo 1 emoji. A precisao dos fatos vem sempre em primeiro lugar.
+
+Resposta:"""

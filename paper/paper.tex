@@ -1,0 +1,345 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+%
+\begin{document}
+%
+\title{Bidirectional Neuro-Symbolic Reasoning for Graph-RAG}
+%
+\author{Leonardo Arazo de Oliveira Araújo\inst{1}\orcidID{0009-0004-6118-5464} \and
+Didier Augusto Vega-Oliveros\inst{1}\orcidID{0000-0001-9569-3775}}
+%
+\authorrunning{Araújo and Oliveros}
+%
+\institute{Federal University of São Paulo (UNIFESP), São Paulo, Brazil\\
+\email{\{arazo.leonardo,didier.vega\}@unifesp.br}}
+%
+\maketitle
+%
+\begin{abstract}
+Retrieval-Augmented Generation (RAG) and its graph-based extensions improve factual grounding in LLMs but do not guarantee logical consistency when responses must satisfy explicit domain constraints. We propose a bidirectional neuro-symbolic validation framework for Graph-RAG that combines neural language understanding with First-Order Logic (FOL) reasoning over a domain knowledge graph (KG). The framework models dependency relations through FOL rules and extends symbolic inference with an Annotated Datalog engine built on PyReason, propagating confidence bounds across inferred facts. A bidirectional control mechanism supports symbolic enrichment, post-hoc validation with corrective rewriting, and direct symbolic execution for compositional queries. Evaluated on a UNIFESP academic-advisory benchmark, the framework reaches 84.2\% strict accuracy and 87.7\% weighted accuracy, an 87\% reduction in factual errors over LLM-only. Routing accuracy on neuro-symbolic queries is 100\% and symbolic verification is 96\%; the symbolic path is 3.1$\times$ faster than neural paths. An independent LLM-as-judge confirms high groundedness, correctness, completeness, and clarity.
+\keywords{Neuro-Symbolic AI \and Graph-RAG \and Annotated Datalog \and First-Order Logic \and Question Answering.}
+\end{abstract}
+
+
+\section{Introduction}
+
+Large Language Models (LLMs) have become an effective interface for accessing structured knowledge through natural language. Retrieval-Augmented Generation (RAG) improves factual grounding by incorporating external evidence into the generation process, while Graph-RAG extends this paradigm through knowledge graphs that support relational and multi-hop retrieval. Despite these advances, retrieval alone does not guarantee logical consistency: generated answers may remain grounded in retrieved evidence while violating domain-specific constraints that emerge from the composition of multiple facts.
+
+This limitation is particularly relevant in domains whose knowledge is naturally represented as dependency graphs, such as educational curricula, workflow planning, software dependencies, and regulatory compliance. In these settings, correctness depends not only on retrieving relevant information but also on reasoning over chains of dependencies and validating conclusions against explicit rules.
+
+Neuro-symbolic AI offers a promising approach to address this challenge, but existing methods typically employ symbolic reasoning either inside specialised learning architectures or as isolated post-processing checks, limiting the interaction between neural and symbolic components in practical Graph-RAG systems. We propose a bidirectional neuro-symbolic validation framework that combines FOL reasoning over a domain KG with an Annotated Datalog engine implemented through PyReason. The framework enables symbolic enrichment before generation, post-generation validation with corrective rewriting, and direct symbolic execution for compositional queries, while supporting confidence-aware reasoning through the propagation of probabilistic bounds over inferred relations.
+
+We evaluate the framework on a university advisory benchmark derived from institutional data at UNIFESP. The main contributions are: a bidirectional neuro-symbolic framework for Graph-RAG integrating symbolic enrichment, post-generation validation, direct symbolic execution, and confidence-aware reasoning through Annotated Datalog, and an experimental evaluation on a real-world academic-advisory benchmark, demonstrating substantial reductions in factual errors compared with LLM-only, RAG, and Graph-RAG baselines.
+
+
+\section{Related Work}
+
+\subsection{Retrieval-Augmented Generation and Graph-RAG}
+
+Retrieval-Augmented Generation (RAG) improves factual grounding by conditioning LLM outputs on external evidence~\cite{cheng2025,brown2025}, but text-based retrieval often struggles with queries that require reasoning across multiple relational constraints. Graph-RAG addresses this limitation through graph-structured representations and multi-hop traversal~\cite{zhang2025}, including knowledge-graph-guided retrieval~\cite{zhu2025} and graph-grounded question decomposition~\cite{linders2025}. Recent studies report consistent improvements on relation-intensive tasks~\cite{han2025} and high-stakes domains such as medicine~\cite{wu2024}. Nevertheless, graph retrieval provides supporting evidence rather than logical verification, leaving generated responses vulnerable to violations of domain-specific constraints.
+
+\subsection{Neuro-Symbolic Reasoning under Uncertainty}
+
+Neuro-symbolic AI combines the pattern-recognition capabilities of neural models with the explicit reasoning mechanisms of symbolic systems~\cite{garcez2023}. Existing approaches range from tightly integrated architectures with differentiable reasoning~\cite{yu2023} to loosely coupled pipelines that verify or refine generated outputs, with recent work showing improvements in QA through KG-grounded symbolic execution~\cite{saha2026,saxena2026}. Most existing systems employ symbolic reasoning as a single-stage process, either before or after generation. Our framework enables bidirectional interaction between neural and symbolic components and adds direct symbolic execution for compositional queries. Because real-world KGs are incomplete and noisy, we use the Annotated Datalog framework PyReason~\cite{aditya2023} to propagate confidence bounds over inferred relations, allowing the same validation pipeline to operate on both curated and heuristically extracted knowledge.
+
+
+\section{Bidirectional Neuro-Symbolic Framework}
+
+\subsection{System Overview}
+
+We propose a bidirectional neuro-symbolic framework for Graph-RAG, illustrated in Fig.~\ref{fig:pipeline}. The architecture integrates four main components: a hybrid retrieval over the document corpus, a domain knowledge graph (KG) built from the same sources, a \emph{symbolic reasoning layer} that supports FOL inference with probabilistic bounds, and a \emph{bidirectional validation loop} that couples the symbolic layer with neural generation. An intent classifier and multi-agent router dispatch each query to the appropriate combination of components.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{pipeline.png}
+\caption{Architecture of the proposed bidirectional neuro-symbolic Graph-RAG framework. The system combines hybrid retrieval, knowledge-graph reasoning, and bidirectional validation through symbolic enrichment, post-generation verification, and direct symbolic execution.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Hybrid Retrieval}
+
+Institutional documents (course descriptions, regulations, faculty profiles) are parsed into semantically structured chunks with section-level metadata, enabling intent-aware retrieval. We combine dense retrieval with Maximum Marginal Relevance (MMR) over vector embeddings for semantic similarity, and BM25 for exact lexical matching. The two rankings are fused through Reciprocal Rank Fusion (RRF):
+\begin{equation}
+\mathrm{score}(d)=\sum_i \frac{1}{k+r_i(d)},
+\label{eq:rrf}
+\end{equation}
+where $r_i(d)$ is the rank of document $d$ under retriever $i$. The top-$N$ list feeds the downstream Graph-RAG pipeline; RRF avoids score calibration across heterogeneous retrievers and is robust on both semantic and keyword-oriented queries.
+
+\subsection{Knowledge Graph Construction}
+
+The KG is implemented as a \texttt{MultiDiGraph} in NetworkX and built from the same markdown sources used for retrieval (Fig.~\ref{fig:kg}). It captures academic entities (disciplines, faculty members, programs, regulations, research areas) together with the relations that connect them (Table~\ref{tab:kg}). Edges of type \texttt{prerequisite\_of} carry a confidence $c \in [0,1]$ distinguishing \emph{curated} relations from the official curriculum ($c=1.0$) from \emph{heuristic} relations inferred from textual cues ($c<1.0$); these values feed the probabilistic bounds propagated by the symbolic layer (Section~\ref{sec:symbolic}). The KG maintains accent-insensitive indices over names, codes, and aliases (via NFD normalisation) to support reliable symbolic lookup despite heterogeneous naming.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.78\textwidth]{kg_2.png}
+\caption{Schema of the academic knowledge graph, showing main entity and relation types.}
+\label{fig:kg}
+\end{figure}
+
+\begin{table}[t]
+\caption{Main entity and relation types in the academic knowledge graph.}
+\label{tab:kg}
+\centering
+\begin{tabular}{ll}
+\hline
+\textbf{Entity types} & \textbf{Relation types} \\
+\hline
+\texttt{Discipline} & \texttt{prerequisite\_of} (with confidence $\in [0,1]$) \\
+\texttt{Faculty Member} & \texttt{teaches} \\
+\texttt{Course} & \texttt{belongs\_to\_course} \\
+\texttt{Regulation/Article} & \texttt{coordinates} \\
+\texttt{Research Area} & \texttt{has\_area}, \texttt{regulates} \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Symbolic Reasoning Layer}
+\label{sec:symbolic}
+
+The symbolic layer combines five First-Order Logic (FOL) rules with graph-based procedures executed by an \emph{Annotated Datalog} engine built on PyReason~\cite{aditya2023}. Together, these rules capture the compositional patterns required to reason over a directed acyclic graph (DAG) of academic dependencies (Table~\ref{tab:rules}). Rule R1 is implemented directly as an Annotated Datalog program; R2--R5 operate over the inferred dependency structure produced by the symbolic layer.
+
+\begin{table}[t]
+\caption{First-order logic rules implemented by the symbolic reasoning layer.}
+\label{tab:rules}
+\centering
+\small
+\begin{tabular}{lll}
+\hline
+\textbf{Rule} & \textbf{Formalisation} & \textbf{Semantics} \\
+\hline
+R1 & $\mathrm{prereq}(x,y) \wedge \mathrm{prereq}(y,z) \rightarrow \mathrm{prereq\_trans}(x,z)$ & Transitive closure of dependency \\
+R2 & $(\forall p \in \mathrm{prereqs}(d): p \in C) \rightarrow \mathrm{unlocked}(d, C)$ & Discipline unlocked given completed set $C$ \\
+R3 & $|\mathrm{dependents}(x)| \geq \theta \rightarrow \mathrm{critical}(x)$,\ $\theta=3$ & Critical-node detection \\
+R4 & $\mathrm{prereq}(x,z) \wedge \mathrm{prereq}(y,z), x\neq y \rightarrow \mathrm{co\_prereq}(x,y)$ & Shared downstream dependency \\
+R5 & $\min\{P: \mathrm{taken}(P) \rightarrow \mathrm{unlocked}(t, C\cup P)\}$ & Minimal study-plan via topological BFS \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Probabilistic bounds via max-bottleneck path.}
+Under Annotated Datalog, each atom is associated with a confidence interval $[l,u]\subseteq[0,1]$. Curated prerequisite edges are assigned $[1.0,1.0]$, heuristic edges $[c,1.0]$ with $c<1$. For derived atoms, we adopt a \emph{max-bottleneck path} semantics: among alternative derivations of $\mathrm{prereq\_trans}(x,z)$, the system selects the path whose minimum edge confidence is maximal. For example, the chain $A \xrightarrow{1.0} B \xrightarrow{0.7} C \xrightarrow{1.0} D$ yields $\mathrm{prereq\_trans}(A,D)=[0.7,1.0]$; if an alternative fully curated path exists, it dominates and produces $[1.0,1.0]$. This reflects the user-facing intent: when multiple chains support a derivation, report the strongest one.
+
+
+\subsection{Bidirectional Validation Loop}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{neurossimbolic.png}
+\caption{Per-agent bidirectional validation loop. The symbolic layer feeds verified KG facts into the LLM prompt before generation, validates and rewrites the LLM output after generation, and provides a direct symbolic shortcut for compositional intents.}
+\label{fig:neurossimbolic}
+\end{figure}
+
+The bidirectional loop (Fig.~\ref{fig:neurossimbolic}) establishes a two-way interaction between neural generation and symbolic reasoning and operates in three complementary modes.
+
+\paragraph{Symbolic $\rightarrow$ Neural (pre-generation enrichment).} For selected intents, a block of KG-verified facts (direct prerequisites, transitive chains with confidence bounds, dependents, faculty assignments, and outputs of R1--R5) is prepended to the agent prompt before generation, reducing the surface from which unsupported claims can arise.
+
+\paragraph{Neural $\rightarrow$ Symbolic (post-generation validation with corrective rewriting).} Factual claims are extracted from the LLM output through pattern matching over recognised entities and relations, and are verified against the KG. When a violation is detected (e.g., a prerequisite not supported by the dependency closure), the framework performs a \emph{corrective rewrite}: the response is replaced by an answer derived directly from the KG and the applicable rules. Inferred relations whose confidence is below $1.0$ are surfaced as user-facing indicators (e.g., ``probable'' for $[0.7,1.0]$).
+
+\paragraph{Direct symbolic shortcut.} For strictly compositional intents (program listings, curriculum exploration, prerequisite-chain analysis, course–faculty assignments), the framework bypasses LLM generation and returns an answer derived directly from the KG, eliminating hallucination risk and reducing latency. Answer synthesis uses Ollama with \texttt{ministral-3:8b} under low-temperature decoding; prompts constrain the model to the provided context and instruct it to acknowledge missing information explicitly.
+
+
+\section{Experimental Setup}
+
+\subsection{Research Questions and Datasets}
+
+The evaluation is guided by four questions: \textbf{RQ1.} Does the framework improve factual consistency over LLM-only, RAG, and Graph-RAG baselines? \textbf{RQ2.} What are the individual contributions of KG grounding and symbolic validation? \textbf{RQ3.} How effectively does the framework handle neuro-symbolic queries (routing, verification, latency)? \textbf{RQ4.} Does Annotated Datalog inference match a reference implementation and propagate probabilistic bounds correctly?
+
+The \textbf{main benchmark} consists of 57 manually curated questions covering the UNIFESP institutional domain across eight thematic categories (syllabi, faculty assignments, prerequisites, dependents, curriculum structure, coordinator and contact information, and regulations), each annotated with a reference answer from official documents. Queries are routed to four specialised agents (\textit{Disciplines}, \textit{Faculty}, \textit{Programs}, \textit{Regulations}) and include both simple fact-retrieval questions and compositional multi-hop reasoning. A second \textbf{neuro-symbolic feature set} of 25 queries targets the five FOL rules: trajectory\_planning (R5), critical\_disciplines (R3), co\_prerequisite (R4), prerequisite\_chain (R1), and discipline\_docentes (relational), with five queries each. The KG itself is built from 236 institutional markdown files (222 disciplines, 6 regulation files, 7 curriculum matrices, 1 faculty file), comprising 693 nodes and 1584 edges across 9 entity types (322 disciplines, 129 faculty, 108 areas, 50 FAQ, 42 regulation articles, 21 organisations, 7 programmes, 7 curricula, 6 institutional documents).
+
+\subsection{Baselines}
+
+We compare the framework against three progressively stronger baselines, all using the same \texttt{ministral-3:8b} model through Ollama and the same document corpus:
+\textbf{B1: LLM-only}, answering from parametric knowledge with no retrieval; \textbf{B2: Standard RAG}, hybrid retrieval (dense + BM25 + RRF) feeding contextual evidence to the LLM; \textbf{B3: Graph-RAG}, hybrid retrieval augmented with KG-derived context, without symbolic validation; and \textbf{B4: Bidirectional Neuro-Symbolic Graph-RAG (ours)}, the complete framework of Section~3.
+
+\subsection{Protocol and Configuration}
+
+Responses on the main benchmark were independently evaluated by two annotators using three labels (\textit{Correct}, \textit{Partially Correct}, \textit{Incorrect}); we report \textit{Strict Accuracy} (Correct only) and \textit{Weighted Accuracy} (1.0/0.5/0.0). Final scores average the two annotators; inter-annotator agreement is $\kappa\approx 0.54$ (moderate)~\cite{cohen1960}. For the neuro-symbolic feature set we additionally report \emph{routing accuracy} (correct dispatch to the symbolic agent) and \emph{symbolic verification} (structural correctness w.r.t.\ the KG). Latency is measured per query. Experiments run on a MacBook Air M1 (16\,GB) with Ollama (\texttt{ministral-3:8b} for generation, \texttt{mxbai-embed-large} for embeddings). PyReason runs under Numba JIT with a persistent cache.
+
+
+\section{Results and Analysis}
+
+\subsection{Main Results}
+
+Table~\ref{tab:results} reports performance on the 57-question benchmark. The proposed framework (B4) achieves 84.2\% strict accuracy, 87.7\% weighted accuracy, and reduces the proportion of incorrect responses to 8.8\%, a gain of 77.2\,pp in strict accuracy and an 87\% reduction in error rate relative to LLM-only. Standard retrieval alone (B2) brings only marginal improvements, indicating that many institutional queries require relational reasoning beyond document matching. Introducing KG grounding (B3) yields the largest single gain (strict accuracy 7.0\%$\rightarrow$57.9\%), and the bidirectional neuro-symbolic layer (B4) produces a further substantial improvement, demonstrating that symbolic reasoning and validation complement graph grounding.
+
+\begin{table}[t]
+\caption{Performance on the 57-question benchmark. Acc: strict accuracy; wAcc: weighted accuracy; Err: percentage of answers labelled \textit{Incorrect}.}
+\label{tab:results}
+\centering
+\begin{tabular}{lrrr}
+\hline
+\textbf{System} & \textbf{Acc} & \textbf{wAcc} & \textbf{Err} \\
+\hline
+B1: LLM-only & 7.0\% & 19.3\% & 68.4\% \\
+B2: Standard RAG & 7.0\% & 28.1\% & 50.9\% \\
+B3: Graph-RAG & 57.9\% & 60.5\% & 36.8\% \\
+B4: Bidirectional NS Graph-RAG (ours) & \textbf{84.2\%} & \textbf{87.7\%} & \textbf{8.8\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Ablation Analysis}
+
+\paragraph{B1 $\rightarrow$ B2: standard RAG has limited impact.} Hybrid retrieval over textual documents yields only a +8.8\,pp improvement in wAcc and no gain in strict accuracy. Prerequisite chains, faculty assignments, and curriculum structures are fundamentally relational and resist text-similarity retrieval.
+
+\paragraph{B2 $\rightarrow$ B3: KG grounding is the dominant factor.} Augmenting retrieval with KG-derived context produces the largest single gain (+32.4\,pp wAcc), raising strict accuracy from 7.0\% to 57.9\%, explicit entity-relation representations are essential when answers require multi-hop traversal across dependencies.
+
+\paragraph{B3 $\rightarrow$ B4: symbolic validation provides the final reliability layer.} Bidirectional symbolic validation yields a further +27.2\,pp wAcc gain and reduces error from 36.8\% to 8.8\%. Post-generation verification with corrective rewriting and the direct symbolic shortcut convert partially correct Graph-RAG responses into fully correct answers and eliminate most remaining errors. The validation loop is not redundant with KG grounding: B3 already exploits the KG as context, yet the loop produces a substantial complementary gain.
+
+\subsection{Neuro-Symbolic Feature Evaluation (RQ3)}
+
+Table~\ref{tab:nsfeat} reports routing and verification on the 25-query neuro-symbolic feature set. Routing reaches 100\%, and symbolic verification 96\%, with the single failure on \textit{critical\_disciplines} corresponding to a borderline node whose classification depends on the threshold $\theta=3$ rather than a reasoning failure. R1, R4, and R5 are perfectly verified.
+
+\begin{table}[t]
+\caption{Routing accuracy and symbolic verification by neuro-symbolic feature (FOL rule).}
+\label{tab:nsfeat}
+\centering
+\begin{tabular}{llcc}
+\hline
+\textbf{Feature} & \textbf{Rule} & \textbf{Routed correctly} & \textbf{Verified} \\
+\hline
+trajectory\_planning      & R5 & 5/5 (100\%) & 5/5 (100\%) \\
+critical\_disciplines     & R3 & 5/5 (100\%) & 4/5 (80\%)  \\
+co\_prerequisite          & R4 & 5/5 (100\%) & 5/5 (100\%) \\
+prerequisite\_chain       & R1 & 5/5 (100\%) & 5/5 (100\%) \\
+discipline\_docentes      & --- & 5/5 (100\%) & 5/5 (100\%) \\
+\hline
+\textbf{Total}            & --- & \textbf{25/25 (100\%)} & \textbf{24/25 (96\%)} \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Latency.} On 82 queries spanning all paths, the symbolic path averages 1.56\,s against 4.76\,s for neural paths, a 3.1$\times$ speedup. The gain is structural: the direct shortcut converts an LLM call into a KG traversal independently of model size.
+
+
+\subsection{PyReason Engine: Parity and Bounds Propagation (RQ4)}
+
+To validate the symbolic layer independently of the end-to-end pipeline, we compared the PyReason implementation of R1 and R4 against a pure-Python reference on 8 transitive-closure samples and 5 co-prerequisite samples from the KG: \emph{the two implementations agree on every output} (zero divergence). On the synthetic chain $A \xrightarrow{1.0} B \xrightarrow{0.7} C \xrightarrow{1.0} D$, PyReason returns $\mathrm{prereq\_trans}(A,D) = [0.7,1.0]$ as expected; introducing a parallel curated chain restores the bound to $[1.0,1.0]$, confirming the max-bottleneck-path semantics. These tests substantiate the formal claims of Section~\ref{sec:symbolic} and rule out a class of implementation defects.
+
+\subsection{LLM-as-Judge Evaluation}
+
+To complement human annotation, we ran an independent LLM-as-judge on 38 semantic queries (those whose reference answer is a textual description), scoring \textit{Groundedness}, \textit{Correctness}, \textit{Completeness}, and \textit{Clarity} on a 1--5 scale. The judge received both the system response and the retrieved evidence and was instructed to score only against that evidence. Across all paths the framework reaches high overall averages: 4.79 groundedness, 4.79 correctness, 4.74 completeness, and 5.00 clarity (Table~\ref{tab:judge_path}). Regulations and symbolic-KG paths achieve perfect scores; the Disciplines path is weakest in completeness (4.18), reflecting longer-form descriptive answers for syllabus queries. Results converge with the human evaluation in Table~\ref{tab:results}: the weakest dimension (completeness) corresponds to cases where the system correctly abstains rather than fabricating.
+
+\begin{table}[t]
+\caption{LLM-as-judge scores by reasoning path (38 semantic queries, scale 1--5).}
+\label{tab:judge_path}
+\centering
+\begin{tabular}{lccccc}
+\hline
+\textbf{Path} & \textbf{$N$} & \textbf{Ground.} & \textbf{Correct.} & \textbf{Complete.} & \textbf{Clarity} \\
+\hline
+Disciplines            & 11 & 4.45 & 4.45 & 4.18 & 5.00 \\
+Faculty                & 11 & 4.82 & 4.82 & 4.91 & 5.00 \\
+Regulations            & 5  & 5.00 & 5.00 & 5.00 & 5.00 \\
+Symbolic KG (semantic) & 11 & 5.00 & 5.00 & 5.00 & 5.00 \\
+\hline
+\textbf{Overall}       & \textbf{38} & \textbf{4.79} & \textbf{4.79} & \textbf{4.74} & \textbf{5.00} \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\section{Limitations}
+
+The benchmark covers 57 + 25 queries from a single institution, which limits statistical power and generalisation to other DAG-structured domains (medical curricula, software dependencies, administrative workflows). The symbolic layer relies on five manually designed FOL rules; richer reasoning (temporal constraints, preference-aware planning) would require additional rules and possibly a richer annotation algebra. All experiments use \texttt{ministral-3:8b}, which controls for model variation across baselines but ties absolute numbers to one model family; the structural gain of direct symbolic execution is expected to be model-independent. Finally, the KG is built from 236 documents available at evaluation time, so information absent from these sources cannot be retrieved or validated, a non-trivial share of failures stems from coverage gaps rather than reasoning errors.
+
+
+\section{Conclusion}
+
+We presented a bidirectional neuro-symbolic validation framework for Graph-RAG that integrates KG grounding, first-order logic reasoning, Annotated Datalog inference with confidence bounds, and a bidirectional control loop combining symbolic enrichment, post-generation validation with corrective rewriting, and direct symbolic execution. On a UNIFESP academic-advisory benchmark, the framework reaches 84.2\% strict / 87.7\% weighted accuracy, an 87\% relative reduction in factual errors over LLM-only, and a 27.2\,pp gain over Graph-RAG without symbolic validation. Routing accuracy on neuro-symbolic queries is 100\% and symbolic verification 96\%; the symbolic path is 3.1$\times$ faster than neural paths; and PyReason matches the pure-Python reference with zero divergence on parity tests while correctly propagating $[0.7,1.0]$ bounds in mixed-confidence chains.
+
+The results suggest that, for domains whose knowledge naturally forms a dependency graph, a small closed set of FOL rules combined with an annotated logic engine and a bidirectional validation loop is sufficient to substantially close the reliability gap of neural retrieval. Future work will extend the rule set with temporal and preference-aware constraints, evaluate the framework in other DAG-structured domains, and study how confidence propagation and symbolic explanations influence user trust.
+
+
+\begin{credits}
+\subsubsection{\ackname} A bold run-in heading in small font size at the end of the paper is
+used for general acknowledgments, for example: This study was funded
+by X (grant number Y).
+
+\subsubsection{\discintname}
+The authors have no competing interests to declare that are
+relevant to the content of this article.
+\end{credits}
+
+\begin{thebibliography}{8}
+
+\bibitem{cheng2025}
+Cheng, M., Luo, Y., Ouyang, J., Liu, Q., Liu, H., Li, L., Yu, S., Zhang, B., Cao, J., Ma, J., Wang, D., Chen, E.:
+A Survey on Knowledge-Oriented Retrieval-Augmented Generation.
+arXiv preprint arXiv:2503.10677 (2025)
+
+\bibitem{brown2025}
+Brown, A., Roman, M., Devereux, B.:
+A Systematic Literature Review of Retrieval-Augmented Generation: Techniques, Metrics, and Challenges.
+arXiv preprint arXiv:2508.06401 (2025)
+
+\bibitem{han2025}
+Han, H., Ma, L., Wang, Y., Shomer, H., Lei, Y., Qi, Z., Guo, K., Hua, Z., Long, B., Liu, H., Aggarwal, C.C., Tang, J.:
+RAG vs. GraphRAG: A Systematic Evaluation and Key Insights.
+arXiv preprint arXiv:2502.11371 (2025)
+
+\bibitem{zhang2025}
+Zhang, Q., Chen, S., Bei, Y., Yuan, Z., Zhou, H., Hong, Z., Chen, H., Xiao, Y., Zhou, C., Dong, J., Chang, Y., Huang, X.:
+A Survey of Graph Retrieval-Augmented Generation for Customized Large Language Models.
+arXiv preprint arXiv:2501.13958 (2025)
+
+\bibitem{zhu2025}
+Zhu, X., Xie, Y., Liu, Y., Li, Y., Hu, W.:
+Knowledge Graph-Guided Retrieval Augmented Generation.
+In: Proceedings of the 2025 Annual Conference of the Nations of the Americas Chapter of the ACL (NAACL 2025) (2025)
+
+\bibitem{linders2025}
+Linders, J., Tomczak, J.M.:
+Knowledge Graph-Extended Retrieval Augmented Generation for Question Answering.
+Applied Intelligence \textbf{55}, 1102 (2025).
+\doi{10.1007/s10489-025-06885-5}
+
+\bibitem{wu2024}
+Wu, J., Zhu, J., Qi, Y., Chen, J., Xu, M., Menolascina, F., Grau, V.:
+Medical Graph RAG: Towards Safe Medical Large Language Model via Graph Retrieval-Augmented Generation.
+arXiv preprint arXiv:2408.04187 (2024)
+
+\bibitem{garcez2023}
+Garcez, A.S.d'A., Lamb, L.C.:
+Neurosymbolic AI: The Third Wave.
+Artificial Intelligence Review \textbf{56}, 12387--12406 (2023).
+\doi{10.1007/s10462-023-10448-w}
+
+\bibitem{yu2023}
+Yu, D., Yang, B., Liu, D., Wang, H., Pan, S.:
+A Survey on Neural-Symbolic Learning Systems.
+Neural Networks \textbf{166}, 105--126 (2023)
+
+\bibitem{aditya2023}
+Aditya, D., Mukherji, K., Balasubramanian, S., Chaudhary, A., Shakarian, P.:
+PyReason: Software for Open World Temporal Logic.
+In: AAAI Spring Symposium on Challenges Requiring the Combination of Machine Learning and Knowledge Engineering (AAAI-MAKE) (2023)
+
+\bibitem{saha2026}
+Saha, A., Agarwal, P., et al.:
+A Zero-Shot Neuro-Symbolic Approach for Complex Knowledge Graph Question Answering.
+arXiv preprint arXiv:2601.04568 (2026)
+
+\bibitem{saxena2026}
+Saxena, Y., Gaur, M.:
+Neurosymbolic Retrievers for Retrieval-augmented Generation.
+IEEE Intelligent Systems (2026).
+\doi{10.1109/MIS.2025.3642666}
+
+\bibitem{cohen1960}
+Cohen, J.:
+A Coefficient of Agreement for Nominal Scales.
+Educational and Psychological Measurement \textbf{20}(1), 37--46 (1960)
+
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,517 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  showstringspaces=false
+}
+
+\title[NS Graph-RAG]{Validação Neurossimbólica Bidirecional\\ para Graph-RAG}
+\subtitle{Regras de Lógica de Primeira Ordem e Datalog Anotado com Bounds Probabilísticos}
+\author[Araújo \& Vega]{Leonardo Arazo de Oliveira Araújo\\\small Didier Augusto Vega Oliveros (orientador)}
+\institute[UNIFESP]{Universidade Federal de São Paulo (UNIFESP)\\ Instituto de Ciência e Tecnologia -- São José dos Campos}
+\date{\today}
+
+\begin{document}
+
+% ============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% ============================================================
+\begin{frame}{Roteiro}
+  \tableofcontents
+\end{frame}
+
+% ============================================================
+\section{Motivação e Problema}
+
+\begin{frame}{Contexto: assistentes acadêmicos com LLM}
+  \begin{itemize}
+    \item Universidades têm informação acadêmica fragmentada: ementas, pré-requisitos, regimentos, corpo docente.
+    \item Estudantes recorrem a canais institucionais para perguntas que poderiam ser respondidas automaticamente.
+    \item LLMs viabilizam interfaces conversacionais, mas\dots
+    \begin{itemize}
+      \item Alucinação em domínios estruturados.
+      \item Erros em raciocínio composicional (encadeamento de pré-requisitos).
+      \item Falta de auditabilidade -- crítica em contexto institucional.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Problema: RAG não verifica}
+  \begin{itemize}
+    \item \textbf{RAG} ancora a geração em evidência recuperada -- mas \emph{recuperação não é verificação}.
+    \item \textbf{Graph-RAG} adiciona contexto relacional -- mas o grafo não impõe consistência lógica.
+    \item Em domínios cuja estrutura é um \textbf{DAG de dependências} (currículos, software, processos), uma resposta pode citar evidência \emph{e ainda assim} violar a composição.
+  \end{itemize}
+  \vspace{1em}
+  \begin{center}
+    \fbox{\textbf{Lacuna:} \emph{retrieval-augmented} sem \emph{validation-augmented}.}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Perguntas de pesquisa}
+  \begin{description}
+    \item[RQ1] O pipeline neurossimbólico completo é mais consistente que baselines RAG/Graph-RAG?
+    \item[RQ2] Qual é a contribuição individual do \emph{KG grounding} e da \emph{validação simbólica}?
+    \item[RQ3] Como o framework se comporta em \emph{intents neurossimbólicos} (roteamento, verificação, latência)?
+    \item[RQ4] O motor PyReason corresponde a uma implementação de referência e propaga \emph{bounds} probabilísticos corretamente?
+  \end{description}
+\end{frame}
+
+% ============================================================
+\section{Contribuição}
+
+\begin{frame}{Contribuição em três componentes}
+  Propomos um \textbf{framework de validação neurossimbólica bidirecional} para Graph-RAG:
+  \vspace{0.5em}
+  \begin{enumerate}
+    \item \textbf{Cinco regras FOL fechadas} sobre DAGs de dependência:
+      \begin{itemize}\small
+        \item Transitividade, desbloqueio, criticidade, co-dependência, caminho mínimo.
+      \end{itemize}
+    \item \textbf{Motor de Datalog Anotado} (sobre PyReason) que propaga \emph{bounds} $[l,u] \subseteq [0,1]$ por \emph{max-bottleneck path}.
+    \item \textbf{Loop de controle bidirecional} com três modos:
+      \begin{itemize}\small
+        \item \emph{Símbolo $\to$ Neural}: enriquecimento de prompt com fatos do KG.
+        \item \emph{Neural $\to$ Símbolo}: pós-validação + reescrita corretiva.
+        \item \emph{Atalho simbólico direto}: KG responde sem LLM.
+      \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+% ============================================================
+\section{Background}
+
+\begin{frame}{Background: RAG $\to$ Graph-RAG}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{RAG (texto)}
+      \begin{itemize}\small
+        \item Recupera trechos por similaridade densa/esparsa.
+        \item Bom para QA factual aberto.
+        \item Fraco em composição relacional.
+      \end{itemize}
+    \column{0.5\textwidth}
+      \textbf{Graph-RAG}
+      \begin{itemize}\small
+        \item Grafo de entidades e relações tipadas.
+        \item \emph{Multi-hop traversal} para consultas relacionais.
+        \item Melhor para domínios estruturados, mas ainda \emph{sem garantia} de consistência.
+      \end{itemize}
+  \end{columns}
+  \vspace{1em}
+  \begin{itemize}
+    \item Survey: Han et al.\ (2025) -- RAG vs.\ GraphRAG.
+    \item Survey: Zhang et al.\ (2025) -- Graph-RAG paradigms.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Background: Neuro-Symbolic AI}
+  \begin{itemize}
+    \item \textbf{Neural:} reconhecimento de padrão, linguagem natural, generalização.
+    \item \textbf{Simbólico:} regras explícitas, verificabilidade, raciocínio composicional.
+    \item Integração:
+      \begin{itemize}
+        \item \textbf{Tightly coupled}: lógica diferenciável (Logic Tensor Nets, DeepProbLog).
+        \item \textbf{Loosely coupled}: validador simbólico \emph{pós-hoc} sobre saída neural.
+      \end{itemize}
+    \item Garcez \& Lamb (2023): \emph{Neurosymbolic AI: The Third Wave}.
+  \end{itemize}
+  \vspace{0.5em}
+  \begin{block}{Nosso posicionamento}
+    Loosely coupled \emph{bidirecional}: símbolo $\to$ neural \emph{e} neural $\to$ símbolo, com atalho direto quando o intent é compositional.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Background: Annotated Datalog e PyReason}
+  \begin{itemize}
+    \item \textbf{Datalog Anotado}: cada átomo carrega bound $[l, u] \subseteq [0, 1]$.
+    \item Regras propagam bounds deduzidos a partir de bounds das premissas.
+    \item \textbf{PyReason} (Aditya et al., AAAI 2023):
+      \begin{itemize}\small
+        \item Reasoner Datalog anotado com extensões temporais.
+        \item Compilação JIT (Numba) -- viável para grafos médios em segundos.
+      \end{itemize}
+    \item Usamos PyReason para propagar \emph{confidence} no fecho transitivo de pré-requisitos.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+\section{Framework}
+
+\begin{frame}{Visão geral do framework}
+  \begin{center}
+    \includegraphics[width=0.95\textwidth]{pipeline.png}
+  \end{center}
+  \small Quatro componentes cooperantes: retrieval híbrido, KG, camada simbólica, loop bidirecional. Roteador multi-agente despacha por intenção.
+\end{frame}
+
+\begin{frame}{Retrieval híbrido}
+  \begin{itemize}
+    \item \textbf{Dense:} Maximum Marginal Relevance sobre Chroma, embeddings \texttt{mxbai-embed-large}.
+    \item \textbf{Sparse:} BM25 com tokenizador PT-BR (acentos + acrônimos).
+    \item \textbf{Fusão:} Reciprocal Rank Fusion (RRF), $k = 60$.
+  \end{itemize}
+  \vspace{0.5em}
+  \begin{equation*}
+    \mathrm{score}(d) = \sum_i \frac{1}{k + r_i(d)}
+  \end{equation*}
+  \vspace{0.5em}
+  \small Top-$N$ ($N=10$) alimenta o prompt ao lado do contexto do KG e dos fatos simbólicos.
+\end{frame}
+
+\begin{frame}{Knowledge Graph: schema}
+  \begin{center}
+    \includegraphics[width=0.78\textwidth]{kg_2.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Knowledge Graph: estatísticas}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \begin{table}\small
+        \begin{tabular}{lr}
+          \toprule
+          \textbf{Tipo de nó} & \textbf{Qtd} \\
+          \midrule
+          Disciplina            & 322 \\
+          Docente               & 129 \\
+          Área de pesquisa      & 108 \\
+          FAQ                   & 50  \\
+          Artigo de regimento   & 42  \\
+          Organização           & 21  \\
+          Curso                 & 7   \\
+          Currículo             & 7   \\
+          Documento institucional & 6 \\
+          \midrule
+          \textbf{Total nós}    & \textbf{693} \\
+          \textbf{Total arestas}& \textbf{1584} \\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+    \column{0.5\textwidth}
+      \begin{itemize}\small
+        \item Construído de 236 arquivos markdown institucionais.
+        \item Arestas \texttt{prerequisite\_of} carregam \emph{confidence} $\in [0,1]$:
+          \begin{itemize}\scriptsize
+            \item $1.0$ -- relação oficial.
+            \item $<1.0$ -- extraída heuristicamente.
+          \end{itemize}
+        \item Normalização NFD: índices accent-insensitive sobre nomes, códigos, aliases.
+      \end{itemize}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Camada simbólica: cinco regras FOL}
+  \small
+  \textbf{R1 -- Transitividade de pré-requisito}
+  \[ \forall x,y,z:\ \mathrm{prereq}(x,y) \wedge \mathrm{prereq}(y,z) \rightarrow \mathrm{prereq\_trans}(x,z) \]
+
+  \textbf{R2 -- Condição de desbloqueio}
+  \[ \forall d, C:\ \big( \forall p \in \mathrm{prereqs}(d):\ p \in C \big) \rightarrow \mathrm{unlocked}(d, C) \]
+
+  \textbf{R3 -- Detecção de nó crítico} ($\theta = 3$)
+  \[ \forall x:\ |\mathrm{dependents}(x)| \geq \theta \rightarrow \mathrm{critical}(x) \]
+
+  \textbf{R4 -- Co-dependência}
+  \[ \forall x, y, z:\ \mathrm{prereq}(x, z) \wedge \mathrm{prereq}(y, z) \wedge x \neq y \rightarrow \mathrm{co\_prereq}(x, y) \]
+
+  \textbf{R5 -- Caminho mínimo} (BFS topológico, fases paralelas)
+  \[ \forall t, C:\ \min \{P : \mathrm{taken}(P) \rightarrow \mathrm{unlocked}(t, C \cup P) \} \]
+\end{frame}
+
+\begin{frame}[fragile]{Datalog Anotado: R1 e propagação de bounds}
+\begin{lstlisting}
+prereq_trans(X, Z)  <-1  prereq(X, Y), prereq(Y, Z).
+prereq_trans(X, Z)  <-1  prereq(X, Y), prereq_trans(Y, Z).
+\end{lstlisting}
+  \vspace{0.5em}
+  \textbf{Semântica:} \emph{max-bottleneck path}.
+  Entre derivações alternativas, escolhe-se a de \emph{maior confiança mínima}.
+  \vspace{0.5em}
+  \begin{center}
+    $A \xrightarrow{1.0} B \xrightarrow{0.7} C \xrightarrow{1.0} D$
+    \[ \Rightarrow\ \mathrm{prereq\_trans}(A, D) = [0.7,\ 1.0] \]
+  \end{center}
+  Se houver cadeia paralela com todas arestas curadas ($1.0$), a bound se torna $[1.0, 1.0]$.
+\end{frame}
+
+\begin{frame}{Loop de validação bidirecional}
+  \begin{center}
+    \includegraphics[width=0.92\textwidth]{neurossimbolic.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Três modos do loop}
+  \begin{block}{Símbolo $\to$ Neural (pré-geração)}
+    \small Fatos verificados do KG -- pré-requisitos, transitivos com bounds, dependentes, docentes -- prefixados ao prompt do LLM.
+  \end{block}
+
+  \begin{block}{Neural $\to$ Símbolo (pós-geração)}
+    \small Regex extrai \emph{claims} da resposta; cada \emph{claim} é checado contra o KG; violações disparam \textbf{reescrita corretiva} substituindo a resposta por uma derivada do grafo, anotando regras aplicadas e bounds.
+  \end{block}
+
+  \begin{block}{Atalho simbólico direto}
+    \small Para intents estritamente composicionais (cadeia de pré-requisitos, currículo por termo, docente-disciplina), o LLM é \textbf{ignorado}: o KG responde direto. Elimina alucinação \emph{e} reduz latência.
+  \end{block}
+\\end{frame}
+
+\begin{frame}{Fluxo end-to-end}
+  \footnotesize
+  \begin{enumerate}
+    \item \textbf{Resolução de contexto}: referências conversacionais resolvidas via memória de diálogo.
+    \item \textbf{Roteamento}: router multi-agente (embeddings + intent + keywords) escolhe o agente.
+    \item \textbf{Detecção de intent e termo}: classificador identifica tipo de query e entidade-alvo.
+    \item \textbf{Recuperação}: KG, retrieval híbrido, ou ambos.
+    \item \textbf{Raciocínio simbólico}: regras FOL são avaliadas conforme o intent; resultados carregam bounds.
+    \item \textbf{Enriquecimento pré-geração}: fatos simbólicos prefixados ao contexto.
+    \item \textbf{Síntese LLM}: gera resposta (ou pula via atalho simbólico).
+    \item \textbf{Validação pós-hoc}: \emph{claims} checados; violações $\to$ reescrita corretiva.
+    \item \textbf{Entrega}: resposta final + anotações de verificação.
+  \end{enumerate}
+\end{frame}
+
+% ============================================================
+\section{Setup Experimental}
+
+\begin{frame}{Setup experimental}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{Datasets}
+      \begin{itemize}\small
+        \item \textbf{Principal}: 57 perguntas anotadas humanamente, 8 categorias temáticas, 4 agentes.
+        \item \textbf{Neurossimbólico}: 25 queries cobrindo R1, R3, R4, R5 + docente-disciplina.
+      \end{itemize}
+      \vspace{0.5em}
+      \textbf{Baselines}
+      \begin{itemize}\small
+        \item B1 -- LLM-only.
+        \item B2 -- Standard RAG.
+        \item B3 -- Graph-RAG.
+        \item B4 -- Bidirectional NS Graph-RAG (\emph{ours}).
+      \end{itemize}
+    \column{0.5\textwidth}
+      \textbf{Protocolo}
+      \begin{itemize}\small
+        \item Anotação humana (2 anotadores): Correct / Partially / Incorrect.
+        \item Acurácia estrita e ponderada (wAcc).
+        \item Cohen's $\kappa \approx 0.54$ (moderado).
+        \item Para NS queries: routing, verificação simbólica, latência.
+      \end{itemize}
+      \vspace{0.5em}
+      \textbf{Hardware/LLM}
+      \begin{itemize}\small
+        \item MacBook Air M1, 16\,GB.
+        \item \texttt{ministral-3:8b} via Ollama.
+        \item Embeddings \texttt{mxbai-embed-large}.
+      \end{itemize}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Resultados}
+
+\begin{frame}{Resultado principal: 57 perguntas, anotação humana}
+  \begin{table}\centering\small
+    \begin{tabular}{lrrr}
+      \toprule
+      \textbf{Sistema} & \textbf{Acc} & \textbf{wAcc} & \textbf{Err} \\
+      \midrule
+      B1 -- LLM-only                       & 7,0\%  & 19,3\% & 68,4\% \\
+      B2 -- Standard RAG                   & 7,0\%  & 28,1\% & 50,9\% \\
+      B3 -- Graph-RAG                      & 57,9\% & 60,5\% & 36,8\% \\
+      \textbf{B4 -- NS Graph-RAG (ours)}   & \textbf{84,2\%} & \textbf{87,7\%} & \textbf{8,8\%} \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.5em}
+  \begin{itemize}
+    \item $+68{,}4$\,pp de Acc vs.\ LLM-only.
+    \item Redução de erro de $68{,}4\% \to 8{,}8\%$ -- queda relativa de \textbf{87\%}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Ablation: o que cada camada agrega}
+  \begin{itemize}
+    \item \textbf{B1 $\to$ B2 (+ retrieval texto):} $+8{,}8$\,pp wAcc.\\
+      \small RAG textual sozinho é \emph{insuficiente} -- pré-requisitos, docentes, currículo são \emph{relacionais}, não \emph{textuais}.
+    \vspace{0.5em}
+    \item \textbf{B2 $\to$ B3 (+ KG grounding):} $+32{,}5$\,pp wAcc.\\
+      \small KG é o \textbf{maior ganho isolado} do ablation.
+    \vspace{0.5em}
+    \item \textbf{B3 $\to$ B4 (+ validação simbólica bidirecional):} $+27{,}2$\,pp wAcc.\\
+      \small Reescrita corretiva e atalho simbólico cortam o erro residual de $36{,}8\%$ para $8{,}8\%$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Avaliação neurossimbólica: 25 queries, por feature}
+  \begin{table}\centering\small
+    \begin{tabular}{llcc}
+      \toprule
+      \textbf{Feature} & \textbf{Regra} & \textbf{Routing} & \textbf{Verificada} \\
+      \midrule
+      trajectory\_planning      & R5 & 5/5 (100\%) & 5/5 (100\%) \\
+      critical\_disciplines     & R3 & 5/5 (100\%) & 4/5 (80\%)  \\
+      co\_prerequisite          & R4 & 5/5 (100\%) & 5/5 (100\%) \\
+      prerequisite\_chain       & R1 & 5/5 (100\%) & 5/5 (100\%) \\
+      discipline\_docentes      & --- & 5/5 (100\%) & 5/5 (100\%) \\
+      \midrule
+      \textbf{Total}            & --- & \textbf{25/25 (100\%)} & \textbf{24/25 (96\%)} \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.5em}
+  \begin{itemize}\small
+    \item Roteamento \emph{perfeito}: classificador de intent acerta 100\%.
+    \item Verificação simbólica $96\%$: R1, R4, R5 perfeitas; R3 erra em uma borda.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Latência por caminho de raciocínio}
+  \begin{table}\centering\small
+    \begin{tabular}{lrrrr}
+      \toprule
+      \textbf{Caminho} & \textbf{$N$} & \textbf{Mediana} & \textbf{Média} & \textbf{P90} \\
+      \midrule
+      Disciplines (semantic)   & 11 & 6390\,ms & 6874\,ms & 8800\,ms \\
+      Faculty (semantic)       & 11 & 2790\,ms & 3414\,ms & 4090\,ms \\
+      Regulations (semantic)   & 5  & 2940\,ms & 3072\,ms & 2950\,ms \\
+      \textbf{Symbolic KG}     & 55 & \textbf{1530\,ms} & \textbf{1560\,ms} & \textbf{1950\,ms} \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.5em}
+  \begin{center}
+    Caminho simbólico: \textbf{1,56\,s} vs.\ neurais: \textbf{4,76\,s} $\Rightarrow$ \textbf{3{,}1$\times$ speedup}.
+  \end{center}
+  \small Ganho \emph{estrutural} (não depende de tamanho do modelo): atalho simbólico converte chamada neural em traversal de KG.
+\end{frame}
+
+\begin{frame}{PyReason vs.\ implementação de referência (RQ4)}
+  \begin{itemize}
+    \item \textbf{Paridade:}
+      \begin{itemize}
+        \item 8 amostras de fecho transitivo (R1): \textbf{zero divergência}.
+        \item 5 amostras de co-pré-requisito (R4): \textbf{zero divergência}.
+      \end{itemize}
+    \vspace{0.5em}
+    \item \textbf{Propagação de bounds (teste sintético):}
+      \begin{itemize}
+        \item Cadeia $A \xrightarrow{1.0} B \xrightarrow{0.7} C \xrightarrow{1.0} D$ $\to$ $[0{,}7,\ 1{,}0]$ \checkmark
+        \item Introduzir cadeia paralela curada $\to$ bound retorna a $[1{,}0,\ 1{,}0]$ \checkmark
+      \end{itemize}
+    \vspace{0.5em}
+    \item \textbf{Conclusão:} a semântica formal da Seção da camada simbólica é fielmente implementada pelo motor PyReason. Defeitos de implementação ficam descartados.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{LLM-as-Judge: 38 queries semânticas (escala 1--5)}
+  \begin{table}\centering\small
+    \begin{tabular}{lccccc}
+      \toprule
+      \textbf{Caminho} & \textbf{$N$} & \textbf{Ground.} & \textbf{Correct.} & \textbf{Complete.} & \textbf{Clarity} \\
+      \midrule
+      Disciplines              & 11 & 4,45 & 4,45 & 4,18 & 5,00 \\
+      Faculty                  & 11 & 4,82 & 4,82 & 4,91 & 5,00 \\
+      Regulations              & 5  & 5,00 & 5,00 & 5,00 & 5,00 \\
+      Symbolic KG (semantic)   & 11 & 5,00 & 5,00 & 5,00 & 5,00 \\
+      \midrule
+      \textbf{Overall}         & \textbf{38} & \textbf{4,79} & \textbf{4,79} & \textbf{4,74} & \textbf{5,00} \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.5em}
+  \begin{itemize}\small
+    \item Regulations e Symbolic KG: \textbf{perfeitos} em todas as dimensões.
+    \item Disciplines (descrições longas) é o caminho mais fraco -- ainda assim $\geq 4{,}18$.
+  \end{itemize}
+\\end{frame}
+
+% ============================================================
+\section{Discussão e Limitações}
+
+\begin{frame}{Discussão}
+  \begin{itemize}
+    \item \textbf{Validação bidirecional não é redundante com KG grounding:}\\
+      B3 já usa o KG como contexto -- mesmo assim, B4 corta o erro de $36{,}8\% \to 8{,}8\%$.
+    \vspace{0.5em}
+    \item \textbf{Ganho de latência é estrutural:}\\
+      Atalho simbólico converte chamada LLM (4--7\,s) em traversal de KG ($\approx$1,5\,s) -- independente do tamanho do modelo.
+    \vspace{0.5em}
+    \item \textbf{Convergência entre avaliações:}\\
+      Anotação humana ($8{,}8\%$ erro) e LLM-judge (groundedness $4{,}79$) apontam na mesma direção.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Limitações}
+  \begin{itemize}
+    \item \textbf{Escala do benchmark:} 57 + 25 perguntas, uma instituição. Poder estatístico limitado.
+    \item \textbf{Conjunto fechado de regras:} 5 regras FOL. Padrões mais ricos (temporal, soft constraints) exigem extensão.
+    \item \textbf{Backend único:} \texttt{ministral-3:8b} para todos os sistemas.
+    \item \textbf{Cobertura do KG:} 236 markdowns. Política atualizada fora do corpus não pode ser validada.
+    \item \textbf{Concordância humana moderada:} $\kappa \approx 0{,}54$ reflete ambiguidade Correct/Partially Correct.
+    \item \textbf{Viés do LLM-judge:} usa as mesmas evidências que o sistema.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Próximos passos}
+  \begin{itemize}
+    \item \textbf{Estender regras FOL}: raciocínio temporal (versões de disciplinas/regimentos por semestre), soft constraints (horário, turno, modalidade).
+    \item \textbf{Outros domínios DAG}: currículos médicos, dependências de software, processos administrativos.
+    \item \textbf{KGC dinâmico}: atualização incremental de \emph{confidence} via feedback de usuário.
+    \item \textbf{Avaliação prospectiva}: estudantes, docentes, gestores.
+    \item \textbf{Backends mais fortes}: estudar interação entre escala do LLM e ganho da camada simbólica.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+\section*{Encerramento}
+
+\begin{frame}{Conclusão}
+  \begin{itemize}
+    \item Propusemos um framework \textbf{neurossimbólico bidirecional} para Graph-RAG.
+    \item Três contribuições: \textbf{5 regras FOL}, \textbf{Datalog anotado com bounds}, \textbf{loop bidirecional} com atalho.
+    \item Resultados:
+      \begin{itemize}\small
+        \item $84{,}2\%$ Acc, $87{,}7\%$ wAcc (vs.\ $7\%$ LLM-only) -- 87\% menos erro.
+        \item Routing $100\%$, verificação $96\%$ em queries neurossimbólicas.
+        \item $3{,}1\times$ \emph{speedup} no caminho simbólico.
+        \item Paridade PyReason vs.\ Python: \textbf{zero divergência}.
+        \item LLM-judge: $4{,}79$ / $4{,}79$ / $4{,}74$ / $5{,}00$.
+      \end{itemize}
+    \item Para domínios cuja estrutura é um DAG, um \emph{conjunto pequeno e fechado} de regras simbólicas + loop bidirecional \emph{fecha} a lacuna de confiabilidade.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    \Huge Obrigado!\\[1em]
+    \large Perguntas?\\[2em]
+    \normalsize
+    Leonardo Arazo de Oliveira Araújo\\
+    \texttt{arazo.leonardo@unifesp.br}\\[0.5em]
+    \small Didier Augusto Vega Oliveros (orientador)
+  \end{center}
+\end{frame}
+
+\end{document}

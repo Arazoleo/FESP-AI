@@ -55,6 +55,35 @@ def _import_module(name: str, path: str):
     spec.loader.exec_module(mod)
     return mod
 
+
+def _stub_langchain():
+    """Permite importar os agentes sem langchain instalado (nada aqui invoca o LLM)."""
+    try:
+        import langchain_core  # noqa: F401
+        return
+    except ImportError:
+        pass
+    root = _types.ModuleType("langchain_core")
+    prompts = _types.ModuleType("langchain_core.prompts")
+    parsers = _types.ModuleType("langchain_core.output_parsers")
+    messages = _types.ModuleType("langchain_core.messages")
+    prompts.ChatPromptTemplate = object
+    parsers.StrOutputParser = object
+
+    class _HumanMessage:
+        def __init__(self, content):
+            self.content = content
+
+    messages.HumanMessage = _HumanMessage
+    root.prompts, root.output_parsers, root.messages = prompts, parsers, messages
+    sys.modules["langchain_core"] = root
+    sys.modules["langchain_core.prompts"] = prompts
+    sys.modules["langchain_core.output_parsers"] = parsers
+    sys.modules["langchain_core.messages"] = messages
+
+
+_stub_langchain()
+
 # ── Cores para output ──────────────────────────────────────────────────────────
 GREEN  = "\033[92m"
 RED    = "\033[91m"
