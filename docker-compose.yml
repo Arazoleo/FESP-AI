@@ -9,22 +9,34 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ./src:/app/src
+      - ./planner.html:/app/planner.html
+      - ./graph_viewer.html:/app/graph_viewer.html
       - ./chroma_db_unifesp:/app/chroma_db_unifesp
-      - ./jsons_disciplinas:/app/jsons_disciplinas
       - ./jsons_regimentos:/app/jsons_regimentos
       - ./markdown_disciplinas:/app/markdown_disciplinas
       - ./markdown_regimentos:/app/markdown_regimentos
       - ./markdown_docentes:/app/markdown_docentes
       - ./markdown_cursos:/app/markdown_cursos
+      # JIT cache do numba (usado pelo PyReason) — persiste entre restarts
+      # para evitar recompilação de kernels (~20s) a cada boot do container.
+      - numba-cache:/app/.numba_cache
     environment:
       # Ollama: local (Mac) ou na nuvem — para nuvem, defina a URL abaixo
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       # Modelo de geração — para testar modelo grande na nuvem: MODEL_NAME=llama3.1:70b (ou qwen2.5:72b, etc.)
-      - MODEL_NAME=${MODEL_NAME:-gpt-oss:120b-cloud}
+      - MODEL_NAME=${MODEL_NAME:-gemma4:31b-cloud}
       # Embeddings (recomendado manter mxbai-embed-large; na nuvem deve estar no mesmo Ollama)
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-mxbai-embed-large}
       - PYTHONUNBUFFERED=1
       - PYTHONWARNINGS=ignore
+      # PyReason / numba JIT
+      - NUMBA_CACHE_DIR=/app/.numba_cache
+      # Motor neurossimbólico (pyreason | python). Default = pyreason.
+      - FESPAI_REASONER=${FESPAI_REASONER:-pyreason}
+      # Humanizer do symbolic_kg: 1 = suaviza o tom da resposta do KG via LLM
+      # (preservando os fatos). Ligado no app; use 0 para runs puros do paper.
+      - FESPAI_HUMANIZE_KG=${FESPAI_HUMANIZE_KG:-1}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -50,3 +62,6 @@ services:
 networks:
   fesp-ai-network:
     driver: bridge
+
+volumes:
+  numba-cache:

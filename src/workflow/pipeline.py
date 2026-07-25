@@ -7,20 +7,84 @@ Fluxo:
 
 from typing import Any
 from langgraph.graph import StateGraph, END
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
 from .state import AgentState
 from .router import (
     route_intent,
+    phrase_override,
     get_meta_capability_response,
-    CURSOS_SEQ_KEYWORDS,
-    REGIMENTO_FORCE_KEYWORDS,
+    is_conversational,
+    is_montar_grade,
+    is_noticias,
+    is_web_sjc,
+    is_course_overview,
     SYMBOLIC_DIRECT_INTENTS,
 )
+
+# Intents que o KG pode responder sem nenhum termo (ou com termo vazio)
+_TERM_OPTIONAL_INTENTS: frozenset = frozenset({"listar_cursos", "critical_disciplines"})
 from .embedding_router import EmbeddingAgentRouter
 from ..agents.disciplinas_agent import DisciplinasAgent
 from ..agents.docentes_agent import DocentesAgent
 from ..agents.cursos_agent import CursosAgent
 from ..agents.regimentos_agent import RegimentosAgent
+from ..agents.conversa_agent import ConversaAgent
+from ..agents.montar_grade_agent import MontarGradeAgent
+from ..agents.noticias_agent import NoticiasAgent
+from ..agents.web_sjc_agent import WebSjcAgent
+
+
+# Prompt do "humanizer" do symbolic_kg: suaviza o tom SEM alterar os fatos.
+_KG_HUMANIZER_TEMPLATE = """Voce e o assistente virtual da UNIFESP ICT, simpatico e acolhedor. Abaixo esta uma RESPOSTA JA VERIFICADA, extraida diretamente da base de dados oficial. Ela esta correta e completa.
+
+Pergunta do aluno: {question}
+
+Resposta verificada:
+{kg_response}
+
+Sua tarefa: reescrever essa resposta num tom mais conversacional, caloroso e natural, como um chatbot amigavel conversando com um aluno.
+
+REGRAS INVIOLAVEIS:
+- NAO altere, remova, adicione ou invente NENHUM fato: nomes, codigos, numeros, disciplinas, professores, artigos e listas devem permanecer IDENTICOS em conteudo.
+- Mantenha TODOS os itens de qualquer lista, na mesma ordem.
+- Voce so pode mudar a FORMA: uma abertura amigavel, conectar as frases de modo natural e, se fizer sentido, uma frase final se colocando a disposicao.
+- Responda em PORTUGUES BRASILEIRO, de forma breve. No maximo 1 emoji.
+- Nao comente estas instrucoes nem mencione "base de dados" ou "Knowledge Graph".
+
+Resposta conversacional:"""
+
+
+def humanize_kg_response(llm, question: str, kg_response: str, history: str = "") -> str:
+    """
+    Suaviza o tom de uma resposta determinística do KG via LLM, preservando os
+    fatos. Em caso de erro, retorna a resposta original (degradação segura).
+    Só deve ser chamada quando Config.HUMANIZE_KG está ativo.
+
+    `history`: trocas anteriores — evita re-saudação ("Olá!") a cada turno.
+    """
+    if not llm or not kg_response or not kg_response.strip():
+        return kg_response
+    try:
+        template = _KG_HUMANIZER_TEMPLATE
+        inputs = {"question": question, "kg_response": kg_response}
+        if history:
+            template = template.replace(
+                "Pergunta do aluno: {question}",
+                "HISTORICO RECENTE DA CONVERSA:\n{history}\n\n"
+                "A conversa JA ESTA EM ANDAMENTO: NAO cumprimente de novo "
+                "(nada de 'Ola', 'Oi'); emende direto no assunto.\n\n"
+                "Pergunta do aluno: {question}",
+                1,
+            )
+            inputs["history"] = history
+        prompt = ChatPromptTemplate.from_template(template)
+        chain = prompt | llm | StrOutputParser()
+        softened = chain.invoke(inputs)
+        return softened.strip() or kg_response
+    except Exception:
+        return kg_response
 
 
 def build_pipeline(rag_instance):
@@ -39,6 +103,10 @@ def build_pipeline(rag_instance):
         "docentes": DocentesAgent(rag_instance),
         "cursos": CursosAgent(rag_instance),
         "regimentos": RegimentosAgent(rag_instance),
+        "conversa": ConversaAgent(rag_instance),
+        "montar_grade": MontarGradeAgent(rag_instance),
+        "noticias": NoticiasAgent(rag_instance),
+        "web_sjc": WebSjcAgent(rag_instance),
     }
 
     # Roteador por embeddings (prioridade sobre intent/keywords quando confiança alta)
@@ -62,6 +130,59 @@ def build_pipeline(rag_instance):
                 "active_agent": "meta",
             }
 
+        # Conversa social (saudações, agradecimentos, despedidas, identidade) →
+        # agente conversacional, antes do roteamento por embeddings/intent.
+        if is_conversational(question_lower):
+            return {
+                **state,
+                "intent": "conversa",
+                "term": "",
+                "confidence": 1.0,
+                "active_agent": "conversa",
+            }
+
+        # Pedido de montar a grade / planejar trajetória → agente dedicado.
+        if is_montar_grade(question_lower):
+            return {
+                **state,
+                "intent": "plan_curriculum",
+                "term": "",
+                "confidence": 1.0,
+                "active_agent": "montar_grade",
+            }
+
+        # Pedido de notícias / novidades da UNIFESP → agente de notícias.
+        if is_noticias(question_lower):
+            return {
+                **state,
+                "intent": "noticias",
+                "term": "",
+                "confidence": 1.0,
+                "active_agent": "noticias",
+            }
+
+        # Pergunta institucional sobre o campus → agente do site (cobertura completa).
+        if is_web_sjc(question_lower):
+            return {
+                **state,
+                "intent": "web_sjc",
+                "term": "",
+                "confidence": 1.0,
+                "active_agent": "web_sjc",
+            }
+
+        # Pergunta descritiva sobre um CURSO ("O que é o BCT?") → página do curso
+        # no site. Desambiguação simbólica via KG: se a entidade fosse uma
+        # disciplina ("O que é Teoria dos Grafos?"), segue o fluxo normal.
+        if is_course_overview(question_lower, rag_instance.knowledge_graph):
+            return {
+                **state,
+                "intent": "web_sjc",
+                "term": "",
+                "confidence": 0.9,
+                "active_agent": "web_sjc",
+            }
+
         intent = "unknown"
         term = ""
         confidence = 0.0
@@ -72,17 +193,12 @@ def build_pipeline(rag_instance):
             active_agent, emb_conf = embedding_router.route(question)
             if active_agent:
                 confidence = emb_conf
-        # Correção: "me fale sobre matemática discreta" não é sobre professor
-        if active_agent == "docentes" and (
-            "fale sobre" in question_lower or "me fale sobre" in question_lower
-        ) and "professor" not in question_lower and "docente" not in question_lower:
-            active_agent = "disciplinas"
-
-        # Overrides por keywords (têm prioridade sobre embedding quando presentes)
-        if any(kw in question_lower for kw in CURSOS_SEQ_KEYWORDS):
-            active_agent = "cursos"
-        elif any(kw in question_lower for kw in REGIMENTO_FORCE_KEYWORDS):
-            active_agent = "regimentos"
+        # Overrides de alta precisão por frase (prioridade sobre o embedding).
+        # Fonte única em router.phrase_override — substitui as correções
+        # hardcoded pontuais que existiam aqui.
+        override = phrase_override(question_lower, active_agent)
+        if override:
+            active_agent = override
 
         # 2) Intent/term do GraphRAG (para preencher intent/term quando agente é docentes ou ainda não definido)
         if rag_instance.graph_rag:
@@ -94,7 +210,7 @@ def build_pipeline(rag_instance):
                 # Para intents determinísticos, o KG responde diretamente sem LLM.
                 # Isso elimina latência de inferência e risco de alucinação.
                 if (
-                    detected_term
+                    (detected_term or detected_intent in _TERM_OPTIONAL_INTENTS)
                     and detected_intent in SYMBOLIC_DIRECT_INTENTS
                     and rag_instance.graph_rag
                 ):
@@ -102,9 +218,17 @@ def build_pipeline(rag_instance):
                         detected_intent, detected_term
                     )
                     if kg_response:
+                        # Humanização opcional: suaviza o tom sem alterar os fatos.
+                        # Desligada por padrão (paper puro); ative com FESPAI_HUMANIZE_KG=1.
+                        response_text = kg_response
+                        if getattr(rag_instance.config, "HUMANIZE_KG", False):
+                            response_text = humanize_kg_response(
+                                rag_instance.llm, question, kg_response,
+                                history=state.get("history", ""),
+                            )
                         return {
                             **state,
-                            "response": kg_response,
+                            "response": response_text,
                             "intent": detected_intent,
                             "term": detected_term,
                             "confidence": 1.0,
@@ -125,7 +249,12 @@ def build_pipeline(rag_instance):
                     term = detected_term or ""
                     if confidence < 0.5:
                         confidence = 0.8
-                # Se active_agent != routed, mantém o agente do embedding e intent/term ficam como estão
+                else:
+                    # Agente do embedding vence, mas intent/term detectados ainda
+                    # são úteis para os lookups do agente (antes ficavam vazios)
+                    if not term and detected_term:
+                        intent = detected_intent
+                        term = detected_term
         if not active_agent:
             active_agent = route_intent(intent, question_lower)
 
@@ -141,7 +270,8 @@ def build_pipeline(rag_instance):
     def disciplinas_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["disciplinas"].answer(
-            question, state.get("intent", ""), state.get("term", "")
+            question, state.get("intent", ""), state.get("term", ""),
+            history=state.get("history", ""),
         )
         return {
             **state,
@@ -155,7 +285,8 @@ def build_pipeline(rag_instance):
     def docentes_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["docentes"].answer(
-            question, state.get("intent", ""), state.get("term", "")
+            question, state.get("intent", ""), state.get("term", ""),
+            history=state.get("history", ""),
         )
         return {
             **state,
@@ -169,7 +300,8 @@ def build_pipeline(rag_instance):
     def cursos_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["cursos"].answer(
-            question, state.get("intent", ""), state.get("term", "")
+            question, state.get("intent", ""), state.get("term", ""),
+            history=state.get("history", ""),
         )
         return {
             **state,
@@ -183,12 +315,62 @@ def build_pipeline(rag_instance):
     def regimentos_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["regimentos"].answer(
-            question, state.get("intent", ""), state.get("term", "")
+            question, state.get("intent", ""), state.get("term", ""),
+            history=state.get("history", ""),
         )
         return {
             **state,
             "response": result["response"],
             "active_agent": "regimentos",
+            "context": result.get("context", ""),
+            "sources": result.get("sources", []),
+        }
+
+    # ── Nó: Agente Conversacional (saudações, agradecimentos, small talk) ─────
+    def conversa_node(state: AgentState) -> AgentState:
+        question = state.get("question", "")
+        result = agents["conversa"].answer(question, "", "", history=state.get("history", ""))
+        return {
+            **state,
+            "response": result["response"],
+            "active_agent": "conversa",
+            "context": "",
+            "sources": [],
+        }
+
+    # ── Nó: Agente Montar Grade (planejador de trajetória) ────────────────────
+    def montar_grade_node(state: AgentState) -> AgentState:
+        question = state.get("enhanced_question") or state.get("question", "")
+        result = agents["montar_grade"].answer(question, state.get("intent", ""), "", history=state.get("history", ""))
+        return {
+            **state,
+            "response": result["response"],
+            "active_agent": "montar_grade",
+            "context": "",
+            "sources": [],
+            "plan_request": result.get("plan_request"),
+        }
+
+    # ── Nó: Agente de Notícias (retrieval ao vivo, fonte oficial) ─────────────
+    def noticias_node(state: AgentState) -> AgentState:
+        question = state.get("enhanced_question") or state.get("question", "")
+        result = agents["noticias"].answer(question, state.get("intent", ""), "", history=state.get("history", ""))
+        return {
+            **state,
+            "response": result["response"],
+            "active_agent": "noticias",
+            "context": result.get("context", ""),
+            "sources": result.get("sources", []),
+        }
+
+    # ── Nó: Agente Web SJC (cobertura completa do site do campus) ─────────────
+    def web_sjc_node(state: AgentState) -> AgentState:
+        question = state.get("enhanced_question") or state.get("question", "")
+        result = agents["web_sjc"].answer(question, state.get("intent", ""), "", history=state.get("history", ""))
+        return {
+            **state,
+            "response": result["response"],
+            "active_agent": "web_sjc",
             "context": result.get("context", ""),
             "sources": result.get("sources", []),
         }
@@ -233,6 +415,10 @@ def build_pipeline(rag_instance):
     graph.add_node("docentes", docentes_node)
     graph.add_node("cursos", cursos_node)
     graph.add_node("regimentos", regimentos_node)
+    graph.add_node("conversa", conversa_node)
+    graph.add_node("montar_grade", montar_grade_node)
+    graph.add_node("noticias", noticias_node)
+    graph.add_node("web_sjc", web_sjc_node)
     graph.add_node("fallback", fallback_node)
     graph.add_node("meta", meta_node)
     graph.add_node("symbolic_kg", symbolic_kg_node)
@@ -247,13 +433,17 @@ def build_pipeline(rag_instance):
             "docentes": "docentes",
             "cursos": "cursos",
             "regimentos": "regimentos",
+            "conversa": "conversa",
+            "montar_grade": "montar_grade",
+            "noticias": "noticias",
+            "web_sjc": "web_sjc",
             "fallback": "fallback",
             "meta": "meta",
             "symbolic_kg": "symbolic_kg",
         },
     )
 
-    for agent_name in ["disciplinas", "docentes", "cursos", "regimentos", "fallback", "meta", "symbolic_kg"]:
+    for agent_name in ["disciplinas", "docentes", "cursos", "regimentos", "conversa", "montar_grade", "noticias", "web_sjc", "fallback", "meta", "symbolic_kg"]:
         graph.add_edge(agent_name, END)
 
     return graph.compile()

@@ -58,6 +58,33 @@ class SemanticChunker:
         return result
 
 
+class BatchedEmbeddings:
+    """
+    Envolve o modelo de embeddings quebrando embed_documents em lotes.
+
+    O langchain-chroma manda TODOS os chunks numa única chamada ao Ollama;
+    payloads de vários MB derrubam o runner de alguns modelos (embeddinggemma:
+    'Post .../tokenize: EOF' no rebuild da collection). Lotes pequenos mantêm
+    cada requisição dentro do que o runner aguenta, para qualquer modelo.
+    """
+
+    def __init__(self, inner, batch_size: int = 64):
+        self._inner = inner
+        self._batch_size = batch_size
+
+    def embed_documents(self, texts):
+        out = []
+        for i in range(0, len(texts), self._batch_size):
+            out.extend(self._inner.embed_documents(texts[i:i + self._batch_size]))
+        return out
+
+    def embed_query(self, text):
+        return self._inner.embed_query(text)
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
+
+
 class RAGUnifesp:
     
     def __init__(self, config: Config = None):
@@ -78,11 +105,11 @@ class RAGUnifesp:
                 repeat_penalty=1.1,
                 timeout=llm_timeout
             )
-            self.embeddings = OllamaEmbeddings(
-                model=self.config.EMBEDDING_MODEL, 
+            self.embeddings = BatchedEmbeddings(OllamaEmbeddings(
+                model=self.config.EMBEDDING_MODEL,
                 base_url=ollama_base_url,
                 keep_alive=keep_alive_seconds
-            )
+            ))
         else:
             self.llm = OllamaLLM(
                 model=self.config.MODEL_NAME, 
@@ -93,10 +120,10 @@ class RAGUnifesp:
                 repeat_penalty=1.1,
                 timeout=llm_timeout
             )
-            self.embeddings = OllamaEmbeddings(
-                model=self.config.EMBEDDING_MODEL, 
+            self.embeddings = BatchedEmbeddings(OllamaEmbeddings(
+                model=self.config.EMBEDDING_MODEL,
                 keep_alive=keep_alive_seconds
-            )
+            ))
         
         self.db = None
         self.retriever = None
@@ -146,14 +173,63 @@ class RAGUnifesp:
         
         return changes, current_files
     
+    def _embedding_dim_mismatch(self) -> bool:
+        """
+        True se a dimensão do modelo de embedding atual difere da collection
+        persistida (ex.: collection criada com mxbai/1024 e modelo trocado para
+        embeddinggemma/768). Sem este guard, o erro só aparece em runtime, no
+        meio de uma conversa ("Collection expecting embedding with dimension...").
+        """
+        try:
+            data = self.db.get(limit=1, include=["embeddings"])
+            embs = data.get("embeddings")
+            if embs is None or len(embs) == 0:
+                return False
+            collection_dim = len(embs[0])
+            atual = len(self.embeddings.embed_query("probe de dimensao"))
+            if atual != collection_dim:
+                print(
+                    f"[SYNC] Collection persistida tem dimensão {collection_dim}, "
+                    f"mas o modelo atual ({self.config.EMBEDDING_MODEL}) gera {atual}."
+                )
+                return True
+        except Exception:
+            return False
+        return False
+
     def sync(self, force: bool = False) -> bool:
         changes, current_files = self._detect_changes()
-        
+
         has_changes = any(changes.values())
         db_exists = os.path.exists(self.config.PERSIST_DIR) and os.path.exists(
             os.path.join(self.config.PERSIST_DIR, "chroma.sqlite3")
         )
-        
+
+        # Guard de dimensão: modelo de embedding trocado → rebuild automático
+        # (deleta só a collection; o restante do diretório, ex. cache do crawler,
+        # é preservado)
+        if db_exists and not force:
+            self._load_db()
+            vazia = False
+            try:
+                vazia = self.db._collection.count() == 0
+            except Exception:
+                pass
+            if vazia:
+                # Rebuild anterior interrompido (crash pós-delete_collection):
+                # sem este guard, o boot carregaria uma collection vazia em silêncio
+                print("[SYNC] Collection vazia — recriando o banco vetorial.")
+                self.db = None
+                force = True
+            elif self._embedding_dim_mismatch():
+                print("[SYNC] Modelo de embedding mudou — recriando o banco vetorial do zero.")
+                try:
+                    self.db.delete_collection()
+                except Exception:
+                    pass
+                self.db = None
+                force = True
+
         if not has_changes and db_exists and not force:
             print("Banco atualizado, nenhuma mudanca detectada.")
             self._load_db()
@@ -161,7 +237,7 @@ class RAGUnifesp:
             self._setup_chain()
             self._setup_knowledge_graph()
             return False
-        
+
         if force or not db_exists:
             print("Recriando banco vetorial...")
             all_docs = []
@@ -210,9 +286,9 @@ class RAGUnifesp:
                 cursos_arg
             )
             
-            # Criar GraphRAG com embeddings para classificação semântica
-            self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings)
-            
+            # Criar GraphRAG com embeddings + LLM para classificação semântica
+            self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings, llm=self.llm)
+
             # Inicializar classificador de intenção (pré-computa embeddings)
             self.graph_rag.initialize_classifier()
             
@@ -450,20 +526,23 @@ Resposta:"""
             combined_context = graph_context + rag_context
         
         # 5. SEMPRE passar pelo LLM para gerar resposta natural
-        template = """Voce e o Assistente Unifesp ICT. Responda APENAS em PORTUGUES BRASILEIRO.
+        template = """Voce e o assistente virtual da UNIFESP ICT: simpatico, acolhedor e conversacional, como um colega que conhece bem o instituto. Fale sempre em PORTUGUES BRASILEIRO.
 
 {context}
 
-Pergunta: {question}
+Pergunta do usuario: {question}
 
-INSTRUCOES OBRIGATORIAS:
-1. Use APENAS as informacoes presentes no contexto acima
-2. NAO INVENTE disciplinas, emails, salas ou informacoes que nao estejam no contexto
-3. Se houver listas, mantenha TODAS as informacoes listadas
-4. Responda de forma natural e direta
-5. Se a informacao nao estiver no contexto, diga que nao tem essa informacao
+Como conversar:
+- Tom humano, caloroso e natural — use "voce", seja gentil e proximo, como num bate-papo real.
+- Se a pessoa so cumprimentar, agradecer ou puxar papo (ex.: "oi", "tudo bem?", "obrigado"), responda na mesma vibe, de forma breve e simpatica, e convide-a a perguntar sobre disciplinas, professores, cursos ou regimentos da UNIFESP ICT. Nao precisa de contexto para isso.
+- Quando responder sobre a UNIFESP, baseie-se SOMENTE nas informacoes do contexto acima.
+- Nunca invente disciplinas, emails, salas, nomes ou dados que nao estejam no contexto.
+- Se houver listas no contexto, preserve TODOS os itens.
+- Se a informacao nao estiver no contexto, admita com naturalidade (ex.: "Poxa, isso eu nao tenho aqui...") e sugira como a pessoa pode reformular ou onde procurar.
 
-IMPORTANTE: Nao adicione disciplinas ou dados que nao foram explicitamente mencionados no contexto.
+Regras de estilo:
+- Va direto ao que importa, mas sem soar robotico — pode usar uma frase de abertura amigavel quando fizer sentido.
+- Evite jargao desnecessario e respostas longas demais; seja claro e leve.
 
 Resposta:"""
         
@@ -536,6 +615,7 @@ Resposta:"""
             r'professor(?:es)?\s+(?:de|da|do)\s+([A-Za-z][^?.,!]+)',
             r'carga\s+horaria\s+(?:de|da|do)\s+([A-Za-z][^?.,!]+)',
             r'pre[-\s]?requisitos?\s+(?:de|da|do|para)\s+([A-Za-z][^?.,!]+)',
+            r'(?:tem|ver|mostra)\s+(?:a\s+)?ementa\s+(?:de|da|do)\s+([A-Za-z][^?.,!]+)',
             r'ementa\s+(?:de|da|do)\s+([A-Za-z][^?.,!]+)',
             r'(?:o\s+que\s+(?:vc\s+)?sabe\s+)?sobre\s+(?:a\s+disciplina\s+)?([A-Za-zÀ-ú][^?.,!]+)',
             r'sobre\s+(?:a\s+disciplina\s+)?([A-Za-zÀ-ú][^?.,!]+)',

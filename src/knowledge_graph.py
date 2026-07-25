@@ -1,7 +1,7 @@
 import networkx as nx
 import re
 import unicodedata
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Set, Tuple
 from pathlib import Path
 
 class KnowledgeGraph:
@@ -15,6 +15,15 @@ class KnowledgeGraph:
         self._index_by_codigo: Dict[str, str] = {}    # codigo_normalizado -> node_id
         # Mapeamento nome/variante -> sigla para unificar nós de curso (evitar CURSO:X e CURSO:Y para o mesmo curso)
         self._curso_name_to_sigla: Dict[str, str] = {}
+        # KGC: inicializado após o grafo ser populado (lazy)
+        self._kgc: Optional["KGCompletion"] = None
+
+    @property
+    def kgc(self) -> "KGCompletion":
+        """Acesso lazy ao KGCompletion — inicializado na primeira chamada."""
+        if self._kgc is None:
+            self._kgc = KGCompletion(self)
+        return self._kgc
     
     @staticmethod
     def _normalize_text(text: str) -> str:
@@ -88,6 +97,15 @@ class KnowledgeGraph:
             for md_file in docentes_path.glob("*.md"):
                 self._process_docentes_file(md_file)
         
+        # NSAI-2: verificação de consistência simbólica ao final do build
+        try:
+            issues = self.lint()
+            problemas = {k: len(v) for k, v in issues.items() if v}
+            if problemas:
+                print(f"[KG lint] Inconsistências detectadas: {problemas}")
+        except Exception as e:
+            print(f"[KG lint] falhou: {e}")
+
         stats = self.get_stats()
         print(f"Grafo construído:")
         print(f"  - {stats['disciplinas']} disciplinas")
@@ -100,6 +118,71 @@ class KnowledgeGraph:
         print(f"  - {stats['artigos']} artigos")
         print(f"  - Total: {stats['total_nos']} nós, {stats['total_arestas']} arestas")
     
+    def lint(self) -> Dict[str, list]:
+        """
+        NSAI-2: lint de consistência simbólica do grafo.
+
+        Um sistema simbólico vale o que vale seu grafo — detecta:
+        - disciplinas duplicadas por nome normalizado ("de/da Biologia Moderna")
+        - ciclos no DAG de pré-requisitos (quebrariam o BFS topológico)
+        - disciplinas sem vínculo com curso/matriz nem termo
+        - nós de pré-requisito "pendurados" (criados só pela aresta, sem código)
+        """
+        import networkx as nx
+        issues: Dict[str, list] = {
+            "disciplinas_duplicadas": [],
+            "ciclos_prereq": [],
+            "disciplinas_sem_curso": [],
+            "prereqs_pendurados": [],
+        }
+
+        vistos: Dict[str, str] = {}
+        for _, d in self.graph.nodes(data=True):
+            if d.get("tipo") != "disciplina":
+                continue
+            chave = self._normalize_text(d.get("nome", ""))
+            if not chave:
+                continue
+            if chave in vistos and vistos[chave] != d.get("nome"):
+                issues["disciplinas_duplicadas"].append((vistos[chave], d.get("nome")))
+            else:
+                vistos[chave] = d.get("nome")
+
+        prereq_edges = [
+            (u, v) for u, v, dd in self.graph.edges(data=True)
+            if dd.get("relacao") == "PREREQUISITO_DE"
+        ]
+        sub = nx.DiGraph(prereq_edges)
+        try:
+            ciclo = nx.find_cycle(sub)
+            issues["ciclos_prereq"].append(
+                [self.graph.nodes[a].get("nome", a) for a, _ in ciclo]
+            )
+        except nx.NetworkXNoCycle:
+            pass
+
+        com_curso = {
+            v for _, v, dd in self.graph.edges(data=True)
+            if dd.get("relacao") in ("INCLUI", "OFERECE")
+        }
+        pendurados = set()
+        for u, _ in prereq_edges:
+            du = self.graph.nodes[u]
+            if du.get("tipo") == "disciplina" and not du.get("codigo"):
+                pendurados.add(du.get("nome"))
+        issues["prereqs_pendurados"] = sorted(pendurados)
+
+        for n, d in self.graph.nodes(data=True):
+            if (
+                d.get("tipo") == "disciplina"
+                and n not in com_curso
+                and not d.get("termo")
+                and d.get("codigo")
+            ):
+                issues["disciplinas_sem_curso"].append(d.get("nome"))
+
+        return issues
+
     def _process_discipline_file(self, file_path: Path):
         """Processa um arquivo de disciplina."""
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -498,7 +581,22 @@ class KnowledgeGraph:
 
         dfs(disc_id, 0)
         return chain
-    
+
+    def get_direct_prerequisites(self, disciplina: str) -> List[str]:
+        """Retorna apenas os pré-requisitos DIRETOS (um salto) da disciplina."""
+        disc_id = self._find_node(disciplina, "disciplina")
+        if not disc_id:
+            return []
+        diretos = []
+        for pred in self.graph.predecessors(disc_id):
+            edge_data = self.graph.get_edge_data(pred, disc_id)
+            if (self._has_edge_relation(edge_data, 'PREREQUISITO_DE')
+                    and self.graph.nodes[pred].get('tipo') == 'disciplina'):
+                nome = self.graph.nodes[pred].get('nome')
+                if nome:
+                    diretos.append(nome)
+        return diretos
+
     def get_dependent_disciplines(self, disciplina: str) -> List[str]:
         """Disciplinas que dependem desta (esta é pré-requisito)."""
         disc_id = self._find_node(disciplina, "disciplina")
@@ -1239,3 +1337,271 @@ class KnowledgeGraph:
             'docentes': docentes,
             'dependentes': dependentes,
         }
+
+
+class KGCompletion:
+    """
+    Knowledge Graph Completion leve para o domínio UNIFESP ICT.
+
+    Inspirado em dois módulos do artigo "Enhancing KGC with GNN Distillation
+    and Probabilistic Interaction Modeling" (Wang et al., 2025):
+
+    1. **Assinatura estrutural** (GNN neighborhood aggregation sem pesos treináveis):
+       Para cada disciplina, agrega características de vizinhos em 1-hop e 2-hop
+       — pré-requisitos, docentes, dependentes, co-pré-requisitos.
+
+    2. **Score de interação** (APIM simplificado):
+       Jaccard ponderado entre assinaturas, com pesos diferentes por tipo de
+       relação (análogo à matriz de transição Pr do APIM).
+
+    Com isso é possível:
+    - Encontrar disciplinas estruturalmente similares (sem match exato de nome)
+    - Inferir arestas prováveis ausentes (KGC propriamente dito)
+    - Enriquecer contexto dos agentes com relações latentes
+    """
+
+    # Pesos por tipo de relação — equivalentes à Pr do APIM.
+    # PREREQUISITO é o mais discriminativo; LECIONA conecta entidades de tipos
+    # diferentes; co-pré-requisito (disciplinas que são irmãs) é sinal mais fraco.
+    _RELATION_WEIGHTS: Dict[str, float] = {
+        "prereqs_1":   0.35,
+        "docentes":    0.30,
+        "dependents":  0.20,
+        "co_prereqs":  0.10,
+        "prereqs_2":   0.05,
+    }
+
+    def __init__(self, kg: "KnowledgeGraph"):
+        self.kg = kg
+        self._cache: Dict[str, Dict[str, Set[str]]] = {}
+
+    def invalidate_cache(self) -> None:
+        self._cache.clear()
+
+    # ──────────────────────────────────────────────────────────────────────
+    # 1. Assinatura estrutural (GNN 1-hop + 2-hop sem treino)
+    # ──────────────────────────────────────────────────────────────────────
+
+    def _signature(self, discipline: str) -> Dict[str, Set[str]]:
+        """Agrega vizinhança em até 2 hops — equivalente a 2 camadas de MPNN."""
+        norm = self.kg._normalize_text(discipline)
+        if norm in self._cache:
+            return self._cache[norm]
+
+        prereqs_1: Set[str] = set(self.kg.get_prerequisite_chain(discipline, max_depth=1))
+        docentes: Set[str]   = set(self.kg.get_docentes_of_discipline(discipline))
+        dependents: Set[str] = set(self.kg.get_dependent_disciplines(discipline))
+
+        # 2-hop: irmãs (co-pré-requisitos — outras disciplinas necessárias para os
+        # mesmos dependentes) e pré-requisitos dos pré-requisitos
+        co_prereqs: Set[str] = set()
+        for dep in dependents:
+            co_prereqs.update(self.kg.get_prerequisite_chain(dep, max_depth=1))
+        co_prereqs -= prereqs_1
+        co_prereqs.discard(discipline)
+
+        prereqs_2: Set[str] = set()
+        for p in prereqs_1:
+            prereqs_2.update(self.kg.get_prerequisite_chain(p, max_depth=1))
+        prereqs_2 -= prereqs_1
+        prereqs_2.discard(discipline)
+
+        sig = {
+            "prereqs_1":  prereqs_1,
+            "docentes":   docentes,
+            "dependents": dependents,
+            "co_prereqs": co_prereqs,
+            "prereqs_2":  prereqs_2,
+        }
+        self._cache[norm] = sig
+        return sig
+
+    # ──────────────────────────────────────────────────────────────────────
+    # 2. Score de similaridade estrutural (APIM simplificado)
+    # ──────────────────────────────────────────────────────────────────────
+
+    def structural_similarity(self, disc_a: str, disc_b: str) -> float:
+        """
+        Score de interação entre duas disciplinas.
+        Análogo a f(h, r, t) = ã_h^T · Pr · ã_t do APIM, porém calculado
+        como Jaccard ponderado entre assinaturas estruturais.
+        """
+        sig_a = self._signature(disc_a)
+        sig_b = self._signature(disc_b)
+
+        total = 0.0
+        denom = 0.0
+        for key, w in self._RELATION_WEIGHTS.items():
+            a, b = sig_a[key], sig_b[key]
+            union = a | b
+            if union:
+                total += w * (len(a & b) / len(union))
+                denom += w
+
+        return total / denom if denom > 0 else 0.0
+
+    # ──────────────────────────────────────────────────────────────────────
+    # 3. Busca de disciplinas similares (KGC aplicado)
+    # ──────────────────────────────────────────────────────────────────────
+
+    def _name_similarity(self, query: str, candidate: str) -> float:
+        """Token Jaccard similarity between normalized names (fallback for unknown disciplines)."""
+        _STOPWORDS = {"de", "da", "do", "das", "dos", "e", "em", "com", "para", "um", "uma"}
+        def tokens(s: str) -> Set[str]:
+            return {t for t in self.kg._normalize_text(s).split() if t not in _STOPWORDS and len(t) > 2}
+        a, b = tokens(query), tokens(candidate)
+        if not a or not b:
+            return 0.0
+        return len(a & b) / len(a | b)
+
+    def find_similar(
+        self,
+        discipline: str,
+        n: int = 5,
+        threshold: float = 0.08,
+    ) -> List[Tuple[str, float]]:
+        """Retorna as n disciplinas estruturalmente mais similares a `discipline`.
+
+        Se a disciplina não existe no KG, usa similaridade por nome (token Jaccard)
+        como fallback — útil para sugerir disciplinas reais para termos mal grafados
+        ou que não constam na base.
+        """
+        norm_discipline = self.kg._normalize_text(discipline)
+        candidates = [
+            data.get("nome", nid)
+            for nid, data in self.kg.graph.nodes(data=True)
+            if data.get("tipo") == "disciplina"
+            and data.get("nome") != discipline
+            and self.kg._normalize_text(data.get("nome", "")) != norm_discipline
+        ]
+
+        # Verificar se a disciplina está no KG (tem nó próprio)
+        in_kg = self.kg._find_node(discipline, "disciplina") is not None
+
+        # B5: componente semântica via embeddings (quando disponíveis)
+        semantic = self._semantic_scores(discipline, candidates)
+
+        scores: List[Tuple[str, float]] = []
+        for other in candidates:
+            try:
+                if in_kg:
+                    sim = self.structural_similarity(discipline, other)
+                else:
+                    sim = self._name_similarity(discipline, other)
+                if other in semantic:
+                    # Estrutura diz "papel no currículo"; embedding diz "assunto".
+                    sim = 0.6 * sim + 0.4 * semantic[other]
+                if sim >= threshold:
+                    scores.append((other, sim))
+            except Exception:
+                continue
+
+        return sorted(scores, key=lambda x: -x[1])[:n]
+
+    # ── B5: embeddings semânticos ─────────────────────────────────────────
+
+    def set_embeddings(self, model) -> None:
+        """Injeta o modelo de embeddings (chamado no sync, quando existe)."""
+        self._emb_model = model
+        self._emb_names: List[str] = []
+        self._emb_vecs: List[List[float]] = []
+
+    def _semantic_scores(self, discipline: str, candidates: List[str]) -> Dict[str, float]:
+        """Cosseno entre o termo e os nomes das candidatas (cache lazy dos vetores)."""
+        model = getattr(self, "_emb_model", None)
+        if model is None:
+            return {}
+        import math
+        try:
+            if not getattr(self, "_emb_names", None):
+                self._emb_names = candidates
+                self._emb_vecs = model.embed_documents(candidates)
+            qv = model.embed_query(discipline)
+
+            def _cos(a, b):
+                num = sum(x * y for x, y in zip(a, b))
+                na = math.sqrt(sum(x * x for x in a))
+                nb = math.sqrt(sum(y * y for y in b))
+                return num / (na * nb) if na and nb else 0.0
+
+            return {
+                nome: _cos(qv, vec)
+                for nome, vec in zip(self._emb_names, self._emb_vecs)
+            }
+        except Exception:
+            return {}
+
+    # ──────────────────────────────────────────────────────────────────────
+    # 4. Inferência de arestas ausentes
+    # ──────────────────────────────────────────────────────────────────────
+
+    def predict_missing_prerequisites(
+        self,
+        discipline: str,
+        threshold: float = 0.6,
+        top_k: int = 5,
+    ) -> List[Tuple[str, float]]:
+        """
+        Prediz pré-requisitos prováveis ausentes.
+        Estratégia: disciplinas similares que têm pré-req X em comum → X é
+        candidato para `discipline` também.
+        Score = proporção de similares que possuem o candidato como pré-req.
+        """
+        known_prereqs_norm = {
+            self.kg._normalize_text(p)
+            for p in self.kg.get_all_ancestors(discipline)
+        }
+        similar = self.find_similar(discipline, n=10, threshold=0.08)
+        if not similar:
+            return []
+
+        counts: Dict[str, int] = {}
+        for (sim_disc, _) in similar:
+            for p in self.kg.get_prerequisite_chain(sim_disc, max_depth=1):
+                pn = self.kg._normalize_text(p)
+                if pn not in known_prereqs_norm and pn != self.kg._normalize_text(discipline):
+                    counts[p] = counts.get(p, 0) + 1
+
+        scored = [
+            (disc, count / len(similar))
+            for disc, count in counts.items()
+            if count / len(similar) >= threshold
+        ]
+        return sorted(scored, key=lambda x: -x[1])[:top_k]
+
+    # ──────────────────────────────────────────────────────────────────────
+    # 5. Bloco de contexto enriquecido para os agentes
+    # ──────────────────────────────────────────────────────────────────────
+
+    def get_enrichment_block(self, discipline: str, max_similar: int = 3) -> str:
+        """
+        Gera bloco de contexto com insights de KGC para uso nos prompts.
+        Inclui disciplinas estruturalmente similares e pré-requisitos inferidos.
+        """
+        similar = self.find_similar(discipline, n=max_similar, threshold=0.1)
+        if not similar:
+            return ""
+
+        lines = [f"[KGC — Relações Estruturais Inferidas para {discipline}]"]
+
+        # Disciplinas estruturalmente similares
+        sim_parts = []
+        for (disc, score) in similar:
+            prereqs = self.kg.get_prerequisite_chain(disc, max_depth=1)
+            docentes = self.kg.get_docentes_of_discipline(disc)
+            tags = []
+            if prereqs:
+                tags.append(f"pré-req: {', '.join(prereqs[:2])}")
+            if docentes:
+                tags.append(f"docentes: {', '.join(docentes[:2])}")
+            tag_str = f" [{'; '.join(tags)}]" if tags else ""
+            sim_parts.append(f"{disc} (sim={score:.0%}){tag_str}")
+        lines.append("  • Similares: " + " | ".join(sim_parts))
+
+        # Pré-requisitos inferidos (ausentes no KG)
+        inferred = self.predict_missing_prerequisites(discipline, threshold=0.5, top_k=3)
+        if inferred:
+            inf_strs = [f"{p} ({s:.0%} confiança)" for p, s in inferred]
+            lines.append("  • Pré-requisitos prováveis não cadastrados: " + ", ".join(inf_strs))
+
+        return "\n".join(lines)

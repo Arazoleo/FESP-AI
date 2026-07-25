@@ -19,6 +19,11 @@ import {
   Users,
   FileText,
   Brain,
+  Route,
+  X,
+  MessageCircle,
+  Newspaper,
+  Globe,
 } from 'lucide-react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -42,10 +47,16 @@ interface Message {
   agent_info?: AgentInfo
 }
 
+interface PlanRequest {
+  curso?: string | null
+  completed?: string[]
+  max_creditos?: number
+}
+
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
 const AGENT_ICONS: Record<string, React.ElementType> = {
-  BookOpen, GraduationCap, Users, FileText, Bot, Brain,
+  BookOpen, GraduationCap, Users, FileText, Bot, Brain, Route, MessageCircle, Newspaper, Globe,
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
@@ -246,6 +257,8 @@ export default function ChatPage() {
   const [activeAgent, setActiveAgent] = useState<{ agent: string; info?: AgentInfo } | null>(null)
   // Índice da mensagem atualmente sendo animada (-1 = nenhuma)
   const [animatingIndex, setAnimatingIndex] = useState(-1)
+  // URL do planejador de trajetória (canvas ao vivo). null = painel fechado.
+  const [plannerUrl, setPlannerUrl] = useState<string | null>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -324,6 +337,25 @@ export default function ChatPage() {
         agent: response.data.active_agent || 'fallback',
         info: response.data.agent_info,
       })
+
+      // Se o agente pediu para montar a grade, abre o planejador (canvas ao vivo).
+      const planReq: PlanRequest | undefined = response.data.plan_request
+      if (planReq) {
+        const params = new URLSearchParams()
+        if (planReq.curso) {
+          params.set('curso', planReq.curso)
+          // Com curso detectado, o canvas já monta a grade sozinho.
+          params.set('auto', '1')
+        }
+        if (planReq.completed && planReq.completed.length) {
+          params.set('completed', planReq.completed.join(';'))
+        }
+        if (planReq.max_creditos) {
+          params.set('creditos', String(planReq.max_creditos))
+        }
+        const qs = params.toString()
+        setPlannerUrl(`${API_URL}/planner${qs ? `?${qs}` : ''}`)
+      }
 
       if (!conversationId) setConversationId(response.data.conversation_id)
     } catch (err: any) {
@@ -414,6 +446,14 @@ export default function ChatPage() {
                   <span>Processando...</span>
                 </div>
               )}
+
+              <button
+                onClick={() => setPlannerUrl(`${API_URL}/planner`)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-medium text-sm hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-300 group"
+              >
+                <Route className="w-4 h-4" />
+                <span className="hidden sm:inline">Planejador</span>
+              </button>
 
               <button
                 onClick={createNewConversation}
@@ -655,6 +695,52 @@ export default function ChatPage() {
           </p>
         </div>
       </footer>
+
+      {/* Painel do Planejador de Trajetória (canvas ao vivo) */}
+      <AnimatePresence>
+        {plannerUrl && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setPlannerUrl(null)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+              className="fixed top-0 right-0 h-full w-full md:w-[64%] lg:w-[58%] bg-[#060912] border-l border-white/10 z-50 flex flex-col shadow-2xl"
+            >
+              <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white">
+                    <Route className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white leading-tight">Planejador de Trajetória</p>
+                    <p className="text-[11px] text-slate-400 leading-tight">Montando sua grade ao vivo…</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setPlannerUrl(null)}
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 flex items-center justify-center transition-colors"
+                  aria-label="Fechar planejador"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <iframe
+                src={plannerUrl}
+                className="flex-1 w-full border-0"
+                title="Planejador de Trajetória"
+              />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
