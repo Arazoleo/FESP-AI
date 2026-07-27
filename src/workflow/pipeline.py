@@ -5,6 +5,8 @@ Fluxo:
   router_node → [disciplinas | docentes | cursos | regimentos | fallback] → END
 """
 
+import re
+from collections import Counter
 from typing import Any
 from langgraph.graph import StateGraph, END
 from langchain_core.prompts import ChatPromptTemplate
@@ -56,6 +58,48 @@ REGRAS INVIOLAVEIS:
 Resposta conversacional:"""
 
 
+def _kg_facts_preserved(original: str, humanized: str) -> bool:
+    """
+    Guard barato de pós-verificação do humanizer: True se a saída preservou os
+    fatos da resposta original do KG. O LLM ocasionalmente mutila a resposta
+    (ex.: "O cursoisciplinas obrigatórias" — perda de um trecho no decoding).
+
+    Critérios (perda > 10% → descarta):
+      - dígitos: >= 90% dos tokens numéricos da original (multiset) presentes;
+      - listas: com 3+ itens na original, >= 90% dos itens com o CONTEÚDO
+        presente na saída (o humanizer pode converter bullets em prosa — o que
+        conta é o conteúdo do item, não o marcador).
+    """
+    if not humanized or not humanized.strip():
+        return False
+    # Tokens numéricos (códigos, cargas horárias, termos) como multiset
+    orig_nums = re.findall(r"\d+", original)
+    if orig_nums:
+        hum_counts = Counter(re.findall(r"\d+", humanized))
+        kept = sum(
+            min(count, hum_counts.get(num, 0))
+            for num, count in Counter(orig_nums).items()
+        )
+        if kept < 0.9 * len(orig_nums):
+            return False
+    # Itens de lista ("- item", "• item", "1. item"): conteúdo preservado?
+    orig_items = re.findall(r"^\s*(?:[-•*]|\d+[.)])\s+(.+)$", original, re.MULTILINE)
+    if len(orig_items) >= 3:
+        hum_lower = humanized.lower()
+        items_ok = 0
+        for item in orig_items:
+            tokens = re.findall(r"[^\W\d_]{4,}", item, re.UNICODE)
+            if not tokens:
+                items_ok += 1  # item só de números/símbolos — coberto pelos dígitos
+                continue
+            present = sum(1 for t in tokens if t.lower() in hum_lower)
+            if present >= 0.6 * len(tokens):
+                items_ok += 1
+        if items_ok < 0.9 * len(orig_items):
+            return False
+    return True
+
+
 def humanize_kg_response(llm, question: str, kg_response: str, history: str = "") -> str:
     """
     Suaviza o tom de uma resposta determinística do KG via LLM, preservando os
@@ -81,8 +125,12 @@ def humanize_kg_response(llm, question: str, kg_response: str, history: str = ""
             inputs["history"] = history
         prompt = ChatPromptTemplate.from_template(template)
         chain = prompt | llm | StrOutputParser()
-        softened = chain.invoke(inputs)
-        return softened.strip() or kg_response
+        softened = chain.invoke(inputs).strip()
+        # Guard pós-verificação: se o LLM mutilou a resposta (perdeu >10% dos
+        # dígitos ou dos itens de lista), descarta e usa a original do KG.
+        if not _kg_facts_preserved(kg_response, softened):
+            return kg_response
+        return softened
     except Exception:
         return kg_response
 

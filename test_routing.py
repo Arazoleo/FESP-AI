@@ -100,6 +100,26 @@ check("'monta minha grade respeitando os pré-requisitos' continua montar_grade"
 check("'quantas horas tem o curso de bcc?' NÃO vira web_sjc (fica no KG)",
       not router.is_web_sjc("quantas horas tem o curso de bcc?"))
 
+print(f"\n{BOLD}── quebra/distribuição de horas → web_sjc (FAQ do site tem os números) ──{RESET}")
+check("'mas essas horas estão distribuídas em diferentes atividades?' → web_sjc",
+      router.is_web_sjc("mas essas horas estão distribuídas em diferentes atividades?"))
+check("pergunta reescrita de distribuição de horas → web_sjc",
+      router.is_web_sjc("como as horas para integralizar o bct estão distribuídas entre unidades curriculares, extensão e atividades complementares?"))
+check("'como as horas do bct são divididas?' → web_sjc",
+      router.is_web_sjc("como as horas do bct são divididas?"))
+check("'quantas horas de eletivas do bct?' → web_sjc",
+      router.is_web_sjc("quantas horas de eletivas do bct?"))
+check("'quantas horas de extensão preciso cumprir?' → web_sjc",
+      router.is_web_sjc("quantas horas de extensão preciso cumprir?"))
+check("'quantas horas de atividades complementares no bct?' → web_sjc",
+      router.is_web_sjc("quantas horas de atividades complementares no bct?"))
+check("'qual a carga horária de cálculo numérico?' NÃO vira web_sjc (disciplina, KG)",
+      not router.is_web_sjc("qual a carga horária de cálculo numérico?"))
+check("'quais as eletivas de bcc?' NÃO vira web_sjc (lista de eletivas, KG)",
+      not router.is_web_sjc("quais as eletivas de bcc?"))
+check("'como as disciplinas estão distribuídas nos termos?' NÃO vira web_sjc (sem 'horas')",
+      not router.is_web_sjc("como as disciplinas estão distribuídas nos termos?"))
+
 print(f"\n{BOLD}── is_conversational (word-boundary, não substring) ──{RESET}")
 check("'como funciona o aproveitamento de estudos?' NÃO é conversa ('ei' interno)",
       not router.is_conversational("como funciona o aproveitamento de estudos?"))

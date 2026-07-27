@@ -246,6 +246,26 @@ _WEB_SJC_PHRASES = [
 ]
 
 
+# ── Quebra/distribuição de horas do curso → site (FAQ das páginas de curso) ───
+# O KG só tem a carga horária TOTAL; a distribuição (UCs, extensão,
+# complementares, eletivas) está nas FAQs das páginas de curso do site.
+# Regexes (não frases) porque as formas variam: "essas horas estão
+# distribuídas...", "como as horas do BCT são divididas", "quantas horas de
+# eletivas". Aplicadas sobre texto minúsculo e sem acentos.
+_HOURS_BREAKDOWN_RES = [
+    r"\bhoras?\b[^.?!]*\b(?:distribuid|dividid)\w*\b",
+    r"\b(?:distribuid|dividid)\w*\b[^.?!]*\bhoras?\b",
+    r"\bdistribuicao\s+(?:de\s+|das?\s+)?horas\b",
+    r"\bhoras\s+de\s+(?:eletivas?|optativas?|extensao|complementares)\b",
+    r"\bhoras\s+(?:de\s+)?(?:atividades\s+complementares|disciplinas\s+obrigatorias|ucs?\s+obrigatorias|obrigatorias)\b",
+]
+
+
+def _is_hours_breakdown(q_sem_acentos: str) -> bool:
+    """True se a pergunta pede a QUEBRA das horas do curso (não o total)."""
+    return any(re.search(p, q_sem_acentos) for p in _HOURS_BREAKDOWN_RES)
+
+
 # Se a pergunta cita professor/disciplina, deixe os agentes especialistas tratarem
 # (evita "contato do PROFESSOR X" cair no agente do site por causa de "contato").
 _WEB_SJC_EXCLUDE = [
@@ -266,7 +286,7 @@ def is_web_sjc(question_lower: str) -> bool:
     q = _strip_accents(question_lower)
     if _any_phrase([_strip_accents(e) for e in _WEB_SJC_EXCLUDE], q):
         return False
-    return _any_phrase(_WEB_SJC_PHRASES, q)
+    return _any_phrase(_WEB_SJC_PHRASES, q) or _is_hours_breakdown(q)
 
 
 # ── Pergunta descritiva sobre um CURSO → página do curso no site ──────────────

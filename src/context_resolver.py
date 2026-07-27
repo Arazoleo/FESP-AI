@@ -16,6 +16,27 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
+# Cursos reconhecidos (siglas e nomes) — mesma alternância dos curso_patterns
+_CURSO_ALT = (
+    r'(?:bcc|bct|bbt|ec|engenharia\s+de\s+computa[cç][aã]o|'
+    r'ci[eê]ncia\s+da\s+computa[cç][aã]o|ci[eê]ncia\s+e\s+tecnologia|'
+    r'biotecnologia|biomedicina)'
+)
+# Mensagem que é SÓ uma referência de curso: "do BCT", "BCT", "de BCC",
+# "no curso de biotecnologia" — típica resposta a um pedido de clarificação.
+_COURSE_ONLY_RE = re.compile(
+    rf'^(?:e\s+)?(?:(?:d[oae]s?|n[oa]s?|em|para\s+[oa]?)\s+)?'
+    rf'(?:curso\s+(?:de\s+)?)?({_CURSO_ALT})\s*[?!.]*$',
+    re.IGNORECASE,
+)
+# Qualquer menção a curso dentro de uma frase maior
+_COURSE_MENTION_RE = re.compile(rf'\b{_CURSO_ALT}\b', re.IGNORECASE)
+# A mensagem parece uma pergunta (para detectar a "pergunta pendente")
+_QUESTION_CUE_RE = re.compile(
+    r'\?|^(?:quais|qual|quanta?s?|quantos|quem|como|onde|quando|o\s+que|tem|existe)\b',
+    re.IGNORECASE,
+)
+
 
 def _last_user_intent(history: List[dict]) -> Optional[str]:
     """Tenta detectar o intent da última pergunta do usuário a partir de keywords no texto."""
@@ -170,7 +191,9 @@ class ConversationContext:
             and re.match(r'^[A-ZÀ-Ú]', message)
         ):
             candidate = message.strip().rstrip('.,')
-            if len(candidate) >= 3:
+            # Referência de curso ("BCT", "Do BCT") NÃO é disciplina — é resposta
+            # de clarificação de curso, tratada pelo ContextResolver.
+            if len(candidate) >= 3 and not _COURSE_ONLY_RE.match(candidate):
                 self.disciplina = candidate
                 self.disciplina_from_user = True
 
@@ -285,6 +308,11 @@ class ContextResolver:
         r'\b(?:a\s+)?(?:matriz|grade)\s+(?:dele|dela|desse|dessa)\b',
         # "quais as disciplinas que tenho que fazer?" após falar de um curso
         r'\bquais?\s+(?:as\s+)?disciplinas?\s+(?:que\s+)?(?:eu\s+)?(?:tenho|preciso|devo)\s+(?:que\s+)?(?:fazer|cursar)\b',
+        # Quebra/distribuição de horas — herda o curso do contexto (T2):
+        # "essas horas estão distribuídas...?", "quantas horas de eletivas?"
+        r'\bhoras?\b.*\b(?:distribu[ií]d|dividid)',
+        r'\b(?:distribu[ií]d|dividid)\w*\b.*\bhoras?\b',
+        r'^(?:e\s+)?(?:quantas\s+)?horas\s+de\s+\w+(?:\s+\w+)?\s*\??\s*$',
     ]
 
     # Mapeamento: padrão → (template_disciplina, template_curso)
@@ -402,6 +430,34 @@ class ContextResolver:
                         flags=re.IGNORECASE
                     )
                     modified = True
+
+        # 0c. Herança de clarificação (bug T3): a mensagem é SÓ uma referência
+        #     de curso ("do BCT", "BCT") e a última pergunta do usuário no
+        #     histórico era uma pergunta SEM curso (clarificação implícita) →
+        #     combinar: pergunta pendente + curso.
+        #     Ex.: "Quantas horas de eletivas?" + "do BCT"
+        #          → "Quantas horas de eletivas do BCT?"
+        if not modified and history:
+            course_only = _COURSE_ONLY_RE.match(question.strip())
+            if course_only:
+                pending = self._find_pending_question_sem_curso(history)
+                if pending:
+                    base = re.sub(r'[\s?!.]+$', '', pending).strip()
+                    ref = re.sub(r'^e\s+', '', question.strip(), flags=re.IGNORECASE)
+                    ref = re.sub(r'[\s?!.]+$', '', ref).strip()
+                    # "BCT" sozinho vira "do BCT"; "de BCC"/"no BCT" ficam como estão
+                    if not re.match(r'^(?:d[oae]s?|n[oa]s?|em|para)\b', ref, re.IGNORECASE):
+                        ref = f'do {ref}'
+                    resolved = f'{base} {ref}?'
+                    curso_raw = course_only.group(1)
+                    context.curso = (
+                        curso_raw.upper() if len(curso_raw) <= 3 else curso_raw.title()
+                    )
+                    modified = True
+                    logger.info(
+                        f"[CONTEXT][clarificacao-curso] '{question}' + pendente "
+                        f"'{pending}' → '{resolved}'"
+                    )
 
         # 1. Resolver referências a docentes (dele, dela, etc.)
         # EXCETO quando a pergunta contém palavras inequívocas de disciplina (ementa, conteúdo…)
@@ -533,6 +589,26 @@ class ContextResolver:
         
         return resolved, modified
     
+    def _find_pending_question_sem_curso(self, history: List[dict]) -> Optional[str]:
+        """
+        Última pergunta do usuário no histórico que pedia algo mas NÃO citava
+        curso — a "pergunta pendente" de uma clarificação implícita.
+        Retorna None se a última pergunta já tinha curso ou não era pergunta.
+        """
+        for msg in reversed(history):
+            if msg.get('role') != 'user':
+                continue
+            q = (msg.get('content') or '').strip()
+            if not q or _COURSE_ONLY_RE.match(q):
+                # respostas de clarificação anteriores não são a pergunta pendente
+                continue
+            if _COURSE_MENTION_RE.search(q):
+                return None  # a última pergunta já tinha curso — nada a herdar
+            if not _QUESTION_CUE_RE.search(q):
+                return None
+            return q
+        return None
+
     def _resolve_partial_docente_from_list(self, partial_name: str, docentes_list: List[str]) -> Optional[str]:
         """
         Dado um nome parcial (ex. "Rodrigo") e a lista de docentes da última resposta,
@@ -686,6 +762,33 @@ class ContextResolver:
             context.disciplina_from_user = True
             logger.info(f"[CONTEXT][e_de] '{question}' → '{rewritten}'")
             return rewritten
+
+        # Quebra/distribuição de horas (T2): herda o curso do contexto.
+        # "mas essas horas estão distribuídas em diferentes atividades?" após
+        # falar do BCT → pergunta auto-contida sobre a distribuição das horas.
+        if context.curso and not _COURSE_MENTION_RE.search(question):
+            if re.search(r'\bhoras?\b.*\b(?:distribu[ií]d|dividid)', question_lower) or \
+                    re.search(r'\b(?:distribu[ií]d|dividid)\w*\b.*\bhoras?\b', question_lower):
+                # Redação alinhada à FAQ de integralização da página do curso
+                # (quebra: UCs + extensão + complementares); evitar "carga
+                # horária", que é frase de exclusão do agente do site.
+                rewritten = (
+                    f"Como as horas para integralizar o {context.curso} estão "
+                    f"distribuídas entre unidades curriculares, extensão e "
+                    f"atividades complementares?"
+                )
+                logger.info(f"[CONTEXT][horas-curso] '{question}' → '{rewritten}'")
+                return rewritten
+            horas_de = re.search(
+                r'\bhoras\s+(?:de\s+|em\s+)?'
+                r'(eletivas?|optativas?|extens[aã]o|(?:atividades\s+)?complementares|'
+                r'(?:disciplinas\s+|ucs?\s+)?obrigat[oó]rias?)\b',
+                question_lower,
+            )
+            if horas_de:
+                rewritten = f"Quantas horas de {horas_de.group(1)} do {context.curso}?"
+                logger.info(f"[CONTEXT][horas-curso] '{question}' → '{rewritten}'")
+                return rewritten
 
         # Intent-switch follow-ups: detectar qual informação o usuário quer
         # e montar uma pergunta completa com a entidade do contexto.
