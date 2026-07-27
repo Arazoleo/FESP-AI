@@ -1,5 +1,7 @@
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { ArrowRight, ArrowDown } from 'lucide-react'
+import ScrollFX from './components/ScrollFX'
 
 // ─── Motivo visual: grafo de conhecimento ─────────────────────────────────────
 // Nós e arestas nomeados com entidades reais do KG do FESP-AI.
@@ -46,6 +48,7 @@ function KnowledgeGraphFigure({ className }: { className?: string }) {
     <svg
       viewBox="0 0 480 400"
       className={className}
+      data-graph
       role="img"
       aria-label="Representação de um grafo de conhecimento: cursos, disciplinas, docentes e regimentos conectados"
     >
@@ -63,8 +66,8 @@ function KnowledgeGraphFigure({ className }: { className?: string }) {
           style={{ animationDelay: `${0.15 + i * 0.12}s` }}
         />
       ))}
-      {NODES.map((n) => (
-        <g key={n.id}>
+      {NODES.map((n, i) => (
+        <g key={n.id} className="kg-node" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
           <circle
             cx={n.x}
             cy={n.y}
@@ -142,11 +145,14 @@ const DOMAINS = [
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen bg-ink text-paper">
+      {/* Efeitos de scroll (barra de progresso, reveals, parallax, nav) */}
+      <ScrollFX />
+
       {/* Grade de fundo sutil */}
       <div className="pointer-events-none fixed inset-0 bg-grid-faint" aria-hidden />
 
       {/* ── Nav ── */}
-      <header className="relative z-10 border-b border-line">
+      <header data-nav className="site-nav sticky top-0 z-40">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
             <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
@@ -205,10 +211,12 @@ export default function LandingPage() {
           </div>
 
           <div className="animate-rise rise-5 hidden lg:block">
-            <KnowledgeGraphFigure className="w-full" />
-            <p className="mt-4 text-center font-mono text-[11px] text-paper-mute">
-              fragmento do grafo de conhecimento do campus
-            </p>
+            <div data-parallax="0.05">
+              <KnowledgeGraphFigure className="w-full" />
+              <p className="mt-4 text-center font-mono text-[11px] text-paper-mute">
+                fragmento do grafo de conhecimento do campus
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -216,7 +224,7 @@ export default function LandingPage() {
       {/* ── Como funciona ── */}
       <section id="como-funciona" className="relative z-10 border-t border-line">
         <div className="mx-auto max-w-6xl px-6 py-24">
-          <div className="mb-14 max-w-2xl">
+          <div data-reveal className="mb-14 max-w-2xl">
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-accent">
               Como funciona
             </p>
@@ -226,9 +234,14 @@ export default function LandingPage() {
           </div>
 
           <ol className="grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-2 lg:grid-cols-4">
-            {PIPELINE_STEPS.map((step) => (
-              <li key={step.n} className="bg-ink-raise p-7">
-                <span className="font-mono text-xs text-accent">{step.n}</span>
+            {PIPELINE_STEPS.map((step, i) => (
+              <li
+                key={step.n}
+                data-reveal
+                style={{ '--fxd': `${i * 110}ms` } as CSSProperties}
+                className="bg-ink-raise p-7"
+              >
+                <span className="step-num font-mono text-xs text-accent">{step.n}</span>
                 <h3 className="mt-4 font-display text-lg font-medium text-paper">
                   {step.title}
                 </h3>
@@ -242,7 +255,7 @@ export default function LandingPage() {
       {/* ── Domínios ── */}
       <section className="relative z-10 border-t border-line">
         <div className="mx-auto max-w-6xl px-6 py-24">
-          <div className="mb-14 max-w-2xl">
+          <div data-reveal className="mb-14 max-w-2xl">
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-accent">
               Escopo
             </p>
@@ -252,9 +265,11 @@ export default function LandingPage() {
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            {DOMAINS.map((d) => (
+            {DOMAINS.map((d, i) => (
               <div
                 key={d.n}
+                data-reveal
+                style={{ '--fxd': `${i * 110}ms` } as CSSProperties}
                 className="group rounded-xl border border-line bg-ink-raise p-7 transition-colors hover:border-accent/30"
               >
                 <div className="flex items-baseline justify-between">
@@ -268,7 +283,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="mt-16 flex justify-center">
+          <div data-reveal className="mt-16 flex justify-center">
             <Link
               href="/chat"
               className="group inline-flex items-center gap-3 rounded-lg border border-line-strong px-7 py-3.5 font-medium text-paper transition-colors hover:border-accent/50 hover:text-accent"
@@ -283,7 +298,7 @@ export default function LandingPage() {
       {/* ── Footer ── */}
       <footer className="relative z-10 border-t border-line">
         <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <div data-reveal className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <span className="font-mono text-sm tracking-widest text-paper">FESP-AI</span>
               <p className="mt-2 text-sm text-paper-mute">
