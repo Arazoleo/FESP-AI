@@ -17,6 +17,22 @@ from dataclasses import dataclass, field
 logger = logging.getLogger(__name__)
 
 
+def _last_user_intent(history: List[dict]) -> Optional[str]:
+    """Tenta detectar o intent da última pergunta do usuário a partir de keywords no texto."""
+    for msg in reversed(history):
+        if msg.get('role') != 'user':
+            continue
+        q = msg.get('content', '').lower()
+        if re.search(r'pr[eé]-?requisitos?', q):
+            return 'prerequisite_chain'
+        if re.search(r'quem\s+leciona|quais?\s+(?:professore?s?|docentes?)', q):
+            return 'discipline_docentes'
+        if re.search(r'ementa', q):
+            return 'ementa_disciplina'
+        return None
+    return None
+
+
 # Template para reescrita de query com LLM
 QUERY_REWRITE_TEMPLATE = """Você é um assistente que reescreve perguntas para torná-las auto-contidas.
 
@@ -48,14 +64,26 @@ class ConversationContext:
     disciplina: Optional[str] = None
     docente: Optional[str] = None
     termo: Optional[str] = None
-    
+
     # Lista de entidades mencionadas (para "qual deles?")
     docentes_list: List[str] = field(default_factory=list)
     disciplinas_list: List[str] = field(default_factory=list)
-    
+
+    # Proveniência (bug T8): True quando a disciplina ativa foi definida
+    # EXPLICITAMENTE pelo usuário ("e sobre Banco de Dados?"). Enquanto True,
+    # menções heurísticas em respostas do assistente ("...pré-requisito para
+    # cursar Projetos em Engenharia de Computação") NÃO podem sobrescrevê-la —
+    # nem no update do fim do turno, nem no replay do histórico feito pela API
+    # a cada turno (que reprocessa a resposta antiga DEPOIS da troca do usuário).
+    disciplina_from_user: bool = False
+
     def update_from_message(self, message: str, role: str = "user"):
         """Atualiza contexto baseado em uma mensagem."""
         message_lower = message.lower()
+
+        # (T8) Troca explícita de entidade pelo usuário tem precedência:
+        # mensagens do assistente não podem reverter a disciplina ativa.
+        protect_disc = role == "assistant" and self.disciplina_from_user
         
         # Detectar curso mencionado
         curso_patterns = [
@@ -77,10 +105,33 @@ class ConversationContext:
         
         # Detectar disciplina mencionada — pesquisar em message_lower mas extrair
         # da mensagem original para preservar capitalização (ex: "Cálculo Numérico")
+        # Palavras/frases que indicam referência vaga e não devem ser aceitas como nome.
+        _DISC_REJEITAR = frozenset({
+            'o', 'a', 'os', 'as', 'que', 'qual', 'quais',
+            'essa', 'esse', 'esta', 'este', 'essas', 'esses',
+            'ela', 'ele', 'elas', 'eles', 'dela', 'dele',
+            'isso', 'isto', 'aquilo', 'aquela', 'aquele',
+            'essa disciplina', 'esta disciplina', 'essa matéria', 'esta matéria',
+            'essa cadeira', 'esta cadeira',
+        })
         disc_patterns = [
+            # Já existentes
             r'disciplina\s+(?:de\s+)?(.+?)(?:\?|$)',
             r'pr[eé]-?requisitos?\s+(?:de|da|do)\s+(.+?)(?:\?|,|\.|$)',
             r'quem\s+leciona\s+(.+?)(?:\?|$)',
+            # "O que é X?" / "O que se estuda em X?"
+            r'o\s+que\s+[eé]\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?(.+?)(?:\?|$)',
+            r'o\s+que\s+(?:se\s+)?(?:estuda|aprende)\s+em\s+(.+?)(?:\?|$)',
+            # "fale sobre X" / "me fale mais sobre X"
+            r'(?:fale|fala|me\s+fale|me\s+fala)(?:\s+mais)?\s+sobre\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?(.+?)(?:\?|$)',
+            # "o que sabe sobre X" / "sabe sobre X"
+            r'(?:o\s+que\s+(?:vc|você\s+)?sabe|sabe)\s+sobre\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?(.+?)(?:\?|$)',
+            # "ementa de X"
+            r'ementa\s+(?:de|da|do)\s+(.+?)(?:\?|$)',
+            # "descreva X" / "explique X"
+            r'(?:descreva|explique|explica|me\s+explique)\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?(.+?)(?:\?|$)',
+            # "quais professores dão X" → captura a disciplina como efeito colateral útil
+            r'(?:professores?|docentes?)\s+(?:d[aã]o|leciona[m]?|ensina[m]?)\s+(.+?)(?:\?|$)',
         ]
         for pattern in disc_patterns:
             match = re.search(pattern, message_lower)
@@ -88,36 +139,66 @@ class ConversationContext:
                 # Usar a posição do match para extrair o texto ORIGINAL (com capitalização)
                 start, end = match.span(1)
                 disc_name = message[start:end].strip()
-                disc_name = re.sub(r'[,\.\?]$', '', disc_name).strip()
-                if disc_name.lower() not in ['o', 'a', 'os', 'as', 'que', 'qual', 'quais', 'essa', 'esse']:
-                    self.disciplina = disc_name
-                    break
-        
-        # Detectar padrão "E de X, ..." para mudança de disciplina
-        mudanca_disc = re.search(r'^e\s+(?:de|sobre)\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)', message, re.IGNORECASE)
-        if mudanca_disc:
+                disc_name = re.sub(r'[,\.\?]+$', '', disc_name).strip()
+                disc_name = re.sub(r'\s+(?:da|de|do|das|dos)\s*$', '', disc_name, flags=re.IGNORECASE).strip()
+                disc_lower = disc_name.lower()
+                # Rejeitar pronomes/demonstrativos e referências a docentes
+                if disc_lower not in _DISC_REJEITAR and len(disc_name) >= 3:
+                    if not re.search(r'\b(?:professor[a]?|docente)\b', disc_lower):
+                        if not protect_disc:
+                            self.disciplina = disc_name
+                            if role == "user":
+                                self.disciplina_from_user = True
+                        break
+
+        # Detectar padrão "E de X, ..." / "(e) sobre X" para mudança de disciplina
+        mudanca_disc = re.search(r'^(?:e\s+(?:de|sobre)|sobre)\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)', message, re.IGNORECASE)
+        if mudanca_disc and not protect_disc:
             self.disciplina = mudanca_disc.group(1).strip()
-        
-        # Detectar disciplina em respostas do assistente sobre pré-requisitos
-        if role == "assistant":
-            # "Para cursar X, são necessários..." ou "Os pré-requisitos de X são..."
-            # IMPORTANTE: sem re.IGNORECASE para exigir letra maiúscula — evita capturar
-            # verbos como "cursar" de "pré-requisitos para cursar X" como nome de disciplina.
-            resp_disc_match = re.search(
+            if role == "user":
+                self.disciplina_from_user = True
+
+        # Resposta de clarificação: mensagem é apenas um nome próprio (ex: "Banco de Dados")
+        # → usuário está respondendo a "qual disciplina?"
+        if (
+            role == "user"
+            and not self.disciplina  # só se não capturou pelos padrões acima
+            and len(message.split()) <= 5
+            and not re.search(r'[?!]', message)
+            # Rejeitar se contém verbos/pronomes interrogativos ou palavras de ação
+            and not re.search(r'\b(?:que|qual|quais|quem|como|onde|quando|sim|não|nao|é|sao|são|tem|tenho|quero|preciso)\b', message_lower)
+            and re.match(r'^[A-ZÀ-Ú]', message)
+        ):
+            candidate = message.strip().rstrip('.,')
+            if len(candidate) >= 3:
+                self.disciplina = candidate
+                self.disciplina_from_user = True
+
+        # Detectar disciplina em respostas do assistente
+        if role == "assistant" and not protect_disc:
+            # Sem re.IGNORECASE para exigir letra maiúscula — evita capturar verbos.
+            verbos_comuns = {'cursar', 'lecionar', 'fazer', 'pegar', 'estudar', 'ter', 'para'}
+            resp_disc_patterns = [
                 r'(?:para\s+cursar|pr[eé]-requisitos?\s+(?:de|da))\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
-                message
-            )
-            if resp_disc_match:
-                disc = resp_disc_match.group(1).strip()
-                # Filtro extra: não aceitar verbos comuns como nome de disciplina
-                verbos_comuns = {'cursar', 'lecionar', 'fazer', 'pegar', 'estudar', 'ter'}
-                if disc.lower() not in verbos_comuns:
-                    self.disciplina = disc
+                r'[Aa]\s+disciplina\s+(?:de\s+)?([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
+                r'^([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)\s+[eé]\s+uma\s+disciplina',
+            ]
+            for pattern in resp_disc_patterns:
+                m = re.search(pattern, message, re.MULTILINE)
+                if m:
+                    disc = m.group(1).strip()
+                    if disc.lower() not in verbos_comuns and len(disc) >= 3:
+                        self.disciplina = disc
+                        break
         
         # Detectar docente mencionado
+        # Nome capitalizado "solto" só conta como docente com prefixo explícito
+        # ("professor X" / "quem é X") — sem isso, qualquer nome próprio na
+        # frase virava docente ("Matriz Curricular", "Estrutura de Dados") e os
+        # pronomes "dele/dela" passavam a resolver para um falso docente.
         docente_patterns = [
             r'professor(?:a)?\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)',
-            r'(?:quem\s+[eé]\s+)?([A-ZÀ-Ú][a-zà-ú]+\s+[A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)\??',
+            r'[Qq]uem\s+[eé]\s+(?:o\s+|a\s+)?([A-ZÀ-Ú][a-zà-ú]+\s+[A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)\??',
         ]
         for pattern in docente_patterns:
             match = re.search(pattern, message)
@@ -145,6 +226,15 @@ class ContextResolver:
     """Resolve referências contextuais em perguntas."""
     
     # Padrões de pronomes e referências
+    # Palavras que sinalizam que a pergunta é inequivocamente sobre uma DISCIPLINA.
+    # Quando presentes junto com um pronome, disciplina tem prioridade sobre docente.
+    DISCIPLINE_PRIORITY_WORDS = frozenset({
+        'ementa', 'ementas', 'conteúdo', 'conteudo', 'carga', 'horária', 'horaria',
+        'bibliografia', 'tópicos', 'topicos', 'objetivos',
+        'pré-requisito', 'pre-requisito', 'prerequisito',
+        'pré-requisitos', 'pre-requisitos', 'prerequisitos',
+    })
+
     PRONOME_PATTERNS = {
         'docente': [
             r'\b(?:dele|dela)\b',
@@ -156,9 +246,12 @@ class ContextResolver:
             r'\b(?:ele|ela)\s+(?:leciona|ensina|ministra|pesquisa|atua|costuma)\b',
         ],
         'disciplina': [
-            r'\b(?:essa|essa|desta|destra)\s+(?:disciplina|mat[eé]ria|cadeira)\b',
+            r'\b(?:essa|esta|desta|dessa)\s+(?:disciplina|mat[eé]ria|cadeira)\b',
             r'\bpr[eé]-?requisitos?\s+(?:dela|dessa)\b',
             r'\bquem\s+leciona\s+(?:ela|essa)\b',
+            # Pronomes genéricos em contexto inequívoco de disciplina
+            r'\bementa\s+(?:d[ae]la?|d[ae]le|d[ae]ss[ae]|dela)\b',
+            r'\b(?:d[ae]la?|d[ae]le)\b(?=.*(?:ementa|conteúdo|conteudo|carga|bibliograf))',
         ],
         'curso': [
             r'\b(?:desse|dessa|deste|desta)\s+(?:curso|gradua[cç][aã]o)\b',
@@ -169,9 +262,78 @@ class ContextResolver:
     
     # Padrões de perguntas de follow-up curtas
     FOLLOWUP_PATTERNS = [
-        r'^e\s+(?:as?|os?|no|na|do|da)\s+',  # "E as do termo 5?"
-        r'^(?:e\s+)?qual\s+(?:deles|delas)\b',  # "Qual deles trabalha com..."
-        r'^(?:e\s+)?quais?\s+(?:s[aã]o)?\s*\?',  # "E quais são?"
+        r'^e\s+(?:as?|os?|no|na|do|da)\s+',       # "E as do termo 5?"
+        r'^(?:e\s+)?qual\s+(?:deles|delas)\b',     # "Qual deles trabalha com..."
+        r'^(?:e\s+)?quais?\s+(?:s[aã]o)?\s*\?',   # "E quais são?"
+        # "e sobre X?" / "sobre X?" — troca de entidade sem verbo
+        r'^(?:e\s+)?sobre\s+\w',
+        # "e de X?" / "e do X?" — muda entidade mantendo o tipo de consulta anterior
+        r'^e\s+(?:de|do|da)\s+\w',
+        # Intent-switch follow-ups — só disparam quando NÃO há entidade explícita na pergunta
+        # (ancorados no fim: "e os pré-requisitos?" sim, "pré-requisitos de IHC?" não)
+        r'^(?:(?:e|qual|quais|tem)\s+)?(?:os?\s+|as?\s+)?pr[eé]-?requisitos?\s*\??\s*$',
+        r'^(?:(?:e|qual|quais)\s+)?(?:quem\s+(?:leciona|d[aá]|ensina)|os?\s+docentes?|os?\s+professores?)\s*\??\s*$',
+        r'^(?:tem|qual|e)[\s\w]{0,6}ementa\s*\??\s*$',
+        r'^(?:(?:e|qual)\s+)?(?:a\s+)?carga\s+hor[aá]ria\s*\??\s*$',
+        r'^(?:(?:e|qual)\s+)?(?:a\s+)?bibliograf\w*\s*\??\s*$',
+        r'^(?:(?:e|quais)\s+)?(?:as?\s+)?eletivas?\s*\??\s*$',
+        r'^(?:(?:e|quem)\s+)?(?:[eé]\s+)?(?:o\s+)?coordenador\s*\??\s*$',
+        # Anáforas no meio da frase: "tem como saber algumas dessas eletivas?",
+        # "e a matriz dele?" — herdam o curso do contexto
+        r'\bdess[ae]s?\s+(?:eletivas?|optativas?)\b',
+        r'\bess[ae]s\s+eletivas?\b',
+        r'\b(?:a\s+)?(?:matriz|grade)\s+(?:dele|dela|desse|dessa)\b',
+        # "quais as disciplinas que tenho que fazer?" após falar de um curso
+        r'\bquais?\s+(?:as\s+)?disciplinas?\s+(?:que\s+)?(?:eu\s+)?(?:tenho|preciso|devo)\s+(?:que\s+)?(?:fazer|cursar)\b',
+    ]
+
+    # Mapeamento: padrão → (template_disciplina, template_curso)
+    _INTENT_FOLLOWUP: list = [
+        (
+            [r'pr[eé]-?requisitos?'],
+            "Quais os pré-requisitos de {disciplina}?",
+            None,
+        ),
+        (
+            [r'quem\s+(?:leciona|d[aá]|ensina)', r'docentes?', r'professores?'],
+            "Quem leciona {disciplina}?",
+            None,
+        ),
+        (
+            [r'ementa'],
+            "Qual a ementa de {disciplina}?",
+            None,
+        ),
+        (
+            [r'carga\s+hor[aá]ria', r'quantas\s+horas'],
+            "Qual a carga horária de {disciplina}?",
+            None,
+        ),
+        (
+            [r'bibliograf'],
+            "Qual a bibliografia de {disciplina}?",
+            None,
+        ),
+        (
+            [r'eletivas?', r'optativas?'],
+            None,
+            "Quais as eletivas de {curso}?",
+        ),
+        (
+            [r'coordenador'],
+            None,
+            "Quem é o coordenador de {curso}?",
+        ),
+        (
+            [r'matriz', r'grade'],
+            None,
+            "Como funciona a matriz curricular de {curso}?",
+        ),
+        (
+            [r'disciplinas?\s+(?:que\s+)?(?:eu\s+)?(?:tenho|preciso|devo)\s+(?:que\s+)?(?:fazer|cursar)'],
+            None,
+            "Quais as disciplinas de {curso}?",
+        ),
     ]
     
     def __init__(self):
@@ -242,21 +404,27 @@ class ContextResolver:
                     modified = True
 
         # 1. Resolver referências a docentes (dele, dela, etc.)
-        for pattern in self.PRONOME_PATTERNS['docente']:
-            if re.search(pattern, question_lower):
-                if context.docente:
-                    resolved = self._replace_docente_reference(resolved, context.docente)
-                    modified = True
-                    break
-                # Tentar extrair do histórico
-                elif history:
-                    docente = self._find_docente_in_history(history)
-                    if docente:
-                        context.docente = docente
-                        resolved = self._replace_docente_reference(resolved, docente)
+        # EXCETO quando a pergunta contém palavras inequívocas de disciplina (ementa, conteúdo…)
+        # — nesse caso pulamos para o passo 2 para evitar reescrever "ementa dela" como docente.
+        has_discipline_priority = any(
+            w in question_lower for w in self.DISCIPLINE_PRIORITY_WORDS
+        )
+        if not has_discipline_priority:
+            for pattern in self.PRONOME_PATTERNS['docente']:
+                if re.search(pattern, question_lower):
+                    if context.docente:
+                        resolved = self._replace_docente_reference(resolved, context.docente)
                         modified = True
                         break
-        
+                    # Tentar extrair do histórico
+                    elif history:
+                        docente = self._find_docente_in_history(history)
+                        if docente:
+                            context.docente = docente
+                            resolved = self._replace_docente_reference(resolved, docente)
+                            modified = True
+                            break
+
         # 2. Resolver referências a disciplinas (dessa disciplina, etc.)
         if not modified:
             for pattern in self.PRONOME_PATTERNS['disciplina']:
@@ -408,13 +576,33 @@ class ContextResolver:
     
     def _replace_disciplina_reference(self, question: str, disciplina: str) -> str:
         """Substitui referências a disciplina pelo nome."""
-        replacements = [
-            (r'\b(?:essa|esta|desta|dessa)\s+(?:disciplina|mat[eé]ria|cadeira)\b', disciplina),
-            (r'\b(?:dela|dessa)\b(?=.*(?:pr[eé]-?requisito|quem\s+leciona))', f'de {disciplina}'),
-        ]
         result = question
-        for pattern, replacement in replacements:
-            result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
+        # "ementa dela/dessa" → "ementa de <disciplina>"
+        result = re.sub(
+            r'\bementa\s+(?:dela?|dele|dess[ae])\b',
+            f'ementa de {disciplina}',
+            result, flags=re.IGNORECASE,
+        )
+        # "(ementa|conteúdo|carga|bibliograf) dela/dessa" — captura prefixo + pronome
+        result = re.sub(
+            r'((?:ementa|conte[uú]do|carga|bibliograf)\s+)(?:dela?|dele|dess[ae])\b',
+            lambda m: m.group(1) + f'de {disciplina}',
+            result, flags=re.IGNORECASE,
+        )
+        # "dessa/desta disciplina/matéria/cadeira"
+        result = re.sub(
+            r'\b(?:essa|esta|desta|dessa)\s+(?:disciplina|mat[eé]ria|cadeira)\b',
+            disciplina,
+            result, flags=re.IGNORECASE,
+        )
+        # "dela/dessa" com lookahead de pré-requisito ou "quem leciona"
+        result = re.sub(
+            r'\b(?:dela|dessa)\b(?=.*(?:pr[eé]-?requisito|quem\s+leciona))',
+            f'de {disciplina}',
+            result, flags=re.IGNORECASE,
+        )
+        # Genérico: "dela" quando nenhum dos anteriores pegou
+        result = re.sub(r'\bdela\b', f'de {disciplina}', result, flags=re.IGNORECASE)
         return result
     
     def _replace_curso_reference(self, question: str, curso: str) -> str:
@@ -437,37 +625,85 @@ class ContextResolver:
         return result
     
     def _expand_followup(
-        self, 
-        question: str, 
+        self,
+        question: str,
         history: List[dict],
-        context: ConversationContext
+        context: ConversationContext,
     ) -> str:
-        """Expande pergunta de follow-up curta."""
+        """Expande pergunta de follow-up curta, herdando entidade do contexto."""
         question_lower = question.lower()
-        
+
         # "E no termo 6?" com curso no contexto
         termo_match = re.search(r'termo\s+(\d+)', question_lower)
         if termo_match and context.curso:
             novo_termo = termo_match.group(1)
             return f"Quais disciplinas do termo {novo_termo} de {context.curso}?"
-        
-        # Encontrar última pergunta do usuário e adaptar
-        for msg in reversed(history):
-            if msg['role'] == 'user':
-                last_question = msg['content']
-                
-                # Se a pergunta atual menciona um novo termo, substituir na anterior
-                if termo_match:
-                    novo_termo = termo_match.group(1)
+
+        # Substituir termo numérico na última pergunta do usuário
+        if termo_match:
+            for msg in reversed(history):
+                if msg['role'] == 'user':
+                    last_question = msg['content']
                     if re.search(r'termo\s+\d+', last_question, re.IGNORECASE):
                         return re.sub(
-                            r'termo\s+\d+', 
-                            f'termo {novo_termo}', 
-                            last_question, 
-                            flags=re.IGNORECASE
+                            r'termo\s+\d+',
+                            f'termo {termo_match.group(1)}',
+                            last_question,
+                            flags=re.IGNORECASE,
                         )
-                break
-        
+                    break
+
+        # "e sobre X?" / "sobre X?" — reescreve para "Me fale sobre X" e troca entidade
+        sobre_match = re.match(r'^(?:e\s+)?sobre\s+(.+)', question_lower)
+        if sobre_match:
+            entity_lower = sobre_match.group(1).rstrip('?').strip()
+            # Preservar capitalização original
+            orig_match = re.match(r'^(?:e\s+)?sobre\s+(.+)', question, re.IGNORECASE)
+            entity = orig_match.group(1).rstrip('?').strip() if orig_match else entity_lower.title()
+            context.disciplina = entity
+            context.disciplina_from_user = True
+            rewritten = f"Me fale sobre {entity}"
+            logger.info(f"[CONTEXT][sobre] '{question}' → '{rewritten}'")
+            return rewritten
+
+        # "e de X?" / "e do X?" — repete a pergunta anterior substituindo a entidade
+        e_de_match = re.match(r'^e\s+(?:de|do|da)\s+(.+)', question_lower)
+        if e_de_match:
+            entity_raw = e_de_match.group(1).rstrip('?').strip()
+            orig_match = re.match(r'^e\s+(?:de|do|da)\s+(.+)', question, re.IGNORECASE)
+            entity = orig_match.group(1).rstrip('?').strip() if orig_match else entity_raw.title()
+            # Descobrir qual era o último intent do usuário para remontar a pergunta
+            last_intent = _last_user_intent(history)
+            if last_intent == 'prerequisite_chain':
+                rewritten = f"Quais os pré-requisitos de {entity}?"
+            elif last_intent in ('discipline_docentes', 'docente_disciplines'):
+                rewritten = f"Quem leciona {entity}?"
+            elif last_intent == 'ementa_disciplina':
+                rewritten = f"Qual a ementa de {entity}?"
+            else:
+                rewritten = f"Me fale sobre {entity}"
+            context.disciplina = entity
+            context.disciplina_from_user = True
+            logger.info(f"[CONTEXT][e_de] '{question}' → '{rewritten}'")
+            return rewritten
+
+        # Intent-switch follow-ups: detectar qual informação o usuário quer
+        # e montar uma pergunta completa com a entidade do contexto.
+        for patterns, tmpl_disc, tmpl_curso in self._INTENT_FOLLOWUP:
+            if any(re.search(p, question_lower) for p in patterns):
+                if tmpl_disc and context.disciplina:
+                    rewritten = tmpl_disc.format(disciplina=context.disciplina)
+                    logger.info(
+                        f"[CONTEXT][followup-intent] '{question}' → '{rewritten}'"
+                    )
+                    return rewritten
+                if tmpl_curso and context.curso:
+                    rewritten = tmpl_curso.format(curso=context.curso)
+                    logger.info(
+                        f"[CONTEXT][followup-intent] '{question}' → '{rewritten}'"
+                    )
+                    return rewritten
+
         return question
     
     def _find_docente_in_history(self, history: List[dict]) -> Optional[str]:
@@ -510,37 +746,53 @@ class ContextResolver:
             
             # Primeiro verificar respostas do assistente (mais confiável)
             if msg['role'] == 'assistant':
-                # "Para cursar X, são necessários..." ou "Os pré-requisitos de X são..."
                 # Sem re.IGNORECASE: exige letra maiúscula para evitar capturar verbos
                 resp_patterns = [
                     r'(?:para\s+cursar|pr[eé]-requisitos?\s+(?:de|da))\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
-                    r'[Dd]ocentes?\s+(?:que\s+lecionam?|de)\s+([A-Za-zÀ-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
+                    r'[Dd]ocentes?\s+(?:que\s+lecionam?|de)\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
+                    # "X é uma disciplina..." — nome no início da frase
+                    r'^([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)\s+[eé]\s+uma\s+disciplina',
+                    # "a disciplina de X" / "disciplina X"
+                    r'[Aa]\s+disciplina\s+(?:de\s+)?([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
                 ]
                 verbos_comuns = {'cursar', 'lecionar', 'fazer', 'pegar', 'estudar', 'ter', 'para'}
                 for pattern in resp_patterns:
-                    match = re.search(pattern, content)
+                    match = re.search(pattern, content, re.MULTILINE)
                     if match:
                         disc = match.group(1).strip()
-                        if disc.lower() not in ['o', 'a', 'os', 'as', 'que', 'qual', 'quais', 'total'] \
-                                and disc.lower() not in verbos_comuns:
+                        disc_lower = disc.lower()
+                        if disc_lower not in ['o', 'a', 'os', 'as', 'que', 'qual', 'quais', 'total'] \
+                                and disc_lower not in verbos_comuns \
+                                and len(disc) >= 3:
                             return disc
             
             # Depois verificar perguntas do usuário
             elif msg['role'] == 'user':
+                _HIST_REJEITAR = frozenset({
+                    'o', 'a', 'os', 'as', 'que', 'qual', 'quais',
+                    'essa', 'esse', 'esta', 'este', 'ela', 'ele',
+                    'dela', 'dele', 'isso', 'aquilo',
+                    'essa disciplina', 'esta disciplina',
+                })
                 patterns = [
-                    r'pr[eé]-?requisitos?\s+(?:de|da|do|para)\s+([A-Za-zÀ-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
-                    r'quem\s+leciona\s+([A-Za-zÀ-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
-                    r'disciplina\s+(?:de\s+)?([A-Za-zÀ-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
+                    r'disciplina\s+(?:de\s+)?([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
+                    r'pr[eé]-?requisitos?\s+(?:de|da|do|para)\s+([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|,|\.|$)',
+                    r'quem\s+leciona\s+([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
+                    r'o\s+que\s+[eé]\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
+                    r'(?:fale|me\s+fale)(?:\s+mais)?\s+sobre\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
+                    r'(?:o\s+que\s+(?:vc\s+)?sabe|sabe)\s+sobre\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
+                    r'ementa\s+(?:de|da|do)\s+([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
                 ]
                 for pattern in patterns:
                     match = re.search(pattern, content, re.IGNORECASE)
                     if match:
                         disc = match.group(1).strip()
-                        # Limpar pontuação
                         disc = re.sub(r'[\?.,!]+$', '', disc).strip()
-                        # Filtrar palavras comuns
-                        if disc.lower() not in ['o', 'a', 'os', 'as', 'que', 'qual', 'quais', 'essa', 'esse', 'ela']:
-                            return disc
+                        disc = re.sub(r'\s+(?:da|de|do)\s*$', '', disc, flags=re.IGNORECASE).strip()
+                        disc_lower = disc.lower()
+                        if disc_lower not in _HIST_REJEITAR and len(disc) >= 3:
+                            if not re.search(r'\b(?:professor[a]?|docente)\b', disc_lower):
+                                return disc
         
         return None
     
@@ -583,17 +835,27 @@ class ContextResolver:
         )
         
         try:
-            # Invocar LLM
+            # Invocar LLM. Chat models retornam AIMessage (.content), não str —
+            # o .strip() direto quebrava silenciosamente e a reescrita nunca rodava.
             response = llm.invoke(prompt)
-            rewritten = response.strip()
-            
+            text = response.content if hasattr(response, "content") else str(response)
+            rewritten = text.strip().strip('"').strip()
+            # Só a primeira linha útil (modelos às vezes adicionam explicação)
+            rewritten = rewritten.splitlines()[0].strip() if rewritten else ""
+
             # Validar resposta
-            if rewritten and len(rewritten) > 5 and len(rewritten) < 500:
+            if rewritten and 5 < len(rewritten) < 500:
                 logger.info(f"[LLM REWRITE] '{question}' → '{rewritten}'")
+                if rewritten.strip() != question.strip():
+                    try:
+                        from .telemetry import incr
+                        incr("llm_rewrite")
+                    except ImportError:
+                        pass
                 return rewritten
         except Exception as e:
             logger.warning(f"[LLM REWRITE] Falha: {e}")
-        
+
         return question
     
     def is_ambiguous_question(self, question: str) -> bool:
@@ -609,7 +871,11 @@ class ContextResolver:
         # Se a pergunta menciona uma entidade específica (nome próprio), não é ambígua
         if re.search(r'(?:de|sobre|para)\s+[A-Z][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)?(?:\?|,|\s+quais?)', question):
             return False
-        
+
+        # Se contém sigla (2+ letras maiúsculas), a entidade é explícita — não é ambígua
+        if re.search(r'\b[A-Z]{2,}\b', question):
+            return False
+
         # Perguntas muito curtas são potencialmente ambíguas
         if len(question.split()) < 4:
             return True
@@ -620,12 +886,21 @@ class ContextResolver:
             r'\b(?:isso|isto|aquilo)\b',
             r'\b(?:esse|essa|esses|essas)\s+(?!de\s)',  # "essa" mas não "essa de"
             r'\b(?:qual|quais)\s+(?:deles|delas)\b',
+            # Pronomes oblíquos — "dela/dele" são os mais comuns em perguntas de follow-up
+            # Ex.: "Tem a ementa dela?", "Qual o email dele?", "Quais as áreas delas?"
+            r'\b(?:dela|dele|delas|deles)\b',
+            # Demonstrativos contraídos: "dessas eletivas", "nesse curso", "daquela matéria"
+            r'\b(?:dess[ae]s?|ness[ae]s?|daquel[ea]s?|naquel[ea]s?)\b',
+            r'\bnel[ea]s?\b',
+            # Continuação explícita: "E quais as disciplinas...?" — o "E" inicial
+            # indica que a pergunta emenda no assunto anterior
+            r'^\s*e\s+\w',
         ]
-        
+
         for pattern in ambiguous_patterns:
             if re.search(pattern, question_lower):
                 return True
-        
+
         return False
 
 

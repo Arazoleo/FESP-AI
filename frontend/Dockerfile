@@ -10,8 +10,11 @@ COPY next.config.js ./
 COPY tailwind.config.js ./
 COPY postcss.config.js ./
 
-# Instalar dependências (npm install funciona sem package-lock.json)
-RUN npm install --legacy-peer-deps
+# Instalar dependências (npm ci usa o lockfile; retries ajudam com ECONNRESET)
+RUN npm config set fetch-retries 5 && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retry-maxtimeout 120000 && \
+    npm ci --legacy-peer-deps
 
 # Copiar código fonte
 COPY app/ ./app/

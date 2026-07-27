@@ -12,9 +12,16 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pré-compilar kernels JIT do numba (usado pelo PyReason). Sem isso,
+# o primeiro `pr.reason()` paga ~20s no startup do container.
+ENV NUMBA_CACHE_DIR=/app/.numba_cache
+RUN mkdir -p /app/.numba_cache && \
+    python -c "import pyreason as pr; import networkx as nx; g = nx.DiGraph(); g.add_edge('a','b',p=1); pr.load_graph(g); pr.add_rule(pr.Rule('q(x,y) <-1 p(x,y)', 'warm')); pr.reason(timesteps=1); print('numba/pyreason JIT pré-compilado.')"
+
 # Copiar código da aplicação
 COPY src/ ./src/
 COPY graph_viewer.html .
+COPY planner.html .
 COPY markdown_disciplinas/ ./markdown_disciplinas/
 COPY markdown_regimentos/ ./markdown_regimentos/
 COPY markdown_docentes/ ./markdown_docentes/

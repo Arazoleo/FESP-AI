@@ -22,6 +22,38 @@ class BaseAgent(ABC):
     description: str = ""
     color: str = "#6b7280"  # Cor para o indicador no frontend
 
+    # Regra de ouro anti-alucinação compartilhada por todos os agentes.
+    # Deve aparecer no TOPO de cada prompt, antes do contexto.
+    GOLDEN_RULE: str = (
+        "⚠️ REGRA DE OURO: Voce so pode usar informacoes que aparecem LITERALMENTE no CONTEXTO abaixo.\n"
+        "Nao use conhecimento proprio, nao invente nomes, codigos, emails, salas, cargas horarias, "
+        "docentes, ementas ou regras.\n"
+        "Se a informacao NAO estiver no CONTEXTO, diga com gentileza que nao tem esse dado na base da UNIFESP ICT."
+    )
+
+    # Palavras que nunca são nomes de entidade — usadas para detectar termo vazio
+    _PRONOUN_WORDS: frozenset = frozenset({
+        'ela', 'ele', 'elas', 'eles', 'dela', 'dele', 'delas', 'deles',
+        'isso', 'esta', 'este', 'essa', 'esse', 'disso', 'ementa', 'ementas',
+        'essa disciplina', 'este professor', 'essa matéria',
+    })
+
+    # Clarificações por intent: quando o sistema detecta a intenção mas não o sujeito
+    _CLARIFICATION_FOR_INTENT: Dict[str, str] = {
+        "ementa_disciplina":    "Sobre qual disciplina você quer ver a ementa?",
+        "prerequisite_chain":   "Qual é a disciplina cujos pré-requisitos você quer conhecer?",
+        "dependents":           "Qual disciplina você quer saber quais outras dependem dela?",
+        "discipline_docentes":  "De qual disciplina você quer saber os docentes?",
+        "unlocked_disciplines": (
+            "Quais disciplinas você já cursou? "
+            "Exemplo: *Algoritmos e Estruturas de Dados I, Cálculo 1*."
+        ),
+        "docente_info":         "Qual é o nome do professor que você quer consultar?",
+        "docente_areas":        "Qual é o nome do professor?",
+        "docente_disciplines":  "Qual é o nome do professor?",
+        "docentes_by_area":     "Qual área de pesquisa você quer buscar?",
+    }
+
     def __init__(self, rag_instance):
         self.rag = rag_instance
         self.llm = rag_instance.llm
@@ -48,24 +80,82 @@ class BaseAgent(ABC):
         """Retorna o template de prompt especializado deste agente."""
         pass
 
-    def answer(self, question: str, intent: str, term: str) -> Dict[str, Any]:
+    def _is_empty_term(self, term: str) -> bool:
+        """Retorna True se o termo é vazio ou apenas pronomes/demonstrativos."""
+        if not term or term in ("", "unknown"):
+            return True
+        words = set(term.lower().split())
+        return words.issubset(self._PRONOUN_WORDS)
+
+    def _expand_via_kg(self, term: str, tipo: str = "disciplina") -> Optional[str]:
+        """Se o termo é sigla ou código, expande para o nome completo do KG."""
+        if not term or not self.knowledge_graph:
+            return None
+        try:
+            node_id = self.knowledge_graph._find_node(term, tipo)
+            if node_id:
+                nome = self.knowledge_graph.graph.nodes[node_id].get("nome", "")
+                if nome and nome.strip().lower() != term.strip().lower():
+                    return nome
+        except Exception:
+            pass
+        return None
+
+    _HISTORY_BLOCK = (
+        "HISTORICO RECENTE DA CONVERSA (apenas para continuidade de dialogo — "
+        "NAO e fonte de fatos; fatos vem so do CONTEXTO):\n{history}\n\n"
+        "REGRA DE CONTINUIDADE: a conversa JA ESTA EM ANDAMENTO. NAO cumprimente "
+        "de novo (nada de 'Ola', 'Oi', 'Tudo bem?'). Responda direto, como quem "
+        "continua um papo, e nao repita o que ja foi dito.\n\n"
+        "Pergunta: {question}"
+    )
+
+    def _apply_history(self, template: str, history: str) -> str:
+        """
+        Insere o histórico recente + regra de continuidade antes da pergunta.
+        Sem histórico (primeira mensagem), o template fica intacto — e o agente
+        pode abrir com a saudação de praxe.
+        """
+        if not history:
+            return template
+        return template.replace("Pergunta: {question}", self._HISTORY_BLOCK, 1)
+
+    def answer(self, question: str, intent: str, term: str, history: str = "") -> Dict[str, Any]:
         """
         Pipeline neurossimbólico completo:
           1. Retrieval (vector + KG)
           2. Enriquecimento simbólico: fatos verificados do KG → contexto (Simbólico → Neural)
           3. Geração pelo LLM com contexto enriquecido
           4. Validação simbólica: checar resposta contra KG (Neural → Simbólico)
+
+        `history` (opcional): últimas trocas da conversa, injetadas no prompt
+        para continuidade de diálogo (sem re-saudação a cada turno).
         """
+        # Item 4: clarificação proativa — quando o intent é claro mas o sujeito não foi extraído
+        if self._is_empty_term(term) and intent in self._CLARIFICATION_FOR_INTENT:
+            return {
+                "response": self._CLARIFICATION_FOR_INTENT[intent],
+                "agent": self.name,
+                "agent_description": self.description,
+                "context_length": 0,
+                "context": "",
+                "sources": [],
+            }
+
         context = self.retrieve(question, intent, term)
 
         # Guardrail: não invocar o LLM se não há contexto relevante.
         if not context or not context.strip():
+            # KGC: sugerir disciplinas estruturalmente similares em vez de erro genérico
+            suggestion = self._kgc_suggestion(term)
+            response_text = (
+                suggestion if suggestion else
+                "Não encontrei informações sobre isso na base de dados da UNIFESP ICT. "
+                "Tente reformular a pergunta, ser mais específico, ou consulte o site "
+                "oficial em unifesp.br."
+            )
             return {
-                "response": (
-                    "Não encontrei informações sobre isso na base de dados da UNIFESP ICT. "
-                    "Tente reformular a pergunta, ser mais específico, ou consulte o site "
-                    "oficial em unifesp.br."
-                ),
+                "response": response_text,
                 "agent": self.name,
                 "agent_description": self.description,
                 "context_length": 0,
@@ -80,18 +170,25 @@ class BaseAgent(ABC):
             if kg_enrichment:
                 enriched_context = kg_enrichment + "\n\n" + context
 
-        template = self.get_prompt_template()
+        template = self._apply_history(self.get_prompt_template(), history)
         prompt = ChatPromptTemplate.from_template(template)
         chain = prompt | self.llm | StrOutputParser()
 
-        response = chain.invoke({"context": enriched_context, "question": question})
+        inputs = {"context": enriched_context, "question": question}
+        if history:
+            inputs["history"] = history
+        response = chain.invoke(inputs)
 
-        # ── Neural → Simbólico: validar resposta gerada contra o KG ──────────
+        # ── Neural → Simbólico → Neural: validar e corrigir (B1) ────────────
         if self.validator and intent not in ("", "unknown"):
-            validation = self.validator.validate_response(response, intent, term)
-            annotation = validation.to_annotation()
-            if annotation:
-                response += annotation
+            response, _ = self.validator.validate_and_correct(response, intent, term)
+
+        # KGC: se o LLM retornou o fallback "sem informação", sugerir similares
+        _NO_INFO_MARKERS = ("Nao tenho essa informacao", "não tenho essa informação")
+        if any(m.lower() in response.lower() for m in _NO_INFO_MARKERS):
+            suggestion = self._kgc_suggestion(term)
+            if suggestion:
+                response = suggestion
 
         sources = self._extract_sources_from_context(enriched_context)
         return {
@@ -102,6 +199,28 @@ class BaseAgent(ABC):
             "context": enriched_context,
             "sources": sources,
         }
+
+    def _kgc_suggestion(self, term: str) -> str:
+        """
+        Usa KGCompletion para sugerir disciplinas estruturalmente similares
+        quando o termo buscado não produziu contexto no vector store ou KG.
+        Inspirado em APIM: score de interação entre entidades via assinatura estrutural.
+        """
+        if not term or not self.knowledge_graph:
+            return ""
+        try:
+            similar = self.knowledge_graph.kgc.find_similar(term, n=3, threshold=0.08)
+            if not similar:
+                return ""
+            nomes = [f"**{d}**" for d, _ in similar]
+            return (
+                f"Não encontrei informações sobre **{term}** diretamente. "
+                f"Com base na estrutura do grafo de conhecimento, disciplinas "
+                f"estruturalmente relacionadas são: {', '.join(nomes)}. "
+                f"Você quis dizer alguma delas?"
+            )
+        except Exception:
+            return ""
 
     def _format_docs(self, docs) -> str:
         """Formata documentos do vector store para o contexto."""

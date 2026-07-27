@@ -4,12 +4,23 @@ from pathlib import Path
 
 class Config:
     # Modelo de geração: use MODEL_NAME no .env ou docker para testar outro (ex.: llama3.1:70b na nuvem)
-    MODEL_NAME = os.getenv("MODEL_NAME", "gpt-oss:120b-cloud")
-    # Embeddings: mxbai-embed-large é ótimo para RAG; para multilíngue/PT-BR pode testar bge-m3 (ollama pull bge-m3)
+    MODEL_NAME = os.getenv("MODEL_NAME", "gemma4:31b-cloud")
+    # Embeddings: mxbai-embed-large (1024d) é ótimo para RAG; alternativas:
+    # embeddinggemma (768d), bge-m3 (multilíngue). Troque via EMBEDDING_MODEL no
+    # .env/docker — NUNCA hardcoded, senão a env var do compose para de valer.
+    # ATENÇÃO: trocar o modelo muda a dimensão dos vetores; o sync detecta e
+    # reconstrói a collection automaticamente (demora alguns minutos).
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "mxbai-embed-large")
     PERSIST_DIR = "./chroma_db_unifesp"
     # URL do Ollama: local ou na nuvem (ex.: https://sua-instancia-ollama.com ou http://IP:11434)
     OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", None)
+
+    # Humanização da resposta simbólica (symbolic_kg): se ativada, a resposta
+    # determinística do Knowledge Graph passa por um LLM que APENAS suaviza o
+    # tom, preservando todos os fatos. Padrão DESLIGADO para manter a garantia
+    # "sem LLM / 0% alucinação" nos experimentos do paper. Ative no app/produção
+    # com FESPAI_HUMANIZE_KG=1.
+    HUMANIZE_KG = os.getenv("FESPAI_HUMANIZE_KG", "0") == "1"
     
     SOURCES = {
         "disciplinas": "./markdown_disciplinas",
