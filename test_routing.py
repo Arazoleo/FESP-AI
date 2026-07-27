@@ -80,6 +80,26 @@ check("'disciplina' explícita ainda exclui do web_sjc",
 check("'normalmente' não força regimentos ('norma' interno)",
       router.phrase_override("normalmente quem coordena os estágios?") != "regimentos")
 
+print(f"\n{BOLD}── formação/integralização: informacional ≠ montar grade ──{RESET}")
+check("'o que preciso para me formar no bct?' NÃO é montar_grade",
+      not router.is_montar_grade("o que preciso para me formar no bct?"))
+check("'quantas horas para me formar no bct?' NÃO é montar_grade",
+      not router.is_montar_grade("quantas horas para me formar no bct?"))
+check("'o que preciso para me formar no bct?' → web_sjc (FAQ do site)",
+      router.is_web_sjc("o que preciso para me formar no bct?"))
+check("'quantas horas para me formar no bct?' → web_sjc",
+      router.is_web_sjc("quantas horas para me formar no bct?"))
+check("'como funciona a formação no bct?' → web_sjc",
+      router.is_web_sjc("como funciona a formação no bct?"))
+check("'monte minha grade de bcc' continua montar_grade",
+      router.is_montar_grade("monte minha grade de bcc"))
+check("'que disciplinas devo cursar no próximo semestre?' continua montar_grade",
+      router.is_montar_grade("que disciplinas devo cursar no próximo semestre?"))
+check("'monta minha grade respeitando os pré-requisitos' continua montar_grade",
+      router.is_montar_grade("monta minha grade respeitando os pré-requisitos"))
+check("'quantas horas tem o curso de bcc?' NÃO vira web_sjc (fica no KG)",
+      not router.is_web_sjc("quantas horas tem o curso de bcc?"))
+
 print(f"\n{BOLD}── is_conversational (word-boundary, não substring) ──{RESET}")
 check("'como funciona o aproveitamento de estudos?' NÃO é conversa ('ei' interno)",
       not router.is_conversational("como funciona o aproveitamento de estudos?"))

@@ -156,10 +156,22 @@ _MONTAR_GRADE_PHRASES = [
     "montar meu semestre", "planejar meus semestres",
 ]
 
+# Perguntas INFORMACIONAIS sobre requisitos/horas de formação não são pedido
+# de montar grade ("quantas horas para me formar no BCT?", "o que preciso
+# para me formar?") — devem seguir o fluxo normal (site/KG tem a resposta,
+# ex.: FAQ de integralização da página do BCT).
+_MONTAR_GRADE_INFO_EXCLUDE = [
+    "quantas horas", "quanto tempo", "o que preciso", "o que e preciso",
+    "o que necessito", "requisitos para",
+    "integralizar", "integralizacao", "formacao",
+]
+
 
 def is_montar_grade(question_lower: str) -> bool:
     """True se a mensagem pede para montar a grade / planejar a trajetória."""
     q = _strip_accents(question_lower)
+    if _any_phrase([_strip_accents(e) for e in _MONTAR_GRADE_INFO_EXCLUDE], q):
+        return False
     return any(_strip_accents(p) in q for p in _MONTAR_GRADE_PHRASES)
 
 
@@ -197,6 +209,11 @@ _WEB_SJC_PHRASES = [
     "extensionista", "extensionistas",
     "integralizar", "integralizacao", "projeto pedagogico", "ppc",
     "pos-bct", "pos bct", "matriz de transicao", "comissao de curso",
+    # Formação/integralização do curso (FAQ da página do BCT no site)
+    # Nota: "quantas horas" sozinho ficaria amplo demais ("quantas horas tem
+    # o curso de BCC?" é do KG) — só as formas ligadas a formar/necessitar.
+    "me formar no", "me formar em", "formar no bct", "formacao no",
+    "formacao do", "quantas horas necessito", "quantas horas preciso",
     "nucleo docente", "nde", "ex-officio", "ex officio",
     # Procedimentos da secretaria (páginas em /graduacao-todos)
     "atestado", "diploma", "aproveitamento de estudos", "cracha", "crachá",
