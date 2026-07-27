@@ -59,7 +59,8 @@ const AGENT_ICONS: Record<string, React.ElementType> = {
   BookOpen, GraduationCap, Users, FileText, Bot, Brain, Route, MessageCircle, Newspaper, Globe,
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+// Default '/api' = mesma origem (rotas proxyadas via rewrites do next.config.js)
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
 const suggestions = [
   { text: 'Quais são os pré-requisitos de Cálculo Numérico?', icon: BookOpen },
