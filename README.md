@@ -1,4 +1,4 @@
-# FESP-AI — Assistente Acadêmico Neurossimbólico da UNIFESP (ICT/SJC)
+# FESP-AI: Assistente Acadêmico Neurossimbólico da UNIFESP (ICT/SJC)
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688)
@@ -7,7 +7,7 @@
 ![PyReason](https://img.shields.io/badge/PyReason-inferência%20FOL-purple)
 ![Status](https://img.shields.io/badge/status-pesquisa-lightgrey)
 
-O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto de Ciência e Tecnologia da UNIFESP (campus São José dos Campos). Ele combina um **Knowledge Graph** curricular (disciplinas, pré-requisitos, docentes, cursos), **regras de inferência FOL** executadas via **PyReason** e um **LLM** (Ollama), orquestrados por um pipeline **multi-agente em LangGraph** — com RAG híbrido (vetorial + BM25) sobre ementas e regimentos e um corpus vivo do **site institucional do campus**. A tese central: o LLM interpreta e redige, mas **quem julga os fatos é o grafo** — reduzindo alucinação em respostas acadêmicas críticas (pré-requisitos, matrizes curriculares, docentes).
+O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto de Ciência e Tecnologia da UNIFESP (campus São José dos Campos). Ele combina um **Knowledge Graph** curricular (disciplinas, pré-requisitos, docentes, cursos), **regras de inferência FOL** executadas via **PyReason** e um **LLM** (Ollama), orquestrados por um pipeline **multi-agente em LangGraph**: com RAG híbrido (vetorial + BM25) sobre ementas e regimentos e um corpus vivo do **site institucional do campus**. A tese central: o LLM interpreta e redige, mas **quem julga os fatos é o grafo** - reduzindo alucinação em respostas acadêmicas críticas (pré-requisitos, matrizes curriculares, docentes).
 
 ![FESP-AI em execução](docs/screenshot-app.png)
 
@@ -32,13 +32,13 @@ flowchart TD
 
 **Loop bidirecional Neural ↔ Simbólico:**
 
-- **Enriquecimento pré-geração** — fatos verificados do KG são injetados no prompt do agente antes da geração;
-- **Validação de claims LLM→KG** — o LLM extrai triplas (código/docente/pré-requisito) da própria resposta e o KG julga cada uma;
-- **B1 — Reescrita corretiva** — violações disparam corretores dedicados (pré-requisitos, docentes) ou reescrita genérica via LLM ancorada nos fatos do KG;
-- **B2 — Propagação de incerteza com bounds** — `path_confidence` propaga o menor `confidence` das arestas do caminho e a resposta anota elos parciais ("confiança 70%");
-- **B3 — Path-finding no DAG de pré-requisitos** — `plan_minimal_path` (BFS topológico) planeja o caminho mínimo até uma disciplina-alvo;
-- **B4 — Regras FOL explícitas com traço** — respostas simbólicas citam as regras aplicadas (`prereq_transitivity`, `minimal_path`, `unlock_condition`);
-- **B5 — KGC estrutural + semântico** — completação do grafo combinando similaridade estrutural (0.6) e embeddings semânticos (0.4).
+- **Enriquecimento pré-geração**: fatos verificados do KG são injetados no prompt do agente antes da geração;
+- **Validação de claims LLM→KG**: o LLM extrai triplas (código/docente/pré-requisito) da própria resposta e o KG julga cada uma;
+- **B1: Reescrita corretiva** - violações disparam corretores dedicados (pré-requisitos, docentes) ou reescrita genérica via LLM ancorada nos fatos do KG;
+- **B2: Propagação de incerteza com bounds** - `path_confidence` propaga o menor `confidence` das arestas do caminho e a resposta anota elos parciais ("confiança 70%");
+- **B3: Path-finding no DAG de pré-requisitos** - `plan_minimal_path` (BFS topológico) planeja o caminho mínimo até uma disciplina-alvo;
+- **B4: Regras FOL explícitas com traço** - respostas simbólicas citam as regras aplicadas (`prereq_transitivity`, `minimal_path`, `unlock_condition`);
+- **B5: KGC estrutural + semântico** - completação do grafo combinando similaridade estrutural (0.6) e embeddings semânticos (0.4).
 
 **Outras peças:** fusão multi-fonte **KG ↔ site** com regra de precedência (em divergência, vale o KG e a resposta avisa que a página pode estar desatualizada); **crawler multi-domínio** do site do campus com seccionamento por headings (páginas longas viram uma entrada de corpus por seção h2/h3, com âncora); **telemetria** do loop neurossimbólico (grounding, correções B1, reescritas LLM, claims) em `GET /telemetry`; `kg.lint()` no build do grafo (duplicatas, ciclos no DAG, pré-requisitos pendurados).
 
@@ -49,7 +49,7 @@ flowchart TD
 | Routing accuracy (82 queries, gabarito com alternativas) | **96%** (79/82) |
 | Verificação simbólica das respostas no caminho simbólico | **89%** (47/53) |
 | Eval conversacional do site (10 conversas multi-turno) | **29/29** (100%) |
-| LLM-as-judge — correctness/groundedness no caminho simbólico | **5.0 / 5.0** |
+| LLM-as-judge: correctness/groundedness no caminho simbólico | **5.0 / 5.0** |
 
 Números do run mais recente de `eval/eval_neurosymbolic.py` (07/2026) e de `eval/eval_site_conversations.py`; histórico e detalhes em `BACKLOG.md`.
 
@@ -64,7 +64,7 @@ cp .env.example .env        # escolha MODEL_NAME / EMBEDDING_MODEL
 docker compose up -d        # backend :8000 + frontend :3000
 ```
 
-Requer Ollama acessível (local ou cloud — veja `OLLAMA_CLOUD.md`) com os modelos baixados (`ollama pull gemma4:31b-cloud` e `ollama pull embeddinggemma`).
+Requer Ollama acessível (local ou cloud: veja `OLLAMA_CLOUD.md`) com os modelos baixados (`ollama pull gemma4:31b-cloud` e `ollama pull embeddinggemma`).
 
 **Endpoints principais** (`http://localhost:8000`, docs interativas em `/docs`):
 
