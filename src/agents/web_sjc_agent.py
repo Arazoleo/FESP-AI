@@ -135,7 +135,7 @@ class WebSjcAgent(BaseAgent):
             "- Quando citar uma informacao de pagina do site, indique de qual pagina veio (inclua o link).\n"
             "- Se a resposta nao estiver no material acima, diga com gentileza que nao "
             "encontrou isso no site e sugira o link mais proximo ou os contatos do campus.\n"
-            "- Seja conversacional e direto. No maximo 1 emoji.\n\nResposta:"
+            "- Seja conversacional e direto. NAO use emojis.\n\nResposta:"
         )
 
     # ── Fusão com o Knowledge Graph (as duas bases "conversam") ───────────────

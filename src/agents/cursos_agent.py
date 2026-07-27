@@ -129,6 +129,6 @@ REGRA ABSOLUTA: Se a informacao pedida NAO estiver no CONTEXTO acima, diga com g
 tem esse dado na base da UNIFESP ICT.
 NAO invente, suponha ou extrapole NENHUM dado (nome de curso, código, carga horária, etc.).
 
-TOM: caloroso e direto, como num bate-papo. Pode abrir com uma frase amigavel e fechar se colocando a disposicao; no maximo 1 emoji. A precisao dos fatos vem sempre em primeiro lugar. Para listas longas (matrizes, termos), mantenha a organizacao clara.
+TOM: caloroso e direto, como num bate-papo. Pode abrir com uma frase amigavel e fechar se colocando a disposicao; NAO use emojis. A precisao dos fatos vem sempre em primeiro lugar. Para listas longas (matrizes, termos), mantenha a organizacao clara.
 
 Resposta:"""

@@ -72,7 +72,7 @@ class NoticiasAgent(BaseAgent):
             "nao encontrou isso nas noticias recentes e sugira acompanhar a pagina oficial.\n"
             "- Seja conversacional. Se a noticia trouxer detalhes (datas, local, inscricoes, "
             "programacao), aprofunde-se e explique-os; caso contrario, seja breve. "
-            "No maximo 1 emoji.\n\nResposta:"
+            "NAO use emojis.\n\nResposta:"
         )
 
     def _is_listagem(self, question: str) -> bool:

@@ -1,374 +1,301 @@
-'use client'
+import Link from 'next/link'
+import { ArrowRight, ArrowDown } from 'lucide-react'
 
-import { useEffect, useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import { 
-  Sparkles, 
-  Brain, 
-  Zap, 
-  ArrowRight,
-  GraduationCap,
-  BookOpen,
-  Users,
-  Clock,
-  ChevronDown,
-} from 'lucide-react'
+// ─── Motivo visual: grafo de conhecimento ─────────────────────────────────────
+// Nós e arestas nomeados com entidades reais do KG do FESP-AI.
+
+const NODES: {
+  id: string
+  x: number
+  y: number
+  r: number
+  label?: string
+  pulse?: boolean
+  delay?: string
+}[] = [
+  { id: 'curso', x: 96, y: 96, r: 5, label: 'curso', pulse: true },
+  { id: 'disciplina', x: 258, y: 58, r: 6, label: 'disciplina', pulse: true, delay: '1.2s' },
+  { id: 'docente', x: 408, y: 118, r: 5, label: 'docente', pulse: true, delay: '2.1s' },
+  { id: 'prereq', x: 176, y: 208, r: 4, label: 'pré-requisito' },
+  { id: 'carga', x: 340, y: 236, r: 4, label: 'carga horária' },
+  { id: 'regimento', x: 84, y: 312, r: 4, label: 'regimento' },
+  { id: 'matriz', x: 256, y: 336, r: 5, label: 'matriz curricular', pulse: true, delay: '3s' },
+  { id: 'p1', x: 430, y: 320, r: 2.5 },
+  { id: 'p2', x: 40, y: 200, r: 2.5 },
+  { id: 'p3', x: 350, y: 30, r: 2.5 },
+]
+
+const EDGES: [string, string][] = [
+  ['curso', 'disciplina'],
+  ['disciplina', 'docente'],
+  ['disciplina', 'prereq'],
+  ['disciplina', 'carga'],
+  ['curso', 'matriz'],
+  ['matriz', 'prereq'],
+  ['matriz', 'carga'],
+  ['curso', 'regimento'],
+  ['regimento', 'matriz'],
+  ['docente', 'p1'],
+  ['curso', 'p2'],
+  ['disciplina', 'p3'],
+]
+
+function KnowledgeGraphFigure({ className }: { className?: string }) {
+  const byId = Object.fromEntries(NODES.map((n) => [n.id, n]))
+  return (
+    <svg
+      viewBox="0 0 480 400"
+      className={className}
+      role="img"
+      aria-label="Representação de um grafo de conhecimento: cursos, disciplinas, docentes e regimentos conectados"
+    >
+      {EDGES.map(([a, b], i) => (
+        <line
+          key={i}
+          x1={byId[a].x}
+          y1={byId[a].y}
+          x2={byId[b].x}
+          y2={byId[b].y}
+          stroke="#34d399"
+          strokeOpacity={0.16}
+          strokeWidth={1}
+          className="edge-draw"
+          style={{ animationDelay: `${0.15 + i * 0.12}s` }}
+        />
+      ))}
+      {NODES.map((n) => (
+        <g key={n.id}>
+          <circle
+            cx={n.x}
+            cy={n.y}
+            r={n.r}
+            fill="#34d399"
+            fillOpacity={n.label ? 0.9 : 0.35}
+            className={n.pulse ? 'node-pulse' : undefined}
+            style={n.delay ? { animationDelay: n.delay } : undefined}
+          />
+          {n.label && (
+            <text
+              x={n.x + n.r + 8}
+              y={n.y + 4}
+              className="font-mono"
+              fontSize="11"
+              fill="#9aa8a2"
+            >
+              {n.label}
+            </text>
+          )}
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+// ─── Conteúdo ─────────────────────────────────────────────────────────────────
+
+const PIPELINE_STEPS = [
+  {
+    n: '01',
+    title: 'Interpretação',
+    text: 'A pergunta é classificada e encaminhada ao agente certo: disciplinas, docentes, cursos ou regimentos.',
+  },
+  {
+    n: '02',
+    title: 'Consulta ao grafo',
+    text: 'Entidades e relações são buscadas no Knowledge Graph, construído a partir das matrizes curriculares e dos regimentos oficiais do campus.',
+  },
+  {
+    n: '03',
+    title: 'Recuperação de documentos',
+    text: 'Trechos relevantes dos documentos originais complementam o contexto usado para escrever a resposta.',
+  },
+  {
+    n: '04',
+    title: 'Verificação',
+    text: 'Antes de chegar até você, os fatos citados na resposta são conferidos contra o grafo.',
+  },
+]
+
+const DOMAINS = [
+  {
+    n: '01',
+    title: 'Disciplinas',
+    text: 'Ementas, pré-requisitos, carga horária teórica e prática de cada unidade curricular.',
+  },
+  {
+    n: '02',
+    title: 'Docentes',
+    text: 'Quem leciona cada disciplina e em quais cursos atua.',
+  },
+  {
+    n: '03',
+    title: 'Cursos',
+    text: 'Matrizes curriculares e estrutura dos cursos de graduação do ICT.',
+  },
+  {
+    n: '04',
+    title: 'Regimentos',
+    text: 'Normas, prazos e regulamentos institucionais, com referência aos artigos.',
+  },
+]
 
 export default function LandingPage() {
-  const router = useRouter()
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [isLoaded, setIsLoaded] = useState(false)
-  const heroRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    setIsLoaded(true)
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      if (heroRef.current) {
-        const rect = heroRef.current.getBoundingClientRect()
-        setMousePosition({
-          x: (e.clientX - rect.left) / rect.width,
-          y: (e.clientY - rect.top) / rect.height,
-        })
-      }
-    }
-
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
-
-  const features = [
-    {
-      icon: BookOpen,
-      title: 'Disciplinas',
-      description: 'Informações completas sobre ementas, pré-requisitos e bibliografia',
-      gradient: 'from-emerald-400 to-emerald-600',
-    },
-    {
-      icon: Users,
-      title: 'Docentes',
-      description: 'Descubra quem leciona cada disciplina e suas especialidades',
-      gradient: 'from-emerald-500 to-emerald-700',
-    },
-    {
-      icon: Clock,
-      title: 'Carga Horária',
-      description: 'Consulte horas teóricas, práticas e de extensão',
-      gradient: 'from-emerald-300 to-emerald-500',
-    },
-    {
-      icon: GraduationCap,
-      title: 'Regimentos',
-      description: 'Acesse normas, regulamentos e informações institucionais',
-      gradient: 'from-emerald-600 to-emerald-800',
-    },
-  ]
-
   return (
-    <div className="relative min-h-screen bg-[#030712] text-white overflow-hidden">
-      {/* ===== ANIMATED BACKGROUND ===== */}
-      <div className="fixed inset-0 overflow-hidden">
-        {/* Gradient Orbs - Monocromático Verde */}
-        <div 
-          className="absolute w-[800px] h-[800px] rounded-full opacity-30 blur-[120px] transition-all duration-1000 ease-out"
-          style={{
-            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.8) 0%, transparent 70%)',
-            left: `${mousePosition.x * 20 - 10}%`,
-            top: `${mousePosition.y * 20 - 10}%`,
-          }}
-        />
-        <div 
-          className="absolute w-[600px] h-[600px] rounded-full opacity-25 blur-[100px] transition-all duration-1000 ease-out"
-          style={{
-            background: 'radial-gradient(circle, rgba(52, 211, 153, 0.7) 0%, transparent 70%)',
-            right: `${(1 - mousePosition.x) * 20 - 10}%`,
-            bottom: `${(1 - mousePosition.y) * 20 - 10}%`,
-          }}
-        />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-20 blur-[80px] bg-gradient-to-r from-emerald-700 to-emerald-500 animate-pulse" />
-        
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h60v60H0z%22%2F%3E%3Cpath%20d%3D%22M60%200v60H0%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.03)%22%20stroke-width%3D%221%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50" />
-      
-        {/* Floating Particles - Verde */}
-        {[...Array(40)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full animate-float-particle"
-            style={{
-              width: `${2 + Math.random() * 3}px`,
-              height: `${2 + Math.random() * 3}px`,
-              background: `rgba(16, 185, 129, ${0.3 + Math.random() * 0.5})`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${8 + Math.random() * 10}s`,
-              boxShadow: `0 0 ${4 + Math.random() * 6}px rgba(16, 185, 129, 0.5)`,
-            }}
-          />
-        ))}
+    <div className="relative min-h-screen bg-ink text-paper">
+      {/* Grade de fundo sutil */}
+      <div className="pointer-events-none fixed inset-0 bg-grid-faint" aria-hidden />
 
-        {/* Horizontal Lines */}
-        <div className="absolute inset-0">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute h-px w-full bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent animate-scan-line"
-              style={{
-                top: `${20 + i * 15}%`,
-                animationDelay: `${i * 0.5}s`,
-              }}
-            />
-          ))}
+      {/* ── Nav ── */}
+      <header className="relative z-10 border-b border-line">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+          <div className="flex items-center gap-3">
+            <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
+              <line x1="5" y1="18" x2="12" y2="6" stroke="#34d399" strokeOpacity="0.5" strokeWidth="1.2" />
+              <line x1="12" y1="6" x2="19" y2="16" stroke="#34d399" strokeOpacity="0.5" strokeWidth="1.2" />
+              <line x1="5" y1="18" x2="19" y2="16" stroke="#34d399" strokeOpacity="0.5" strokeWidth="1.2" />
+              <circle cx="5" cy="18" r="2.4" fill="#34d399" />
+              <circle cx="12" cy="6" r="2.4" fill="#34d399" />
+              <circle cx="19" cy="16" r="2.4" fill="#34d399" />
+            </svg>
+            <span className="font-mono text-sm tracking-widest text-paper">FESP-AI</span>
+          </div>
+          <Link
+            href="/chat"
+            className="group flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-paper-dim transition-colors hover:text-accent"
+          >
+            Abrir o assistente
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </Link>
         </div>
-                </div>
-                
-      {/* ===== HERO SECTION ===== */}
-      <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20">
-        {/* Glowing Badge */}
-        <div 
-          className={`
-            mb-8 px-5 py-2.5 rounded-full
-            bg-emerald-500/10
-            border border-emerald-500/30
-            backdrop-blur-xl
-            flex items-center gap-3
-            transition-all duration-1000
-            ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
-          `}
-        >
-          <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-          </span>
-          <span className="text-sm font-medium text-emerald-300">
-            Powered by Advanced RAG Technology
-                  </span>
-              </div>
+      </header>
 
-        {/* Main Title */}
-        <div className="text-center max-w-5xl mx-auto">
-          <h1 
-            className={`
-              text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-6
-              transition-all duration-1000 delay-200
-              ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
-            `}
-          >
-            {/* FESP-AI em uma linha com estilo premium */}
-            <div className="flex items-center justify-center">
-              {/* Logo à esquerda - maior e sem fundo */}
-              <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-52 lg:h-52 xl:w-60 xl:h-60 flex-shrink-0 -mr-6 sm:-mr-8 md:-mr-10 lg:-mr-12 xl:-mr-14">
-                <Image
-                  src="/fespai-removebg-preview.png"
-                  alt="FESP-AI Logo"
-                  fill
-                  className="object-contain drop-shadow-2xl"
-                  style={{ filter: 'drop-shadow(0 0 20px rgba(16, 185, 129, 0.5))' }}
-                  priority
-                />
-              </div>
-              <span className="bg-gradient-to-b from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent drop-shadow-2xl">
-                FESP
-              </span>
-              <span className="relative">
-                <span className="absolute inset-0 bg-emerald-500 blur-2xl opacity-50 animate-pulse" />
-                <span className="relative bg-gradient-to-br from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">
-                  AI
-                </span>
-              </span>
-            </div>
-          </h1>
-
-          {/* Subtitle */}
-          <p 
-            className={`
-              text-xl sm:text-2xl md:text-3xl text-slate-400 max-w-3xl mx-auto mb-12
-              transition-all duration-1000 delay-300
-              ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
-            `}
-          >
-            O assistente inteligente da{' '}
-            <span className="text-white font-semibold">UNIFESP</span>
-            <br className="hidden sm:block" />
-            {' '}que entende suas dúvidas acadêmicas
-          </p>
-
-          {/* CTA Button */}
-          <div 
-            className={`
-              flex flex-col sm:flex-row items-center justify-center gap-4
-              transition-all duration-1000 delay-500
-              ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
-            `}
-          >
-              <button
-              onClick={() => router.push('/chat')}
-                className="
-                group relative px-10 py-5 rounded-2xl
-                bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-500
-                text-white font-bold text-lg
-                overflow-hidden
-                transition-all duration-500
-                hover:scale-105
-                hover:shadow-[0_0_60px_rgba(16,185,129,0.6)]
-                active:scale-95
-                border border-emerald-400/30
-              "
-            >
-              {/* Shine Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              
-              {/* Button Content */}
-              <span className="relative flex items-center gap-3">
-                <Sparkles className="w-5 h-5" />
-                Experimentar Agora
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </span>
-              </button>
-
-            {/* Secondary Info */}
-            <div className="flex items-center gap-2 text-slate-500 text-sm">
-              <Zap className="w-4 h-4 text-emerald-400" />
-              <span>Respostas instantâneas</span>
+      {/* ── Hero ── */}
+      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-20 sm:pt-28">
+        <div className="grid items-center gap-16 lg:grid-cols-[1.15fr_1fr]">
+          <div>
+            <p className="animate-rise rise-1 mb-6 font-mono text-xs uppercase tracking-[0.25em] text-accent">
+              UNIFESP — Instituto de Ciência e Tecnologia
+            </p>
+            <h1 className="animate-rise rise-2 font-display text-5xl font-medium leading-[1.05] tracking-tightest sm:text-6xl lg:text-7xl">
+              Perguntas acadêmicas.
+              <br />
+              Respostas <span className="text-accent">verificadas</span>.
+            </h1>
+            <p className="animate-rise rise-3 mt-8 max-w-xl text-lg leading-relaxed text-paper-dim">
+              O FESP-AI responde sobre a vida acadêmica do campus São José dos
+              Campos consultando um grafo de conhecimento montado a partir de
+              documentos oficiais — e confere os fatos antes de responder.
+            </p>
+            <div className="animate-rise rise-4 mt-10 flex flex-wrap items-center gap-6">
+              <Link
+                href="/chat"
+                className="group inline-flex items-center gap-3 rounded-lg bg-accent px-7 py-3.5 font-medium text-ink transition-colors hover:bg-accent-deep"
+              >
+                Abrir o assistente
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <a
+                href="#como-funciona"
+                className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-paper-mute transition-colors hover:text-paper-dim"
+              >
+                Como funciona
+                <ArrowDown className="h-3.5 w-3.5" />
+              </a>
             </div>
           </div>
+
+          <div className="animate-rise rise-5 hidden lg:block">
+            <KnowledgeGraphFigure className="w-full" />
+            <p className="mt-4 text-center font-mono text-[11px] text-paper-mute">
+              fragmento do grafo de conhecimento do campus
+            </p>
+          </div>
         </div>
-
-        {/* Scroll Indicator */}
-        <div 
-          className={`
-            absolute bottom-10 left-1/2 -translate-x-1/2
-            flex flex-col items-center gap-2
-            transition-all duration-1000 delay-700
-            ${isLoaded ? 'opacity-100' : 'opacity-0'}
-          `}
-        >
-          <span className="text-xs text-slate-500 uppercase tracking-widest">Explore</span>
-          <ChevronDown className="w-5 h-5 text-slate-500 animate-bounce" />
-              </div>
-
       </section>
 
-      {/* ===== FEATURES SECTION ===== */}
-      <section className="relative py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-20">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-white via-emerald-50 to-emerald-100 bg-clip-text text-transparent">
-                Tudo que você precisa saber
-              </span>
-              </h2>
-            <p className="text-xl text-slate-500 max-w-2xl mx-auto">
-              Acesse informações acadêmicas da UNIFESP Campus São José dos Campos de forma rápida e inteligente
+      {/* ── Como funciona ── */}
+      <section id="como-funciona" className="relative z-10 border-t border-line">
+        <div className="mx-auto max-w-6xl px-6 py-24">
+          <div className="mb-14 max-w-2xl">
+            <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-accent">
+              Como funciona
             </p>
-              </div>
+            <h2 className="font-display text-3xl font-medium tracking-tightest sm:text-4xl">
+              Cada resposta percorre o mesmo caminho
+            </h2>
+          </div>
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="
-                  group relative p-8 rounded-3xl
-                  bg-emerald-500/[0.02] border border-emerald-500/10
-                  backdrop-blur-xl
-                  hover:bg-emerald-500/[0.05] hover:border-emerald-500/30
-                  transition-all duration-500
-                  hover:-translate-y-2
-                "
-              >
-                {/* Icon */}
-                <div className={`
-                  w-14 h-14 rounded-2xl mb-6
-                  bg-gradient-to-br ${feature.gradient}
-                  flex items-center justify-center
-                  group-hover:scale-110 transition-transform duration-300
-                  shadow-lg shadow-emerald-500/20
-                `}>
-                  <feature.icon className="w-7 h-7 text-white" />
-                </div>
-
-                {/* Content */}
-                <h3 className="text-xl font-bold mb-3 text-white group-hover:text-emerald-50">
-                  {feature.title}
+          <ol className="grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-2 lg:grid-cols-4">
+            {PIPELINE_STEPS.map((step) => (
+              <li key={step.n} className="bg-ink-raise p-7">
+                <span className="font-mono text-xs text-accent">{step.n}</span>
+                <h3 className="mt-4 font-display text-lg font-medium text-paper">
+                  {step.title}
                 </h3>
-                <p className="text-slate-400 leading-relaxed group-hover:text-slate-300">
-                  {feature.description}
-                </p>
+                <p className="mt-3 text-sm leading-relaxed text-paper-dim">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
 
-                {/* Hover Glow */}
-                <div className="
-                  absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100
-                  bg-emerald-500
-                  blur-3xl -z-10 transition-opacity duration-500
-                " style={{ opacity: 0.08 }} />
+      {/* ── Domínios ── */}
+      <section className="relative z-10 border-t border-line">
+        <div className="mx-auto max-w-6xl px-6 py-24">
+          <div className="mb-14 max-w-2xl">
+            <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-accent">
+              Escopo
+            </p>
+            <h2 className="font-display text-3xl font-medium tracking-tightest sm:text-4xl">
+              Sobre o que você pode perguntar
+            </h2>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            {DOMAINS.map((d) => (
+              <div
+                key={d.n}
+                className="group rounded-xl border border-line bg-ink-raise p-7 transition-colors hover:border-accent/30"
+              >
+                <div className="flex items-baseline justify-between">
+                  <h3 className="font-display text-xl font-medium text-paper">{d.title}</h3>
+                  <span className="font-mono text-xs text-paper-mute transition-colors group-hover:text-accent">
+                    {d.n}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-paper-dim">{d.text}</p>
               </div>
             ))}
           </div>
+
+          <div className="mt-16 flex justify-center">
+            <Link
+              href="/chat"
+              className="group inline-flex items-center gap-3 rounded-lg border border-line-strong px-7 py-3.5 font-medium text-paper transition-colors hover:border-accent/50 hover:text-accent"
+            >
+              Fazer uma pergunta
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ===== CTA SECTION ===== */}
-      <section className="relative py-32 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Decorative Element */}
-          <div className="relative inline-block mb-10">
-            <div className="absolute inset-0 bg-emerald-500 rounded-full blur-3xl opacity-30 animate-pulse" />
-            <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center border border-emerald-400/30">
-              <GraduationCap className="w-12 h-12 text-white" />
+      {/* ── Footer ── */}
+      <footer className="relative z-10 border-t border-line">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <span className="font-mono text-sm tracking-widest text-paper">FESP-AI</span>
+              <p className="mt-2 text-sm text-paper-mute">
+                Projeto acadêmico — UNIFESP, Instituto de Ciência e Tecnologia,
+                São José dos Campos.
+              </p>
             </div>
+            <p className="max-w-md text-xs leading-relaxed text-paper-mute sm:text-right">
+              As respostas são geradas automaticamente e podem conter erros.
+              Confirme informações importantes nas fontes oficiais da UNIFESP.
+            </p>
           </div>
-
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-8">
-            <span className="bg-gradient-to-r from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent">
-              Pronto para começar?
-            </span>
-          </h2>
-
-          <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
-            Faça perguntas sobre disciplinas, docentes, regimentos e muito mais.
-            Nossa IA está pronta para ajudar.
-          </p>
-
-          <button
-            onClick={() => router.push('/chat')}
-            className="
-              group relative px-12 py-6 rounded-2xl
-              bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-bold text-xl
-              overflow-hidden
-              transition-all duration-500
-              hover:scale-105
-              hover:shadow-[0_0_80px_rgba(16,185,129,0.5)]
-              active:scale-95
-              border border-emerald-300/30
-            "
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-            <span className="relative flex items-center gap-3">
-              <Brain className="w-6 h-6" />
-              Iniciar Conversa
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
-            </span>
-          </button>
-        </div>
-      </section>
-
-      {/* ===== FOOTER ===== */}
-      <footer className="relative py-10 px-6 border-t border-emerald-500/10">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-lg text-emerald-50">FESP-AI</span>
-          </div>
-
-          <p className="text-sm text-slate-500">
-            UNIFESP Campus São José dos Campos • Assistente Acadêmico Inteligente
-          </p>
         </div>
       </footer>
     </div>

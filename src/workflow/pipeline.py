@@ -50,7 +50,7 @@ REGRAS INVIOLAVEIS:
 - NAO altere, remova, adicione ou invente NENHUM fato: nomes, codigos, numeros, disciplinas, professores, artigos e listas devem permanecer IDENTICOS em conteudo.
 - Mantenha TODOS os itens de qualquer lista, na mesma ordem.
 - Voce so pode mudar a FORMA: uma abertura amigavel, conectar as frases de modo natural e, se fizer sentido, uma frase final se colocando a disposicao.
-- Responda em PORTUGUES BRASILEIRO, de forma breve. No maximo 1 emoji.
+- Responda em PORTUGUES BRASILEIRO, de forma breve. NAO use emojis.
 - Nao comente estas instrucoes nem mencione "base de dados" ou "Knowledge Graph".
 
 Resposta conversacional:"""

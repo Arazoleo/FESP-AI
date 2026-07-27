@@ -58,7 +58,7 @@ class MontarGradeAgent(BaseAgent):
             "Se houver um curso identificado, mencione-o. Se ele citou disciplinas "
             "cursadas, de a entender que voce ja as considerou. Diga que ele pode "
             "ajustar curso, disciplinas ou o teto de creditos ali no painel se quiser. "
-            "No maximo 1 emoji. Nao use listas nem texto institucional.\n\nResposta:"
+            "NAO use emojis. Nao use listas nem texto institucional.\n\nResposta:"
         )
 
     def _resolve_curso(self, question: str) -> Optional[str]:

@@ -4,26 +4,12 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Send,
-  Sparkles,
   Plus,
-  GraduationCap,
   ArrowDown,
   ArrowLeft,
-  BookOpen,
-  HelpCircle,
-  MessageSquare,
-  Lightbulb,
-  Bot,
-  User,
-  Loader2,
-  Users,
-  FileText,
-  Brain,
+  Check,
   Route,
   X,
-  MessageCircle,
-  Newspaper,
-  Globe,
 } from 'lucide-react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -55,37 +41,105 @@ interface PlanRequest {
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
-const AGENT_ICONS: Record<string, React.ElementType> = {
-  BookOpen, GraduationCap, Users, FileText, Bot, Brain, Route, MessageCircle, Newspaper, Globe,
-}
-
 // Default '/api' = mesma origem (rotas proxyadas via rewrites do next.config.js)
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
-const suggestions = [
-  { text: 'Quais são os pré-requisitos de Cálculo Numérico?', icon: BookOpen },
-  { text: 'Quem leciona Algoritmos e Estrutura de Dados?', icon: HelpCircle },
-  { text: 'Qual a carga horária de Física I?', icon: Lightbulb },
-  { text: 'Me fale sobre os cursos de graduação', icon: MessageSquare },
+const SUGGESTIONS = [
+  'Quais são os pré-requisitos de Cálculo Numérico?',
+  'Quem leciona Algoritmos e Estrutura de Dados?',
+  'Qual a carga horária de Física I?',
+  'Me fale sobre os cursos de graduação do ICT',
 ]
 
-// ─── Componentes auxiliares ───────────────────────────────────────────────────
+// Etapas que espelham o pipeline real (src/workflow/pipeline.py):
+// router → agente (KG + retrieval + geração) → verificação neuro-simbólica.
+// Sem streaming de status do backend, o avanço é estimado por tempo.
+const REASONING_STEPS: { label: string; at: number }[] = [
+  { label: 'Interpretando a pergunta', at: 0 },
+  { label: 'Consultando o Knowledge Graph', at: 800 },
+  { label: 'Recuperando documentos', at: 2000 },
+  { label: 'Gerando resposta', at: 3500 },
+  { label: 'Verificando fatos no grafo', at: 6000 },
+]
 
-function AgentBadge({ agent, agentInfo }: { agent: string; agentInfo?: AgentInfo }) {
-  const Icon = AGENT_ICONS[agentInfo?.icon || 'Bot'] || Bot
-  const color = agentInfo?.color || '#6b7280'
+// ─── Rótulo discreto do agente ────────────────────────────────────────────────
+
+function AgentLabel({ agent, agentInfo }: { agent: string; agentInfo?: AgentInfo }) {
+  const color = agentInfo?.color || '#9aa8a2'
   const label = agentInfo?.label || agent
   return (
-    <div
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium mb-2"
-      style={{
-        backgroundColor: `${color}18`,
-        border: `1px solid ${color}40`,
-        color,
-      }}
-    >
-      <Icon className="w-3 h-3" />
-      <span>{label}</span>
+    <div className="mb-3 flex items-center gap-2">
+      <span
+        className="h-1.5 w-1.5 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper-mute">
+        {label}
+      </span>
+    </div>
+  )
+}
+
+// ─── Indicador de raciocínio (linha do tempo do pipeline) ─────────────────────
+
+function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    const timers = REASONING_STEPS.slice(1).map((step, i) =>
+      setTimeout(() => setCurrent(i + 1), step.at),
+    )
+    return () => timers.forEach(clearTimeout)
+  }, [])
+
+  return (
+    <div className="max-w-md rounded-xl border border-line bg-ink-raise px-6 py-5">
+      <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.18em] text-paper-mute">
+        Raciocinando
+        {firstQuery && (
+          <span className="ml-2 normal-case tracking-normal text-paper-mute/70">
+            — primeira consulta pode levar mais tempo
+          </span>
+        )}
+      </p>
+      <ol className="space-y-0">
+        {REASONING_STEPS.map((step, i) => {
+          const done = i < current
+          const active = i === current
+          return (
+            <li key={step.label} className="relative flex items-start gap-3 pb-3 last:pb-0">
+              {/* Linha vertical conectando as etapas */}
+              {i < REASONING_STEPS.length - 1 && (
+                <span
+                  className={`absolute left-[7px] top-[18px] h-full w-px ${
+                    done ? 'bg-accent/40' : 'bg-line-strong'
+                  }`}
+                  aria-hidden
+                />
+              )}
+              {/* Marcador */}
+              <span className="relative z-10 mt-[3px] flex h-[15px] w-[15px] flex-shrink-0 items-center justify-center">
+                {done ? (
+                  <span className="flex h-[15px] w-[15px] items-center justify-center rounded-full bg-accent/15">
+                    <Check className="h-2.5 w-2.5 text-accent" strokeWidth={3} />
+                  </span>
+                ) : active ? (
+                  <span className="step-active-dot h-[9px] w-[9px] rounded-full bg-accent" />
+                ) : (
+                  <span className="h-[7px] w-[7px] rounded-full border border-line-strong" />
+                )}
+              </span>
+              <span
+                className={`font-mono text-[12.5px] leading-[21px] transition-colors duration-300 ${
+                  done ? 'text-paper-dim' : active ? 'text-paper' : 'text-paper-mute'
+                }`}
+              >
+                {step.label}
+              </span>
+            </li>
+          )
+        })}
+      </ol>
     </div>
   )
 }
@@ -94,66 +148,82 @@ function AgentBadge({ agent, agentInfo }: { agent: string; agentInfo?: AgentInfo
 
 const mdComponents: React.ComponentProps<typeof ReactMarkdown>['components'] = {
   p: ({ children }) => (
-    <p className="mb-3 last:mb-0 leading-relaxed text-slate-200">{children}</p>
+    <p className="mb-3.5 leading-[1.75] text-paper/90 last:mb-0">{children}</p>
   ),
   strong: ({ children }) => (
-    <strong className="font-semibold text-white">{children}</strong>
+    <strong className="font-semibold text-paper">{children}</strong>
   ),
-  em: ({ children }) => (
-    <em className="italic text-slate-300">{children}</em>
+  em: ({ children }) => <em className="italic text-paper-dim">{children}</em>,
+  a: ({ children, href }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent"
+    >
+      {children}
+    </a>
   ),
   code: ({ children, className }) => {
     const isBlock = className?.includes('language-')
     return isBlock ? (
-      <code className="block my-2 p-3 rounded-xl bg-black/40 border border-white/10 text-emerald-300 text-[13px] font-mono whitespace-pre-wrap leading-relaxed">
+      <code className="my-3 block whitespace-pre-wrap rounded-lg border border-line bg-ink-deep p-4 font-mono text-[13px] leading-relaxed text-accent">
         {children}
       </code>
     ) : (
-      <code className="px-1.5 py-0.5 rounded-md bg-white/10 text-emerald-300 text-[13px] font-mono">
+      <code className="rounded bg-ink-deep px-1.5 py-0.5 font-mono text-[13px] text-accent">
         {children}
       </code>
     )
   },
   pre: ({ children }) => <>{children}</>,
-  ul: ({ children }) => (
-    <ul className="my-2 space-y-1.5 list-none pl-0">{children}</ul>
-  ),
+  ul: ({ children }) => <ul className="my-3 list-none space-y-2 pl-0">{children}</ul>,
   ol: ({ children }) => (
-    <ol className="my-2 space-y-1.5 list-decimal pl-5 text-slate-200">{children}</ol>
+    <ol className="my-3 list-decimal space-y-2 pl-5 text-paper/90 marker:text-paper-mute">
+      {children}
+    </ol>
   ),
   li: ({ children }) => (
-    <li className="flex items-start gap-2 text-slate-200">
-      <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
-      <span className="flex-1">{children}</span>
+    <li className="flex items-start gap-2.5 text-paper/90">
+      <span className="mt-[10px] h-1 w-1 flex-shrink-0 rounded-full bg-accent" />
+      <span className="flex-1 leading-[1.7]">{children}</span>
     </li>
   ),
   h1: ({ children }) => (
-    <h1 className="text-lg font-bold text-white mb-2 mt-3 first:mt-0">{children}</h1>
+    <h1 className="mb-3 mt-5 font-display text-lg font-medium text-paper first:mt-0">
+      {children}
+    </h1>
   ),
   h2: ({ children }) => (
-    <h2 className="text-base font-semibold text-white mb-2 mt-3 first:mt-0">{children}</h2>
+    <h2 className="mb-2.5 mt-5 font-display text-base font-medium text-paper first:mt-0">
+      {children}
+    </h2>
   ),
   h3: ({ children }) => (
-    <h3 className="text-sm font-semibold text-slate-100 mb-1.5 mt-2 first:mt-0">{children}</h3>
+    <h3 className="mb-2 mt-4 font-display text-[15px] font-medium text-paper first:mt-0">
+      {children}
+    </h3>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="my-2 pl-3 border-l-2 border-emerald-500/50 text-slate-400 italic">
+    <blockquote className="my-3 border-l-2 border-accent/40 pl-4 text-paper-dim">
       {children}
     </blockquote>
   ),
-  hr: () => <hr className="my-3 border-white/10" />,
+  hr: () => <hr className="my-4 border-line" />,
   table: ({ children }) => (
-    <div className="my-3 overflow-x-auto rounded-xl border border-white/10">
-      <table className="min-w-full text-sm text-slate-200">{children}</table>
+    <div className="my-4 overflow-x-auto rounded-lg border border-line">
+      <table className="min-w-full text-sm">{children}</table>
     </div>
   ),
   th: ({ children }) => (
-    <th className="px-4 py-2.5 bg-white/5 font-semibold text-white text-left border-b border-white/10">
+    <th className="border-b border-line bg-ink-deep px-4 py-2.5 text-left font-mono text-xs uppercase tracking-wider text-paper-dim">
       {children}
     </th>
   ),
   td: ({ children }) => (
-    <td className="px-4 py-2.5 border-b border-white/5 text-slate-300">{children}</td>
+    <td className="border-b border-line px-4 py-2.5 text-paper/90 last:border-b-0">
+      {children}
+    </td>
   ),
 }
 
@@ -205,7 +275,7 @@ function useTypewriter(text: string, enabled: boolean, onDone?: () => void) {
   return { displayed, isDone }
 }
 
-// ─── Componente de mensagem do assistente ─────────────────────────────────────
+// ─── Mensagem do assistente ───────────────────────────────────────────────────
 
 function AssistantMessage({
   message,
@@ -227,19 +297,16 @@ function AssistantMessage({
   return (
     <div className="text-[15px]">
       {message.active_agent && message.active_agent !== 'fallback' && (
-        <AgentBadge agent={message.active_agent} agentInfo={message.agent_info} />
+        <AgentLabel agent={message.active_agent} agentInfo={message.agent_info} />
       )}
 
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={mdComponents}
-      >
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
         {textToRender}
       </ReactMarkdown>
 
-      {/* Cursor piscante durante animação */}
+      {/* Cursor durante a animação */}
       {isAnimating && !isDone && (
-        <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-0.5 align-middle animate-pulse" />
+        <span className="caret-blink ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] bg-accent" />
       )}
     </div>
   )
@@ -384,130 +451,115 @@ export default function ChatPage() {
   }, [])
 
   return (
-    <div className="relative flex flex-col h-screen bg-[#030712] text-white overflow-hidden">
-
-      {/* ── Background ── */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full opacity-20 blur-[100px] bg-emerald-500" />
-        <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full opacity-15 blur-[80px] bg-cyan-500" />
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h60v60H0z%22%2F%3E%3Cpath%20d%3D%22M60%200v60H0%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.03)%22%20stroke-width%3D%221%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50" />
-      </div>
+    <div className="relative flex h-screen flex-col overflow-hidden bg-ink text-paper">
 
       {/* ── Header ── */}
-      <header className="relative z-20 border-b border-white/5 bg-black/40 backdrop-blur-2xl">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <header className="relative z-20 border-b border-line bg-ink/80 backdrop-blur-xl">
+        <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/')}
-                className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                aria-label="Voltar para a página inicial"
+                className="rounded-lg border border-line p-2 text-paper-dim transition-colors hover:border-line-strong hover:text-paper"
               >
-                <ArrowLeft className="w-5 h-5 text-slate-400" />
+                <ArrowLeft className="h-4 w-4" />
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                    <GraduationCap className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
-                  </span>
-                </div>
+                <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
+                  <line x1="5" y1="18" x2="12" y2="6" stroke="#34d399" strokeOpacity="0.5" strokeWidth="1.2" />
+                  <line x1="12" y1="6" x2="19" y2="16" stroke="#34d399" strokeOpacity="0.5" strokeWidth="1.2" />
+                  <line x1="5" y1="18" x2="19" y2="16" stroke="#34d399" strokeOpacity="0.5" strokeWidth="1.2" />
+                  <circle cx="5" cy="18" r="2.4" fill="#34d399" />
+                  <circle cx="12" cy="6" r="2.4" fill="#34d399" />
+                  <circle cx="19" cy="16" r="2.4" fill="#34d399" />
+                </svg>
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-                    FESP-AI
-                  </h1>
-                  <p className="text-xs text-slate-500 hidden sm:block">Assistente UNIFESP</p>
+                  <span className="font-mono text-sm tracking-widest text-paper">FESP-AI</span>
+                  <p className="hidden text-[11px] text-paper-mute sm:block">
+                    Assistente da UNIFESP ICT
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              {activeAgent && !isLoading && (
+            <div className="flex items-center gap-2.5">
+              {activeAgent && !isLoading && activeAgent.agent !== 'fallback' && (
                 <motion.div
-                  initial={{ opacity: 0, x: 8 }}
+                  initial={{ opacity: 0, x: 6 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all duration-500"
-                  style={{
-                    backgroundColor: `${activeAgent.info?.color || '#6b7280'}15`,
-                    borderColor: `${activeAgent.info?.color || '#6b7280'}35`,
-                    color: activeAgent.info?.color || '#6b7280',
-                  }}
+                  className="hidden items-center gap-2 rounded-lg border border-line px-3 py-2 sm:flex"
                 >
-                  {(() => { const Icon = AGENT_ICONS[activeAgent.info?.icon || 'Bot'] || Bot; return <Icon className="w-3.5 h-3.5" /> })()}
-                  <span>{activeAgent.info?.label || activeAgent.agent}</span>
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: activeAgent.info?.color || '#9aa8a2' }}
+                  />
+                  <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-paper-dim">
+                    {activeAgent.info?.label || activeAgent.agent}
+                  </span>
                 </motion.div>
-              )}
-
-              {isLoading && (
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 animate-pulse">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Processando...</span>
-                </div>
               )}
 
               <button
                 onClick={() => setPlannerUrl(`${API_URL}/planner`)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-medium text-sm hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-300 group"
+                className="flex items-center gap-2 rounded-lg border border-line px-3.5 py-2 text-sm text-paper-dim transition-colors hover:border-line-strong hover:text-paper"
               >
-                <Route className="w-4 h-4" />
+                <Route className="h-4 w-4" />
                 <span className="hidden sm:inline">Planejador</span>
               </button>
 
               <button
                 onClick={createNewConversation}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-medium text-sm hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-300 group"
+                className="flex items-center gap-2 rounded-lg border border-line px-3.5 py-2 text-sm text-paper-dim transition-colors hover:border-accent/40 hover:text-accent"
               >
-                <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
-                <span className="hidden sm:inline">Nova Conversa</span>
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Nova conversa</span>
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* ── Messages ── */}
-      <main ref={messagesContainerRef} className="flex-1 overflow-y-auto relative z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* ── Mensagens ── */}
+      <main ref={messagesContainerRef} className="relative z-10 flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
 
-          {/* Empty state */}
+          {/* Estado vazio */}
           {messages.length === 0 && !isLoading && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center min-h-[60vh] text-center"
+              className="flex min-h-[55vh] flex-col justify-center"
             >
-              <div className="relative mb-8">
-                <div className="absolute inset-0 w-24 h-24 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-3xl blur-2xl opacity-40 animate-pulse" />
-                <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-emerald-500/30">
-                  <Sparkles className="w-12 h-12 text-white" />
-                </div>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-                Como posso ajudar?
-              </h2>
-              <p className="text-lg text-slate-500 mb-10 max-w-xl">
-                Pergunte sobre disciplinas, docentes, regimentos e informações da UNIFESP
+              <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-accent">
+                UNIFESP — ICT
               </p>
-              <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {suggestions.map((s, i) => (
+              <h2 className="font-display text-3xl font-medium tracking-tightest text-paper sm:text-4xl">
+                O que você quer saber?
+              </h2>
+              <p className="mt-4 max-w-lg text-paper-dim">
+                Disciplinas, docentes, cursos e regimentos do campus São José dos
+                Campos. As respostas são verificadas no grafo de conhecimento.
+              </p>
+
+              <div className="mt-10 grid gap-3 sm:grid-cols-2">
+                {SUGGESTIONS.map((text, i) => (
                   <motion.button
                     key={i}
-                    initial={{ opacity: 0, y: 12 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.08 + 0.2 }}
-                    onClick={() => { setInput(s.text); inputRef.current?.focus() }}
-                    className="group flex items-start gap-3 p-4 rounded-2xl text-left bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.05] hover:border-emerald-500/30 transition-all duration-300"
+                    transition={{ delay: i * 0.07 + 0.2 }}
+                    onClick={() => { setInput(text); inputRef.current?.focus() }}
+                    className="group rounded-xl border border-line bg-ink-raise p-4 text-left transition-colors hover:border-accent/30"
                   >
-                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
-                      <s.icon className="w-4 h-4" />
-                    </div>
-                    <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">
-                      {s.text}
+                    <span className="font-mono text-[11px] text-paper-mute transition-colors group-hover:text-accent">
+                      {String(i + 1).padStart(2, '0')}
                     </span>
+                    <p className="mt-1.5 text-sm leading-relaxed text-paper-dim transition-colors group-hover:text-paper">
+                      {text}
+                    </p>
                   </motion.button>
                 ))}
               </div>
@@ -515,101 +567,45 @@ export default function ChatPage() {
           )}
 
           {/* Lista de mensagens */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             <AnimatePresence initial={false}>
               {messages.map((msg, idx) => (
                 <motion.div
                   key={idx}
-                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
-                  className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={msg.role === 'user' ? 'flex justify-end' : ''}
                 >
-                  {/* Avatar do assistente */}
-                  {msg.role === 'assistant' && (
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                        <Bot className="w-5 h-5 text-white" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Balão */}
-                  <div
-                    className={`max-w-[82%] sm:max-w-[72%] rounded-2xl px-5 py-4 ${
-                      msg.role === 'user'
-                        ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-br-md shadow-lg shadow-emerald-500/20'
-                        : 'bg-white/[0.03] border border-white/[0.07] text-slate-200 rounded-bl-md'
-                    }`}
-                  >
-                    {msg.role === 'user' ? (
-                      <p className="whitespace-pre-wrap break-words leading-relaxed text-[15px]">
+                  {msg.role === 'user' ? (
+                    <div className="max-w-[85%] rounded-2xl rounded-br-md border border-accent/20 bg-accent/10 px-5 py-3.5 sm:max-w-[70%]">
+                      <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-paper">
                         {msg.content}
                       </p>
-                    ) : (
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl rounded-bl-md border border-line bg-ink-raise px-6 py-5">
                       <AssistantMessage
                         message={msg}
                         isAnimating={idx === animatingIndex}
                         onAnimationDone={handleAnimationDone}
                       />
-                    )}
-                  </div>
-
-                  {/* Avatar do usuário */}
-                  {msg.role === 'user' && (
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
                     </div>
                   )}
                 </motion.div>
               ))}
             </AnimatePresence>
 
-            {/* Loading — três pontinhos */}
+            {/* Indicador de raciocínio */}
             <AnimatePresence>
               {isLoading && (
                 <motion.div
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  className="flex gap-4 justify-start"
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25 }}
                 >
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 animate-pulse">
-                      <Bot className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                  <div className="bg-white/[0.03] border border-white/[0.07] px-6 py-5 rounded-2xl rounded-bl-md">
-                    <div className="flex items-center gap-3">
-                      <div className="flex gap-1.5">
-                        {[0, 1, 2].map((i) => (
-                          <motion.div
-                            key={i}
-                            className="w-2 h-2 rounded-full bg-emerald-500"
-                            animate={{ y: [0, -6, 0] }}
-                            transition={{
-                              repeat: Infinity,
-                              duration: 0.8,
-                              delay: i * 0.15,
-                              ease: 'easeInOut',
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-slate-500">
-                        {messages.length === 0 ? (
-                          <span className="flex items-center gap-2">
-                            Inicializando
-                            <span className="text-emerald-400 text-xs">(~30s na primeira vez)</span>
-                          </span>
-                        ) : (
-                          'Pensando...'
-                        )}
-                      </span>
-                    </div>
-                  </div>
+                  <ReasoningIndicator firstQuery={messages.length <= 1} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -618,16 +614,13 @@ export default function ChatPage() {
             <AnimatePresence>
               {error && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
                   className="flex justify-center"
                 >
-                  <div className="px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/20">
-                    <p className="text-sm text-red-400 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                      {error}
-                    </p>
+                  <div className="rounded-xl border border-red-500/25 bg-red-500/10 px-5 py-3.5">
+                    <p className="text-sm text-red-300">{error}</p>
                   </div>
                 </motion.div>
               )}
@@ -641,58 +634,49 @@ export default function ChatPage() {
         <AnimatePresence>
           {showScrollButton && (
             <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
+              exit={{ opacity: 0, scale: 0.85 }}
               onClick={() => scrollToBottom()}
-              className="fixed bottom-32 right-8 z-30 w-12 h-12 rounded-full bg-white/10 border border-white/10 backdrop-blur-xl flex items-center justify-center hover:bg-white/20 hover:border-emerald-500/30 transition-all duration-300"
+              aria-label="Ir para o fim da conversa"
+              className="fixed bottom-32 right-8 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-ink-raise text-paper-dim backdrop-blur-xl transition-colors hover:border-accent/40 hover:text-accent"
             >
-              <ArrowDown className="w-5 h-5 text-slate-300" />
+              <ArrowDown className="h-[18px] w-[18px]" />
             </motion.button>
           )}
         </AnimatePresence>
       </main>
 
       {/* ── Input ── */}
-      <footer className="relative z-20 border-t border-white/5 bg-black/40 backdrop-blur-2xl">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex gap-4 items-end">
-            <div className="flex-1 relative group">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onInput={handleTextareaInput}
-                placeholder="Digite sua pergunta..."
-                rows={1}
-                disabled={isLoading}
-                className="relative w-full px-5 py-4 pr-14 bg-white/[0.03] border-2 border-white/[0.05] rounded-2xl text-white placeholder-slate-500 text-[15px] leading-relaxed resize-none overflow-hidden focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_30px_rgba(16,185,129,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-                style={{ minHeight: '56px', maxHeight: '160px' }}
-              />
-            </div>
+      <footer className="relative z-20 border-t border-line bg-ink/80 backdrop-blur-xl">
+        <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6">
+          <div className="flex items-end gap-3">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onInput={handleTextareaInput}
+              placeholder="Escreva sua pergunta"
+              rows={1}
+              disabled={isLoading}
+              className="w-full flex-1 resize-none overflow-hidden rounded-xl border border-line bg-ink-raise px-5 py-[15px] text-[15px] leading-relaxed text-paper placeholder-paper-mute transition-colors focus:border-accent/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ minHeight: '54px', maxHeight: '160px' }}
+            />
 
-            <motion.button
+            <button
               onClick={handleSend}
               disabled={!input.trim() || isLoading}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-shadow duration-300"
+              aria-label="Enviar pergunta"
+              className="flex h-[54px] w-[54px] flex-shrink-0 items-center justify-center rounded-xl bg-accent text-ink transition-colors hover:bg-accent-deep disabled:cursor-not-allowed disabled:opacity-30"
             >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Send className="w-5 h-5" />
-              )}
-            </motion.button>
+              <Send className="h-5 w-5" />
+            </button>
           </div>
 
-          <p className="text-xs text-slate-600 mt-3 text-center">
-            <kbd className="px-2 py-0.5 bg-white/5 text-slate-500 rounded text-[10px] border border-white/10">Enter</kbd>
-            {' '}para enviar •{' '}
-            <kbd className="px-2 py-0.5 bg-white/5 text-slate-500 rounded text-[10px] border border-white/10">Shift + Enter</kbd>
-            {' '}para nova linha
+          <p className="mt-3 text-center font-mono text-[11px] text-paper-mute">
+            Enter envia. Shift + Enter quebra a linha. Respostas podem conter
+            erros; confirme o que for importante.
           </p>
         </div>
       </footer>
@@ -706,36 +690,38 @@ export default function ChatPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setPlannerUrl(null)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              className="fixed top-0 right-0 h-full w-full md:w-[64%] lg:w-[58%] bg-[#060912] border-l border-white/10 z-50 flex flex-col shadow-2xl"
+              className="fixed right-0 top-0 z-50 flex h-full w-full flex-col border-l border-line bg-ink shadow-2xl md:w-[64%] lg:w-[58%]"
             >
-              <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white">
-                    <Route className="w-4 h-4" />
-                  </div>
+              <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
+                <div className="flex items-center gap-3">
+                  <Route className="h-4 w-4 text-accent" />
                   <div>
-                    <p className="text-sm font-semibold text-white leading-tight">Planejador de Trajetória</p>
-                    <p className="text-[11px] text-slate-400 leading-tight">Montando sua grade ao vivo…</p>
+                    <p className="font-mono text-xs uppercase tracking-[0.15em] text-paper">
+                      Planejador de trajetória
+                    </p>
+                    <p className="text-[11px] text-paper-mute">
+                      Montando sua grade ao vivo
+                    </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setPlannerUrl(null)}
-                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 flex items-center justify-center transition-colors"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-line text-paper-dim transition-colors hover:border-line-strong hover:text-paper"
                   aria-label="Fechar planejador"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
               <iframe
                 src={plannerUrl}
-                className="flex-1 w-full border-0"
+                className="w-full flex-1 border-0"
                 title="Planejador de Trajetória"
               />
             </motion.div>

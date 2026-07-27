@@ -33,7 +33,7 @@ class ConversaAgent(BaseAgent):
 O usuario disse: {question}
 
 Como responder:
-- Tom caloroso e humano, como num bate-papo real. Pode usar no maximo 1 emoji, sem exageros.
+- Tom caloroso e humano, como num bate-papo real. NAO use emojis.
 - Se for uma saudacao, retribua com simpatia e pergunte como pode ajudar.
 - Se for um agradecimento, responda com gentileza e se coloque a disposicao.
 - Se for uma despedida, despeca-se de forma amigavel.

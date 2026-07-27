@@ -1,24 +1,31 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-sora',
+  variable: '--font-inter',
   display: 'swap',
 })
 
-const jetbrainsMono = JetBrains_Mono({ 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'FESP-AI | Assistente Inteligente UNIFESP',
-  description: 'Sistema de IA para consulta de informações acadêmicas da UNIFESP Campus São José dos Campos - Powered by Advanced RAG',
-  keywords: ['UNIFESP', 'IA', 'Assistente', 'São José dos Campos', 'RAG'],
-  authors: [{ name: 'FESP-AI Team' }],
+  title: 'FESP-AI | Assistente acadêmico da UNIFESP ICT',
+  description:
+    'Assistente acadêmico do Instituto de Ciência e Tecnologia da UNIFESP. Responde sobre disciplinas, docentes, cursos e regimentos consultando um grafo de conhecimento construído a partir de documentos oficiais.',
+  keywords: ['UNIFESP', 'ICT', 'São José dos Campos', 'assistente acadêmico', 'knowledge graph'],
+  authors: [{ name: 'FESP-AI' }],
   icons: {
     icon: '/fespai-removebg-preview.png',
   },
@@ -30,8 +37,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-sans antialiased bg-[#030712]">{children}</body>
+    <html
+      lang="pt-BR"
+      suppressHydrationWarning
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="font-sans antialiased bg-ink text-paper">{children}</body>
     </html>
   )
 }
