@@ -169,6 +169,12 @@ def build_pipeline(rag_instance):
         question = state.get("enhanced_question") or state.get("question", "")
         question_lower = question.lower()
 
+        # Segunda chance (retry-on-miss): o loop externo já decidiu o agente
+        # alternativo — roteia direto, sem reclassificar.
+        forced = state.get("forced_agent")
+        if forced and (forced in agents or forced == "fallback"):
+            return {**state, "active_agent": forced}
+
         # Perguntas meta sobre capacidades do sistema → resposta fixa
         meta_response = get_meta_capability_response(question_lower)
         if meta_response:

@@ -29,6 +29,9 @@ class AgentState(TypedDict, total=False):
     sources: List[str]
     # Contador de tentativas (para evitar loops)
     retry_count: int
+    # Segunda chance (retry-on-miss): agente forçado pelo loop externo —
+    # o router roteia direto para ele, sem reclassificar
+    forced_agent: str
     # Sinal para o front abrir o planejador de grade (canvas ao vivo).
     # Preenchido pelo MontarGradeAgent: {curso: <detectado|None>}.
     plan_request: Optional[Dict[str, Any]]

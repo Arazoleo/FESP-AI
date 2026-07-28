@@ -169,7 +169,21 @@ class MultiAgentRAG:
         }
 
         try:
-            final_state = self._pipeline.invoke(initial_state)
+            # Loop de segunda chance: se a resposta indica falha ("não
+            # encontrei" etc.), re-roteia UMA vez para o agente alternativo
+            # (symbolic_kg/especialista → web_sjc → fallback). A 2ª resposta
+            # só substitui a 1ª se não casar os padrões de falha.
+            from .workflow.second_chance import run_with_second_chance
+            from . import telemetry
+            final_state = run_with_second_chance(
+                self._pipeline.invoke, initial_state, telemetry.incr
+            )
+            if final_state.get("retry_from_agent"):
+                print(
+                    f"[SecondChance] retry recuperado: "
+                    f"{final_state['retry_from_agent']} → "
+                    f"{final_state.get('active_agent', '?')}"
+                )
             active_agent = final_state.get("active_agent", "fallback")
 
             return {
