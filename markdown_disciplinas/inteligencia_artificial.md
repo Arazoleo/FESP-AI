@@ -19,7 +19,7 @@
 
 ## Pré-requisitos
 
-- Algoritmos e Estrutura de Dados I (Código: 2832)
+- Algoritmos e Estruturas de Dados I (Código: 2832)
 
 ## Carga Horária
 

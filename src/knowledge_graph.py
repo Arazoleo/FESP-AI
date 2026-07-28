@@ -134,6 +134,18 @@ class KnowledgeGraph:
             problemas = {k: len(v) for k, v in issues.items() if v}
             if problemas:
                 print(f"[KG lint] Inconsistências detectadas: {problemas}")
+            # Gate: disciplinas duplicadas corrompem lookups e respostas do
+            # KG — WARNING destacado (não exception: produção não pode morrer
+            # por dado; corrija na fonte, em markdown_disciplinas/cursos).
+            duplicadas = issues.get("disciplinas_duplicadas") or []
+            if duplicadas:
+                print("=" * 70)
+                print(f"[KG lint] WARNING: {len(duplicadas)} disciplina(s) "
+                      "DUPLICADA(S) no grafo — corrija os nomes na fonte "
+                      "(markdown_disciplinas/ e markdown_cursos/):")
+                for a, b in duplicadas:
+                    print(f"  - {a!r} != {b!r}")
+                print("=" * 70)
         except Exception as e:
             print(f"[KG lint] falhou: {e}")
 

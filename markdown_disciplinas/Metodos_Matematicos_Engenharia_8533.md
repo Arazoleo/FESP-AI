@@ -17,7 +17,7 @@
 
 ## Pré-requisitos
 
-- Séries e equações diferenciais ordinárias (Código: 4328)
+- Séries e Equações Diferenciais Ordinárias (Código: 4328)
 
 ## Carga Horária
 

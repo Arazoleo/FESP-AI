@@ -16,7 +16,7 @@
 
 ## Pré-requisitos
 
-- Fundamentos de Engenharia Bioquímica (Código: 5119)
+- Fundamentos em Engenharia Bioquímica (Código: 5119)
 - Microbiologia Geral (Código: 5120)
 
 ## Carga Horária

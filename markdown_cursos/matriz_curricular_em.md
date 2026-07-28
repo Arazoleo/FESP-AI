@@ -41,7 +41,7 @@ A Engenharia de Materiais da UNIFESP é um curso de 10 semestres (5 anos) que fo
 | Séries e Equações Diferenciais Ordinárias | 4 |
 | Geometria Analítica | 4 |
 | Química Geral Experimental | 4 |
-| Introdução à Engenharia de Materiais | 2 |
+| Introdução a Engenharia de Materiais | 2 |
 
 **Total:** 20 créditos
 
