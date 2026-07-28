@@ -16,6 +16,8 @@ from .state import AgentState
 from .router import (
     route_intent,
     phrase_override,
+    llm_route,
+    term_from_llm_route,
     get_meta_capability_response,
     is_conversational,
     is_montar_grade,
@@ -24,6 +26,7 @@ from .router import (
     is_course_overview,
     SYMBOLIC_DIRECT_INTENTS,
 )
+from ..telemetry import incr as telemetry_incr
 
 # Intents que o KG pode responder sem nenhum termo (ou com termo vazio)
 _TERM_OPTIONAL_INTENTS: frozenset = frozenset({"listar_cursos", "critical_disciplines"})
@@ -240,33 +243,19 @@ def build_pipeline(rag_instance):
         intent = "unknown"
         term = ""
         confidence = 0.0
-
-        # 1) Roteamento por embeddings (genérico): se confiança acima do limiar, usa
         active_agent = ""
-        if embedding_router:
-            active_agent, emb_conf = embedding_router.route(question)
-            if active_agent:
-                confidence = emb_conf
-        # Overrides de alta precisão por frase (prioridade sobre o embedding).
-        # Fonte única em router.phrase_override — substitui as correções
-        # hardcoded pontuais que existiam aqui.
-        override = phrase_override(question_lower, active_agent)
-        if override:
-            active_agent = override
 
-        # 2) Intent/term do GraphRAG (para preencher intent/term quando agente é docentes ou ainda não definido)
+        # 1) Detecção de intent/termo do GraphRAG + Atalho Neurossimbólico.
+        # Para intents determinísticos, o KG responde diretamente sem LLM —
+        # elimina latência de inferência e risco de alucinação.
+        detected_intent, detected_term = "", ""
         if rag_instance.graph_rag:
-            use_graph, detected_intent, detected_term = (
-                rag_instance.graph_rag.should_use_graph(question)
-            )
-            if use_graph and detected_intent:
-                # ── Atalho Neurossimbólico ────────────────────────────────────
-                # Para intents determinísticos, o KG responde diretamente sem LLM.
-                # Isso elimina latência de inferência e risco de alucinação.
+            use_graph, di, dt = rag_instance.graph_rag.should_use_graph(question)
+            if use_graph and di:
+                detected_intent, detected_term = di, dt or ""
                 if (
                     (detected_term or detected_intent in _TERM_OPTIONAL_INTENTS)
                     and detected_intent in SYMBOLIC_DIRECT_INTENTS
-                    and rag_instance.graph_rag
                 ):
                     kg_response = rag_instance.graph_rag.query_graph(
                         detected_intent, detected_term
@@ -290,25 +279,48 @@ def build_pipeline(rag_instance):
                             "context": kg_response,
                             "sources": ["Knowledge Graph"],
                         }
-                # ── Roteamento normal para agentes ───────────────────────────
-                routed = route_intent(detected_intent, question_lower)
-                if not active_agent:
-                    intent = detected_intent
-                    term = detected_term or ""
-                    confidence = 0.8
-                    active_agent = routed
-                elif active_agent == routed:
-                    # Mesmo agente (ex.: docentes): preencher intent/term para o agente usar
-                    intent = detected_intent
-                    term = detected_term or ""
-                    if confidence < 0.5:
-                        confidence = 0.8
-                else:
-                    # Agente do embedding vence, mas intent/term detectados ainda
-                    # são úteis para os lookups do agente (antes ficavam vazios)
-                    if not term and detected_term:
-                        intent = detected_intent
-                        term = detected_term
+
+        # 2) Sugestão do embedding router (barata) — contexto do phrase_override
+        # e fallback/desempate quando o LLM está indisponível.
+        emb_agent, emb_conf = "", 0.0
+        if embedding_router:
+            emb_agent, emb_conf = embedding_router.route(question)
+
+        # 3) Fast-path: overrides de alta precisão por frase (cache barato).
+        # Fonte única em router.phrase_override.
+        override = phrase_override(question_lower, emb_agent)
+        if override:
+            active_agent = override
+            confidence = max(emb_conf, 0.9)
+        else:
+            # 4) Nenhum fast-path casou → roteador LLM unificado como decisor
+            # primário: UMA chamada decide agente + intent + entidades, com as
+            # entidades aterradas no KG (o que não resolve é descartado).
+            routed_llm = llm_route(
+                question,
+                state.get("history", ""),
+                rag_instance.knowledge_graph,
+                rag_instance.llm,
+            )
+            if routed_llm:
+                active_agent = routed_llm["agente"]
+                confidence = 0.85
+                if routed_llm.get("intent"):
+                    intent = routed_llm["intent"]
+                term = term_from_llm_route(routed_llm)
+                telemetry_incr("llm_route_decisor")
+            elif emb_agent:
+                # LLM indisponível/JSON inválido → embedding router decide.
+                active_agent = emb_agent
+                confidence = emb_conf
+                telemetry_incr("llm_route_fallback_embedding")
+
+        # Preencher intent/term com a detecção do GraphRAG quando faltarem —
+        # são úteis para os lookups internos dos agentes.
+        if detected_intent and intent == "unknown":
+            intent = detected_intent
+        if detected_term and not term:
+            term = detected_term
         if not active_agent:
             active_agent = route_intent(intent, question_lower)
 

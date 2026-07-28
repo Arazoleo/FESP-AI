@@ -2,6 +2,7 @@
 Router: mapeia intents classificados aos agentes especializados.
 """
 
+import json
 import re
 import unicodedata
 from typing import Dict, Optional
@@ -523,6 +524,158 @@ def phrase_override(question_lower: str, current_agent: str = "") -> Optional[st
         return "cursos"
 
     return None
+
+
+# ── Roteador LLM unificado (decisor primário nos casos ambíguos) ──────────────
+# Quando NENHUM fast-path de frases casa, UMA chamada LLM decide agente +
+# intent + entidades num JSON só; as entidades são aterradas no KG
+# (kg._find_node) — o que não resolve é descartado. O embedding router vira
+# desempate/fallback quando o LLM está indisponível ou devolve JSON inválido.
+
+LLM_ROUTE_AGENTS: frozenset = frozenset({
+    "disciplinas", "docentes", "cursos", "regimentos",
+    "conversa", "montar_grade", "noticias", "web_sjc",
+})
+
+# Intents aceitos do LLM (fora disso o intent é descartado — o pipeline usa o
+# detectado pelo GraphRAG ou "unknown")
+_LLM_ROUTE_INTENTS: frozenset = frozenset(
+    {
+        "docente_info", "docente_areas", "docente_disciplines",
+        "discipline_docentes", "docentes_by_area", "docente_leciona_disciplina",
+        "disciplinas_termo", "todos_termos_curso", "matriz_info",
+        "eletivas_curso", "listar_cursos", "coordenador_curso",
+        "prerequisite_chain", "dependents", "co_prerequisite",
+        "critical_disciplines", "ementa_disciplina", "trajectory_planning",
+        "artigos_sobre", "faqs",
+        "conversa", "noticias", "web_sjc", "plan_curriculum", "unknown",
+    }
+)
+
+_LLM_ROUTE_TEMPLATE = """Voce e o roteador de um assistente academico da UNIFESP ICT (campus Sao Jose dos Campos). Escolha o agente mais adequado para responder a pergunta do aluno.
+
+AGENTES DISPONIVEIS:
+- disciplinas: ementas, pre-requisitos, carga horaria e descricao de disciplinas/materias
+- docentes: professores — contato, sala, areas de pesquisa, quem leciona qual disciplina
+- cursos: matrizes curriculares, disciplinas por termo, eletivas, coordenacao de curso
+- regimentos: normas, regimentos, regulamentos, artigos, FAQs institucionais
+- conversa: saudacoes, agradecimentos, small talk sem pedido de informacao
+- montar_grade: pedido explicito de montar/planejar a grade ou trajetoria do aluno
+- noticias: noticias, novidades e eventos da UNIFESP
+- web_sjc: paginas do site do campus — ingresso, secretaria, biblioteca, pos-graduacao, servicos, orgaos, apresentacao dos cursos
+
+HISTORICO RECENTE DA CONVERSA (pode estar vazio):
+{history}
+
+PERGUNTA DO ALUNO: {question}
+
+Responda APENAS com um JSON valido (sem markdown, sem comentarios) no formato:
+{{"agente": "<disciplinas|docentes|cursos|regimentos|conversa|montar_grade|noticias|web_sjc>", "intent": "<rotulo curto, ex.: ementa_disciplina, prerequisite_chain, discipline_docentes, coordenador_curso, matriz_info, faqs, web_sjc, conversa, unknown>", "entidades": {{"disciplina": "<nome da disciplina citada ou null>", "curso": "<nome ou sigla do curso citado ou null>", "docente": "<nome do docente citado ou null>"}}}}
+
+JSON:"""
+
+
+def _extract_json_block(raw: str) -> Optional[dict]:
+    """Extrai o primeiro objeto JSON do texto (tolerante a cercas de código)."""
+    if not raw:
+        return None
+    text = str(raw).strip()
+    m = re.search(r"\{.*\}", text, re.DOTALL)
+    if not m:
+        return None
+    try:
+        data = json.loads(m.group(0))
+    except (json.JSONDecodeError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _ground_entity(kg, valor, tipos) -> Optional[str]:
+    """
+    Aterra uma entidade no KG: retorna o nome canônico do nó ou None se a
+    entidade não resolve (rejeita o que o LLM inventou).
+    """
+    if kg is None or valor is None:
+        return None
+    texto = str(valor).strip()
+    if not texto or texto.lower() in ("null", "none", "n/a"):
+        return None
+    for tipo in tipos:
+        try:
+            node_id = kg._find_node(texto, tipo)
+        except Exception:
+            node_id = None
+        if node_id:
+            try:
+                nome = kg.graph.nodes[node_id].get("nome")
+            except Exception:
+                nome = None
+            return nome or texto
+    return None
+
+
+def llm_route(question: str, history: str, kg, llm) -> Optional[dict]:
+    """
+    Roteador LLM unificado: UMA chamada decide agente + intent + entidades.
+
+    Retorna {"agente": <um dos 8>, "intent": <str>, "entidades": {...}} com as
+    entidades aterradas no KG (não-resolvidas são descartadas), ou None quando
+    o LLM está indisponível / o JSON é inválido / o agente não existe — nesses
+    casos o chamador usa o embedding router como fallback.
+    """
+    if llm is None:
+        return None
+    prompt = _LLM_ROUTE_TEMPLATE.format(
+        history=(history or "").strip() or "(vazio)",
+        question=question,
+    )
+    try:
+        raw = llm.invoke(prompt)
+    except Exception:
+        return None
+    raw = getattr(raw, "content", raw)
+    data = _extract_json_block(raw)
+    if not data:
+        return None
+
+    agente = str(data.get("agente", "")).strip().lower()
+    if agente not in LLM_ROUTE_AGENTS:
+        return None
+
+    intent = str(data.get("intent", "") or "").strip().lower()
+    if intent not in _LLM_ROUTE_INTENTS:
+        intent = ""
+
+    entidades_raw = data.get("entidades") or {}
+    if not isinstance(entidades_raw, dict):
+        entidades_raw = {}
+    entidades: Dict[str, str] = {}
+    grounded = _ground_entity(kg, entidades_raw.get("disciplina"), ("disciplina",))
+    if grounded:
+        entidades["disciplina"] = grounded
+    grounded = _ground_entity(kg, entidades_raw.get("curso"), ("curso", "matriz_curricular"))
+    if grounded:
+        entidades["curso"] = grounded
+    grounded = _ground_entity(kg, entidades_raw.get("docente"), ("docente",))
+    if grounded:
+        entidades["docente"] = grounded
+
+    return {"agente": agente, "intent": intent, "entidades": entidades}
+
+
+def term_from_llm_route(routed: dict) -> str:
+    """Escolhe o termo (entidade aterrada) relevante para o agente decidido."""
+    if not routed:
+        return ""
+    entidades = routed.get("entidades") or {}
+    agente = routed.get("agente", "")
+    if agente == "disciplinas":
+        return entidades.get("disciplina", "")
+    if agente == "docentes":
+        return entidades.get("docente", "") or entidades.get("disciplina", "")
+    if agente == "cursos":
+        return entidades.get("curso", "")
+    return ""
 
 
 def route_intent(intent: str, question_lower: str) -> str:

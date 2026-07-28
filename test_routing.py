@@ -190,6 +190,110 @@ check("'o que é o napcem?' → NÃO (entidade desconhecida)",
 check("kg=None não quebra",
       not router.is_course_overview("o que é o bct?", None))
 
+print(f"\n{BOLD}── llm_route (roteador LLM unificado, com LLM fake) ──{RESET}")
+
+
+class _RouteKG:
+    """KG mínimo para o grounding do llm_route."""
+
+    class _G:
+        nodes = {
+            "d1": {"tipo": "disciplina", "nome": "Interação Humano-Computador"},
+            "doc1": {"tipo": "docente", "nome": "Lilian Berton"},
+            "c1": {"tipo": "curso", "nome": "Bacharelado em Ciência da Computação"},
+        }
+
+    graph = _G()
+
+    def _find_node(self, termo, tipo=None):
+        t = (termo or "").lower().strip()
+        if tipo == "disciplina" and t in ("ihc", "interação humano-computador"):
+            return "d1"
+        if tipo == "docente" and "lilian" in t:
+            return "doc1"
+        if tipo == "curso" and t == "bcc":
+            return "c1"
+        return None
+
+
+class _FakeLLM:
+    def __init__(self, output):
+        self.output = output
+        self.calls = []
+
+    def invoke(self, prompt):
+        self.calls.append(prompt)
+        return self.output
+
+
+route_kg = _RouteKG()
+
+# JSON válido → dict com agente + entidade aterrada (nome canônico do KG)
+fake = _FakeLLM('{"agente": "docentes", "intent": "discipline_docentes", '
+                '"entidades": {"disciplina": "IHC", "curso": null, "docente": null}}')
+r = router.llm_route("quem cuida de ihc?", "", route_kg, fake)
+check("JSON válido → agente docentes", r is not None and r["agente"] == "docentes")
+check("intent aceito é preservado", r is not None and r["intent"] == "discipline_docentes")
+check("entidade 'IHC' aterrada para o nome canônico do KG",
+      r is not None and r["entidades"].get("disciplina") == "Interação Humano-Computador")
+check("prompt recebeu a pergunta", fake.calls and "quem cuida de ihc?" in fake.calls[0])
+
+# JSON dentro de cerca de código → ainda parseia
+fake = _FakeLLM('```json\n{"agente": "cursos", "intent": "matriz_info", '
+                '"entidades": {"curso": "BCC"}}\n```')
+r = router.llm_route("como é a grade?", "", route_kg, fake)
+check("JSON em cerca de código parseia", r is not None and r["agente"] == "cursos")
+check("curso 'BCC' aterrado para o nome canônico",
+      r is not None and r["entidades"].get("curso") == "Bacharelado em Ciência da Computação")
+
+# JSON inválido → None (caller cai no embedding router)
+r = router.llm_route("pergunta", "", route_kg, _FakeLLM("desculpe, não sei"))
+check("JSON inválido → None (fallback)", r is None)
+r = router.llm_route("pergunta", "", route_kg, _FakeLLM('{"agente": "docentes", quebrado'))
+check("JSON malformado → None (fallback)", r is None)
+
+# Agente fora dos 8 → None
+r = router.llm_route("pergunta", "", route_kg,
+                     _FakeLLM('{"agente": "oraculo", "intent": "unknown", "entidades": {}}'))
+check("agente inexistente → None (fallback)", r is None)
+
+# Entidade não-aterrada → descartada; intent desconhecido → descartado
+fake = _FakeLLM('{"agente": "disciplinas", "intent": "intent_inventado", '
+                '"entidades": {"disciplina": "Alquimia Avançada", "docente": "Prof. Dumbledore"}}')
+r = router.llm_route("qual a ementa de alquimia avançada?", "", route_kg, fake)
+check("entidade não-aterrada é descartada",
+      r is not None and "disciplina" not in r["entidades"] and "docente" not in r["entidades"])
+check("intent fora do vocabulário é descartado", r is not None and r["intent"] == "")
+
+# LLM indisponível → None
+check("llm=None → None (fallback para embedding)",
+      router.llm_route("pergunta", "", route_kg, None) is None)
+
+
+# LLM que explode → None (degradação segura)
+class _BoomLLM:
+    def invoke(self, prompt):
+        raise RuntimeError("boom")
+
+
+check("exceção no LLM → None", router.llm_route("pergunta", "", route_kg, _BoomLLM()) is None)
+
+# term_from_llm_route: termo relevante por agente
+check("term p/ disciplinas = entidade disciplina",
+      router.term_from_llm_route({"agente": "disciplinas",
+                                  "entidades": {"disciplina": "IHC"}}) == "IHC")
+check("term p/ docentes prefere docente",
+      router.term_from_llm_route({"agente": "docentes",
+                                  "entidades": {"docente": "Lilian Berton",
+                                                "disciplina": "IHC"}}) == "Lilian Berton")
+check("term p/ docentes cai na disciplina se não há docente",
+      router.term_from_llm_route({"agente": "docentes",
+                                  "entidades": {"disciplina": "IHC"}}) == "IHC")
+check("term p/ cursos = entidade curso",
+      router.term_from_llm_route({"agente": "cursos", "entidades": {"curso": "BCC"}}) == "BCC")
+check("term p/ web_sjc = vazio",
+      router.term_from_llm_route({"agente": "web_sjc", "entidades": {"curso": "BCC"}}) == "")
+
 print(f"\n{BOLD}── check_routing do eval (alternativas com '|') ──{RESET}")
 eval_spec = importlib.util.spec_from_file_location("evalns", ROOT / "eval" / "eval_neurosymbolic.py")
 evalns = importlib.util.module_from_spec(eval_spec)
