@@ -49,6 +49,10 @@ CASES = [
     ("o que diz o regimento sobre estágio?", "", "regimentos"),
     ("como funcionam os cursos sequenciais?", "", "cursos"),
     ("grade curricular de bcc?", "todos_termos_curso", "cursos"),
+    # "professor responsável por <sigla>" → docentes (bug do beta tester)
+    ("qual o professor responsável por sedo?", "discipline_docentes", "docentes"),
+    ("quem é o responsável por sedo?", "", "docentes"),
+    ("professor responsável pela disciplina de ihc?", "", "docentes"),
 ]
 for q, intent, expected in CASES:
     got = router.route_intent(intent, q)
@@ -79,6 +83,17 @@ check("'disciplina' explícita ainda exclui do web_sjc",
       not router.is_web_sjc("qual o ingresso da disciplina de cálculo?"))
 check("'normalmente' não força regimentos ('norma' interno)",
       router.phrase_override("normalmente quem coordena os estágios?") != "regimentos")
+
+print(f"\n{BOLD}── 'responsável por/pela': disciplina → docentes, institucional → web_sjc ──{RESET}")
+check("'quem é o responsável pela biblioteca?' → web_sjc "
+      "(pipeline checa is_web_sjc ANTES do phrase_override)",
+      router.is_web_sjc("quem é o responsável pela biblioteca?"))
+check("'qual o professor responsável por sedo?' NÃO é web_sjc (exclusão 'professor')",
+      not router.is_web_sjc("qual o professor responsável por sedo?"))
+check("phrase_override manda 'responsável por sedo' para docentes",
+      router.phrase_override("quem é o responsável por sedo?") == "docentes")
+check("phrase_override manda 'professor responsável pela disciplina' para docentes",
+      router.phrase_override("professor responsável pela disciplina de ihc?") == "docentes")
 
 print(f"\n{BOLD}── formação/integralização: informacional ≠ montar grade ──{RESET}")
 check("'o que preciso para me formar no bct?' NÃO é montar_grade",

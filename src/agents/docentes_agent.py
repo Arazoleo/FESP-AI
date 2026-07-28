@@ -40,6 +40,11 @@ class DocentesAgent(BaseAgent):
         # Remover palavras verbais e de pergunta que contaminam o term
         noise = r'\b(?:d[aã]o|leciona[m]?|ensina[m]?|ministra[m]?|docentes?|professores?)\b'
         cleaned = re.sub(noise, '', cleaned, flags=re.IGNORECASE).strip()
+        # "responsável por SEDO" → "SEDO" (a sigla é expandida via KG depois)
+        cleaned = re.sub(
+            r'^respons[aá]ve(?:l|is)\s+(?:por|pel[ao])\s+(?:a\s+|o\s+)?(?:disciplina\s+(?:de\s+)?|mat[eé]ria\s+(?:de\s+)?)?',
+            '', cleaned, flags=re.IGNORECASE,
+        ).strip()
         # Normalizar espaços
         cleaned = re.sub(r'\s+', ' ', cleaned).strip()
         return cleaned
@@ -50,6 +55,8 @@ class DocentesAgent(BaseAgent):
         Fallback para quando o intent chegou classificado incorretamente.
         """
         patterns = [
+            # "professor responsável por SEDO" / "quem é o responsável pela disciplina de IHC"
+            r'respons[aá]ve(?:l|is)\s+(?:por|pel[ao])\s+(?:a\s+|o\s+)?(?:disciplina\s+(?:de\s+)?|mat[eé]ria\s+(?:de\s+)?)?(.+?)(?:\?|$)',
             r'(?:professore?s?|docentes?)\s+(?:d[aã]o|que\s+(?:d[aã]o|leciona[m]?|ensina[m]?|ministra[m]?)|de|da|do)\s+(.+?)(?:\?|$)',
             r'd[aã]o\s+([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
             r'(?:quem\s+)?(?:leciona[m]?|ensina[m]?|ministra[m]?)\s+(.+?)(?:\?|$)',

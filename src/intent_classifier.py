@@ -100,6 +100,8 @@ class IntentClassifier:
             "quais professores ensinam programação orientada a objetos",
             "professores que dão cálculo em várias variáveis",
             "quem são os professores de equações diferenciais",
+            "qual o professor responsável por cálculo numérico",
+            "quem é o responsável pela disciplina de redes",
         ],
         'docente_disciplines': [
             "quais disciplinas o professor João leciona",
@@ -252,7 +254,7 @@ class IntentClassifier:
             r'|maior\s+n[uú]mero\s+de\s+dependentes?'
             r'|mais\s+pré-?requisitos?\s+(?:de\s+outras?|para\s+outras?)'
         ),
-        'discipline_docentes': r'quem\s+(?:leciona|d[aá]|ensina)|(?:quais?\s+)?(?:professore?s?|docentes?)\s+(?:d[aã]o|que\s+(?:leciona|d[aã]o|ensina|ministra))',
+        'discipline_docentes': r'quem\s+(?:leciona|d[aá]|ensina)|(?:quais?\s+)?(?:professore?s?|docentes?)\s+(?:d[aã]o|que\s+(?:leciona|d[aã]o|ensina|ministra))|(?:professor(?:es|a)?|docentes?)\s+respons[aá]ve(?:l|is)\s+(?:por|pel[ao])|quem\s+(?:[eé]\s+)?(?:o\s+|a\s+)?respons[aá]vel\s+(?:por|pel[ao])',
         'docente_info': r'(?:email|e-mail|sala|contato)\s+(?:de|do|da)',
         'listar_cursos': r'cursos?\s+(?:da\s+)?(?:unifesp|ict)',
         'eletivas_curso': r'eletivas?',
@@ -301,6 +303,8 @@ class IntentClassifier:
         ],
         'discipline_docentes': [
             # "Quem leciona Compiladores?" / "Quais docentes dão Cálculo Numérico?"
+            # "professor responsável por SEDO" / "quem é o responsável pela disciplina de IHC"
+            r'respons[aá]ve(?:l|is)\s+(?:por|pel[ao])\s+(?:a\s+|o\s+)?(?:disciplina\s+(?:de\s+)?|mat[eé]ria\s+(?:de\s+)?)?(.+?)(?:\?|$)',
             r'(?:leciona|ensina|ministra)\s+(.+?)(?:\?|$)',
             r'd[aá]\s+aula\s+(?:de\s+)?(.+?)(?:\?|$)',
             r'(?:professore?s?|docentes?)\s+(?:d[aã]o|de|da|do)\s+(.+?)(?:\?|$)',

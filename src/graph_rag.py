@@ -35,6 +35,10 @@ class GraphRAGEngine:
             ],
             'discipline_docentes': [
                 # IMPORTANTE: Deve vir ANTES de docente_leciona_disciplina para "quem leciona X?"
+                # "qual o professor responsável por SEDO?" / "professor responsável pela disciplina de IHC?"
+                r'(?:professor(?:es|a)?|docentes?)\s+respons[aá]ve(?:l|is)\s+(?:por|pel[ao])\s+(?:a\s+|o\s+)?(?:disciplina\s+(?:de\s+)?|mat[eé]ria\s+(?:de\s+)?)?(.+?)(?:\?|$)',
+                # "quem é o responsável por SEDO?"
+                r'quem\s+(?:[eé]\s+)?(?:o\s+|a\s+)?respons[aá]vel\s+(?:por|pel[ao])\s+(?:a\s+|o\s+)?(?:disciplina\s+(?:de\s+)?|mat[eé]ria\s+(?:de\s+)?)?(.+?)(?:\?|$)',
                 r'quem\s+(?:leciona|ensina|ministra|d[aá])\s+(.+?)(?:\?|$)',
                 r'(?:quais?\s+)?(?:os?\s+)?(?:professore?s?|docentes?)\s+(?:de|da|do|que\s+d[aã]o)\s+(.+?)(?:\?|$)',
                 r'(?:quais?\s+)?(?:os?\s+)?(?:professore?s?|docentes?)\s+(?:que\s+)?(?:lecionam?|ensinam?|ministram?|d[aã]o)\s+(.+?)(?:\?|$)',

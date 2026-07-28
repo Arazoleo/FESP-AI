@@ -88,6 +88,10 @@ CASES = [
     ("Para cursar Compiladores, preciso ter feito quais disciplinas no total?",
      "prerequisite_chain", "Compiladores"),
     ("Quais os pré-requisitos de Compiladores?", "prerequisite_chain", "compiladores"),
+    # "professor responsável por <sigla>" → discipline_docentes (bug do beta tester)
+    ("Qual o professor responsável por SEDO?", "discipline_docentes", "sedo"),
+    ("Quem é o responsável por SEDO?", "discipline_docentes", "sedo"),
+    ("Professor responsável pela disciplina de IHC?", "discipline_docentes", "ihc"),
 ]
 for question, exp_intent, exp_term in CASES:
     use, intent, term = engine.should_use_graph(question)
@@ -113,6 +117,35 @@ for question, expected_snippet in E2E:
         answer is not None and expected_snippet in answer,
         f"resposta: {(answer or '(None)').splitlines()[0]!r}",
     )
+
+print(f"\n{BOLD}── Sigla → nome completo e sombreamento por nó fantasma ──{RESET}")
+check(
+    "'sedo' expande para o nome completo da disciplina",
+    engine._resolve_discipline_term("sedo") == "Séries e Equações Diferenciais Ordinárias",
+    engine._resolve_discipline_term("sedo"),
+)
+check(
+    "_find_node pelo nome completo resolve o nó real (com sigla SEDO), "
+    "não o fantasma criado por pré-requisito com typo",
+    (kg.graph.nodes.get(
+        kg._find_node("Séries e Equações Diferenciais Ordinárias", "disciplina") or "", {}
+    ).get("sigla") == "SEDO"),
+    str(kg._find_node("Séries e Equações Diferenciais Ordinárias", "disciplina")),
+)
+check(
+    "docentes de SEDO não são vazios (via sigla e via nome completo)",
+    bool(kg.get_docentes_of_discipline("SEDO"))
+    and kg.get_docentes_of_discipline("SEDO")
+    == kg.get_docentes_of_discipline("Séries e Equações Diferenciais Ordinárias"),
+    str(kg.get_docentes_of_discipline("Séries e Equações Diferenciais Ordinárias")),
+)
+resp_sedo = engine.query_graph("discipline_docentes", "sedo") or ""
+check(
+    "'discipline_docentes'/'sedo' lista os docentes reais",
+    "Docentes de Séries e Equações Diferenciais Ordinárias" in resp_sedo
+    and "Cláudia Aline" in resp_sedo,
+    resp_sedo.splitlines()[0] if resp_sedo else "(vazio)",
+)
 
 print(f"\n{BOLD}── Grounding de termo-lixo no KG ──{RESET}")
 check(

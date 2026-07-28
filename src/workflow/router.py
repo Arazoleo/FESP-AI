@@ -424,6 +424,21 @@ DISCIPLINE_DOCENTES_PHRASES = [
     "quem é a professora",
     "quem e o professor",
     "quem e a professora",
+    # "qual o professor responsável por SEDO?" / "quem é o responsável pela
+    # disciplina de IHC?" — NOTA: o pipeline checa is_web_sjc ANTES do
+    # phrase_override, então "responsável pela biblioteca" continua no web_sjc.
+    "professor responsavel",
+    "professor responsável",
+    "professora responsavel",
+    "professora responsável",
+    "docente responsavel",
+    "docente responsável",
+    "responsavel pela disciplina",
+    "responsável pela disciplina",
+    "responsavel pela materia",
+    "responsável pela matéria",
+    "responsavel por",
+    "responsável por",
     # "quais disciplinas X leciona?" — o sujeito da ação é um docente
     "costuma lecionar",
     "costuma ensinar",

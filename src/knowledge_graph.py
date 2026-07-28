@@ -13,6 +13,11 @@ class KnowledgeGraph:
         self._index_by_name: Dict[str, str] = {}      # nome_normalizado -> node_id
         self._index_by_sigla: Dict[str, str] = {}     # sigla_normalizada -> node_id
         self._index_by_codigo: Dict[str, str] = {}    # codigo_normalizado -> node_id
+        # Nós "autoritativos": definidos pelo próprio arquivo da entidade
+        # (ex.: o `# título` do markdown da disciplina). Nós criados de
+        # passagem (pré-requisitos citados em OUTROS arquivos, possivelmente
+        # com typos/variações) nunca sombreiam um nó autoritativo nos índices.
+        self._authoritative_nodes: Set[str] = set()
         # Mapeamento nome/variante -> sigla para unificar nós de curso (evitar CURSO:X e CURSO:Y para o mesmo curso)
         self._curso_name_to_sigla: Dict[str, str] = {}
         # KGC: inicializado após o grafo ser populado (lazy)
@@ -43,18 +48,44 @@ class KnowledgeGraph:
         normalized = re.sub(r"\s+", " ", normalized).strip()
         return normalized
     
-    def _index_node(self, node_id: str, data: dict):
-        """Adiciona nó aos índices para busca rápida."""
+    @staticmethod
+    def _has_real_value(value) -> bool:
+        """True se o valor é real (não vazio nem o literal 'None'/'N/A')."""
+        return bool(value) and str(value).strip().lower() not in ("none", "null", "n/a")
+
+    def _index_node(self, node_id: str, data: dict, authoritative: bool = False):
+        """
+        Adiciona nó aos índices para busca rápida.
+
+        `authoritative=True` marca nós definidos pelo próprio arquivo da
+        entidade (título do markdown). Nomes distintos podem colidir após a
+        normalização (ex.: o pré-requisito com typo "Séries e Equações
+        Diferenciais e Ordinárias" colide com a disciplina real "Séries e
+        Equações Diferenciais Ordinárias" porque "e" é stopword) — sem esta
+        regra, um nó fantasma sem arestas LECIONA sombreava a disciplina real
+        no índice e "quem leciona SEDO?" retornava vazio.
+        """
         nome = self._normalize_text(data.get('nome', ''))
-        sigla = self._normalize_text(data.get('sigla') or '')
-        codigo = self._normalize_text(str(data.get('codigo', '')))
-        
-        if nome:
-            self._index_by_name[nome] = node_id
-        if sigla:
-            self._index_by_sigla[sigla] = node_id
-        if codigo:
-            self._index_by_codigo[codigo] = node_id
+        sigla = self._normalize_text(data.get('sigla') or '') if self._has_real_value(data.get('sigla')) else ''
+        codigo = self._normalize_text(str(data.get('codigo', ''))) if self._has_real_value(data.get('codigo')) else ''
+
+        if authoritative:
+            self._authoritative_nodes.add(node_id)
+
+        def _set(index: dict, key: str):
+            if not key:
+                return
+            existing = index.get(key)
+            if existing is None or existing == node_id:
+                index[key] = node_id
+            elif authoritative or existing not in self._authoritative_nodes:
+                # Nó autoritativo sempre vence; entre nós "de passagem",
+                # o último vence (comportamento anterior).
+                index[key] = node_id
+
+        _set(self._index_by_name, nome)
+        _set(self._index_by_sigla, sigla)
+        _set(self._index_by_codigo, codigo)
     
     def _get_edge_relation(self, edge_data: dict) -> Optional[str]:
         """Helper para extrair relação de edge data do MultiDiGraph."""
@@ -214,7 +245,7 @@ class KnowledgeGraph:
         
         disc_id = f"DISC:{nome}"
         self.graph.add_node(disc_id, tipo="disciplina", nome=nome, codigo=codigo, sigla=sigla, termo=termo)
-        self._index_node(disc_id, {"nome": nome, "codigo": codigo, "sigla": sigla})
+        self._index_node(disc_id, {"nome": nome, "codigo": codigo, "sigla": sigla}, authoritative=True)
         
         for docente in docentes:
             if docente:
@@ -241,10 +272,24 @@ class KnowledgeGraph:
                 self.graph.add_edge(curso_id, disc_id, relacao="OFERECE", confidence=1.0)
         
         for prereq_nome, prereq_codigo in prereqs:
-            prereq_id = f"DISC:{prereq_nome}"
-            if not self.graph.has_node(prereq_id):
-                self.graph.add_node(prereq_id, tipo="disciplina", nome=prereq_nome, codigo=prereq_codigo)
-                self._index_node(prereq_id, {"nome": prereq_nome, "codigo": prereq_codigo})
+            if not self._has_real_value(prereq_codigo):
+                prereq_codigo = ""
+            # Reusar nó existente com o mesmo nome normalizado (ou mesmo
+            # código) — evita criar nó fantasma quando a lista de
+            # pré-requisitos tem typo/variação do nome (ex.: "Séries e
+            # Equações Diferenciais e Ordinárias").
+            existing = (
+                self._index_by_name.get(self._normalize_text(prereq_nome))
+                or (self._index_by_codigo.get(self._normalize_text(prereq_codigo))
+                    if prereq_codigo else None)
+            )
+            if existing and self.graph.nodes.get(existing, {}).get('tipo') == 'disciplina':
+                prereq_id = existing
+            else:
+                prereq_id = f"DISC:{prereq_nome}"
+                if not self.graph.has_node(prereq_id):
+                    self.graph.add_node(prereq_id, tipo="disciplina", nome=prereq_nome, codigo=prereq_codigo)
+                    self._index_node(prereq_id, {"nome": prereq_nome, "codigo": prereq_codigo})
             self.graph.add_edge(prereq_id, disc_id, relacao="PREREQUISITO_DE", confidence=1.0)
 
     def _process_regimento_file(self, filepath: Path):
