@@ -11,8 +11,14 @@ offline sem langgraph/langchain (test_second_chance.py).
 """
 
 import re
+import time
 import unicodedata
 from typing import Callable, Optional
+
+# Se a 1ª tentativa demorar mais que isso (segundos), pula a segunda chance:
+# empilhar outro ciclo completo (roteador LLM + geração) dobraria a latência
+# e estouraria timeouts de proxy/túnel na demo pública.
+RETRY_LATENCY_BUDGET_S = 60.0
 
 
 # Padrões de falha (aplicados sobre o texto minúsculo e sem acentos)
@@ -74,10 +80,17 @@ def run_with_second_chance(
     Retorna o estado final (o da 2ª tentativa apenas se ela recuperou).
     Telemetria: "retry_recuperado" / "retry_sem_sucesso".
     """
+    started = time.monotonic()
     first = invoke(initial_state)
+    first_elapsed = time.monotonic() - started
     if initial_state.get("retry_count", 0) > 0:
         return first
     if not is_miss_response(first.get("response", "")):
+        return first
+    if first_elapsed > RETRY_LATENCY_BUDGET_S:
+        # Guard de latência: não empilhar retry sobre uma resposta já lenta.
+        if telemetry_incr:
+            telemetry_incr("retry_pulado_latencia")
         return first
 
     failed_agent = first.get("active_agent", "")

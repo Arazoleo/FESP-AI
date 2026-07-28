@@ -9,9 +9,10 @@ const nextConfig = {
     // Proxy das rotas da API para o backend — permite servir tudo pela
     // mesma origem (um único túnel público, sem CORS).
     return [
-      // Namespace /api/* — evita colisão com páginas do app router
-      // (ex.: a página /chat sombrearia um rewrite direto de POST /chat).
-      { source: '/api/:path*', destination: `${BACKEND_URL}/:path*` },
+      // /api/* NÃO usa rewrite: é atendido pelo route handler
+      // app/api/[...path]/route.ts (proxy server-side com timeout longo —
+      // o proxy interno do rewrite corta a conexão upstream em ~30s e
+      // derrubava respostas lentas do pipeline).
       // Rotas usadas pelo planner.html (iframe servido pelo backend usa
       // caminhos relativos à origem do frontend) — sem colisão com páginas.
       { source: '/health', destination: `${BACKEND_URL}/health` },
