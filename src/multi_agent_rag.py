@@ -137,12 +137,16 @@ class MultiAgentRAG:
         result = self.query_with_metadata(question, history=history)
         return result["response"]
 
-    def query_with_metadata(self, question: str, history: str = "") -> Dict:
+    def query_with_metadata(
+        self, question: str, history: str = "", original_question: str = None
+    ) -> Dict:
         """
         Processa a pergunta e retorna resposta + metadados do agente ativo.
 
         `history`: últimas trocas formatadas ("Aluno: ...\nAssistente: ...") para
         continuidade de diálogo nos prompts dos agentes.
+        `original_question`: pergunta como o aluno digitou (antes do
+        ContextResolver) — registrada na fila de misses.
         """
         if not self._pipeline:
             # Fallback para RAG original se pipeline não disponível
@@ -173,7 +177,7 @@ class MultiAgentRAG:
             # encontrei" etc.), re-roteia UMA vez para o agente alternativo
             # (symbolic_kg/especialista → web_sjc → fallback). A 2ª resposta
             # só substitui a 1ª se não casar os padrões de falha.
-            from .workflow.second_chance import run_with_second_chance
+            from .workflow.second_chance import run_with_second_chance, is_miss_response
             from . import telemetry
             final_state = run_with_second_chance(
                 self._pipeline.invoke, initial_state, telemetry.incr
@@ -185,6 +189,23 @@ class MultiAgentRAG:
                     f"{final_state.get('active_agent', '?')}"
                 )
             active_agent = final_state.get("active_agent", "fallback")
+
+            # Fila de misses: resposta final que ainda indica falha (mesmo
+            # após a segunda chance) vira insumo de curadoria de conteúdo.
+            final_response = final_state.get("response", "")
+            if is_miss_response(final_response):
+                from .misses_queue import record_miss
+                agentes = [active_agent]
+                tried = final_state.get("retry_agent_tried")
+                if tried and tried not in agentes:
+                    agentes.append(tried)
+                record_miss(
+                    question=original_question or question,
+                    enhanced_question=question,
+                    agentes=agentes,
+                    resposta=final_response,
+                )
+                telemetry.incr("miss_registrado")
 
             return {
                 "response": final_state.get("response", ""),

@@ -139,5 +139,43 @@ def invoke_boom(state):
 final = sc.run_with_second_chance(invoke_boom, {"question": "q", "retry_count": 0}, inc)
 check("exceção no retry mantém a 1ª resposta", final["response"] == MISS)
 
+# Caso 9: retry sem sucesso registra quem tentou (para a fila de misses)
+invoke, calls = make_pipeline("disciplinas", MISS, MISS)
+final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 0}, inc)
+check("retry sem sucesso expõe retry_agent_tried",
+      final.get("retry_agent_tried") == "web_sjc")
+
+print(f"\n{BOLD}── misses_queue (fila de 'não encontrei') ──{RESET}")
+import json as _json
+import tempfile
+import os as _os
+
+mq_spec = importlib.util.spec_from_file_location("misses_queue", ROOT / "src/misses_queue.py")
+mq = importlib.util.module_from_spec(mq_spec)
+mq_spec.loader.exec_module(mq)
+
+with tempfile.TemporaryDirectory() as tmp:
+    path = _os.path.join(tmp, "misses_queue.jsonl")
+    check("fila vazia → []", mq.read_misses(path=path) == [])
+    mq.record_miss("q original?", "q enhanced?", ["disciplinas", "web_sjc"],
+                   "Não encontrei nada. " + "x" * 500, path=path)
+    itens = mq.read_misses(path=path)
+    check("registro aparece na leitura", len(itens) == 1)
+    e = itens[0] if itens else {}
+    check("campos {ts,question,enhanced_question,agentes,resposta_truncada}",
+          set(e) == {"ts", "question", "enhanced_question", "agentes", "resposta_truncada"})
+    check("agentes registrados", e.get("agentes") == ["disciplinas", "web_sjc"])
+    check("resposta truncada a 300 chars", len(e.get("resposta_truncada", "")) == 300)
+    # limite de 50: gravar 60, ler as últimas 50 (mais recentes primeiro)
+    for i in range(60):
+        mq.record_miss(f"q{i}", f"q{i}", ["a"], "não encontrei", path=path)
+    itens = mq.read_misses(limit=50, path=path)
+    check("read_misses respeita o limite de 50", len(itens) == 50)
+    check("mais recente primeiro", itens[0].get("question") == "q59")
+    # linha corrompida não derruba a leitura
+    with open(path, "a", encoding="utf-8") as f:
+        f.write("{quebrado\n")
+    check("linha corrompida é ignorada", len(mq.read_misses(limit=50, path=path)) == 50)
+
 print(f"\n{BOLD}{_passed} passed, {_failed} failed{RESET}")
 sys.exit(1 if _failed else 0)

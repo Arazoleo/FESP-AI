@@ -101,4 +101,5 @@ def run_with_second_chance(
         return {**second, "retry_from_agent": failed_agent, "retry_count": 1}
     if telemetry_incr:
         telemetry_incr("retry_sem_sucesso")
-    return {**first, "retry_count": 1}
+    # retry_agent_tried: quem tentou (e também falhou) — vai para a fila de misses
+    return {**first, "retry_count": 1, "retry_agent_tried": retry_agent}

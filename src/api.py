@@ -296,6 +296,17 @@ async def telemetry():
     return snapshot()
 
 
+@app.get("/misses")
+async def misses(limit: int = Query(50, ge=1, le=50)):
+    """
+    Fila de casos "não encontrei": últimas respostas (pós-retry) que ainda
+    indicaram falha — insumo de curadoria de conteúdo. Mais recentes primeiro.
+    """
+    from .misses_queue import read_misses
+    itens = read_misses(limit=limit)
+    return {"total": len(itens), "misses": itens}
+
+
 @app.get("/health")
 async def health():
     if rag is None:
@@ -375,7 +386,11 @@ async def chat(request: ChatRequest):
     context_resolver.update_context(conversation_id, request.message, 'user')
 
     try:
-        result = rag.query_with_metadata(enhanced_question, history=history_text)
+        result = rag.query_with_metadata(
+            enhanced_question,
+            history=history_text,
+            original_question=request.message,
+        )
         response_text = result["response"]
         active_agent = result.get("active_agent", "fallback")
         agent_metadata = result.get("agent_info") or result.get("agent_metadata", {})
