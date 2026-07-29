@@ -366,13 +366,15 @@ async def chat(request: ChatRequest):
         
         # Se não foi modificado mas a pergunta é ambígua, usar LLM
         if not was_modified and context_resolver.is_ambiguous_question(request.message):
-            # Usar LLM para reescrever apenas se realmente necessário
+            # Usar LLM para reescrever apenas se realmente necessário.
+            # Reescrita é saída curta (uma linha) → LLM auxiliar leve
+            # (FESPAI_ROUTER_MODEL), com fallback para o principal.
             if rag and rag.llm:
                 enhanced_question = context_resolver.rewrite_with_llm(
                     request.message,
                     conversation_id,
                     history,
-                    rag.llm
+                    getattr(rag, "aux_llm", None) or rag.llm
                 )
                 if enhanced_question != request.message:
                     was_modified = True

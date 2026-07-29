@@ -21,6 +21,7 @@ from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
 
 from .config import Config
+from .aux_llm import get_aux_llm
 from .parsers_md import parse_file
 from .hybrid_retriever import HybridRetriever, build_bm25_from_chroma
 
@@ -124,7 +125,13 @@ class RAGUnifesp:
                 model=self.config.EMBEDDING_MODEL,
                 keep_alive=keep_alive_seconds
             ))
-        
+
+        # LLM auxiliar leve (FESPAI_ROUTER_MODEL) para chamadas de suporte
+        # (classificação de intent/termo, reescrita de pergunta ambígua).
+        # Fallback para o LLM principal quando a env está vazia. A geração
+        # da resposta e o humanizer do KG continuam em self.llm.
+        self.aux_llm = get_aux_llm() or self.llm
+
         self.db = None
         self.retriever = None
         self.chain = None
@@ -286,8 +293,10 @@ class RAGUnifesp:
                 cursos_arg
             )
             
-            # Criar GraphRAG com embeddings + LLM para classificação semântica
-            self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings, llm=self.llm)
+            # Criar GraphRAG com embeddings + LLM auxiliar leve para
+            # classificação semântica (intent/termo é saída curta — não
+            # precisa do modelo de geração)
+            self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings, llm=self.aux_llm)
 
             # Inicializar classificador de intenção (pré-computa embeddings)
             self.graph_rag.initialize_classifier()

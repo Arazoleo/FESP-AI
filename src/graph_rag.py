@@ -172,11 +172,16 @@ class GraphRAGEngine:
             result = self.intent_classifier.classify(question)
 
             if result.intent != 'unknown' and result.confidence >= 0.45:
+                # Correção simbólica da direção docente↔disciplina (modelos
+                # pequenos confundem docente_disciplines/discipline_docentes)
+                intent, term = self._fix_docente_direction(
+                    question, result.intent, result.term
+                )
                 # Pós-processamento para casos especiais
-                termo = self._post_process_term(question, result.intent, result.term)
-                termo = self._ground_discipline_term(question, result.intent, termo)
-                termo = self._ground_curso_term(question, result.intent, termo)
-                return True, result.intent, termo
+                termo = self._post_process_term(question, intent, term)
+                termo = self._ground_discipline_term(question, intent, termo)
+                termo = self._ground_curso_term(question, intent, termo)
+                return True, intent, termo
 
         # 2. Fallback para regex (mantém compatibilidade)
         use, intent, termo = self._regex_fallback(question)
@@ -184,6 +189,43 @@ class GraphRAGEngine:
             termo = self._ground_discipline_term(question, intent, termo)
             termo = self._ground_curso_term(question, intent, termo)
         return use, intent, termo
+
+    # Intents direcionais docente↔disciplina. Modelos pequenos (LLM auxiliar
+    # leve) trocam a direção com frequência — e às vezes emitem o rótulo
+    # inválido "disciplina_docentes". A direção é decidível SIMBOLICAMENTE:
+    # se o termo resolve para uma DISCIPLINA no KG, a pergunta pede os
+    # docentes dela; se resolve para um DOCENTE, pede as disciplinas dele.
+    _DOCENTE_DIRECTION_INTENTS = {
+        'docente_disciplines', 'discipline_docentes', 'disciplina_docentes',
+    }
+
+    def _fix_docente_direction(
+        self, question: str, intent: str, termo: str
+    ) -> Tuple[str, str]:
+        """Corrige direção docente↔disciplina (e termo alucinado) via KG."""
+        if intent not in self._DOCENTE_DIRECTION_INTENTS:
+            return intent, termo
+        try:
+            if termo:
+                if self.kg._find_node(termo, 'disciplina'):
+                    return 'discipline_docentes', termo
+                if self.kg._find_docente_id(termo):
+                    return 'docente_disciplines', termo
+            # Termo não aterrou (modelos pequenos às vezes alucinam o termo):
+            # procura um docente citado literalmente na pergunta (sequência
+            # de palavras capitalizadas, ex.: "Lilian Berton").
+            for cand in re.findall(
+                r'[A-ZÀ-Ú][a-zà-ú]+(?:\s+(?:d[aeo]s?\s+)?[A-ZÀ-Ú][a-zà-ú]+)+',
+                question,
+            ):
+                if self.kg._find_docente_id(cand):
+                    return 'docente_disciplines', cand.lower()
+        except Exception:
+            pass
+        # Nada aterrou: pelo menos normaliza o rótulo inválido
+        if intent == 'disciplina_docentes':
+            intent = 'discipline_docentes'
+        return intent, termo
 
     # Intents cujo termo é nome/sigla de curso
     _CURSO_TERM_INTENTS = {

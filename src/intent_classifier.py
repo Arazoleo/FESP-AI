@@ -539,9 +539,11 @@ Responda APENAS com JSON válido, sem explicações:"""
             if not json_match:
                 return None
             data = json.loads(json_match.group())
-            intent = data.get('intent', '').strip()
-            term = data.get('term', '').strip()
-            completed = data.get('completed', [])
+            # `or ''`: o modelo pode devolver "intent"/"term": null (JSON) —
+            # .strip() direto em None estourava e descartava a classificação
+            intent = (data.get('intent') or '').strip()
+            term = (data.get('term') or '').strip()
+            completed = data.get('completed') or []
             if not intent:
                 return None
             # Para trajectory_planning, montar "completed:target"
