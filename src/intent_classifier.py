@@ -399,8 +399,10 @@ faqs                — dúvidas frequentes
 
 REGRAS:
 - Para trajectory_planning, "term" é a disciplina ALVO e "completed" lista as já cursadas.
-- Nomes de disciplinas podem conter ":" (ex: "Laboratório de Sistemas Computacionais: Compiladores").
-  Nunca parta o nome pelo ":" — preserve o nome completo em "term".
+- "term" deve ser copiado da PERGUNTA. NUNCA invente um nome que não foi
+  citado pelo usuário; se a pergunta não cita nenhuma entidade, use "term": "".
+- Nomes de disciplinas podem conter ":" — nunca parta o nome pelo ":",
+  preserve o nome completo em "term".
 
 Pergunta: {question}
 

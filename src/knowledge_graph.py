@@ -1134,6 +1134,8 @@ class KnowledgeGraph:
         'redes neurais': ['neural networks', 'deep learning', 'inteligência artificial'],
         'data science': ['ciência de dados', 'mineração de dados'],
         'ciência de dados': ['data science', 'mineração de dados', 'inteligência artificial'],
+        'data mining': ['mineração de dados'],
+        'mineração de dados': ['data mining'],
     }
     
     def _expand_area_search(self, area: str) -> List[str]:
@@ -1147,30 +1149,39 @@ class KnowledgeGraph:
         
         return areas_to_search
     
+    @staticmethod
+    def _stem_words(words: Set[str]) -> Set[str]:
+        """Singular/plural simples: 'redes complexas' ≈ 'rede complexa'."""
+        return {w[:-1] if len(w) > 3 and w.endswith('s') else w for w in words}
+
     def get_docentes_by_area(self, area: str) -> List[str]:
         """Retorna docentes especialistas em uma área (com suporte a sinônimos)."""
         areas_to_search = self._expand_area_search(area)
         docentes = []
-        
+
         for search_area in areas_to_search:
             area_normalized = self._normalize_text(search_area)
             area_words = set(area_normalized.split())
-            
+
             for node, data in self.graph.nodes(data=True):
                 if data.get('tipo') != 'area':
                     continue
-                
+
                 nome_area = self._normalize_text(data.get('nome', ''))
                 nome_words = set(nome_area.split())
-                
+
                 # Match por palavras (evita "ia" dar match em "engenharia")
                 is_match = False
-                
+
                 # Match exato
                 if area_normalized == nome_area:
                     is_match = True
-                # Todas as palavras da query estão na área
-                elif len(area_normalized) > 3 and area_words.issubset(nome_words):
+                # Todas as palavras da query estão na área (tolerante a
+                # singular/plural: "rede complexa" acha "Redes Complexas")
+                elif len(area_normalized) > 3 and (
+                    area_words.issubset(nome_words)
+                    or self._stem_words(area_words).issubset(self._stem_words(nome_words))
+                ):
                     is_match = True
                 # Substring match (apenas para termos maiores que 5 chars)
                 elif len(area_normalized) > 5 and area_normalized in nome_area:

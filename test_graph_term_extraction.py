@@ -194,6 +194,78 @@ check(
     engine._find_curso_in_text("eletivas do bcc por favor"),
 )
 
+print(f"\n{BOLD}── Docentes por área e canonicalização de nome parcial ──{RESET}")
+check(
+    "KG: get_docentes_by_area('redes complexas') retorna Lilian Berton",
+    kg.get_docentes_by_area("redes complexas") == ["Lilian Berton"],
+    str(kg.get_docentes_by_area("redes complexas")),
+)
+check(
+    "KG: singular 'rede complexa' também encontra a área",
+    "Lilian Berton" in kg.get_docentes_by_area("rede complexa"),
+    str(kg.get_docentes_by_area("rede complexa")),
+)
+check(
+    "intent errado do LLM (discipline_docentes p/ área) corrige para docentes_by_area",
+    engine._fix_docente_direction(
+        "Tem algum professor que trabalha com Redes Complexas?",
+        "discipline_docentes", "redes complexas",
+    ) == ("docentes_by_area", "redes complexas"),
+    str(engine._fix_docente_direction(
+        "Tem algum professor que trabalha com Redes Complexas?",
+        "discipline_docentes", "redes complexas",
+    )),
+)
+resp_area = engine.query_graph("docentes_by_area", "redes complexas") or ""
+check(
+    "'docentes_by_area'/'redes complexas' lista a Lilian",
+    "Lilian Berton" in resp_area,
+    resp_area.splitlines()[0] if resp_area else "(vazio)",
+)
+check(
+    "termo alucinado (exemplo do prompt) não decide a direção; docente da pergunta aterra",
+    engine._fix_docente_direction(
+        "A lilian trabalha com o q?",
+        "discipline_docentes", "laboratório de sistemas computacionais: compiladores",
+    ) == ("docente_areas", "Lilian Berton"),
+    str(engine._fix_docente_direction(
+        "A lilian trabalha com o q?",
+        "discipline_docentes", "laboratório de sistemas computacionais: compiladores",
+    )),
+)
+check(
+    "'A lilian trabalha com o q?' (regex fallback) aterra no docente canônico",
+    engine.should_use_graph("A lilian trabalha com o q?")[1:]
+    == ("docente_areas", "Lilian Berton"),
+    str(engine.should_use_graph("A lilian trabalha com o q?")),
+)
+check(
+    "docente_areas com nome parcial 'lilian' resolve",
+    "Redes Complexas" in (engine.query_graph("docente_areas", "lilian") or ""),
+    (engine.query_graph("docente_areas", "lilian") or "").splitlines()[0],
+)
+check(
+    "docente_areas com 'a lilian' (não resolve direto) aterra via grounding",
+    "Redes Complexas" in (engine.query_graph("docente_areas", "a lilian") or ""),
+    (engine.query_graph("docente_areas", "a lilian") or "").splitlines()[0],
+)
+resp_lixo = engine.query_graph("docente_areas", "xyzabc qualquer") or ""
+check(
+    "termo-lixo em docente_areas → clarificação limpa (sem eco do lixo)",
+    "qual professor" in resp_lixo.lower() and "xyzabc" not in resp_lixo,
+    resp_lixo,
+)
+check(
+    "'o q' não resolve como docente (guarda de substring do _find_docente_id)",
+    engine._resolve_docente("o q") is None,
+    str(engine._resolve_docente("o q")),
+)
+check(
+    "direção disciplina segue intacta: 'quem leciona SEDO?' → discipline_docentes",
+    engine._fix_docente_direction("quem leciona SEDO?", "discipline_docentes", "sedo")
+    == ("discipline_docentes", "sedo"),
+)
+
 print(f"\n{BOLD}── critical_disciplines: filtro de curso e dedup ──{RESET}")
 crit_bcc = engine.query_graph("critical_disciplines", "bcc")
 check(

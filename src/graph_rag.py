@@ -181,45 +181,136 @@ class GraphRAGEngine:
                 termo = self._post_process_term(question, intent, term)
                 termo = self._ground_discipline_term(question, intent, termo)
                 termo = self._ground_curso_term(question, intent, termo)
+                termo = self._ground_docente_term(question, intent, termo)
                 return True, intent, termo
 
         # 2. Fallback para regex (mantém compatibilidade)
         use, intent, termo = self._regex_fallback(question)
         if use and intent and termo:
+            intent, termo = self._fix_docente_direction(question, intent, termo)
             termo = self._ground_discipline_term(question, intent, termo)
             termo = self._ground_curso_term(question, intent, termo)
+            termo = self._ground_docente_term(question, intent, termo)
         return use, intent, termo
 
-    # Intents direcionais docente↔disciplina. Modelos pequenos (LLM auxiliar
-    # leve) trocam a direção com frequência — e às vezes emitem o rótulo
-    # inválido "disciplina_docentes". A direção é decidível SIMBOLICAMENTE:
-    # se o termo resolve para uma DISCIPLINA no KG, a pergunta pede os
-    # docentes dela; se resolve para um DOCENTE, pede as disciplinas dele.
+    # Intents direcionais em torno de docentes. Modelos pequenos (LLM auxiliar
+    # leve) trocam a direção com frequência (docente_disciplines ↔
+    # discipline_docentes, docente_areas ↔ docentes_by_area), às vezes emitem
+    # o rótulo inválido "disciplina_docentes" e às vezes ALUCINAM o termo
+    # (ex.: copiam o exemplo do prompt "Laboratório de Sistemas
+    # Computacionais: Compiladores"). A direção é decidível SIMBOLICAMENTE
+    # com o termo aterrado NA PERGUNTA: se resolve para uma DISCIPLINA, a
+    # pergunta pede os docentes dela; para uma ÁREA, os especialistas nela;
+    # para um DOCENTE, as áreas/disciplinas dele.
     _DOCENTE_DIRECTION_INTENTS = {
         'docente_disciplines', 'discipline_docentes', 'disciplina_docentes',
+        'docente_areas', 'docentes_by_area',
     }
+    _DISCIPLINE_SIDE_INTENTS = {
+        'docente_disciplines', 'discipline_docentes', 'disciplina_docentes',
+    }
+
+    # Pistas lexicais de que a pergunta é sobre ÁREAS de pesquisa (não sobre
+    # disciplinas lecionadas): "trabalha com", "pesquisa", "área de atuação"…
+    _AREA_HINT_RE = re.compile(
+        r'\b(trabalh\w*|pesquis\w*|atua\w*|[aá]reas?|especialist\w*|'
+        r'especializa\w*)\b',
+        re.IGNORECASE,
+    )
+
+    def _mentioned_in_question(self, question: str, termo: str) -> bool:
+        """True se o termo (normalizado) aparece literalmente na pergunta."""
+        t = self.kg._normalize_text(termo)
+        return bool(t) and f" {t} " in f" {self.kg._normalize_text(question)} "
+
+    def _resolve_docente(self, termo: str) -> Optional[str]:
+        """
+        ID do docente para o termo, com guarda de sobreposição de palavras:
+        o substring-match do KG é frouxo demais para termos curtos/lixo
+        (ex.: 'o q' ⊂ 'eduardo quinteiro') — exige ao menos uma palavra do
+        termo igual a uma palavra do nome.
+        """
+        doc_id = self.kg._find_docente_id(termo)
+        if not doc_id:
+            return None
+        termo_words = set(self.kg._normalize_text(termo).split())
+        nome_words = set(self.kg._normalize_text(doc_id.replace("DOC:", "")).split())
+        return doc_id if termo_words & nome_words else None
+
+    def _docente_intent_for_question(self, question: str, intent: str) -> str:
+        """
+        Intent do lado do docente: preserva o original quando já é de docente;
+        senão decide áreas × disciplinas pelas pistas lexicais da pergunta
+        ("trabalha com/pesquisa/área" → áreas; "leciona/ensina" → disciplinas).
+        """
+        if intent in ('docente_areas', 'docente_info'):
+            return intent
+        if self._AREA_HINT_RE.search(question):
+            return 'docente_areas'
+        return 'docente_disciplines'
+
+    def _find_docente_in_text(self, text: str) -> str:
+        """
+        Retorna o nome do docente do KG citado no texto: nome completo (match
+        mais longo) ou, na falta, um nome/sobrenome que identifique UM único
+        docente (ex.: "a lilian" → "Lilian Berton").
+        """
+        text_norm = f" {self.kg._normalize_text(text)} "
+        text_words = set(text_norm.split())
+        best_nome, best_len = "", 0
+        partial: Dict[str, set] = {}
+        for _, data in self.kg.graph.nodes(data=True):
+            if data.get("tipo") != "docente":
+                continue
+            nome = data.get("nome", "")
+            nome_norm = self.kg._normalize_text(nome)
+            if not nome_norm:
+                continue
+            if f" {nome_norm} " in text_norm:
+                if len(nome_norm) > best_len:
+                    best_nome, best_len = nome, len(nome_norm)
+                continue
+            for w in nome_norm.split():
+                if len(w) >= 4 and w in text_words:
+                    partial.setdefault(w, set()).add(nome)
+        if best_nome:
+            return best_nome
+        # Nome parcial: aceita apenas quando identifica UM único docente
+        unicos = {next(iter(nomes)) for nomes in partial.values() if len(nomes) == 1}
+        if len(unicos) == 1:
+            return unicos.pop()
+        return ""
 
     def _fix_docente_direction(
         self, question: str, intent: str, termo: str
     ) -> Tuple[str, str]:
-        """Corrige direção docente↔disciplina (e termo alucinado) via KG."""
+        """Corrige direção docente↔disciplina↔área (e termo alucinado) via KG."""
         if intent not in self._DOCENTE_DIRECTION_INTENTS:
             return intent, termo
         try:
             if termo:
-                if self.kg._find_node(termo, 'disciplina'):
+                # 1) DISCIPLINA — aceita apenas se o termo está NA PERGUNTA:
+                #    termo alucinado pelo LLM não pode decidir a direção.
+                if intent in self._DISCIPLINE_SIDE_INTENTS and \
+                        self._mentioned_in_question(question, termo) and \
+                        self.kg._find_node(termo, 'disciplina'):
                     return 'discipline_docentes', termo
-                if self.kg._find_docente_id(termo):
-                    return 'docente_disciplines', termo
-            # Termo não aterrou (modelos pequenos às vezes alucinam o termo):
-            # procura um docente citado literalmente na pergunta (sequência
-            # de palavras capitalizadas, ex.: "Lilian Berton").
-            for cand in re.findall(
-                r'[A-ZÀ-Ú][a-zà-ú]+(?:\s+(?:d[aeo]s?\s+)?[A-ZÀ-Ú][a-zà-ú]+)+',
-                question,
-            ):
-                if self.kg._find_docente_id(cand):
-                    return 'docente_disciplines', cand.lower()
+                # 2) ÁREA de pesquisa com especialistas → docentes_by_area
+                #    ("professor que trabalha com Redes Complexas" chega como
+                #    discipline_docentes; a área do KG decide a direção certa)
+                if self.kg.get_docentes_by_area(termo):
+                    return 'docentes_by_area', termo
+                # 3) DOCENTE → áreas ou disciplinas dele, conforme a pergunta
+                if self._resolve_docente(termo):
+                    return self._docente_intent_for_question(question, intent), termo
+            # 4) Termo não aterrou (extração capturou lixo ou o LLM alucinou):
+            #    procura um docente citado na pergunta, inclusive nome parcial
+            #    minúsculo ("a lilian" → "Lilian Berton").
+            grounded = self._find_docente_in_text(question)
+            if grounded:
+                from .telemetry import incr
+                incr("grounding_docente")
+                return self._docente_intent_for_question(question, intent), grounded
         except Exception:
             pass
         # Nada aterrou: pelo menos normaliza o rótulo inválido
@@ -293,6 +384,28 @@ class GraphRAGEngine:
         from .telemetry import incr
         incr("grounding_disciplina")
         return f"{completed}:{grounded}" if completed else grounded
+
+    # Intents cujo termo é nome de docente
+    _DOCENTE_TERM_INTENTS = {
+        'docente_areas', 'docente_info', 'docente_disciplines',
+    }
+
+    def _ground_docente_term(self, question: str, intent: str, termo: str) -> str:
+        """
+        Garante que o termo de intents de docente resolve no KG; se a extração
+        capturou lixo ou um nome que não resolve (ex.: "a lilian"), procura um
+        docente citado na pergunta e canonicaliza ("Lilian Berton").
+        """
+        if intent not in self._DOCENTE_TERM_INTENTS or not termo:
+            return termo
+        if self._resolve_docente(termo):
+            return termo
+        grounded = self._find_docente_in_text(question)
+        if grounded:
+            from .telemetry import incr
+            incr("grounding_docente")
+            return grounded
+        return termo
 
     def _find_discipline_in_text(self, text: str) -> str:
         """Retorna o nome da disciplina do KG citada no texto (match mais longo)."""
@@ -580,21 +693,36 @@ Total: {len(docentes)} docente(s) trabalham com **{termo}**."""
 
 O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
             else:
-                return f"Não encontrei informações sobre as áreas de **{termo}**."
-        
+                # Termo pode vir sujo ("a lilian") — procurar um docente
+                # citado nele antes de desistir
+                grounded = self._find_docente_in_text(termo)
+                if grounded and self.kg._normalize_text(grounded) != self.kg._normalize_text(termo):
+                    return self.query_graph('docente_areas', grounded)
+                # Falha limpa: pede o nome, sem ecoar termo-lixo
+                return (
+                    "Não consegui identificar esse docente na base. "
+                    "De qual professor você quer saber as áreas de pesquisa? "
+                    "Por exemplo: *qual a área da professora Lilian Berton?*"
+                )
+
         elif query_type == 'docente_info':
             info = self.kg.get_docente_info(termo)
-            if info:
-                resultado = f"**Informações de {info['nome']}:**\n\n"
-                if info.get('email'):
-                    resultado += f"- **Email:** {info['email']}\n"
-                if info.get('sala'):
-                    resultado += f"- **Sala:** {info['sala']}\n"
-                if info.get('areas'):
-                    resultado += f"- **Áreas:** {info['areas']}\n"
-                return resultado
-            else:
-                return f"Não encontrei informações sobre **{termo}**."
+            if not info:
+                grounded = self._find_docente_in_text(termo)
+                if grounded and self.kg._normalize_text(grounded) != self.kg._normalize_text(termo):
+                    return self.query_graph('docente_info', grounded)
+                return (
+                    "Não consegui identificar esse docente na base. "
+                    "De qual professor você quer as informações (email, sala)?"
+                )
+            resultado = f"**Informações de {info['nome']}:**\n\n"
+            if info.get('email'):
+                resultado += f"- **Email:** {info['email']}\n"
+            if info.get('sala'):
+                resultado += f"- **Sala:** {info['sala']}\n"
+            if info.get('areas'):
+                resultado += f"- **Áreas:** {info['areas']}\n"
+            return resultado
         
         elif query_type == 'matriz_info':
             info = self.kg.get_info_matriz(termo)
