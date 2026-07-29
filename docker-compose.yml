@@ -46,6 +46,8 @@ services:
       # Roteador LLM unificado: 0 = pula a chamada LLM e usa o embedding
       # router/heurísticas (demo, menos latência).
       - FESPAI_LLM_ROUTE=${FESPAI_LLM_ROUTE:-1}
+      # Modelo dedicado (pequeno) para o roteador LLM. Vazio = usa MODEL_NAME.
+      - FESPAI_ROUTER_MODEL=${FESPAI_ROUTER_MODEL:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:

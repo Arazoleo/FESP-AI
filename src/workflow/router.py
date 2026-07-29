@@ -3,9 +3,11 @@ Router: mapeia intents classificados aos agentes especializados.
 """
 
 import json
+import os
 import re
 import unicodedata
-from typing import Dict, Optional
+from collections import OrderedDict
+from typing import Callable, Dict, Optional
 
 
 def _strip_accents(s: str) -> str:
@@ -614,7 +616,102 @@ def _ground_entity(kg, valor, tipos) -> Optional[str]:
     return None
 
 
-def llm_route(question: str, history: str, kg, llm) -> Optional[dict]:
+# ── Modelo dedicado de roteamento (FESPAI_ROUTER_MODEL) ──────────────────────
+# O roteamento não precisa do modelo de GERAÇÃO (grande/lento): a decisão é um
+# JSON curto de classificação. FESPAI_ROUTER_MODEL aponta um modelo pequeno
+# (ex.: qwen2.5:1.5b-instruct) usado SÓ pelo llm_route, com num_predict baixo
+# e temperatura 0. Vazio = usa o LLM de geração passado pelo pipeline.
+_ROUTER_LLM_NUM_PREDICT = 150
+_router_llm_singleton = {"key": None, "llm": None}
+
+
+def _get_router_llm():
+    """Instância própria (lazy, cacheada) do modelo dedicado de roteamento."""
+    model = os.getenv("FESPAI_ROUTER_MODEL", "").strip()
+    if not model:
+        return None
+    base_url = (os.getenv("OLLAMA_BASE_URL") or "").strip() or None
+    key = (model, base_url)
+    if _router_llm_singleton["key"] == key:
+        return _router_llm_singleton["llm"]
+    try:
+        from langchain_ollama import OllamaLLM
+
+        kwargs = dict(
+            model=model,
+            keep_alive=3600,
+            num_predict=_ROUTER_LLM_NUM_PREDICT,
+            temperature=0,
+            timeout=30,
+        )
+        if base_url:
+            kwargs["base_url"] = base_url
+        try:
+            # Desliga o modo "thinking" (qwen3, deepseek-r1): a decisão de
+            # roteamento é um JSON curto — raciocínio verboso só custa latência.
+            llm = OllamaLLM(reasoning=False, **kwargs)
+        except Exception:
+            llm = OllamaLLM(**kwargs)
+    except Exception:
+        llm = None
+    _router_llm_singleton["key"] = key
+    _router_llm_singleton["llm"] = llm
+    return llm
+
+
+# ── Cache LRU de roteamento ──────────────────────────────────────────────────
+# Perguntas repetidas (demo, eval, alunos com dúvidas iguais) não pagam a
+# chamada LLM de novo. Chave = pergunta normalizada (lower, sem acento,
+# espaços colapsados); valor = decisão completa. Só decisões VÁLIDAS entram
+# (None nunca é cacheado — o fallback continua podendo tentar de novo).
+_ROUTE_CACHE_MAX = 500
+_route_cache: "OrderedDict[str, dict]" = OrderedDict()
+
+
+def _route_cache_key(question: str) -> str:
+    """Normaliza a pergunta para chave de cache."""
+    q = _strip_accents((question or "").lower())
+    return re.sub(r"\s+", " ", q).strip()
+
+
+def clear_route_cache() -> None:
+    """Limpa o cache de roteamento (testes / troca de KG)."""
+    _route_cache.clear()
+
+
+def _route_cache_get(key: str) -> Optional[dict]:
+    cached = _route_cache.get(key)
+    if cached is None:
+        return None
+    _route_cache.move_to_end(key)
+    # Cópia defensiva: o chamador pode mutar o dict sem poluir o cache.
+    return {
+        "agente": cached["agente"],
+        "intent": cached["intent"],
+        "entidades": dict(cached["entidades"]),
+    }
+
+
+def _route_cache_put(key: str, decision: dict) -> None:
+    if not key:
+        return
+    _route_cache[key] = {
+        "agente": decision["agente"],
+        "intent": decision["intent"],
+        "entidades": dict(decision["entidades"]),
+    }
+    _route_cache.move_to_end(key)
+    while len(_route_cache) > _ROUTE_CACHE_MAX:
+        _route_cache.popitem(last=False)
+
+
+def llm_route(
+    question: str,
+    history: str,
+    kg,
+    llm,
+    telemetry_incr: Optional[Callable[[str], None]] = None,
+) -> Optional[dict]:
     """
     Roteador LLM unificado: UMA chamada decide agente + intent + entidades.
 
@@ -622,15 +719,28 @@ def llm_route(question: str, history: str, kg, llm) -> Optional[dict]:
     entidades aterradas no KG (não-resolvidas são descartadas), ou None quando
     o LLM está indisponível / o JSON é inválido / o agente não existe — nesses
     casos o chamador usa o embedding router como fallback.
+
+    Latência: (1) cache LRU por pergunta normalizada evita chamadas repetidas;
+    (2) se FESPAI_ROUTER_MODEL estiver setada, usa um modelo pequeno dedicado
+    em vez do LLM de geração.
     """
     if llm is None:
         return None
+
+    cache_key = _route_cache_key(question)
+    cached = _route_cache_get(cache_key)
+    if cached is not None:
+        if telemetry_incr:
+            telemetry_incr("llm_route_cache_hit")
+        return cached
+
+    route_llm = _get_router_llm() or llm
     prompt = _LLM_ROUTE_TEMPLATE.format(
         history=(history or "").strip() or "(vazio)",
         question=question,
     )
     try:
-        raw = llm.invoke(prompt)
+        raw = route_llm.invoke(prompt)
     except Exception:
         return None
     raw = getattr(raw, "content", raw)
@@ -660,7 +770,9 @@ def llm_route(question: str, history: str, kg, llm) -> Optional[dict]:
     if grounded:
         entidades["docente"] = grounded
 
-    return {"agente": agente, "intent": intent, "entidades": entidades}
+    decision = {"agente": agente, "intent": intent, "entidades": entidades}
+    _route_cache_put(cache_key, decision)
+    return decision
 
 
 def term_from_llm_route(routed: dict) -> str:

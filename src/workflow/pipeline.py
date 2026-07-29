@@ -306,6 +306,7 @@ def build_pipeline(rag_instance):
                     state.get("history", ""),
                     rag_instance.knowledge_graph,
                     rag_instance.llm,
+                    telemetry_incr=telemetry_incr,
                 )
             if routed_llm:
                 active_agent = routed_llm["agente"]

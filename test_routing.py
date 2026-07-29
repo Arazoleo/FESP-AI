@@ -192,6 +192,10 @@ check("kg=None não quebra",
 
 print(f"\n{BOLD}── llm_route (roteador LLM unificado, com LLM fake) ──{RESET}")
 
+# Garante determinismo: sem modelo dedicado real durante os testes com fakes.
+import os as _os
+_os.environ.pop("FESPAI_ROUTER_MODEL", None)
+
 
 class _RouteKG:
     """KG mínimo para o grounding do llm_route."""
@@ -293,6 +297,69 @@ check("term p/ cursos = entidade curso",
       router.term_from_llm_route({"agente": "cursos", "entidades": {"curso": "BCC"}}) == "BCC")
 check("term p/ web_sjc = vazio",
       router.term_from_llm_route({"agente": "web_sjc", "entidades": {"curso": "BCC"}}) == "")
+
+print(f"\n{BOLD}── cache LRU do llm_route (hit/miss/normalização) ──{RESET}")
+router.clear_route_cache()
+
+_telemetry_events = []
+_VALID_JSON = ('{"agente": "docentes", "intent": "discipline_docentes", '
+               '"entidades": {"disciplina": "IHC", "curso": null, "docente": null}}')
+
+# Miss: 1ª chamada invoca o LLM e retorna a decisão
+fake = _FakeLLM(_VALID_JSON)
+r1 = router.llm_route("Quem é o responsável por IHC?", "", route_kg, fake,
+                      telemetry_incr=_telemetry_events.append)
+check("miss: 1ª chamada invoca o LLM", len(fake.calls) == 1 and r1 is not None)
+check("miss: sem telemetria de cache_hit", "llm_route_cache_hit" not in _telemetry_events)
+
+# Hit: 2ª chamada idêntica NÃO invoca o LLM e retorna a mesma decisão
+r2 = router.llm_route("Quem é o responsável por IHC?", "", route_kg, fake,
+                      telemetry_incr=_telemetry_events.append)
+check("hit: 2ª chamada não invoca o LLM", len(fake.calls) == 1)
+check("hit: decisão idêntica", r2 == r1)
+check("hit: telemetria 'llm_route_cache_hit'", _telemetry_events.count("llm_route_cache_hit") == 1)
+
+# Normalização: maiúsculas/acentos/espaços extras caem na mesma chave
+r3 = router.llm_route("  quem e o RESPONSAVEL   por ihc?", "", route_kg, fake,
+                      telemetry_incr=_telemetry_events.append)
+check("normalização: variação de caixa/acento/espaços é cache hit",
+      len(fake.calls) == 1 and r3 == r1)
+
+# Hit devolve cópia: mutar o resultado não polui o cache
+r3["entidades"]["disciplina"] = "MUTADO"
+r4 = router.llm_route("quem é o responsável por ihc?", "", route_kg, fake)
+check("hit devolve cópia (mutação não polui o cache)",
+      r4["entidades"].get("disciplina") == "Interação Humano-Computador")
+
+# Decisão inválida (None) NÃO é cacheada — próxima chamada tenta o LLM de novo
+router.clear_route_cache()
+bad = _FakeLLM("desculpe, não sei")
+check("decisão inválida → None", router.llm_route("pergunta nova", "", route_kg, bad) is None)
+check("None não entra no cache (LLM é chamado de novo)",
+      router.llm_route("pergunta nova", "", route_kg, bad) is None and len(bad.calls) == 2)
+
+# clear_route_cache força novo miss
+router.clear_route_cache()
+fake2 = _FakeLLM(_VALID_JSON)
+router.llm_route("quem é o responsável por ihc?", "", route_kg, fake2)
+check("clear_route_cache força novo miss", len(fake2.calls) == 1)
+
+# Eviction LRU: com capacidade 2, a entrada mais antiga sai
+router.clear_route_cache()
+_old_max = router._ROUTE_CACHE_MAX
+router._ROUTE_CACHE_MAX = 2
+try:
+    ev = _FakeLLM(_VALID_JSON)
+    router.llm_route("pergunta a", "", route_kg, ev)
+    router.llm_route("pergunta b", "", route_kg, ev)
+    router.llm_route("pergunta c", "", route_kg, ev)   # evict "pergunta a"
+    router.llm_route("pergunta b", "", route_kg, ev)   # hit
+    check("LRU: 'pergunta b' continua no cache (hit)", len(ev.calls) == 3)
+    router.llm_route("pergunta a", "", route_kg, ev)   # miss (foi evictada)
+    check("LRU: 'pergunta a' foi evictada (miss)", len(ev.calls) == 4)
+finally:
+    router._ROUTE_CACHE_MAX = _old_max
+    router.clear_route_cache()
 
 print(f"\n{BOLD}── check_routing do eval (alternativas com '|') ──{RESET}")
 eval_spec = importlib.util.spec_from_file_location("evalns", ROOT / "eval" / "eval_neurosymbolic.py")
