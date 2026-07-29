@@ -5,6 +5,7 @@ Fluxo:
   router_node → [disciplinas | docentes | cursos | regimentos | fallback] → END
 """
 
+import os
 import re
 from collections import Counter
 from typing import Any
@@ -296,12 +297,16 @@ def build_pipeline(rag_instance):
             # 4) Nenhum fast-path casou → roteador LLM unificado como decisor
             # primário: UMA chamada decide agente + intent + entidades, com as
             # entidades aterradas no KG (o que não resolve é descartado).
-            routed_llm = llm_route(
-                question,
-                state.get("history", ""),
-                rag_instance.knowledge_graph,
-                rag_instance.llm,
-            )
+            # FESPAI_LLM_ROUTE=0 pula o roteador LLM (modo demo, menos
+            # latência) e cai direto no embedding router/heurísticas.
+            routed_llm = None
+            if os.getenv("FESPAI_LLM_ROUTE", "1") != "0":
+                routed_llm = llm_route(
+                    question,
+                    state.get("history", ""),
+                    rag_instance.knowledge_graph,
+                    rag_instance.llm,
+                )
             if routed_llm:
                 active_agent = routed_llm["agente"]
                 confidence = 0.85

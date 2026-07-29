@@ -5,6 +5,8 @@ Substitui o uso direto de RAGUnifesp.query() pela pipeline LangGraph,
 mantendo compatibilidade total com a API existente.
 """
 
+import os
+
 from typing import Dict, Optional, List
 from .rag import RAGUnifesp
 from .config import Config
@@ -179,9 +181,14 @@ class MultiAgentRAG:
             # só substitui a 1ª se não casar os padrões de falha.
             from .workflow.second_chance import run_with_second_chance, is_miss_response
             from . import telemetry
-            final_state = run_with_second_chance(
-                self._pipeline.invoke, initial_state, telemetry.incr
-            )
+            # FESPAI_SECOND_CHANCE=0 desliga o retry de segunda chance (modo
+            # demo, menos latência); a fila de misses continua funcionando.
+            if os.getenv("FESPAI_SECOND_CHANCE", "1") == "0":
+                final_state = self._pipeline.invoke(initial_state)
+            else:
+                final_state = run_with_second_chance(
+                    self._pipeline.invoke, initial_state, telemetry.incr
+                )
             if final_state.get("retry_from_agent"):
                 print(
                     f"[SecondChance] retry recuperado: "

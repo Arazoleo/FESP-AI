@@ -37,6 +37,15 @@ services:
       # Humanizer do symbolic_kg: 1 = suaviza o tom da resposta do KG via LLM
       # (preservando os fatos). Ligado no app; use 0 para runs puros do paper.
       - FESPAI_HUMANIZE_KG=${FESPAI_HUMANIZE_KG:-1}
+      # Claim-check (verificação de alegações via LLM): 0 = desligado no app,
+      # evita respostas de 5+ min na demo pública.
+      - FESPAI_CLAIM_CHECK=${FESPAI_CLAIM_CHECK:-0}
+      # Segunda chance (retry re-roteado quando a resposta indica falha):
+      # 0 = desligado (demo, menos latência). Fila de misses segue ativa.
+      - FESPAI_SECOND_CHANCE=${FESPAI_SECOND_CHANCE:-1}
+      # Roteador LLM unificado: 0 = pula a chamada LLM e usa o embedding
+      # router/heurísticas (demo, menos latência).
+      - FESPAI_LLM_ROUTE=${FESPAI_LLM_ROUTE:-1}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
