@@ -35,3 +35,8 @@ class AgentState(TypedDict, total=False):
     # Sinal para o front abrir o planejador de grade (canvas ao vivo).
     # Preenchido pelo MontarGradeAgent: {curso: <detectado|None>}.
     plan_request: Optional[Dict[str, Any]]
+    # Grafo estruturado de pré-requisitos para renderização no chat
+    # ({nodes: [...], edges: [...]}, ver GraphRAGEngine.graph_payload).
+    # Preenchido pelo atalho simbólico (prerequisite_chain / dependents /
+    # trajectory_planning).
+    graph_data: Optional[Dict[str, Any]]

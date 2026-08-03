@@ -549,6 +549,149 @@ class GraphRAGEngine:
                 return nome
         return termo
 
+    def _resolve_trajectory_parts(
+        self, termo: str
+    ) -> Tuple[List[str], str, Optional[str]]:
+        """
+        Parseia o termo de trajectory_planning → (completed, target, node_id).
+
+        `completed` são as disciplinas já cursadas (texto bruto do aluno),
+        `target` é a disciplina alvo (bruta) e `node_id` o nó do KG resolvido
+        para o alvo (None se não encontrado).
+        """
+        from .neurosymbolic_validator import _parse_trajectory_term
+        # Strip sentence-level noise that regex may have captured (e.g. "Compiladores. por onde começo")
+        termo_clean = re.split(r'[.!]', termo)[0].strip()
+        termo_clean = re.sub(
+            r'\s+(?:por\s+onde|como\s+fica|começo|inicio|inicio\.?|começo\.?)\b.*',
+            '', termo_clean, flags=re.IGNORECASE
+        ).strip()
+        # Se o termo completo é encontrado no KG como disciplina, é target puro (sem completed).
+        # Isso evita que ":" em nomes como "Lab X: Y" seja confundido com separador completed:target.
+        if self.kg._find_node(termo_clean, "disciplina"):
+            completed, target = [], termo_clean
+        else:
+            completed, target = _parse_trajectory_term(termo_clean)
+        if not target:
+            return completed, target, None
+
+        node_id = self.kg._find_node(target, "disciplina")
+        if node_id is None:
+            # Extração pode ter capturado frase inteira — procurar uma
+            # disciplina conhecida citada dentro do termo bruto
+            grounded = self._find_discipline_in_text(target)
+            if grounded:
+                node_id = self.kg._find_node(grounded, "disciplina")
+        return completed, target, node_id
+
+    def _direct_prereq_edges(self, nomes: List[str]) -> List[Dict]:
+        """
+        Arestas diretas PREREQUISITO_DE entre as disciplinas de `nomes`,
+        com a confiança de cada elo (semântica de bounds do PyReason).
+        """
+        nomes_set = set(nomes)
+        edges = []
+        for nome in nomes:
+            for prereq in self.kg.get_direct_prerequisites(nome):
+                if prereq in nomes_set and prereq != nome:
+                    edges.append({
+                        "source": prereq,
+                        "target": nome,
+                        "confidence": round(
+                            self.kg.get_prerequisite_confidence(prereq, nome), 2
+                        ),
+                    })
+        return edges
+
+    def graph_payload(self, query_type: str, termo: str) -> Optional[Dict]:
+        """
+        Versão estruturada de query_graph para renderização de grafo no frontend.
+
+        Retorna {type, nodes: [{id, nome, fase?, cursada?}], edges: [{source,
+        target, confidence}]} para os intents prerequisite_chain, dependents e
+        trajectory_planning — ou None quando não há grafo a exibir. NÃO altera
+        query_graph: é uma função paralela, somente leitura sobre o KG.
+        """
+        if query_type not in (
+            'prerequisite_chain', 'dependents', 'trajectory_planning'
+        ):
+            return None
+
+        if query_type in ('prerequisite_chain', 'dependents'):
+            nome = self._resolve_discipline_term(termo)
+
+            if query_type == 'prerequisite_chain':
+                chain = self.kg.get_prerequisite_chain(nome)
+                if not chain:
+                    return None
+                nomes, vistos = [], set()
+                for n in [nome] + chain:
+                    if n and n not in vistos:
+                        vistos.add(n)
+                        nomes.append(n)
+                nodes = [{"id": n, "nome": n} for n in nomes]
+                return {
+                    "type": "prerequisite_chain",
+                    "nodes": nodes,
+                    "edges": self._direct_prereq_edges(nomes),
+                }
+
+            # dependents
+            dependents = [d for d in self.kg.get_dependent_disciplines(nome) if d]
+            if not dependents:
+                return None
+            nomes, vistos = [], set()
+            for n in [nome] + dependents:
+                if n not in vistos:
+                    vistos.add(n)
+                    nomes.append(n)
+            nodes = [{"id": n, "nome": n} for n in nomes]
+            return {
+                "type": "dependents",
+                "nodes": nodes,
+                "edges": self._direct_prereq_edges(nomes),
+            }
+
+        # trajectory_planning
+        from .neurosymbolic_validator import InferenceEngine
+        completed, target, node_id = self._resolve_trajectory_parts(termo)
+        if not target or not node_id:
+            return None
+        target = self.kg.graph.nodes[node_id].get("nome", target)
+
+        engine = InferenceEngine(self.kg)
+        phases = engine.plan_minimal_path(target, completed)
+        if not phases:
+            return None
+
+        # Cursadas: resolver para o nome canônico do KG quando possível
+        completed_nomes = []
+        for c in completed:
+            cid = self.kg._find_node(c, "disciplina")
+            nome_c = self.kg.graph.nodes[cid].get("nome") if cid else None
+            completed_nomes.append(nome_c or c.strip())
+
+        nodes, vistos = [], set()
+        for nome_c in completed_nomes:
+            if nome_c and nome_c not in vistos:
+                vistos.add(nome_c)
+                nodes.append({
+                    "id": nome_c, "nome": nome_c, "fase": 0, "cursada": True,
+                })
+        for i, phase in enumerate(phases, 1):
+            for disc in phase:
+                if disc and disc not in vistos:
+                    vistos.add(disc)
+                    nodes.append({
+                        "id": disc, "nome": disc, "fase": i, "cursada": False,
+                    })
+        nomes = [n["id"] for n in nodes]
+        return {
+            "type": "trajectory_planning",
+            "nodes": nodes,
+            "edges": self._direct_prereq_edges(nomes),
+        }
+
     def query_graph(self, query_type: str, termo: str) -> Optional[str]:
         """
         Executa uma query no Knowledge Graph e formata a resposta.
@@ -965,30 +1108,11 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
             return resultado
 
         elif query_type == 'trajectory_planning':
-            from .neurosymbolic_validator import _parse_trajectory_term, InferenceEngine
-            # Strip sentence-level noise that regex may have captured (e.g. "Compiladores. por onde começo")
-            termo_clean = re.split(r'[.!]', termo)[0].strip()
-            termo_clean = re.sub(
-                r'\s+(?:por\s+onde|como\s+fica|começo|inicio|inicio\.?|começo\.?)\b.*',
-                '', termo_clean, flags=re.IGNORECASE
-            ).strip()
-            # Se o termo completo é encontrado no KG como disciplina, é target puro (sem completed).
-            # Isso evita que ":" em nomes como "Lab X: Y" seja confundido com separador completed:target.
-            if self.kg._find_node(termo_clean, "disciplina"):
-                completed, target = [], termo_clean
-            else:
-                completed, target = _parse_trajectory_term(termo_clean)
+            from .neurosymbolic_validator import InferenceEngine
+            completed, target, node_id = self._resolve_trajectory_parts(termo)
             if not target:
                 return "Por favor, informe a disciplina alvo (ex: 'Compiladores')."
 
-            # Resolve target to proper-cased name from KG
-            node_id = self.kg._find_node(target, "disciplina")
-            if node_id is None:
-                # Extração pode ter capturado frase inteira — procurar uma
-                # disciplina conhecida citada dentro do termo bruto
-                grounded = self._find_discipline_in_text(target)
-                if grounded:
-                    node_id = self.kg._find_node(grounded, "disciplina")
             if node_id:
                 target = self.kg.graph.nodes[node_id].get("nome", target)
             else:

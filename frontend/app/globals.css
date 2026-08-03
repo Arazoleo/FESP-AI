@@ -153,6 +153,44 @@ body {
   animation: caret-blink 0.9s step-end infinite;
 }
 
+/* Entrada dos nós e arestas do grafo de pré-requisitos no chat.
+   Somente opacidade (sem transform, para não brigar com o transform SVG);
+   neutralizada pelo bloco global de prefers-reduced-motion. */
+@keyframes prereq-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.prereq-in {
+  animation: prereq-in 0.5s ease both;
+}
+
+/* Com movimento reduzido, o stagger (delay) também é zerado — o bloco global
+   só encurta a duração, e o fill-mode "both" deixaria tudo invisível
+   durante o delay. */
+@media (prefers-reduced-motion: reduce) {
+  .prereq-in {
+    animation-delay: 0ms !important;
+  }
+}
+
+.prereq-node {
+  cursor: pointer;
+}
+
+.prereq-node rect {
+  transition: stroke 0.2s ease;
+}
+
+.prereq-node:hover rect,
+.prereq-node:focus-visible rect {
+  stroke: rgba(52, 211, 153, 0.65);
+}
+
 /* ── Utilitários ───────────────────────────────────────────── */
 
 /* Grade de fundo muito sutil (papel milimetrado escuro) */

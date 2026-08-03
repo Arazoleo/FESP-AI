@@ -262,6 +262,19 @@ def build_pipeline(rag_instance):
                         detected_intent, detected_term
                     )
                     if kg_response:
+                        # Grafo estruturado para o frontend renderizar como
+                        # visualização interativa (SVG) acima do texto.
+                        graph_data = None
+                        if detected_intent in (
+                            "prerequisite_chain", "dependents",
+                            "trajectory_planning",
+                        ):
+                            try:
+                                graph_data = rag_instance.graph_rag.graph_payload(
+                                    detected_intent, detected_term
+                                )
+                            except Exception:
+                                graph_data = None
                         # Humanização opcional: suaviza o tom sem alterar os fatos.
                         # Desligada por padrão (paper puro); ative com FESPAI_HUMANIZE_KG=1.
                         response_text = kg_response
@@ -279,6 +292,7 @@ def build_pipeline(rag_instance):
                             "active_agent": "symbolic_kg",
                             "context": kg_response,
                             "sources": ["Knowledge Graph"],
+                            "graph_data": graph_data,
                         }
 
         # 2) Sugestão do embedding router (barata) — contexto do phrase_override

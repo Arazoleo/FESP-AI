@@ -282,5 +282,107 @@ check(
     crit_global.count("Biologia Moderna") <= 1,
 )
 
+print(f"\n{BOLD}── graph_payload: grafo estruturado p/ o frontend ──{RESET}")
+gp_chain = engine.graph_payload("prerequisite_chain", "compiladores")
+check(
+    "prerequisite_chain/'compiladores' devolve dict com nodes e edges",
+    isinstance(gp_chain, dict) and gp_chain.get("nodes") and gp_chain.get("edges"),
+    str(gp_chain)[:120],
+)
+chain_nomes = {n["nome"] for n in (gp_chain or {}).get("nodes", [])}
+check(
+    "nodes da cadeia de Compiladores contêm alvo e ancestrais (LFA, Mat. Discreta, Lógica)",
+    chain_nomes == {
+        "Compiladores", "Linguagens Formais e Autômatos",
+        "Matemática Discreta", "Lógica de Programação",
+    },
+    str(chain_nomes),
+)
+check(
+    "edge LFA → Compiladores presente na cadeia",
+    any(
+        e["source"] == "Linguagens Formais e Autômatos" and e["target"] == "Compiladores"
+        for e in gp_chain["edges"]
+    ),
+    str(gp_chain["edges"]),
+)
+check(
+    "toda edge tem confidence numérico em (0, 1]",
+    all(
+        isinstance(e.get("confidence"), (int, float)) and 0 < e["confidence"] <= 1
+        for e in gp_chain["edges"]
+    ),
+    str(gp_chain["edges"]),
+)
+check(
+    "todo node tem id e nome",
+    all(n.get("id") and n.get("nome") for n in gp_chain["nodes"]),
+)
+
+gp_traj = engine.graph_payload(
+    "trajectory_planning", "matemática discreta:compiladores"
+)
+check(
+    "trajectory_planning devolve dict com nodes e edges",
+    isinstance(gp_traj, dict) and gp_traj.get("nodes") and gp_traj.get("edges"),
+    str(gp_traj)[:120],
+)
+check(
+    "todo node do trajectory tem fase (int) e flag cursada",
+    all(
+        isinstance(n.get("fase"), int) and isinstance(n.get("cursada"), bool)
+        for n in gp_traj["nodes"]
+    ),
+    str(gp_traj["nodes"]),
+)
+check(
+    "'Matemática Discreta' aparece como cursada na fase 0",
+    any(
+        n["nome"] == "Matemática Discreta" and n["cursada"] and n["fase"] == 0
+        for n in gp_traj["nodes"]
+    ),
+    str(gp_traj["nodes"]),
+)
+check(
+    "'Compiladores' é o alvo na última fase (não cursada)",
+    any(
+        n["nome"] == "Compiladores"
+        and not n["cursada"]
+        and n["fase"] == max(x["fase"] for x in gp_traj["nodes"])
+        for n in gp_traj["nodes"]
+    ),
+    str(gp_traj["nodes"]),
+)
+check(
+    "edges do trajectory têm confidence",
+    all("confidence" in e for e in gp_traj["edges"]),
+)
+
+gp_dep = engine.graph_payload("dependents", "aed i")
+check(
+    "dependents/'aed i' resolve a sigla e devolve o grafo de desbloqueios",
+    isinstance(gp_dep, dict)
+    and gp_dep["nodes"][0]["nome"] == "Algoritmos e Estruturas de Dados I"
+    and len(gp_dep["nodes"]) > 1,
+    str(gp_dep)[:160],
+)
+check(
+    "toda edge de dependents sai de AED I com confidence",
+    gp_dep["edges"]
+    and all(
+        e["source"] == "Algoritmos e Estruturas de Dados I" and "confidence" in e
+        for e in gp_dep["edges"]
+    ),
+    str(gp_dep["edges"])[:160],
+)
+check(
+    "intent fora do escopo do grafo devolve None",
+    engine.graph_payload("discipline_docentes", "compiladores") is None,
+)
+check(
+    "termo inexistente devolve None (sem grafo a exibir)",
+    engine.graph_payload("prerequisite_chain", "xyz inexistente qualquer") is None,
+)
+
 print(f"\n{BOLD}{_passed} passed, {_failed} failed{RESET}")
 sys.exit(1 if _failed else 0)

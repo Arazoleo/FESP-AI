@@ -223,6 +223,7 @@ class MultiAgentRAG:
                 "context": final_state.get("context", ""),
                 "sources": final_state.get("sources", []),
                 "plan_request": final_state.get("plan_request"),
+                "graph_data": final_state.get("graph_data"),
                 "agent_metadata": self.AGENT_METADATA.get(
                     active_agent, self.AGENT_METADATA["fallback"]
                 ),

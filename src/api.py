@@ -195,6 +195,9 @@ class ChatResponse(BaseModel):
     agent_info: Optional[AgentInfo] = None
     # Quando preenchido, o front deve abrir o planejador de grade (canvas ao vivo).
     plan_request: Optional[Dict] = None
+    # Grafo de pré-requisitos estruturado ({nodes, edges}) para o front
+    # renderizar como visualização interativa acima do texto da resposta.
+    graph_data: Optional[Dict] = None
 
 
 class ConversationResponse(BaseModel):
@@ -397,6 +400,7 @@ async def chat(request: ChatRequest):
         active_agent = result.get("active_agent", "fallback")
         agent_metadata = result.get("agent_info") or result.get("agent_metadata", {})
         plan_request = result.get("plan_request")
+        graph_data = result.get("graph_data")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao processar pergunta: {str(e)}")
     
@@ -428,6 +432,7 @@ async def chat(request: ChatRequest):
         active_agent=active_agent,
         agent_info=agent_info,
         plan_request=plan_request,
+        graph_data=graph_data,
     )
 
 

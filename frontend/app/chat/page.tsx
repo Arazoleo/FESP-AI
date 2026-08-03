@@ -15,6 +15,7 @@ import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import PrereqGraph, { PrereqGraphData } from '../components/PrereqGraph'
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -31,6 +32,9 @@ interface Message {
   timestamp?: string
   active_agent?: string
   agent_info?: AgentInfo
+  // Grafo de pré-requisitos estruturado (atalho simbólico do backend).
+  // Quando presente, é renderizado como visualização interativa acima do texto.
+  graph_data?: PrereqGraphData | null
 }
 
 interface PlanRequest {
@@ -283,10 +287,12 @@ function AssistantMessage({
   message,
   isAnimating,
   onAnimationDone,
+  onAsk,
 }: {
   message: Message
   isAnimating: boolean
   onAnimationDone: () => void
+  onAsk?: (question: string) => void
 }) {
   const { displayed, isDone } = useTypewriter(
     message.content,
@@ -295,12 +301,16 @@ function AssistantMessage({
   )
 
   const textToRender = isAnimating ? displayed : message.content
+  const hasGraph = !!message.graph_data?.nodes?.length
 
   return (
     <div className="text-[15px]">
       {message.active_agent && message.active_agent !== 'fallback' && (
         <AgentLabel agent={message.active_agent} agentInfo={message.agent_info} />
       )}
+
+      {/* Grafo interativo acima do texto — o markdown vira detalhe/fonte */}
+      {hasGraph && <PrereqGraph data={message.graph_data!} onAsk={onAsk} />}
 
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
         {textToRender}
@@ -369,10 +379,10 @@ export default function ChatPage() {
     }
   }
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return
+  const sendMessage = async (content: string) => {
+    if (!content.trim() || isLoading) return
 
-    const userMessage: Message = { role: 'user', content: input.trim() }
+    const userMessage: Message = { role: 'user', content: content.trim() }
     setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
@@ -394,6 +404,7 @@ export default function ChatPage() {
         timestamp: response.data.timestamp,
         active_agent: response.data.active_agent,
         agent_info: response.data.agent_info,
+        graph_data: response.data.graph_data,
       }
 
       setMessages((prev) => {
@@ -433,6 +444,15 @@ export default function ChatPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSend = () => sendMessage(input)
+
+  // Clique num nó do grafo de pré-requisitos: injeta a pergunta e envia.
+  const handleGraphAsk = (question: string) => {
+    if (isLoading) return
+    setInput(question)
+    sendMessage(question)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -591,6 +611,7 @@ export default function ChatPage() {
                         message={msg}
                         isAnimating={idx === animatingIndex}
                         onAnimationDone={handleAnimationDone}
+                        onAsk={handleGraphAsk}
                       />
                     </div>
                   )}
