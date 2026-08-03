@@ -39,24 +39,42 @@ for i in $(seq 1 30); do
 done
 echo "    Frontend OK."
 
-echo "==> Abrindo Cloudflare Quick Tunnel para http://localhost:3000..."
-: > "$TUNNEL_LOG"
-# --protocol http2: redes que bloqueiam UDP/QUIC (porta 7844) derrubam o túnel
-cloudflared tunnel --protocol http2 --url http://localhost:3000 >"$TUNNEL_LOG" 2>&1 &
-TUNNEL_PID=$!
-trap 'kill $TUNNEL_PID 2>/dev/null || true' EXIT INT TERM
+# Domínio FIXO gratuito do ngrok (nunca muda entre restarts). Requer
+# `ngrok config add-authtoken <token>` feito uma vez. Fallback: cloudflared
+# (URL aleatória) quando o ngrok não está instalado/configurado.
+NGROK_DOMAIN="${NGROK_DOMAIN:-proclaim-exemplary-path.ngrok-free.dev}"
 
-URL=""
-for i in $(seq 1 30); do
-  URL=$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$TUNNEL_LOG" | head -1 || true)
-  [ -n "$URL" ] && break
-  sleep 2
-done
+: > "$TUNNEL_LOG"
+if command -v ngrok >/dev/null && ngrok config check >/dev/null 2>&1; then
+  echo "==> Abrindo ngrok no domínio fixo $NGROK_DOMAIN..."
+  ngrok http --domain="$NGROK_DOMAIN" 3000 --log=stdout >"$TUNNEL_LOG" 2>&1 &
+  TUNNEL_PID=$!
+  URL="https://$NGROK_DOMAIN"
+else
+  echo "==> ngrok não configurado — usando Cloudflare Quick Tunnel (URL muda a cada execução)..."
+  # --protocol http2: redes que bloqueiam UDP/QUIC (porta 7844) derrubam o túnel
+  cloudflared tunnel --protocol http2 --url http://localhost:3000 >"$TUNNEL_LOG" 2>&1 &
+  TUNNEL_PID=$!
+  URL=""
+  for i in $(seq 1 30); do
+    URL=$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$TUNNEL_LOG" | head -1 || true)
+    [ -n "$URL" ] && break
+    sleep 2
+  done
+fi
+trap 'kill $TUNNEL_PID 2>/dev/null || true' EXIT INT TERM
 
 if [ -z "$URL" ]; then
   echo "ERRO: não consegui obter a URL do túnel. Log: $TUNNEL_LOG" >&2
   exit 1
 fi
+
+echo "==> Verificando a URL pública..."
+for i in $(seq 1 15); do
+  curl -sf -m 10 "$URL/api/health" >/dev/null && break
+  [ "$i" -eq 15 ] && echo "AVISO: $URL ainda não respondeu ao health — verifique $TUNNEL_LOG" >&2
+  sleep 2
+done
 
 echo ""
 echo "=================================================================="
