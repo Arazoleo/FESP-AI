@@ -44,11 +44,13 @@ interface PlanRequest {
 // Default '/api' = mesma origem (rotas proxyadas via rewrites do next.config.js)
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
+// Perguntas com resposta verificada nos evals (uma por capacidade:
+// pré-requisitos/KG, docentes, procedimentos do site, notícias ao vivo)
 const SUGGESTIONS = [
-  'Quais são os pré-requisitos de Cálculo Numérico?',
-  'Quem leciona Algoritmos e Estrutura de Dados?',
-  'Qual a carga horária de Física I?',
-  'Me fale sobre os cursos de graduação do ICT',
+  'Quais são os pré-requisitos de Compiladores?',
+  'Quem leciona Banco de Dados?',
+  'Como funcionam as atividades complementares?',
+  'Quais as últimas notícias do campus?',
 ]
 
 // Etapas que espelham o pipeline real (src/workflow/pipeline.py):
