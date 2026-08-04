@@ -9,12 +9,16 @@ export interface PrereqGraphNode {
   nome: string
   fase?: number
   cursada?: boolean
+  /** Nó adicionado por inferência (regra recommended_before), não pela matriz. */
+  inferida?: boolean
 }
 
 export interface PrereqGraphEdge {
   source: string
   target: string
   confidence: number
+  /** Aresta inferida por conteúdo (recommended_before): tracejada + âmbar. */
+  inferida?: boolean
 }
 
 export interface PrereqGraphData {
@@ -48,6 +52,8 @@ const C = {
   textMute: '#9aa8a2', // paper-dim
   edge: 'rgba(236, 242, 239, 0.28)',
   accent: '#34d399',
+  amber: '#fbbf24', // arestas inferidas (recommended_before)
+  amberDim: 'rgba(251, 191, 36, 0.55)',
 } as const
 
 function truncate(nome: string): string {
@@ -159,6 +165,7 @@ export default function PrereqGraph({ data, onAsk }: Props) {
   if (!data?.nodes?.length) return null
   const { laid, edges, colHeaders, width, height } = layout
   const rootId = data.nodes[0]?.id
+  const hasInferidas = edges.some((e) => e.inferida)
 
   const ask = (nome: string) => {
     onAsk?.(`Quais os pré-requisitos de ${nome}?`)
@@ -197,6 +204,17 @@ export default function PrereqGraph({ data, onAsk }: Props) {
             >
               <path d="M 0 1 L 9 5 L 0 9 z" fill={C.edge} />
             </marker>
+            <marker
+              id="prereq-arrow-inferida"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1 L 9 5 L 0 9 z" fill={C.amberDim} />
+            </marker>
           </defs>
 
           {/* Cabeçalhos de coluna (trajectory: Cursadas / Fase N) */}
@@ -226,6 +244,7 @@ export default function PrereqGraph({ data, onAsk }: Props) {
             const y2 = t.y + NODE_H / 2
             const mx = (x1 + x2) / 2
             const partial = e.confidence < 1
+            const inferida = Boolean(e.inferida)
             return (
               <g
                 key={`${e.source}->${e.target}`}
@@ -235,22 +254,39 @@ export default function PrereqGraph({ data, onAsk }: Props) {
                 <path
                   d={`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`}
                   fill="none"
-                  stroke={C.edge}
+                  stroke={inferida ? C.amberDim : C.edge}
                   strokeWidth={1.4}
-                  strokeDasharray={partial ? '5 4' : undefined}
-                  markerEnd="url(#prereq-arrow)"
+                  strokeDasharray={partial || inferida ? '5 4' : undefined}
+                  markerEnd={
+                    inferida
+                      ? 'url(#prereq-arrow-inferida)'
+                      : 'url(#prereq-arrow)'
+                  }
                 />
-                {partial && (
+                {inferida ? (
                   <text
                     x={mx}
                     y={(y1 + y2) / 2 - 6}
                     textAnchor="middle"
-                    fill={C.textMute}
+                    fill={C.amber}
                     fontSize={10}
                     className="font-mono"
                   >
-                    {Math.round(e.confidence * 100)}%
+                    recomendada {Math.round(e.confidence * 100)}%
                   </text>
+                ) : (
+                  partial && (
+                    <text
+                      x={mx}
+                      y={(y1 + y2) / 2 - 6}
+                      textAnchor="middle"
+                      fill={C.textMute}
+                      fontSize={10}
+                      className="font-mono"
+                    >
+                      {Math.round(e.confidence * 100)}%
+                    </text>
+                  )
                 )}
               </g>
             )
@@ -283,8 +319,15 @@ export default function PrereqGraph({ data, onAsk }: Props) {
                     height={NODE_H}
                     rx={NODE_H / 2}
                     fill={C.pillFill}
-                    stroke={isRoot ? C.pillStrokeRoot : C.pillStroke}
+                    stroke={
+                      isRoot
+                        ? C.pillStrokeRoot
+                        : n.inferida
+                          ? C.amberDim
+                          : C.pillStroke
+                    }
                     strokeWidth={isRoot ? 1.4 : 1}
+                    strokeDasharray={n.inferida ? '4 3' : undefined}
                   />
                   {n.cursada && (
                     <path
@@ -313,6 +356,22 @@ export default function PrereqGraph({ data, onAsk }: Props) {
           })}
         </svg>
       </div>
+
+      {/* Legenda: arestas âmbar tracejadas = recomendação inferida por conteúdo */}
+      {hasInferidas && (
+        <div className="border-t border-line px-4 py-2 text-[10.5px] text-paper-mute">
+          <span
+            className="mr-1.5 inline-block align-middle"
+            style={{
+              width: 18,
+              borderTop: `1.5px dashed ${C.amberDim}`,
+            }}
+            aria-hidden
+          />
+          <span style={{ color: C.amber }}>recomendada NN%</span> — inferida
+          pela sobreposição de ementas (não é pré-requisito formal)
+        </div>
+      )}
     </div>
   )
 }

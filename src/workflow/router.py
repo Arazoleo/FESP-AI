@@ -48,6 +48,8 @@ SYMBOLIC_DIRECT_INTENTS: frozenset = frozenset({
     "dependents",
     "co_prerequisite",
     "critical_disciplines",
+    # Recomendadas antes (inferência semântico-simbólica: regra recommended_before)
+    "recommended_before",
     # Planejamento de trajetória (BFS topológico no DAG de pré-requisitos)
     "trajectory_planning",
     # Quem leciona / docente leciona disciplina (resposta sim/não + lista)
@@ -373,6 +375,7 @@ INTENT_TO_AGENT: Dict[str, str] = {
     "coordenador_curso": "cursos",
     # ── Disciplinas / Pré-requisitos / Trajetória ─────────
     "prerequisite_chain": "disciplinas",
+    "recommended_before": "disciplinas",
     "dependents": "disciplinas",
     "co_prerequisite": "disciplinas",
     "critical_disciplines": "disciplinas",
@@ -549,6 +552,7 @@ _LLM_ROUTE_INTENTS: frozenset = frozenset(
         "eletivas_curso", "listar_cursos", "coordenador_curso",
         "prerequisite_chain", "dependents", "co_prerequisite",
         "critical_disciplines", "ementa_disciplina", "trajectory_planning",
+        "recommended_before",
         "artigos_sobre", "faqs",
         "conversa", "noticias", "web_sjc", "plan_curriculum", "unknown",
     }

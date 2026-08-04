@@ -15,6 +15,16 @@ class GraphRAGEngine:
 
         # Patterns regex legados (fallback)
         self.graph_patterns = {
+            # recommended_before ANTES de prerequisite_chain: "o que é BOM
+            # fazer antes de X" (recomendação inferida por conteúdo) ≠ "o que
+            # PRECISO fazer antes de X" (pré-requisito formal). Os padrões
+            # exigem bom/útil/ajuda/recomendado/vale a pena — nunca preciso/devo.
+            'recommended_before': [
+                r'(?:o\s+que\s+)?(?:[eé]\s+)?(?:bom|legal|[uú]til|recomendad[oa]s?|indicad[oa]s?)\s+(?:fazer|cursar|estudar|ter\s+feito)\s+antes\s+de\s+(?:fazer\s+|cursar\s+)?(.+?)(?:\?|$)',
+                r'o\s+que\s+ajuda(?:ria)?\s+(?:a\s+)?(?:fazer|cursar|estudar)?\s*antes\s+de\s+(?:fazer\s+|cursar\s+)?(.+?)(?:\?|$)',
+                r'vale\s+a\s+pena\s+(?:fazer|cursar)\s+(?:o\s+qu[eê]\s+)?antes\s+de\s+(.+?)(?:\?|$)',
+                r'(?:disciplinas?\s+)?recomendad[oa]s?\s+antes\s+de\s+(.+?)(?:\?|$)',
+            ],
             'prerequisite_chain': [
                 r'(?:quais?|todos?)\s+(?:s[aã]o\s+)?(?:os?\s+)?pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
                 r'(?:o\s+que|quais?\s+disciplinas?)\s+(?:preciso|precisa|devo|deve)\s+(?:fazer|cursar|ter)\s+(?:antes\s+de|para\s+fazer|para\s+cursar)\s+(.+?)(?:\?|$)',
@@ -358,6 +368,7 @@ class GraphRAGEngine:
     _DISCIPLINE_TERM_INTENTS = {
         'prerequisite_chain', 'dependents', 'discipline_docentes',
         'ementa_disciplina', 'co_prerequisite', 'trajectory_planning',
+        'recommended_before',
     }
 
     def _ground_discipline_term(self, question: str, intent: str, termo: str) -> str:
@@ -603,6 +614,32 @@ class GraphRAGEngine:
                     })
         return edges
 
+    def _safe_recommended_before(self, termo: str, n: int = 3) -> List[Tuple[str, float]]:
+        """
+        Regra recommended_before do KGC com guarda: sem embeddings (ou em
+        erro) devolve [] — as respostas simbólicas seguem intactas.
+        """
+        try:
+            return self.kg.kgc.get_recommended_before(termo, n=n)
+        except Exception:
+            return []
+
+    def _recommended_before_section(self, termo: str) -> str:
+        """
+        Seção "Recomendadas antes" (inferência semântico-simbólica) para
+        anexar à resposta de prerequisite_chain. Vazia quando nada é inferido.
+        """
+        recs = self._safe_recommended_before(termo)
+        if not recs:
+            return ""
+        itens = ", ".join(f"**{nome}** (sim {sim:.0%})" for nome, sim in recs)
+        return (
+            f"\n\n**Recomendadas antes (inferidas por conteúdo):** {itens}\n"
+            "*Regra `recommended_before`: sim_ementa ≥ θ ∧ ¬ancestral ∧ "
+            "ordem(A) < ordem(B) — não são pré-requisitos formais, o conteúdo "
+            "delas ajuda.*"
+        )
+
     def graph_payload(self, query_type: str, termo: str) -> Optional[Dict]:
         """
         Versão estruturada de query_graph para renderização de grafo no frontend.
@@ -613,11 +650,12 @@ class GraphRAGEngine:
         query_graph: é uma função paralela, somente leitura sobre o KG.
         """
         if query_type not in (
-            'prerequisite_chain', 'dependents', 'trajectory_planning'
+            'prerequisite_chain', 'dependents', 'trajectory_planning',
+            'recommended_before',
         ):
             return None
 
-        if query_type in ('prerequisite_chain', 'dependents'):
+        if query_type in ('prerequisite_chain', 'dependents', 'recommended_before'):
             nome = self._resolve_discipline_term(termo)
 
             if query_type == 'prerequisite_chain':
@@ -630,10 +668,47 @@ class GraphRAGEngine:
                         vistos.add(n)
                         nomes.append(n)
                 nodes = [{"id": n, "nome": n} for n in nomes]
+                edges = self._direct_prereq_edges(nomes)
+                # Arestas inferidas (recommended_before): tracejadas + âmbar
+                # no frontend, confidence = similaridade (< 1.0 sempre).
+                for rec_nome, sim in self._safe_recommended_before(nome):
+                    if rec_nome not in vistos:
+                        vistos.add(rec_nome)
+                        nodes.append({
+                            "id": rec_nome, "nome": rec_nome, "inferida": True,
+                        })
+                    edges.append({
+                        "source": rec_nome,
+                        "target": nome,
+                        "confidence": round(sim, 2),
+                        "inferida": True,
+                    })
                 return {
                     "type": "prerequisite_chain",
                     "nodes": nodes,
-                    "edges": self._direct_prereq_edges(nomes),
+                    "edges": edges,
+                }
+
+            if query_type == 'recommended_before':
+                recs = self._safe_recommended_before(nome)
+                if not recs:
+                    return None
+                nodes = [{"id": nome, "nome": nome}]
+                edges = []
+                for rec_nome, sim in recs:
+                    nodes.append({
+                        "id": rec_nome, "nome": rec_nome, "inferida": True,
+                    })
+                    edges.append({
+                        "source": rec_nome,
+                        "target": nome,
+                        "confidence": round(sim, 2),
+                        "inferida": True,
+                    })
+                return {
+                    "type": "recommended_before",
+                    "nodes": nodes,
+                    "edges": edges,
                 }
 
             # dependents
@@ -697,7 +772,7 @@ class GraphRAGEngine:
         Executa uma query no Knowledge Graph e formata a resposta.
         """
         # Normalizar termos de disciplina (expande siglas, corrige casing)
-        if query_type in ('prerequisite_chain', 'dependents', 'discipline_docentes'):
+        if query_type in ('prerequisite_chain', 'dependents', 'discipline_docentes', 'recommended_before'):
             termo = self._resolve_discipline_term(termo)
 
         if query_type == 'prerequisite_chain':
@@ -713,9 +788,37 @@ Para cursar **{termo}**, você precisa ter cursado anteriormente:
 
 Total: {len(chain)} pré-requisito(s) na cadeia.
 
-*Regras aplicadas: `prereq_transitivity` (fecho transitivo verificado em {len(chain)} aresta(s) do Knowledge Graph)*"""
+*Regras aplicadas: `prereq_transitivity` (fecho transitivo verificado em {len(chain)} aresta(s) do Knowledge Graph)*{self._recommended_before_section(termo)}"""
             else:
-                return f"**{termo}** não possui pré-requisitos ou não foi encontrada no sistema."
+                return (
+                    f"**{termo}** não possui pré-requisitos ou não foi encontrada no sistema."
+                    f"{self._recommended_before_section(termo)}"
+                )
+
+        elif query_type == 'recommended_before':
+            recs = self._safe_recommended_before(termo)
+            if recs:
+                linhas = "\n".join(
+                    f"- **{nome}** — similaridade de ementa {sim:.0%}"
+                    for nome, sim in recs
+                )
+                return f"""**Recomendadas antes de {termo} (inferidas por conteúdo):**
+
+{linhas}
+
+Estas disciplinas **não são pré-requisitos formais** de {termo}: a recomendação é inferida pela sobreposição das ementas, respeitando a ordem do currículo e ficando fora da cadeia de pré-requisitos.
+
+*Regra aplicada: `recommended_before` — sim_ementa(A,B) ≥ θ ∧ ¬ancestral(A,B) ∧ ¬ancestral(B,A) ∧ ordem(A) < ordem(B)*"""
+            if not self.kg._find_node(termo, "disciplina"):
+                return (
+                    f"Não encontrei a disciplina **{termo}** no sistema. "
+                    "Pode me dizer o nome completo dela?"
+                )
+            return (
+                f"Não encontrei disciplinas com conteúdo suficientemente próximo de **{termo}** "
+                "fora da cadeia de pré-requisitos para recomendar. "
+                f"Os pré-requisitos formais você vê com \"Quais os pré-requisitos de {termo}?\"."
+            )
         
         elif query_type == 'dependents':
             dependents = self.kg.get_dependent_disciplines(termo)

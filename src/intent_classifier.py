@@ -78,6 +78,15 @@ class IntentClassifier:
             "para fazer banco de dados preciso cursar o que antes",
             "quais disciplinas são necessárias antes de IA",
         ],
+        'recommended_before': [
+            "o que é bom fazer antes de projeto e análise de algoritmos",
+            "o que ajuda a fazer antes de compiladores",
+            "quais disciplinas são recomendadas antes de banco de dados",
+            "o que vale a pena cursar antes de inteligência artificial",
+            "que matéria é útil fazer antes de redes de computadores",
+            "o que é legal ter feito antes de cálculo numérico",
+            "disciplinas recomendadas antes de estrutura de dados",
+        ],
         'dependents': [
             "quais disciplinas dependem de cálculo 1",
             "para que serve algoritmos como pré-requisito",
@@ -230,6 +239,13 @@ class IntentClassifier:
     
     # Regex rápido para casos óbvios (fallback/boost)
     QUICK_PATTERNS = {
+        # recommended_before ANTES de ementa_disciplina: "o que é BOM fazer
+        # antes de X" casaria com o "o que é" da ementa. Exige bom/útil/ajuda/
+        # recomendado/vale a pena — NUNCA preciso/devo, que é prerequisite_chain.
+        'recommended_before': (
+            r'(?:bom|legal|[uú]til|recomendad\w*|indicad\w*|vale\s+a\s+pena|ajuda(?:ria)?)\s+'
+            r'(?:a\s+)?(?:fazer|cursar|estudar|ter\s+feito)?\s*antes\s+de\b'
+        ),
         # ementa_disciplina tem PRIORIDADE sobre prerequisite_chain — "o que é X?" ≠ pré-req
         'ementa_disciplina': (
             r'ementa\b'
@@ -286,6 +302,9 @@ class IntentClassifier:
             r'(?:qual\s+(?:a\s+)?)?carga\s+hor[aá]ria\s+(?:de|da|do)\s+(.+?)(?:\?|$)',
             r'bibliograf(?:ia)?\s+(?:de|da|do)\s+(.+?)(?:\?|$)',
             r'explique?\s+(?:a\s+)?(?:disciplina\s+(?:de\s+)?)?(.+?)(?:\?|$)',
+        ],
+        'recommended_before': [
+            r'antes\s+de\s+(?:fazer\s+|cursar\s+|estudar\s+)?(.+?)(?:\?|$)',
         ],
         'prerequisite_chain': [
             r'pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
@@ -378,7 +397,8 @@ Dada a pergunta do usuário, retorne um JSON com:
 
 INTENÇÕES:
 ementa_disciplina   — o que é / ementa / conteúdo / explique uma disciplina
-prerequisite_chain  — pré-requisitos para cursar uma disciplina
+prerequisite_chain  — pré-requisitos para cursar uma disciplina ("o que PRECISO fazer antes de X")
+recommended_before  — o que é BOM/recomendado/útil fazer antes de uma disciplina (não é pré-requisito formal)
 co_prerequisite     — disciplinas que compartilham os mesmos pré-requisitos / co-pré-requisitos
 critical_disciplines — disciplinas mais importantes/críticas do currículo (mais dependentes, mais desbloqueiam)
 dependents          — quais disciplinas dependem de / desbloqueiam outra

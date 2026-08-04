@@ -133,6 +133,14 @@ class InferenceEngine:
         "minimal_path": (
             "∀target,C: min{|path|: cursando(path) → desbloqueado(target, C∪path)}"
         ),
+        # Recomendação semântico-simbólica: conteúdo sobreposto (embeddings de
+        # NOME+EMENTA), fora da cadeia do DAG, respeitando a ordem do currículo
+        # (termo da matriz ou, na falta, profundidade no DAG). θ calibrado
+        # empiricamente (KGCompletion.REC_BEFORE_THRESHOLD).
+        "recommended_before": (
+            "∀a,b: sim_ementa(a,b) ≥ θ ∧ ¬ancestral(a,b) ∧ ¬ancestral(b,a) "
+            "∧ ordem(a) < ordem(b) → recommended_before(a,b)"
+        ),
     }
 
     def __init__(self, kg: "KnowledgeGraph"):
@@ -255,6 +263,22 @@ class InferenceEngine:
             if n_dependentes >= min_dependents:
                 result.append((nome, n_dependentes))
         return sorted(result, key=lambda x: -x[1])
+
+    # ── Regra: recommended_before ─────────────────────────────────────────────
+
+    def get_recommended_before(self, discipline: str, n: int = 3) -> List[Tuple[str, float]]:
+        """
+        Disciplinas recomendadas ANTES de `discipline` (regra recommended_before):
+        NÃO são pré-requisitos nem estão na mesma cadeia do DAG, mas o conteúdo
+        (ementa) se sobrepõe e elas vêm antes na ordem do currículo.
+
+        Implementação no KGCompletion (que detém os embeddings); sem embeddings
+        injetados retorna [] (graceful).
+        """
+        try:
+            return self.kg.kgc.get_recommended_before(discipline, n=n)
+        except Exception:
+            return []
 
     # ── Regra: co_prerequisite ────────────────────────────────────────────────
 

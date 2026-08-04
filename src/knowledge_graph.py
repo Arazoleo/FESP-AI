@@ -246,6 +246,13 @@ class KnowledgeGraph:
 
         docentes = self._extract_list_section(content, 'Docentes')
 
+        # Ementa (truncada): enriquece o nó para a similaridade semântica do
+        # KGC (regra recommended_before) — sem ementa, o KGC usa só o nome.
+        ementa = ""
+        ementa_match = re.search(r'##\s+Ementa\s*\n+(.*?)(?=\n#{2,3}\s|\Z)', content, re.DOTALL)
+        if ementa_match:
+            ementa = re.sub(r'\s+', ' ', ementa_match.group(1)).strip()[:800]
+
         prereqs = []
 
         prereq_match = re.search(r'## Pré-requisitos\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
@@ -256,7 +263,7 @@ class KnowledgeGraph:
 
         
         disc_id = f"DISC:{nome}"
-        self.graph.add_node(disc_id, tipo="disciplina", nome=nome, codigo=codigo, sigla=sigla, termo=termo)
+        self.graph.add_node(disc_id, tipo="disciplina", nome=nome, codigo=codigo, sigla=sigla, termo=termo, ementa=ementa)
         self._index_node(disc_id, {"nome": nome, "codigo": codigo, "sigla": sigla}, authoritative=True)
         
         for docente in docentes:
@@ -1445,6 +1452,9 @@ class KGCompletion:
 
     def invalidate_cache(self) -> None:
         self._cache.clear()
+        self._rec_cache = {}
+        self._rec_doc_vecs = None
+        self._depth_cache = {}
 
     # ──────────────────────────────────────────────────────────────────────
     # 1. Assinatura estrutural (GNN 1-hop + 2-hop sem treino)
@@ -1598,6 +1608,194 @@ class KGCompletion:
             }
         except Exception:
             return {}
+
+    # ──────────────────────────────────────────────────────────────────────
+    # 3b. Recomendadas antes (semântico + simbólico)
+    #
+    # Regra formal (também documentada em InferenceEngine.RULES):
+    #   recommended_before(A,B) ⟺ sim_ementa(A,B) ≥ θ ∧ ¬ancestral(A,B)
+    #                             ∧ ¬ancestral(B,A) ∧ ordem(A) < ordem(B)
+    #
+    # sim_ementa: cosseno dos embeddings de NOME + EMENTA (ementa enriquecida
+    # no nó em _process_discipline_file); ordem(): `termo` da matriz quando
+    # AMBOS os nós têm o atributo, senão profundidade no DAG de pré-requisitos;
+    # empate de ordem → não inferir direção. θ calibrado empiricamente
+    # (distribuição das similaridades reais com embeddinggemma; ver relatório).
+    # ──────────────────────────────────────────────────────────────────────
+
+    # θ = 0.65 ≈ p99 da distribuição de similaridade dos 32k pares elegíveis
+    # (embeddinggemma 768d, NOME+EMENTA): p50=0.38, p90=0.51, p95=0.55,
+    # p99=0.65, max=0.88. Acima de 0.65 os pares validados manualmente são
+    # coerentes (ex.: EDO→EDP 0.81, Arquitetura de Computadores→SO 0.68,
+    # Química Geral Exp.→Química Analítica 0.80); abaixo entram pares
+    # absurdos entre áreas ("Tecnologia e Meio Ambiente→Proc. Cerâmicos" 0.64).
+    REC_BEFORE_THRESHOLD: float = 0.65
+
+    def _termo_ordem(self, node_data: dict) -> Optional[int]:
+        """Parse do atributo `termo` do nó ("4", "4º", None...) → int ou None."""
+        termo = node_data.get("termo")
+        if termo is None:
+            return None
+        m = re.search(r'\d+', str(termo))
+        return int(m.group()) if m else None
+
+    def _dag_depth(self, nome: str) -> int:
+        """Profundidade no DAG de pré-requisitos (maior cadeia de ancestrais)."""
+        cache = getattr(self, "_depth_cache", None)
+        if cache is None:
+            cache = self._depth_cache = {}
+        norm = self.kg._normalize_text(nome)
+        if norm in cache:
+            return cache[norm]
+        cache[norm] = 0  # guarda contra ciclos acidentais
+        prereqs = self.kg.get_prerequisite_chain(nome, max_depth=1)
+        depth = 1 + max((self._dag_depth(p) for p in prereqs), default=-1)
+        cache[norm] = depth
+        return depth
+
+    def _ordem_pair(self, data_a: dict, data_b: dict) -> Tuple[float, float]:
+        """
+        ordem() dos dois lados na MESMA escala: termo da matriz quando ambos
+        os nós têm o atributo; senão profundidade no DAG de pré-requisitos.
+        """
+        ta, tb = self._termo_ordem(data_a), self._termo_ordem(data_b)
+        if ta is not None and tb is not None:
+            return float(ta), float(tb)
+        return (
+            float(self._dag_depth(data_a.get("nome", ""))),
+            float(self._dag_depth(data_b.get("nome", ""))),
+        )
+
+    def _doc_text(self, data: dict) -> str:
+        """Documento de embedding da disciplina: NOME + EMENTA (quando existe)."""
+        nome = data.get("nome", "")
+        ementa = (data.get("ementa") or "").strip()
+        return f"{nome}. {ementa}" if ementa else nome
+
+    def _doc_vectors(self) -> Dict[str, List[float]]:
+        """
+        Vetores de NOME+EMENTA de todas as disciplinas autoritativas do KG
+        (cache lazy: UMA chamada batch de embeddings na primeira consulta —
+        nunca o produto cartesiano de pares no build).
+        """
+        model = getattr(self, "_emb_model", None)
+        if model is None:
+            return {}
+        vecs = getattr(self, "_rec_doc_vecs", None)
+        if vecs is not None:
+            return vecs
+        try:
+            entries: List[Tuple[str, str]] = []  # (norm_nome, doc)
+            seen: Set[str] = set()
+            for _, data in self.kg.graph.nodes(data=True):
+                if data.get("tipo") != "disciplina":
+                    continue
+                nome = data.get("nome", "")
+                norm = self.kg._normalize_text(nome)
+                if not norm or norm in seen:
+                    continue
+                seen.add(norm)
+                entries.append((norm, self._doc_text(data)))
+            vectors = model.embed_documents([doc for _, doc in entries])
+            self._rec_doc_vecs = {
+                norm: vec for (norm, _), vec in zip(entries, vectors)
+            }
+        except Exception:
+            return {}
+        return self._rec_doc_vecs
+
+    def _descendants_norm(self, nome: str) -> Set[str]:
+        """Fecho transitivo dos dependentes (normalizado) — ancestral(nome, ·)."""
+        result: Set[str] = set()
+        queue = [nome]
+        while queue:
+            atual = queue.pop()
+            for dep in self.kg.get_dependent_disciplines(atual):
+                dn = self.kg._normalize_text(dep)
+                if dn not in result:
+                    result.add(dn)
+                    queue.append(dep)
+        return result
+
+    def get_recommended_before(
+        self,
+        discipline: str,
+        n: int = 3,
+        threshold: Optional[float] = None,
+    ) -> List[Tuple[str, float]]:
+        """
+        Disciplinas RECOMENDADAS ANTES de `discipline` (não pré-requisitos):
+        conteúdo (ementa) fortemente sobreposto, fora da cadeia do DAG, e que
+        vêm antes na ordem do currículo. Confiança da aresta = similaridade
+        (sempre < 1.0 → renderizada tracejada no grafo do chat).
+
+        Sem embeddings injetados (set_embeddings) retorna [] (graceful).
+        """
+        model = getattr(self, "_emb_model", None)
+        if model is None:
+            return []
+        th = self.REC_BEFORE_THRESHOLD if threshold is None else threshold
+
+        target_id = self.kg._find_node(discipline, "disciplina")
+        if not target_id:
+            return []
+        data_b = self.kg.graph.nodes[target_id]
+        nome_b = data_b.get("nome", discipline)
+        norm_b = self.kg._normalize_text(nome_b)
+
+        cache = getattr(self, "_rec_cache", None)
+        if cache is None:
+            cache = self._rec_cache = {}
+        cache_key = (norm_b, th)
+        if cache_key in cache:
+            return cache[cache_key][:n]
+
+        vecs = self._doc_vectors()
+        vec_b = vecs.get(norm_b)
+        if vec_b is None:
+            return []
+
+        import math
+
+        def _cos(a, b):
+            num = sum(x * y for x, y in zip(a, b))
+            na = math.sqrt(sum(x * x for x in a))
+            nb = math.sqrt(sum(y * y for y in b))
+            return num / (na * nb) if na and nb else 0.0
+
+        # Filtros simbólicos: fora da cadeia (nos dois sentidos) e ordem menor
+        ancestors_b = {
+            self.kg._normalize_text(a) for a in self.kg.get_all_ancestors(nome_b)
+        }
+        descendants_b = self._descendants_norm(nome_b)
+
+        results: List[Tuple[str, float]] = []
+        vistos: Set[str] = set()
+        for _, data_a in self.kg.graph.nodes(data=True):
+            if data_a.get("tipo") != "disciplina":
+                continue
+            nome_a = data_a.get("nome", "")
+            norm_a = self.kg._normalize_text(nome_a)
+            if not norm_a or norm_a == norm_b or norm_a in vistos:
+                continue
+            vistos.add(norm_a)
+            if norm_a in ancestors_b or norm_a in descendants_b:
+                continue  # ¬ancestral(A,B) ∧ ¬ancestral(B,A)
+            vec_a = vecs.get(norm_a)
+            if vec_a is None:
+                continue
+            sim = _cos(vec_a, vec_b)
+            if sim < th:
+                continue  # sim_ementa(A,B) ≥ θ
+            ordem_a, ordem_b = self._ordem_pair(data_a, data_b)
+            if ordem_a >= ordem_b:
+                continue  # ordem(A) < ordem(B); empate → não inferir direção
+            # Confiança < 1.0 por construção (aresta inferida, não verificada)
+            results.append((nome_a, round(min(sim, 0.99), 4)))
+
+        results.sort(key=lambda x: -x[1])
+        cache[cache_key] = results
+        return results[:n]
 
     # ──────────────────────────────────────────────────────────────────────
     # 4. Inferência de arestas ausentes

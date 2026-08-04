@@ -267,7 +267,7 @@ def build_pipeline(rag_instance):
                         graph_data = None
                         if detected_intent in (
                             "prerequisite_chain", "dependents",
-                            "trajectory_planning",
+                            "trajectory_planning", "recommended_before",
                         ):
                             try:
                                 graph_data = rag_instance.graph_rag.graph_payload(
