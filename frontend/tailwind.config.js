@@ -19,7 +19,7 @@ module.exports = {
         paper: {
           DEFAULT: '#ecf2ef',
           dim: '#9aa8a2',
-          mute: '#5f6b66',
+          mute: '#7d8c86', // ≥4.5:1 sobre ink (5.5:1) e ink.raise (5.2:1) — WCAG 2.1 AA 1.4.3
         },
         // Acento único (verde-esmeralda)
         accent: {
