@@ -475,6 +475,15 @@ export default function ChatPage() {
   return (
     <div className="relative flex h-screen flex-col overflow-hidden bg-ink text-paper">
 
+      {/* ── Acessibilidade: título da página e skip-link ── */}
+      <h1 className="sr-only">FESP-AI — Assistente acadêmico da UNIFESP ICT</h1>
+      <a
+        href="#chat-main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:border focus:border-accent focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
+      >
+        Pular para a conversa
+      </a>
+
       {/* ── Header ── */}
       <header className="relative z-20 border-b border-line bg-ink/80 backdrop-blur-xl">
         <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6">
@@ -544,7 +553,7 @@ export default function ChatPage() {
       </header>
 
       {/* ── Mensagens ── */}
-      <main ref={messagesContainerRef} className="relative z-10 flex-1 overflow-y-auto">
+      <main id="chat-main" ref={messagesContainerRef} className="relative z-10 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
 
           {/* Estado vazio */}
