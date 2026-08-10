@@ -16,7 +16,9 @@ Two other cycles are reported in the paper and are out of scope here: automated
 accessibility conformance (Cycle 1, AMAWeb/WCAG 2.1) and answer-consistency
 benchmarking against baselines (Cycle 3). For the record, the Cycle 1 issues
 were corrected after the initial assessment of 3 August 2026 and a re-test
-returned no errors on either page.
+returned no errors on either page, both scoring 9.8/10. The re-test reports are
+archived in this directory (`amaweb_retest_landing.pdf`,
+`amaweb_retest_chat.pdf`).
 
 ## 2. Protocol
 

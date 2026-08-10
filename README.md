@@ -50,7 +50,7 @@ flowchart TD
 
 O sistema foi avaliado em três ciclos iterativos - interface, interação e camada de raciocínio - cada um alimentando correções na camada examinada.
 
-**Ciclo 1 - Acessibilidade (WCAG 2.1).** Conformidade avaliada com o AMAWeb (validador institucional da UNIFESP): landing page 9,8/10 e chat 9,0/10 na primeira rodada; os cinco erros apontados (contraste do texto secundário, h1 e skip link ausentes no chat) foram corrigidos e o re-teste não reportou erros.
+**Ciclo 1 - Acessibilidade (WCAG 2.1).** Conformidade avaliada com o AMAWeb (validador institucional da UNIFESP): landing page 9,8/10 e chat 9,0/10 na primeira rodada; os cinco erros apontados (contraste do texto secundário, h1 e skip link ausentes no chat) foram corrigidos e o re-teste não reportou erros, com ambas as páginas em 9,8/10. Relatórios do re-teste: [landing](docs/amaweb_retest_landing.pdf), [chat](docs/amaweb_retest_chat.pdf).
 
 **Ciclo 2 - Usabilidade (n = 10, formativo).** Dez estudantes de sete cursos do ICT executaram seis fluxos de tarefa com **100% de sucesso não assistido**; SUS médio **90,0** (mediana 90,0, DP 2,0). Protocolo, resultados consolidados, matriz SUS por participante e codificação temática das entrevistas em [`docs/usability_report.md`](docs/usability_report.md).
 
