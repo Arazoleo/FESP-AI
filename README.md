@@ -9,7 +9,7 @@
 
 O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto de Ciência e Tecnologia da UNIFESP (campus São José dos Campos). Ele combina um **Knowledge Graph** curricular (disciplinas, pré-requisitos, docentes, cursos), **regras de inferência FOL** executadas via **PyReason** e um **LLM** (Ollama), orquestrados por um pipeline **multi-agente em LangGraph**: com RAG híbrido (vetorial + BM25) sobre ementas e regimentos e um corpus vivo do **site institucional do campus**. A tese central: o LLM interpreta e redige, mas **quem julga os fatos é o grafo** - reduzindo alucinação em respostas acadêmicas críticas (pré-requisitos, matrizes curriculares, docentes).
 
-> **Nota:** este repositório acompanha o artigo *Neuro-Symbolic Graph-RAG for Academic Advising: A Three-Cycle Evaluation of a University Web Chatbot* (CTIC — WebMedia 2026). Os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo; o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
+> **Nota:** este repositório acompanha o artigo *Neuro-Symbolic Graph-RAG for Academic Advising: A Three-Cycle Evaluation of a University Web Chatbot* (CTIC - WebMedia 2026). Os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo; o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
 
 ![FESP-AI em execução](docs/screenshot-app.png)
 
@@ -42,24 +42,24 @@ flowchart TD
 - **B4: Regras FOL explícitas com traço** - respostas simbólicas citam as regras aplicadas (`prereq_transitivity`, `minimal_path`, `unlock_condition`);
 - **B5: KGC estrutural + semântico** - completação do grafo combinando similaridade estrutural (0.6) e embeddings semânticos (0.4).
 
-**Outras peças:** fusão multi-fonte **KG ↔ site** com regra de precedência (em divergência, vale o KG e a resposta avisa que a página pode estar desatualizada); **crawler multi-domínio** do site do campus com seccionamento por headings (páginas longas viram uma entrada de corpus por seção h2/h3, com âncora); **telemetria** do loop neurossimbólico (grounding, correções B1, reescritas LLM, claims) em `GET /telemetry`; `kg.lint()` no build do grafo (duplicatas, ciclos no DAG, pré-requisitos pendurados); **follow-up proativo de atividades complementares** — respostas sobre AC terminam oferecendo o detalhamento por eixo e o aceite ("sim, pode") vira resposta simbólica direta do regulamento estruturado, sem LLM (melhoria derivada do ciclo 2 de usabilidade).
+**Outras peças:** fusão multi-fonte **KG ↔ site** com regra de precedência (em divergência, vale o KG e a resposta avisa que a página pode estar desatualizada); **crawler multi-domínio** do site do campus com seccionamento por headings (páginas longas viram uma entrada de corpus por seção h2/h3, com âncora); **telemetria** do loop neurossimbólico (grounding, correções B1, reescritas LLM, claims) em `GET /telemetry`; `kg.lint()` no build do grafo (duplicatas, ciclos no DAG, pré-requisitos pendurados); **follow-up proativo de atividades complementares** - respostas sobre AC terminam oferecendo o detalhamento por eixo e o aceite ("sim, pode") vira resposta simbólica direta do regulamento estruturado, sem LLM (melhoria derivada do ciclo 2 de usabilidade).
 
 ## Avaliação (três ciclos)
 
-O sistema foi avaliado em três ciclos iterativos — interface, interação e camada de raciocínio — cada um alimentando correções na camada examinada.
+O sistema foi avaliado em três ciclos iterativos - interface, interação e camada de raciocínio - cada um alimentando correções na camada examinada.
 
-**Ciclo 1 — Acessibilidade (WCAG 2.1).** Conformidade avaliada com o AMAWeb (validador institucional da UNIFESP): landing page 9,8/10 e chat 9,0/10 na primeira rodada; os cinco erros apontados (contraste do texto secundário, h1 e skip link ausentes no chat) foram corrigidos e o re-teste não reportou erros.
+**Ciclo 1 - Acessibilidade (WCAG 2.1).** Conformidade avaliada com o AMAWeb (validador institucional da UNIFESP): landing page 9,8/10 e chat 9,0/10 na primeira rodada; os cinco erros apontados (contraste do texto secundário, h1 e skip link ausentes no chat) foram corrigidos e o re-teste não reportou erros.
 
-**Ciclo 2 — Usabilidade (n = 10, formativo).** Dez estudantes de sete cursos do ICT executaram seis fluxos de tarefa com **100% de sucesso não assistido**; SUS médio **90,0** (mediana 90,0, DP 2,0). Protocolo, resultados consolidados, matriz SUS por participante e codificação temática das entrevistas em [`docs/usability_report.md`](docs/usability_report.md).
+**Ciclo 2 - Usabilidade (n = 10, formativo).** Dez estudantes de sete cursos do ICT executaram seis fluxos de tarefa com **100% de sucesso não assistido**; SUS médio **90,0** (mediana 90,0, DP 2,0). Protocolo, resultados consolidados, matriz SUS por participante e codificação temática das entrevistas em [`docs/usability_report.md`](docs/usability_report.md).
 
-**Ciclo 3 — Consistência de respostas.** Benchmark de 57 perguntas curadas (8 categorias temáticas, gabarito de documentos oficiais) + 25 queries dirigidas às regras FOL, sobre um KG de 690 nós e 1584 arestas construído de 236 arquivos institucionais. Baselines progressivos com o mesmo corpus e modelo de geração:
+**Ciclo 3 - Consistência de respostas.** Benchmark de 57 perguntas curadas (8 categorias temáticas, gabarito de documentos oficiais) + 25 queries dirigidas às regras FOL, sobre um KG de 690 nós e 1584 arestas construído de 236 arquivos institucionais. Baselines progressivos com o mesmo corpus e modelo de geração:
 
 | Sistema | Acc estrita | Acc ponderada | Erro |
 |---|---|---|---|
-| B1 — LLM-only | 7,0% | 19,3% | 68,4% |
-| B2 — RAG padrão | 7,0% | 28,1% | 50,9% |
-| B3 — Graph-RAG | 57,9% | 60,5% | 36,8% |
-| **B4 — NS Graph-RAG (este sistema)** | **84,2%** | **87,7%** | **8,8%** |
+| B1 - LLM-only | 7,0% | 19,3% | 68,4% |
+| B2 - RAG padrão | 7,0% | 28,1% | 50,9% |
+| B3 - Graph-RAG | 57,9% | 60,5% | 36,8% |
+| **B4 - NS Graph-RAG (este sistema)** | **84,2%** | **87,7%** | **8,8%** |
 
 Nas 25 queries neurossimbólicas: routing **100%**, verificação simbólica **96%**, com o caminho simbólico respondendo em 1,56 s contra 4,76 s dos caminhos neurais. Anotação humana dupla (κ ≈ 0,54) com cross-check por LLM-as-judge (> 4,7/5 nas quatro dimensões). O benchmark usou `ministral-3:8b`; o sistema em produção roda `gemma4:12b`, que preserva a ordenação dos baselines.
 
@@ -76,7 +76,7 @@ cp .env.example .env        # escolha MODEL_NAME / EMBEDDING_MODEL
 docker compose up -d        # backend :8000 + frontend :3000
 ```
 
-Requer Ollama acessível (local ou cloud: veja `OLLAMA_CLOUD.md`) com os modelos baixados (`ollama pull gemma4:31b-cloud` e `ollama pull embeddinggemma`). O modelo original do sistema — usado em produção e reportado no artigo — é o `gemma4:12b`; o default `gemma4:31b-cloud` atende os testes atuais via Ollama Cloud (ajuste `MODEL_NAME` no `.env` para rodar o original localmente).
+Requer Ollama acessível (local ou cloud: veja `OLLAMA_CLOUD.md`) com os modelos baixados (`ollama pull gemma4:31b-cloud` e `ollama pull embeddinggemma`). O modelo original do sistema - usado em produção e reportado no artigo - é o `gemma4:12b`; o default `gemma4:31b-cloud` atende os testes atuais via Ollama Cloud (ajuste `MODEL_NAME` no `.env` para rodar o original localmente).
 
 **Endpoints principais** (`http://localhost:8000`, docs interativas em `/docs`):
 

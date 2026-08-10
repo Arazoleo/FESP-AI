@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Avaliação conversacional do site do campus — FESP-AI.
+Avaliação conversacional do site do campus - FESP-AI.
 
 10 conversas multi-turno (mesmo conversation_id por conversa) cobrindo todos os
 tópicos do corpus do site SJC: página do BCT (visão geral, ingresso, FAQ,
@@ -12,7 +12,7 @@ e honestidade em negativos.
 Checagens por turno:
   - agente ativo dentro do conjunto esperado
   - resposta contém ao menos uma keyword esperada (sem acentos, case-insensitive)
-  - turnos 2+ NÃO recomeçam com saudação ("Olá!", "Oi!"...) — continuidade
+  - turnos 2+ NÃO recomeçam com saudação ("Olá!", "Oi!"...) - continuidade
   - negativos: resposta não inventa (proíbe padrões tipo "R$")
 
 Uso:
@@ -45,13 +45,9 @@ _GREETING_RE = re.compile(
     r"^\s*[*_#\s]*(?:ol[aá]|oi+|opa|e\s*a[ií]|eai|tudo\s+bem|salve)\b", re.IGNORECASE
 )
 
-# ---------------------------------------------------------------------------
-# Turno: (mensagem, agentes aceitos (set | None=qualquer), keywords any-of,
-#         proibidos na resposta (lista de regex, opcional))
-# ---------------------------------------------------------------------------
 
 CONVERSAS = [
-    ("C1 — BCT: visão geral + fusão KG↔site", [
+    ("C1 - BCT: visão geral + fusão KG↔site", [
         ("O que é o BCT?",
          {"web_sjc"}, ["ciencia e tecnologia", "interdisciplinar"], []),
         ("e como eu ingresso nele?",
@@ -59,7 +55,7 @@ CONVERSAS = [
         ("quantos termos tem o BCT?",
          None, ["termo", "semestre", "seis", "6"], []),
     ]),
-    ("C2 — BCT: FAQ de integralização", [
+    ("C2 - BCT: FAQ de integralização", [
         ("Quantas horas preciso para integralizar o BCT integral?",
          None, ["horas", "carga"], []),
         ("e qual o prazo máximo para concluir o curso?",
@@ -67,7 +63,7 @@ CONVERSAS = [
         ("o que são atividades curriculares extensionistas?",
          None, ["extensionista", "extensao"], []),
     ]),
-    ("C3 — BCT: matrizes e estrutura", [
+    ("C3 - BCT: matrizes e estrutura", [
         ("Como funciona a matriz curricular do BCT?",
          None, ["fixas", "eletivas", "matriz", "unidades curriculares"], []),
         ("entrei em 2021, qual matriz de transição eu sigo?",
@@ -75,7 +71,7 @@ CONVERSAS = [
         ("quem faz parte da comissão de curso do BCT?",
          None, ["comissao", "prof"], []),
     ]),
-    ("C4 — Graduação: procedimentos da secretaria", [
+    ("C4 - Graduação: procedimentos da secretaria", [
         ("Como emito um atestado de matrícula?",
          {"web_sjc"}, ["atestado", "matricula"], []),
         ("e como solicito o diploma?",
@@ -83,7 +79,7 @@ CONVERSAS = [
         ("como funciona o aproveitamento de estudos?",
          None, ["aproveitamento"], []),
     ]),
-    ("C5 — Biblioteca", [
+    ("C5 - Biblioteca", [
         ("Como faço o cadastro de usuário na biblioteca?",
          {"web_sjc"}, ["biblioteca", "cadastro"], []),
         ("tem salas de estudo em grupo?",
@@ -91,13 +87,13 @@ CONVERSAS = [
         ("como funciona a verificação de similaridade para plágio?",
          None, ["similaridade", "plagio"], []),
     ]),
-    ("C6 — Pós-graduação e pesquisa", [
+    ("C6 - Pós-graduação e pesquisa", [
         ("Tem mestrado no campus? Como ingresso na pós?",
          {"web_sjc"}, ["mestrado", "pos-graduacao", "pos"], []),
         ("quais programas de pós-graduação existem no ICT?",
          None, ["programa", "pos"], []),
     ]),
-    ("C7 — Institucional e contatos", [
+    ("C7 - Institucional e contatos", [
         ("Qual o contato da secretaria de graduação?",
          {"web_sjc"}, ["contato", "email", "@", "telefone", "atendimento"], []),
         ("quem é a direção acadêmica do campus?",
@@ -105,7 +101,7 @@ CONVERSAS = [
         ("o que faz a congregação do instituto?",
          None, ["congregacao"], []),
     ]),
-    ("C8 — Outros cursos do site", [
+    ("C8 - Outros cursos do site", [
         ("Como funciona a Engenharia Biomédica?",
          {"web_sjc"}, ["biomedica"], []),
         ("O que é o BCC?",
@@ -113,7 +109,7 @@ CONVERSAS = [
         ("quem coordena o BCC?",
          None, ["coordenad"], []),
     ]),
-    ("C9 — Robustez NL: anáforas (conversa que quebrava)", [
+    ("C9 - Robustez NL: anáforas (conversa que quebrava)", [
         ("Como funciona a matriz curricular do BCC?",
          None, ["bcc", "matriz", "termos", "computacao"], []),
         ("E tem como saber algumas dessas eletivas?",
@@ -122,7 +118,7 @@ CONVERSAS = [
         ("e o coordenador?",
          None, ["coordenad"], []),
     ]),
-    ("C10 — Honestidade em negativos", [
+    ("C10 - Honestidade em negativos", [
         ("Qual a mensalidade do BCT?",
          None, ["nao", "gratuito", "publica"],
          [r"r\$\s*\d"]),

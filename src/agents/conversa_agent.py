@@ -21,14 +21,13 @@ class ConversaAgent(BaseAgent):
 
     name = "conversa"
     description = "Assistente conversacional para saudações e conversa do dia a dia"
-    color = "#22c55e"  # Green
+    color = "#22c55e"
 
     def retrieve(self, question: str, intent: str, term: str) -> str:
-        # Conversa social não consulta a base de dados.
         return ""
 
     def get_prompt_template(self) -> str:
-        return """Voce e o assistente virtual da UNIFESP ICT — simpatico, acolhedor e bem-humorado, como um colega que adora ajudar. Fale sempre em PORTUGUES BRASILEIRO, de forma curta e natural.
+        return """Voce e o assistente virtual da UNIFESP ICT - simpatico, acolhedor e bem-humorado, como um colega que adora ajudar. Fale sempre em PORTUGUES BRASILEIRO, de forma curta e natural.
 
 O usuario disse: {question}
 
@@ -44,7 +43,7 @@ Como responder:
 Resposta:"""
 
     def answer(self, question: str, intent: str, term: str, history: str = "") -> Dict[str, Any]:
-        """Gera resposta conversacional direta — sem retrieval nem validação simbólica."""
+        """Gera resposta conversacional direta - sem retrieval nem validação simbólica."""
         template = self.get_prompt_template()
         if history:
             template = template.replace(

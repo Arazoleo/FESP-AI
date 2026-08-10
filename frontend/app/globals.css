@@ -2,26 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============================================================
-   FESP-AI — Design system
-   Direção: escuro sóbrio, um único acento (verde-esmeralda),
-   tipografia display (Space Grotesk) + mono discreta, motivo
-   visual de grafo. Sem ruído, sem neon, sem buzzword.
-   ============================================================ */
-
 :root {
-  /* Superfícies */
-  --ink: #0b0f0e;          /* fundo base — quase preto, com um traço de verde */
-  --ink-raise: #101513;    /* superfícies elevadas */
+  --ink: #0b0f0e;
+  --ink-raise: #101513;
   --line: rgba(236, 242, 239, 0.08);
   --line-strong: rgba(236, 242, 239, 0.14);
 
-  /* Texto */
   --paper: #ecf2ef;
   --paper-dim: #9aa8a2;
-  --paper-mute: #7d8c86; /* ≥4.5:1 sobre --ink (5.5:1) e --ink-raise (5.2:1) — WCAG 2.1 AA 1.4.3 */
+  --paper-mute: #7d8c86;
 
-  /* Acento único */
   --accent: #34d399;
   --accent-deep: #10b981;
   --accent-soft: rgba(52, 211, 153, 0.12);
@@ -47,7 +37,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -72,15 +61,11 @@ body {
   scrollbar-color: rgba(154, 168, 162, 0.25) transparent;
 }
 
-/* ── Seleção ───────────────────────────────────────────────── */
 ::selection {
   background: rgba(52, 211, 153, 0.25);
   color: var(--paper);
 }
 
-/* ── Animações ─────────────────────────────────────────────── */
-
-/* Entrada suave de blocos */
 @keyframes rise {
   from {
     opacity: 0;
@@ -96,7 +81,6 @@ body {
   animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Pulso lento dos nós do grafo */
 @keyframes node-pulse {
   0%, 100% {
     opacity: 0.35;
@@ -110,7 +94,6 @@ body {
   animation: node-pulse 4s ease-in-out infinite;
 }
 
-/* Traçado das arestas do grafo no carregamento */
 @keyframes edge-draw {
   from {
     stroke-dashoffset: 260;
@@ -125,7 +108,6 @@ body {
   animation: edge-draw 2.4s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-/* Pulso do passo ativo do indicador de raciocínio */
 @keyframes step-active {
   0%, 100% {
     box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.35);
@@ -139,7 +121,6 @@ body {
   animation: step-active 1.4s ease-out infinite;
 }
 
-/* Cursor do typewriter */
 @keyframes caret-blink {
   0%, 100% {
     opacity: 1;
@@ -153,9 +134,6 @@ body {
   animation: caret-blink 0.9s step-end infinite;
 }
 
-/* Entrada dos nós e arestas do grafo de pré-requisitos no chat.
-   Somente opacidade (sem transform, para não brigar com o transform SVG);
-   neutralizada pelo bloco global de prefers-reduced-motion. */
 @keyframes prereq-in {
   from {
     opacity: 0;
@@ -169,9 +147,6 @@ body {
   animation: prereq-in 0.5s ease both;
 }
 
-/* Com movimento reduzido, o stagger (delay) também é zerado — o bloco global
-   só encurta a duração, e o fill-mode "both" deixaria tudo invisível
-   durante o delay. */
 @media (prefers-reduced-motion: reduce) {
   .prereq-in {
     animation-delay: 0ms !important;
@@ -191,9 +166,6 @@ body {
   stroke: rgba(52, 211, 153, 0.65);
 }
 
-/* ── Utilitários ───────────────────────────────────────────── */
-
-/* Grade de fundo muito sutil (papel milimetrado escuro) */
 .bg-grid-faint {
   background-image:
     linear-gradient(var(--line) 1px, transparent 1px),
@@ -203,18 +175,12 @@ body {
   -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 30%, transparent 75%);
 }
 
-/* Delays utilitários para entradas sequenciais */
 .rise-1 { animation-delay: 0.05s; }
 .rise-2 { animation-delay: 0.15s; }
 .rise-3 { animation-delay: 0.25s; }
 .rise-4 { animation-delay: 0.35s; }
 .rise-5 { animation-delay: 0.45s; }
 
-/* ── Efeitos de scroll (ScrollFX) ──────────────────────────── */
-/* Tudo abaixo só é armado quando o JS adiciona `.fx-ready` ao <html>.
-   Sem JS ou com prefers-reduced-motion, nada é escondido: página estática. */
-
-/* Barra fina de progresso de scroll */
 .scroll-progress {
   position: fixed;
   top: 0;
@@ -232,7 +198,6 @@ html:not(.fx-ready) .scroll-progress {
   display: none;
 }
 
-/* Reveal on scroll: fade + translateY sutil, stagger via --fxd */
 .fx-ready [data-reveal] {
   opacity: 0;
   transform: translateY(18px);
@@ -247,7 +212,6 @@ html:not(.fx-ready) .scroll-progress {
   transform: none;
 }
 
-/* Nav: ganha fundo blur + borda ao rolar */
 .site-nav {
   border-bottom: 1px solid transparent;
   transition:
@@ -262,7 +226,6 @@ html:not(.fx-ready) .scroll-progress {
   border-bottom-color: var(--line);
 }
 
-/* Grafo: arestas se redesenham e nós acendem quando o hero (re)entra em view */
 @keyframes node-in {
   from {
     opacity: 0;
@@ -289,7 +252,6 @@ html:not(.fx-ready) .scroll-progress {
   animation: node-in 0.9s ease both;
 }
 
-/* Números das etapas: underline animado ao entrar em view */
 .step-num {
   position: relative;
   display: inline-block;
@@ -312,12 +274,10 @@ html:not(.fx-ready) .scroll-progress {
   transform: scaleX(0);
 }
 
-/* Parallax: dica de compositing */
 [data-parallax] {
   will-change: transform;
 }
 
-/* ── Movimento reduzido ────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

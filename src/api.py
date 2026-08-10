@@ -53,7 +53,6 @@ app.add_middleware(
 
 rag: MultiAgentRAG = None
 
-# ── Ollama helpers ────────────────────────────────────────────────────────────
 
 def ensure_ollama_model(ollama_url: str, model: str):
     """
@@ -69,7 +68,6 @@ def ensure_ollama_model(ollama_url: str, model: str):
         if show.status_code == 200:
             return
     except Exception:
-        # Se show falhar, ainda tentamos pull.
         pass
 
     print(f"  - Baixando modelo no Ollama: {model}")
@@ -81,11 +79,9 @@ def ensure_ollama_model(ollama_url: str, model: str):
     r.raise_for_status()
 
 
-# Configurações de gerenciamento de memória para conversas
-MAX_CONVERSATIONS = 1000  # Máximo de conversas simultâneas
-CONVERSATION_TTL = timedelta(hours=24)  # Tempo de vida das conversas
+MAX_CONVERSATIONS = 1000
+CONVERSATION_TTL = timedelta(hours=24)
 
-# Usar OrderedDict para manter ordem de inserção (LRU)
 conversations: OrderedDict[str, List[dict]] = OrderedDict()
 conversation_timestamps: Dict[str, datetime] = {}
 
@@ -94,7 +90,6 @@ def cleanup_old_conversations():
     """Remove conversas antigas e limita o número total de conversas."""
     now = datetime.now()
     
-    # Remover conversas expiradas
     expired = [
         cid for cid, ts in conversation_timestamps.items()
         if now - ts > CONVERSATION_TTL
@@ -103,7 +98,6 @@ def cleanup_old_conversations():
         conversations.pop(cid, None)
         conversation_timestamps.pop(cid, None)
     
-    # Limitar número máximo (remover mais antigas - LRU)
     while len(conversations) > MAX_CONVERSATIONS:
         oldest_cid, _ = conversations.popitem(last=False)
         conversation_timestamps.pop(oldest_cid, None)
@@ -112,9 +106,6 @@ def cleanup_old_conversations():
         logger.info(f"[CLEANUP] Removidas {len(expired)} conversas expiradas. Total: {len(conversations)}")
 
 
-# Limites do histórico injetado nos prompts (continuidade de diálogo).
-# Curto de propósito: o histórico serve para tom/referências, não como fonte
-# de fatos — respostas longas são truncadas para não inflar o prompt.
 HISTORY_PROMPT_MAX_TURNS = 6
 HISTORY_PROMPT_MAX_CHARS_PER_MSG = 350
 
@@ -134,7 +125,7 @@ def format_history_for_prompt(messages: List[dict]) -> str:
 
 
 class Message(BaseModel):
-    role: str  # "user" ou "assistant"
+    role: str
     content: str
     timestamp: Optional[str] = None
 
@@ -143,7 +134,7 @@ class ChatRequest(BaseModel):
     message: str
     conversation_id: Optional[str] = None
     include_history: bool = True
-    max_history: int = 10  # Número máximo de mensagens anteriores a incluir
+    max_history: int = 10
 
 
 class ChatEvalRequest(BaseModel):
@@ -193,10 +184,7 @@ class ChatResponse(BaseModel):
     timestamp: str
     active_agent: str = "fallback"
     agent_info: Optional[AgentInfo] = None
-    # Quando preenchido, o front deve abrir o planejador de grade (canvas ao vivo).
     plan_request: Optional[Dict] = None
-    # Grafo de pré-requisitos estruturado ({nodes, edges}) para o front
-    # renderizar como visualização interativa acima do texto da resposta.
     graph_data: Optional[Dict] = None
 
 
@@ -213,13 +201,11 @@ async def startup_event():
     print("Inicializando Multi-Agent RAG...")
     rag = MultiAgentRAG()
 
-    # Antes de indexar/criar embeddings, garantir que os modelos existem.
     try:
         ollama_url = rag.config.OLLAMA_BASE_URL or "http://ollama:11434"
         ensure_ollama_model(ollama_url, rag.config.EMBEDDING_MODEL)
         ensure_ollama_model(ollama_url, rag.config.MODEL_NAME)
     except Exception as e:
-        # Se não conseguir baixar, falha com mensagem clara (evita loop de restart sem contexto)
         raise RuntimeError(
             f"Falha ao garantir modelos no Ollama ({rag.config.OLLAMA_BASE_URL}). "
             f"Verifique se o Ollama está acessível e faça pull do modelo. Erro: {e}"
@@ -259,12 +245,12 @@ async def startup_event():
         O primeiro `pr.reason()` paga ~20s compilando kernels do numba.
         Roda em background no startup para que a primeira query que
         precise de inferência transitiva não pague essa penalidade.
-        Usa `_build_default_engine` para popular o cache global — todas
+        Usa `_build_default_engine` para popular o cache global - todas
         as instâncias subsequentes de SymbolicValidator vão reutilizar
         o mesmo engine warmed-up.
         """
         import time
-        time.sleep(2)  # esperar o KG terminar de carregar
+        time.sleep(2)
         try:
             if rag is None or rag.knowledge_graph is None:
                 print("PyReason warmup: KG indisponível, pulando.")
@@ -303,7 +289,7 @@ async def telemetry():
 async def misses(limit: int = Query(50, ge=1, le=50)):
     """
     Fila de casos "não encontrei": últimas respostas (pós-retry) que ainda
-    indicaram falha — insumo de curadoria de conteúdo. Mais recentes primeiro.
+    indicaram falha - insumo de curadoria de conteúdo. Mais recentes primeiro.
     """
     from .misses_queue import read_misses
     itens = read_misses(limit=limit)
@@ -329,14 +315,12 @@ async def chat(request: ChatRequest):
     
     conversation_id = request.conversation_id or str(uuid4())
     
-    # Limpar conversas antigas periodicamente
     cleanup_old_conversations()
     
     if conversation_id not in conversations:
         conversations[conversation_id] = []
         conversation_timestamps[conversation_id] = datetime.now()
     else:
-        # Atualizar timestamp (mover para final - LRU)
         conversations.move_to_end(conversation_id)
         conversation_timestamps[conversation_id] = datetime.now()
     
@@ -347,31 +331,21 @@ async def chat(request: ChatRequest):
     }
     conversations[conversation_id].append(user_message)
     
-    # Usar o ContextResolver para resolver referências contextuais
     history_text = ""
     if request.include_history and len(conversations[conversation_id]) > 1:
         history = conversations[conversation_id][-request.max_history-1:-1]
-        # Histórico formatado para os prompts dos agentes (continuidade de
-        # diálogo — evita "Olá!" a cada turno e permite referências ao que
-        # já foi dito)
         history_text = format_history_for_prompt(history)
         
-        # Atualizar contexto com mensagens do histórico
         for msg in history:
             context_resolver.update_context(conversation_id, msg['content'], msg['role'])
         
-        # Resolver referências na pergunta atual (baseado em regras)
         enhanced_question, was_modified = context_resolver.resolve_question(
             request.message, 
             conversation_id, 
             history
         )
         
-        # Se não foi modificado mas a pergunta é ambígua, usar LLM
         if not was_modified and context_resolver.is_ambiguous_question(request.message):
-            # Usar LLM para reescrever apenas se realmente necessário.
-            # Reescrita é saída curta (uma linha) → LLM auxiliar leve
-            # (FESPAI_ROUTER_MODEL), com fallback para o principal.
             if rag and rag.llm:
                 enhanced_question = context_resolver.rewrite_with_llm(
                     request.message,
@@ -387,7 +361,6 @@ async def chat(request: ChatRequest):
     else:
         enhanced_question = request.message
     
-    # Atualizar contexto com a pergunta atual
     context_resolver.update_context(conversation_id, request.message, 'user')
 
     try:
@@ -411,7 +384,6 @@ async def chat(request: ChatRequest):
     }
     conversations[conversation_id].append(assistant_message)
     
-    # Atualizar contexto com a resposta (para extrair listas de docentes, etc.)
     context_resolver.update_context(conversation_id, response_text, 'assistant')
     
     logger.info(f"[AGENT] Agente ativo: {active_agent}")
@@ -472,12 +444,9 @@ async def llm_judge(request: JudgeRequest):
         llm = rag.llm
         if request.judge_model and request.judge_model.strip():
             ollama_url = rag.config.OLLAMA_BASE_URL or "http://ollama:11434"
-            # garantir que o modelo do juiz existe (pull se necessário)
-            # reusar a função do startup (está no escopo do módulo)
             try:
                 ensure_ollama_model(ollama_url, request.judge_model.strip())
             except Exception:
-                # não bloquear; se o modelo já existir e show falhou, seguimos
                 pass
             llm = OllamaLLM(
                 model=request.judge_model.strip(),
@@ -500,7 +469,7 @@ async def llm_judge(request: JudgeRequest):
 
 class BaselineRequest(BaseModel):
     message: str
-    system: str = "b2"  # "b2" = Standard RAG | "b3" = Graph-RAG sem validação
+    system: str = "b2"
 
 
 class BaselineResponse(BaseModel):
@@ -512,7 +481,7 @@ class BaselineResponse(BaseModel):
 @app.post("/chat_baseline", response_model=BaselineResponse)
 async def chat_baseline(request: BaselineRequest):
     """
-    Endpoint para avaliação dos baselines do paper BRACIS.
+    Endpoint para avaliação dos baselines do benchmark.
     
     system="b2" → Standard RAG (só vector store, sem KG, sem validação simbólica)
     system="b3" → Graph-RAG (KG + vector store, sem validação neurossimbólica)
@@ -537,13 +506,11 @@ async def chat_baseline(request: BaselineRequest):
 
     t0 = time.time()
     try:
-        inner = rag._rag  # RAGUnifesp instance (MultiAgentRAG wraps it)
+        inner = rag._rag
         if request.system == "b2":
-            # Só retriever híbrido, sem KG
             docs = inner.retriever.invoke(request.message)
             context = inner._format_docs(docs)
         else:
-            # B3: KG + retriever, sem enriquecimento/validação simbólica
             context_parts = []
             if inner.graph_rag:
                 use_g, q_type, termo = inner.graph_rag.should_use_graph(request.message)
@@ -612,8 +579,6 @@ async def status():
     }
 
 
-# ==================== ENDPOINTS DE EXTRAÇÃO DE RELAÇÕES ====================
-
 class ExtractRequest(BaseModel):
     text: str
     min_confidence: float = 0.6
@@ -677,7 +642,6 @@ async def graph_stats():
     
     stats = rag.knowledge_graph.get_stats()
     
-    # Adicionar estatísticas de extração se disponíveis
     if rag.graph_enricher:
         extraction_stats = rag.graph_enricher.get_extraction_stats()
         stats['extracted_relations'] = extraction_stats
@@ -692,8 +656,6 @@ async def get_graph():
         raise HTTPException(status_code=503, detail="Knowledge Graph não disponível")
     return rag.knowledge_graph.export_for_visualization()
 
-
-# ──────────────── Explain endpoint (demo neurosymbolic vs vanilla) ────────────
 
 class ChatExplainRequest(BaseModel):
     message: str
@@ -753,14 +715,12 @@ def _compute_highlights(kg, intent: str, term: str) -> Dict:
                     base_nodes.append(nid)
                     base_edges.append({"from": nid, "to": target_id, "label": "PREREQUISITO_DE"})
 
-            # Inferred: pré-requisitos transitivos (ancestrais que não são diretos)
             all_anc = kg.get_all_ancestors(term)
             transitive = [a for a in all_anc if a not in direct_set]
             for d in transitive:
                 nid = _disc_id(kg, d)
                 if nid and nid not in base_nodes:
                     inferred_nodes.append(nid)
-                    # adicionar arestas inferidas conectando o transitivo ao seu sucessor
                     for succ_name in kg.get_dependent_disciplines(d):
                         succ_id = _disc_id(kg, succ_name)
                         if succ_id and (succ_id in base_nodes or succ_id in inferred_nodes):
@@ -795,8 +755,6 @@ def _compute_highlights(kg, intent: str, term: str) -> Dict:
                     base_edges.append({"from": target_id, "to": nid, "label": "PREREQUISITO_DE"})
 
     elif intent == "trajectory_planning":
-        # Igual ao graph_rag.py: se o termo inteiro é uma disciplina (mesmo com ":")
-        # tratar como target puro; caso contrário parsear "completed:target".
         if _disc_id(kg, term):
             completed, target = [], term
         else:
@@ -805,14 +763,12 @@ def _compute_highlights(kg, intent: str, term: str) -> Dict:
             target_id = _disc_id(kg, target)
             if target_id:
                 base_nodes.append(target_id)
-                # base = pré-requisitos DIRETOS (o que o KG sozinho sabe, 1 hop)
                 for d in kg.get_prerequisite_chain(target, max_depth=0):
                     nid = _disc_id(kg, d)
                     if nid:
                         base_nodes.append(nid)
                         base_edges.append({"from": nid, "to": target_id, "label": "PREREQUISITO_DE"})
 
-                # inferred = caminho mínimo completo (todas as fases)
                 phases = engine.plan_minimal_path(target, completed) or []
                 rules.append("minimal_path")
                 for phase in phases:
@@ -820,7 +776,6 @@ def _compute_highlights(kg, intent: str, term: str) -> Dict:
                         nid = _disc_id(kg, d)
                         if nid and nid not in base_nodes and nid not in inferred_nodes:
                             inferred_nodes.append(nid)
-                            # arestas inferidas: do nó até seus dependentes que estão no plano
                             for succ_name in kg.get_dependent_disciplines(d):
                                 succ_id = _disc_id(kg, succ_name)
                                 if succ_id and (succ_id in base_nodes or succ_id in inferred_nodes):
@@ -828,7 +783,6 @@ def _compute_highlights(kg, intent: str, term: str) -> Dict:
                                         "from": nid, "to": succ_id, "label": "PREREQUISITO_DE"
                                     })
 
-                # disciplinas 'completed' também aparecem como base (já cursadas)
                 for c in completed:
                     nid = _disc_id(kg, c)
                     if nid and nid not in base_nodes:
@@ -903,8 +857,6 @@ async def chat_explain(request: ChatExplainRequest):
             intent = result.get("intent", "unknown")
             term = result.get("term", "")
         else:
-            # baseline b3: GraphRAG + retriever, sem enriquecimento/validação simbólica.
-            # Reusa a lógica do /chat_baseline mas extrai intent/term via graph_rag.
             from langchain_core.prompts import ChatPromptTemplate
             from langchain_core.output_parsers import StrOutputParser
             inner = rag._rag
@@ -953,15 +905,12 @@ async def graph_viewer_page():
     return FileResponse(path, media_type="text/html")
 
 
-# ── Planejador de trajetória curricular ───────────────────────────────────────
-
 @app.get("/cursos")
 async def listar_cursos():
     """Lista os cursos com matriz curricular (para o seletor do planejador)."""
     if rag is None or rag.knowledge_graph is None:
         raise HTTPException(status_code=503, detail="Knowledge Graph não inicializado")
     cursos = rag.knowledge_graph.get_all_cursos()
-    # Apenas o necessário para o front, sem duplicatas por nome.
     vistos = set()
     saida = []
     for c in cursos:
@@ -996,7 +945,6 @@ async def plan_stream(
     if rag is None or rag.knowledge_graph is None:
         raise HTTPException(status_code=503, detail="Knowledge Graph não inicializado")
 
-    # Aceita ';' (preferido) ou ',' como separador.
     raw = completed.replace(",", ";")
     cursadas = [c.strip() for c in raw.split(";") if c.strip()]
 
@@ -1011,7 +959,6 @@ async def plan_stream(
             yield _sse("done", {})
             return
 
-        # 1. Metadados gerais.
         yield _sse("meta", {
             "curso": plan["curso"],
             "max_creditos": plan["max_creditos"],
@@ -1022,12 +969,10 @@ async def plan_stream(
         })
         await asyncio.sleep(0.3)
 
-        # Mapa de arestas de entrada por disciplina (para desenhar no momento certo).
         incoming = {}
         for e in plan["edges"]:
             incoming.setdefault(e["to"], []).append(e["from"])
 
-        # 2. Disciplinas já cursadas entram primeiro, como base (semestre 0).
         cursadas_nodes = [n for n in plan["nodes"] if n.get("cursada")]
         if cursadas_nodes:
             yield _sse("narration", {
@@ -1039,7 +984,6 @@ async def plan_stream(
                 yield _sse("node_added", n)
                 await asyncio.sleep(0.08)
 
-        # 3. Semestre a semestre.
         for s in plan["semestres"]:
             nomes = ", ".join(d["nome"] for d in s["disciplinas"])
             yield _sse("narration", {
@@ -1062,7 +1006,6 @@ async def plan_stream(
             yield _sse("phase_done", {"semestre": s["numero"], "creditos": s["creditos"]})
             await asyncio.sleep(0.25)
 
-        # 4. Avisos (se houver) e encerramento.
         for aviso in plan["avisos"]:
             yield _sse("narration", {"text": f"⚠️ {aviso}"})
             await asyncio.sleep(0.3)
@@ -1110,11 +1053,9 @@ async def crawl_sjc_endpoint(max_pages: int = Query(400, ge=10, le=1000)):
     """
     from .site_crawler import crawl_sjc
     pages = crawl_sjc(max_pages=max_pages)
-    # O agente Web SJC recarrega o corpus automaticamente ao detectar o cache novo.
     return {"paginas_rastreadas": len(pages)}
 
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

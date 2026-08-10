@@ -1,5 +1,5 @@
 """
-Fila de casos "não encontrei" — insumo de curadoria de conteúdo.
+Fila de casos "não encontrei" - insumo de curadoria de conteúdo.
 
 Toda resposta final que casa os padrões de falha do retry-on-miss (mesmo
 após a segunda chance) vira uma linha JSON em

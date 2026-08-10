@@ -29,7 +29,7 @@ def check(desc, cond, detail=""):
         print(f"{GREEN}✓{RESET} {desc}")
     else:
         _failed += 1
-        print(f"{RED}✗ {desc}{RESET}" + (f" — {detail}" if detail else ""))
+        print(f"{RED}✗ {desc}{RESET}" + (f" - {detail}" if detail else ""))
 
 
 print(f"{BOLD}── is_miss_response (case/acento-insensitive) ──{RESET}")
@@ -84,7 +84,6 @@ def make_pipeline(first_agent, first_resp, retry_resp):
 events = []
 inc = events.append
 
-# Caso 1: miss no symbolic_kg, web_sjc recupera
 invoke, calls = make_pipeline("symbolic_kg", MISS, OK)
 final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 0}, inc)
 check("miss → re-roteia (2 chamadas ao pipeline)", len(calls) == 2)
@@ -95,7 +94,6 @@ check("agente final é o da segunda chance", final["active_agent"] == "web_sjc")
 check("estado registra o agente que falhou", final.get("retry_from_agent") == "symbolic_kg")
 check("telemetria: retry_recuperado", events == ["retry_recuperado"])
 
-# Caso 2: retry também dá miss → mantém a primeira resposta
 events.clear()
 invoke, calls = make_pipeline("disciplinas", MISS, "Não encontrei no site do campus.")
 final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 0}, inc)
@@ -103,34 +101,28 @@ check("retry sem sucesso mantém a 1ª resposta", final["response"] == MISS)
 check("agente final continua o original", final["active_agent"] == "disciplinas")
 check("telemetria: retry_sem_sucesso", events == ["retry_sem_sucesso"])
 
-# Caso 3: primeira resposta OK → nenhuma segunda chamada
 events.clear()
 invoke, calls = make_pipeline("docentes", OK, "n/a")
 final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 0}, inc)
 check("sem miss → 1 chamada só", len(calls) == 1)
 check("sem miss → sem eventos de telemetria", events == [])
 
-# Caso 4: agente sem fallback (conversa) → não re-roteia
 invoke, calls = make_pipeline("conversa", MISS, OK)
 final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 0}, inc)
 check("agente sem fallback não re-roteia", len(calls) == 1 and final["response"] == MISS)
 
-# Caso 5: web_sjc falha → cai no fallback RAG
 invoke, calls = make_pipeline("web_sjc", MISS, OK)
 final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 0}, inc)
 check("web_sjc → retry no fallback", calls[1].get("forced_agent") == "fallback")
 
-# Caso 6: já houve retry (retry_count>0) → nunca re-roteia de novo
 invoke, calls = make_pipeline("symbolic_kg", MISS, OK)
 final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 1}, inc)
 check("retry_count>0 nunca re-roteia (sem loop infinito)", len(calls) == 1)
 
-# Caso 7: retry devolve resposta vazia → mantém a primeira
 invoke, calls = make_pipeline("cursos", MISS, "   ")
 final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 0}, inc)
 check("retry com resposta vazia mantém a 1ª", final["response"] == MISS)
 
-# Caso 8: retry explode → degradação segura (mantém a 1ª)
 def invoke_boom(state):
     if state.get("forced_agent"):
         raise RuntimeError("boom")
@@ -139,7 +131,6 @@ def invoke_boom(state):
 final = sc.run_with_second_chance(invoke_boom, {"question": "q", "retry_count": 0}, inc)
 check("exceção no retry mantém a 1ª resposta", final["response"] == MISS)
 
-# Caso 9: retry sem sucesso registra quem tentou (para a fila de misses)
 invoke, calls = make_pipeline("disciplinas", MISS, MISS)
 final = sc.run_with_second_chance(invoke, {"question": "q", "retry_count": 0}, inc)
 check("retry sem sucesso expõe retry_agent_tried",
@@ -166,13 +157,11 @@ with tempfile.TemporaryDirectory() as tmp:
           set(e) == {"ts", "question", "enhanced_question", "agentes", "resposta_truncada"})
     check("agentes registrados", e.get("agentes") == ["disciplinas", "web_sjc"])
     check("resposta truncada a 300 chars", len(e.get("resposta_truncada", "")) == 300)
-    # limite de 50: gravar 60, ler as últimas 50 (mais recentes primeiro)
     for i in range(60):
         mq.record_miss(f"q{i}", f"q{i}", ["a"], "não encontrei", path=path)
     itens = mq.read_misses(limit=50, path=path)
     check("read_misses respeita o limite de 50", len(itens) == 50)
     check("mais recente primeiro", itens[0].get("question") == "q59")
-    # linha corrompida não derruba a leitura
     with open(path, "a", encoding="utf-8") as f:
         f.write("{quebrado\n")
     check("linha corrompida é ignorada", len(mq.read_misses(limit=50, path=path)) == 50)

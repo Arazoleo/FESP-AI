@@ -15,7 +15,7 @@ class CursosAgent(BaseAgent):
 
     name = "cursos"
     description = "Especialista em matrizes curriculares e estrutura dos cursos"
-    color = "#f59e0b"  # Amber
+    color = "#f59e0b"
 
     GRAPH_INTENTS = {
         "disciplinas_termo",
@@ -26,7 +26,6 @@ class CursosAgent(BaseAgent):
         "coordenador_curso",
     }
 
-    # Keywords que indicam necessidade de RAG (docs têm mais info que o grafo)
     RAG_SUPPLEMENT_KEYWORDS = [
         "sequencial", "sequenciais", "certificado",
         "carga horária total", "carga horaria total",
@@ -46,31 +45,24 @@ class CursosAgent(BaseAgent):
         parts = []
         question_lower = question.lower()
 
-        # 1. Knowledge Graph para estrutura curricular
         if intent in self.GRAPH_INTENTS and self.graph_rag:
             graph_result = self._get_graph_context(intent, self._expand_curso_term(term))
             if graph_result:
                 parts.append(graph_result)
-                # Para listagem de cursos e info de matriz, o grafo é suficiente
-                # para eletivas e termos, o RAG pode complementar
                 if intent in ("listar_cursos",) and not any(
                     kw in question_lower for kw in self.RAG_SUPPLEMENT_KEYWORDS
                 ):
                     return "\n\n".join(parts)
 
-        # 2. RAG vector store para detalhes de matrizes e cursos sequenciais
         if self.db:
             rag_docs = self.rag._retrieve_regimento_docs(question_lower)
             if rag_docs:
                 parts.append(self._format_docs(rag_docs))
 
-        # 3. Fallback: busca semântica
         if not parts and self.rag.retriever:
             docs = self.rag.retriever.invoke(question)
             parts.append(self._format_docs(docs))
 
-        # 4. As duas bases "conversam": seções da página do curso no site
-        #    (ingresso, PPC, FAQ...) complementam os dados verificados do KG.
         site_ctx = self._site_supplement(question)
         if site_ctx:
             parts.append(site_ctx)
@@ -86,7 +78,7 @@ class CursosAgent(BaseAgent):
             return ""
         if not secoes:
             return ""
-        partes = ["[PAGINAS DO SITE DO CAMPUS — complemento; cite o link ao usar]"]
+        partes = ["[PAGINAS DO SITE DO CAMPUS - complemento; cite o link ao usar]"]
         for p in secoes:
             partes.append(f"[{p['titulo']}]\nLink: {p['url']}\n{p['texto'][:1200]}")
         return "\n\n".join(partes)
@@ -105,7 +97,7 @@ class CursosAgent(BaseAgent):
         return self._expand_via_kg(term, "curso") or term
 
     def get_prompt_template(self) -> str:
-        return """Voce e o assistente virtual da UNIFESP ICT, especialista em CURSOS e MATRIZES CURRICULARES — simpatico e didatico, como um colega que ajuda os alunos a se organizarem. Fale sempre em PORTUGUES BRASILEIRO, de forma natural e conversacional.
+        return """Voce e o assistente virtual da UNIFESP ICT, especialista em CURSOS e MATRIZES CURRICULARES - simpatico e didatico, como um colega que ajuda os alunos a se organizarem. Fale sempre em PORTUGUES BRASILEIRO, de forma natural e conversacional.
 
 """ + self.GOLDEN_RULE + """
 

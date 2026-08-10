@@ -13,10 +13,8 @@ from typing import Dict, List, Optional, Tuple, Any
 
 logger = logging.getLogger(__name__)
 
-# Exemplares por agente — cobrem intents e variações de redação
 AGENT_EXAMPLES: Dict[str, List[str]] = {
     "disciplinas": [
-        # Ementa / descrição / "fale mais sobre disciplina"
         "o que é Geometria Analítica",
         "o que é Cálculo Numérico",
         "descreva a disciplina Algoritmos",
@@ -32,25 +30,21 @@ AGENT_EXAMPLES: Dict[str, List[str]] = {
         "conte mais sobre a disciplina de redes",
         "o que aprendo em Álgebra Linear",
         "do que trata Inteligência Artificial",
-        # Pré-requisitos
         "quais são os pré-requisitos de banco de dados",
         "pré-requisitos para cursar algoritmos 2",
         "o que preciso fazer antes de inteligência artificial",
         "disciplinas necessárias para fazer cálculo 2",
         "antes de cursar redes preciso de o que",
         "cadeia de pré-requisitos de estrutura de dados",
-        # Dependentes
         "quais disciplinas dependem de cálculo 1",
         "o que posso cursar depois de algoritmos",
     ],
     "docentes": [
-        # Quem leciona X
         "quem leciona banco de dados",
         "quais docentes dão Compiladores",
         "quais professores lecionam Cálculo Numérico",
         "quem ensina Algoritmos e Estruturas de Dados",
         "professores de Fenômenos Mecânicos",
-        # Info / contato / disciplinas do professor
         "qual o email do professor Rodrigo",
         "sala do professor Álvaro",
         "como entro em contato com a professora Maria",
@@ -59,11 +53,9 @@ AGENT_EXAMPLES: Dict[str, List[str]] = {
         "quais disciplinas o professor João leciona",
         "disciplinas que o Rodrigo Colnago leciona",
         "quais matérias a Daniela dá",
-        # Áreas
         "qual a área de pesquisa do professor",
         "áreas de atuação do professor Tiago",
         "em que o Álvaro é especialista",
-        # Por área
         "professores que trabalham com inteligência artificial",
         "quem pesquisa machine learning",
     ],

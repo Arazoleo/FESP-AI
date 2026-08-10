@@ -2,7 +2,7 @@
 Testes de regressão da continuidade de conversa.
 
 Motivação: cada mensagem começava com "Olá!" porque o histórico nunca chegava
-aos prompts dos agentes — todo turno parecia o primeiro para o LLM.
+aos prompts dos agentes - todo turno parecia o primeiro para o LLM.
 
 Verifica a montagem do prompt (sem invocar LLM):
   - com histórico: bloco HISTORICO + regra de não re-saudação antes da pergunta
@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT))
 
 def _stub_langchain():
     try:
-        import langchain_core  # noqa: F401
+        import langchain_core
         return
     except ImportError:
         pass
@@ -37,7 +37,7 @@ def _stub_langchain():
 
 def _stub_langgraph():
     try:
-        import langgraph.graph  # noqa: F401
+        import langgraph.graph
         return
     except ImportError:
         pass
@@ -89,7 +89,7 @@ def check(desc, cond, detail=""):
         print(f"{GREEN}✓{RESET} {desc}")
     else:
         _failed += 1
-        print(f"{RED}✗ {desc}{RESET}" + (f" — {detail}" if detail else ""))
+        print(f"{RED}✗ {desc}{RESET}" + (f" - {detail}" if detail else ""))
 
 
 _stub_langchain()
@@ -192,10 +192,6 @@ check(
 )
 
 print(f"\n{BOLD}── Troca de entidade mid-conversation (T8) ──{RESET}")
-# Simula o fluxo exato da API: replay do histórico a cada turno + update com a
-# mensagem crua e com a resposta. Bug: a resposta do assistente sobre a NOVA
-# entidade mencionava outra disciplina ("...pré-requisito para cursar X") e o
-# extrator heurístico revertia a troca feita pelo usuário no turno 2.
 t8 = cr_mod.ContextResolver()
 T8_MSG1 = "Quais os pré-requisitos de Redes de Computadores?"
 T8_R1 = "Para você cursar Redes de Computadores, é necessário: Sistemas Operacionais e Algoritmos."
@@ -204,10 +200,8 @@ T8_R2 = (
     "A disciplina de Banco de Dados (Código: 2831) tem 72h. "
     "Ela é pré-requisito para cursar Projetos em Engenharia de Computação."
 )
-# Turno 1
 t8.update_context("t8", T8_MSG1, "user")
 t8.update_context("t8", T8_R1, "assistant")
-# Turno 2 (replay do histórico como a API faz, depois resolve + updates)
 t8_hist2 = [
     {"role": "user", "content": T8_MSG1},
     {"role": "assistant", "content": T8_R1},
@@ -227,7 +221,6 @@ check(
     t8.get_context("t8").disciplina == "Banco de Dados",
     f"obteve {t8.get_context('t8').disciplina!r}",
 )
-# Turno 3 (replay completo, como a API faz a cada turno)
 t8_hist3 = t8_hist2 + [
     {"role": "user", "content": T8_MSG2},
     {"role": "assistant", "content": T8_R2},
@@ -240,7 +233,6 @@ check(
     t8_mod3 and t8_res3 == "Qual a ementa de Banco de Dados?",
     f"obteve {t8_res3!r}",
 )
-# Assistente ainda pode definir a disciplina quando o usuário não nomeou nenhuma
 t8b = cr_mod.ContextResolver()
 t8b.update_context("t8b", "estou meio perdido com o curso", "user")
 t8b.update_context(
@@ -320,8 +312,6 @@ check(
 )
 
 print(f"\n{BOLD}── Herança de clarificação de curso (defeito T3) ──{RESET}")
-# Simula os turnos reais: "Quantas horas de eletivas?" → clarificação →
-# usuário responde "do BCT" → deve virar a pergunta pendente + curso.
 t3 = cr_mod.ContextResolver()
 T3_Q = "Quantas horas de eletivas?"
 T3_CLARIF = (
@@ -360,7 +350,6 @@ check(
     t3b.get_context("t3b").disciplina is None,
     f"obteve {t3b.get_context('t3b').disciplina!r}",
 )
-# Negativos: sem pergunta pendente compatível, nada é combinado
 t3c = cr_mod.ContextResolver()
 t3c_hist = [
     {"role": "user", "content": "Quais as eletivas de BCC?"},

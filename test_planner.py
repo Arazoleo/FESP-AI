@@ -9,13 +9,11 @@ spec.loader.exec_module(planner)
 class StubKG:
     """KG falso com um currículo pequeno para validar o algoritmo."""
 
-    # termo -> [(nome, creditos)]
     TERMOS = {
         1: [("Cálculo 1", 4), ("Algoritmos 1", 4)],
         2: [("Cálculo 2", 4), ("Estruturas de Dados", 4)],
         3: [("Cálculo 3", 4), ("Compiladores", 6)],
     }
-    # disciplina -> pré-requisitos diretos
     PREREQS = {
         "Cálculo 2": ["Cálculo 1"],
         "Cálculo 3": ["Cálculo 2"],
@@ -52,13 +50,11 @@ def show(plan):
 
 kg = StubKG()
 
-# Caso 1: já cursou Cálculo 1, teto 8 créditos.
 plan = planner.plan_curriculum(kg, "Teste", ["Cálculo 1"], max_creditos=8)
 show(plan)
 
 checks = []
 sems = plan["semestres"]
-# Pré-requisitos respeitados: Cálculo 2 depois de Cálculo 1 (cursada); EstruturasDados depois de Algoritmos 1.
 def sem_de_in(plan, nome):
     for s in plan["semestres"]:
         if any(d["nome"] == nome for d in s["disciplinas"]):
@@ -77,14 +73,11 @@ checks.append(("Todas as 5 restantes planejadas", plan["total_disciplinas"] == 5
 checks.append(("Sem avisos de não-planejadas", not any("não consegui encaixar" in a.lower() for a in plan["avisos"])))
 checks.append(("Aresta Cálculo 1 -> Cálculo 2 existe", {"from": "Cálculo 1", "to": "Cálculo 2"} in plan["edges"]))
 
-# Caso 2: curso inexistente -> None
 plan2 = planner.plan_curriculum(kg, "Curso Fantasma", [])
 checks.append(("Curso inexistente retorna None", plan2 is None))
 
-# Caso 3: disciplina cursada desconhecida -> aviso
 plan3 = planner.plan_curriculum(kg, "Teste", ["Quântica Avançada"], max_creditos=24)
 checks.append(("Cursada desconhecida gera aviso", any("não reconheci" in a.lower() for a in plan3["avisos"])))
-# Caso 4: teto alto empacota mais por semestre
 plan4 = planner.plan_curriculum(kg, "Teste", ["Cálculo 1", "Algoritmos 1"], max_creditos=24)
 checks.append(("Teto 24: Estruturas e Cálculo 2 no mesmo semestre", sem_de_in(plan4, "Cálculo 2") == sem_de_in(plan4, "Estruturas de Dados")))
 

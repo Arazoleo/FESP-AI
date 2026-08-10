@@ -1,8 +1,8 @@
 """
 LLM auxiliar leve compartilhado (FESPAI_ROUTER_MODEL).
 
-Chamadas auxiliares — classificação de intent/termo (IntentClassifier._llm_classify)
-e reescrita de pergunta ambígua (ContextResolver.rewrite_with_llm) — produzem
+Chamadas auxiliares - classificação de intent/termo (IntentClassifier._llm_classify)
+e reescrita de pergunta ambígua (ContextResolver.rewrite_with_llm) - produzem
 saídas curtas (JSON ou uma linha) e não precisam do modelo de GERAÇÃO
 (grande/lento, possivelmente cloud). Quando FESPAI_ROUTER_MODEL está setado,
 essas chamadas usam este modelo pequeno com temperatura 0 e num_predict baixo.
@@ -13,8 +13,6 @@ A geração da resposta e o humanizer do KG continuam no modelo grande.
 
 import os
 
-# Saídas auxiliares são curtas: JSON {"intent","term","completed"} ou uma
-# pergunta reescrita de uma linha. 200 tokens cobrem com folga.
 _AUX_LLM_NUM_PREDICT = 200
 
 _aux_llm_singleton = {"key": None, "llm": None}
@@ -24,7 +22,7 @@ def get_aux_llm():
     """
     Instância própria (lazy, cacheada) do LLM auxiliar leve.
 
-    Retorna None quando FESPAI_ROUTER_MODEL está vazio ou a construção falha —
+    Retorna None quando FESPAI_ROUTER_MODEL está vazio ou a construção falha -
     o chamador deve usar o LLM principal como fallback.
     """
     model = os.getenv("FESPAI_ROUTER_MODEL", "").strip()
@@ -47,8 +45,6 @@ def get_aux_llm():
         if base_url:
             kwargs["base_url"] = base_url
         try:
-            # Desliga o modo "thinking" (qwen3, deepseek-r1): a saída auxiliar
-            # é curta — raciocínio verboso só custa latência.
             llm = OllamaLLM(reasoning=False, **kwargs)
         except Exception:
             llm = OllamaLLM(**kwargs)

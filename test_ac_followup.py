@@ -57,10 +57,9 @@ def check(desc, cond, detail=""):
         print(f"  {GREEN}PASS{RESET} {desc}")
     else:
         _failed += 1
-        print(f"  {RED}FAIL{RESET} {desc}" + (f" — {detail}" if detail else ""))
+        print(f"  {RED}FAIL{RESET} {desc}" + (f" - {detail}" if detail else ""))
 
 
-# ── 1. Resposta simbólica direta do regulamento ──────────────────────────────
 print(f"\n{BOLD}1. build_breakdown_response (regulamento estruturado){RESET}")
 resp = build_breakdown_response()
 check("resposta não vazia", bool(resp))
@@ -74,7 +73,6 @@ check("ACE eletivas (36 a 108 horas)", "ACE" in resp and "108" in resp)
 check("cita a fonte (regulamento)", "Regulamento" in resp)
 check("marcador da oferta NÃO está na própria resposta", OFFER_MARKER not in resp)
 
-# ── 2. Detecção do pedido de detalhamento ────────────────────────────────────
 print(f"\n{BOLD}2. is_breakdown_request{RESET}")
 positivos = [
     BREAKDOWN_CANONICAL_QUESTION,
@@ -97,7 +95,6 @@ negativos = [
 for q in negativos:
     check(f"negativo: '{q[:55]}'", not is_breakdown_request(q))
 
-# ── 3. Aceite curto da oferta ────────────────────────────────────────────────
 print(f"\n{BOLD}3. is_affirmative_reply{RESET}")
 for q in ["sim", "Sim!", "sim, pode", "quero, por favor", "pode ser",
           "claro", "detalha", "manda", "Sim, por favor."]:
@@ -107,7 +104,6 @@ for q in ["não", "nao, obrigado", "sim, mas quantas horas de extensão?",
           "sim quero saber sobre o professor"]:
     check(f"rejeita: '{q}'", not is_affirmative_reply(q))
 
-# ── 4. Oferta pós-resposta ───────────────────────────────────────────────────
 print(f"\n{BOLD}4. maybe_append_offer{RESET}")
 pergunta_ac = "Como funcionam as atividades complementares?"
 resposta_base = "As AC somam 312 horas obrigatórias em três eixos."
@@ -123,7 +119,6 @@ check("não anexa em pergunta de outro assunto",
       == resposta_base)
 check("não anexa em resposta vazia", maybe_append_offer(pergunta_ac, "") == "")
 
-# ── 5. Fluxo no ContextResolver (oferta pendente → aceite → canônica) ────────
 print(f"\n{BOLD}5. ContextResolver: aceite vira pergunta canônica{RESET}")
 resolver = ContextResolver()
 conv = "test-ac-followup"
@@ -157,7 +152,6 @@ resolved3, modified3 = resolver3.resolve_question("sim", conv3, [])
 check("resposta nova do assistente limpa a oferta pendente",
       resolved3 == "sim" and not modified3, resolved3)
 
-# ── Resumo ───────────────────────────────────────────────────────────────────
 total = _passed + _failed
 cor = GREEN if _failed == 0 else RED
 print(f"\n{BOLD}{cor}{_passed}/{total} testes passaram{RESET}\n")

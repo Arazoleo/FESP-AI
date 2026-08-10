@@ -18,13 +18,13 @@ services:
       - ./markdown_regimentos:/app/markdown_regimentos
       - ./markdown_docentes:/app/markdown_docentes
       - ./markdown_cursos:/app/markdown_cursos
-      # JIT cache do numba (usado pelo PyReason) — persiste entre restarts
+      # JIT cache do numba (usado pelo PyReason) - persiste entre restarts
       # para evitar recompilação de kernels (~20s) a cada boot do container.
       - numba-cache:/app/.numba_cache
     environment:
-      # Ollama: local (Mac) ou na nuvem — para nuvem, defina a URL abaixo
+      # Ollama: local (Mac) ou na nuvem - para nuvem, defina a URL abaixo
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
-      # Modelo de geração — para testar modelo grande na nuvem: MODEL_NAME=llama3.1:70b (ou qwen2.5:72b, etc.)
+      # Modelo de geração - para testar modelo grande na nuvem: MODEL_NAME=llama3.1:70b (ou qwen2.5:72b, etc.)
       - MODEL_NAME=${MODEL_NAME:-gemma4:31b-cloud}
       # Embeddings (recomendado manter mxbai-embed-large; na nuvem deve estar no mesmo Ollama)
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-mxbai-embed-large}

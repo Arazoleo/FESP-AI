@@ -6,15 +6,15 @@ const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || 'http://backend:8000'
 const nextConfig = {
   reactStrictMode: true,
   async rewrites() {
-    // Proxy das rotas da API para o backend — permite servir tudo pela
+    // Proxy das rotas da API para o backend - permite servir tudo pela
     // mesma origem (um único túnel público, sem CORS).
     return [
       // /api/* NÃO usa rewrite: é atendido pelo route handler
-      // app/api/[...path]/route.ts (proxy server-side com timeout longo —
+      // app/api/[...path]/route.ts (proxy server-side com timeout longo -
       // o proxy interno do rewrite corta a conexão upstream em ~30s e
       // derrubava respostas lentas do pipeline).
       // Rotas usadas pelo planner.html (iframe servido pelo backend usa
-      // caminhos relativos à origem do frontend) — sem colisão com páginas.
+      // caminhos relativos à origem do frontend) - sem colisão com páginas.
       { source: '/health', destination: `${BACKEND_URL}/health` },
       { source: '/telemetry', destination: `${BACKEND_URL}/telemetry` },
       { source: '/planner', destination: `${BACKEND_URL}/planner` },

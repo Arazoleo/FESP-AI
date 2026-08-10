@@ -9,16 +9,10 @@ class GraphRAGEngine:
     def __init__(self, knowledge_graph: KnowledgeGraph, embeddings_model=None, llm=None):
         self.kg = knowledge_graph
 
-        # Classificador de intenção: embeddings + LLM fallback
         self.intent_classifier = IntentClassifier(embeddings_model, llm=llm)
         self._use_semantic_classification = embeddings_model is not None
 
-        # Patterns regex legados (fallback)
         self.graph_patterns = {
-            # recommended_before ANTES de prerequisite_chain: "o que é BOM
-            # fazer antes de X" (recomendação inferida por conteúdo) ≠ "o que
-            # PRECISO fazer antes de X" (pré-requisito formal). Os padrões
-            # exigem bom/útil/ajuda/recomendado/vale a pena — nunca preciso/devo.
             'recommended_before': [
                 r'(?:o\s+que\s+)?(?:[eé]\s+)?(?:bom|legal|[uú]til|recomendad[oa]s?|indicad[oa]s?)\s+(?:fazer|cursar|estudar|ter\s+feito)\s+antes\s+de\s+(?:fazer\s+|cursar\s+)?(.+?)(?:\?|$)',
                 r'o\s+que\s+ajuda(?:ria)?\s+(?:a\s+)?(?:fazer|cursar|estudar)?\s*antes\s+de\s+(?:fazer\s+|cursar\s+)?(.+?)(?:\?|$)',
@@ -44,10 +38,7 @@ class GraphRAGEngine:
                 r'(?:o\s+que|quais?)\s+(?:o\s+|a\s+)?(.+?)\s+(?:leciona|ensina|ministra|d[aá])(?:\?|$)',
             ],
             'discipline_docentes': [
-                # IMPORTANTE: Deve vir ANTES de docente_leciona_disciplina para "quem leciona X?"
-                # "qual o professor responsável por SEDO?" / "professor responsável pela disciplina de IHC?"
                 r'(?:professor(?:es|a)?|docentes?)\s+respons[aá]ve(?:l|is)\s+(?:por|pel[ao])\s+(?:a\s+|o\s+)?(?:disciplina\s+(?:de\s+)?|mat[eé]ria\s+(?:de\s+)?)?(.+?)(?:\?|$)',
-                # "quem é o responsável por SEDO?"
                 r'quem\s+(?:[eé]\s+)?(?:o\s+|a\s+)?respons[aá]vel\s+(?:por|pel[ao])\s+(?:a\s+|o\s+)?(?:disciplina\s+(?:de\s+)?|mat[eé]ria\s+(?:de\s+)?)?(.+?)(?:\?|$)',
                 r'quem\s+(?:leciona|ensina|ministra|d[aá])\s+(.+?)(?:\?|$)',
                 r'(?:quais?\s+)?(?:os?\s+)?(?:professore?s?|docentes?)\s+(?:de|da|do|que\s+d[aã]o)\s+(.+?)(?:\?|$)',
@@ -55,8 +46,6 @@ class GraphRAGEngine:
                 r'(?:quais?\s+)?(?:s[aã]o\s+)?(?:os?\s+)?(?:professore?s?|docentes?)\s+(?:de|da|do)\s+(.+?)(?:\?|$)',
             ],
             'docente_leciona_disciplina': [
-                # Padrão: "O professor X leciona Y?" - retorna (docente, disciplina)
-                # Exige "professor" ou "docente" para evitar confusão com "quem leciona X?"
                 r'(?:o\s+|a\s+)?(?:professor(?:a)?|docente)\s+(.+?)\s+leciona\s+(.+?)(?:\?|$)',
                 r'(?:o\s+|a\s+)?([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)\s+(?:leciona|d[aá]|ensina|ministra)\s+(.+?)(?:\?|$)',
             ],
@@ -78,10 +67,8 @@ class GraphRAGEngine:
                 r'(?:em\s+que|quais?\s+[aá]reas?)\s+(?:o\s+|a\s+)?(.+?)\s+(?:pesquisa|trabalha|atua|[eé]\s+especialista)(?:\?|$)',
                 r'(?:qual|quais?)\s+(?:[eé]\s+)?(?:a\s+)?[aá]reas?\s+(?:de|do|da)\s+(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
                 r'[aá]reas?\s+(?:de|do|da)\s+(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
-                # Padrões para perguntas com referência a IC/pesquisa
                 r'(?:quero\s+fazer\s+(?:uma?\s+)?(?:ic|inicia[çc][aã]o\s+cient[ií]fica)\s+com\s+(?:o\s+|a\s+)?(.+?))[\.,]\s*(?:qual|pode\s+me\s+dizer)\s+(?:a\s+)?[aá]rea',
                 r'(?:pode\s+me\s+dizer|me\s+diz(?:er)?|qual\s+[eé])\s+(?:a\s+)?[aá]rea\s+(?:de|do|da)\s+(?:o\s+|a\s+)?(.+?)(?:\?|$)',
-                # Padrões com pronomes (já resolvidos para nome pela API)
                 r'(?:pode\s+me\s+dizer|me\s+diz(?:er)?)\s+(?:a\s+)?[aá]rea\s+(?:de|do|da)\s+(.+?)(?:\?|$)',
             ],
             'docente_info': [
@@ -98,26 +85,17 @@ class GraphRAGEngine:
                 r'(?:o\s+que\s+)?(?:tem\s+)?(?:no\s+)?(primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|quint[oa]|sext[oa]|s[eé]tim[oa]|oitav[oa]|non[oa]|d[eé]cim[oa])\s+(?:termo|semestre|per[ií]odo)\s+(?:de|do|da)\s+(.+?)(?:\?|$)',
             ],
             'eletivas_curso': [
-                # Padrões MAIS ESPECÍFICOS primeiro (com "grupo")
                 r'(?:quais?\s+)?(?:s[aã]o\s+)?(?:as?\s+)?eletivas?\s+do\s+grupo\s+\d+\s+(?:de|do|da|para)\s+(.+?)(?:\?|$)',
-                # Padrões GERAIS depois
                 r'(?:como\s+)?funcionam?\s+(?:as?\s+)?(?:disciplinas?\s+)?eletivas?\s+(?:de|do|da|no|na)\s+(.+?)(?:\?|$)',
                 r'(?:quais?\s+)?(?:s[aã]o\s+)?(?:as?\s+)?eletivas?\s+(?:de|do|da|para|d[oe])\s+(.+?)(?:\?|$)',
                 r'(?:quais?\s+)?disciplinas?\s+eletivas?\s+(?:de|do|da|para)\s+(.+?)(?:\?|$)',
                 r'eletivas?\s+(?:dispon[ií]veis?\s+)?(?:para|no|na|do|da|de)\s+(.+?)(?:\?|$)',
                 r'(?:liste|mostre|quero\s+ver)\s+(?:as?\s+)?eletivas?\s+(?:de|do|da)\s+(.+?)(?:\?|$)',
             ],
-            # trajectory_planning ANTES de matriz_info/todos_termos_curso: os
-            # pega-tudo desses intents casam com o "de" de "Banco de Dados" ou
-            # de "onde" e roubam queries de planejamento de trajetória.
             'trajectory_planning': [
-                # 2-group: "já cursei/fiz X, Y: como chego em Z"
                 r'(?:j[aá]\s+)?(?:cursei|fiz|conclui|conclu[ií])\s+(.+?)[,:]\s+(?:como\s+)?(?:chego|chegar|fica)\s+(?:em\s+)?([^.!?]+?)(?:[.!?]|$)',
-                # "já fiz X, Y, como fica?" — completed only
                 r'(?:j[aá]\s+)?(?:fiz|conclui|conclu[ií])\s+(.+?)[,.]?\s+(?:como\s+fica|o\s+que\s+falta)\s*\??',
-                # "quero chegar em TARGET, já fiz COMPLETED" — target first
                 r'quero\s+chegar\s+em\s+([^,.!?]+?),\s+(?:j[aá]\s+)?(?:fiz|cursei|conclui|conclu[ií])\s+([^.!?]+?)(?:[.!?]|$)',
-                # "quero chegar em X" — para em qualquer pontuação
                 r'quero\s+chegar\s+em\s+([^,.!?]+?)(?:[,.!?]|$)',
                 r'caminho\s+(?:m[ií]nimo\s+)?para\s+(?:chegar\s+(?:em|at[eé])\s+)?([^.!?]+?)(?:[.!?]|$)',
                 r'como\s+cheg(?:o|ar)\s+(?:em|at[eé])\s+([^.!?]+?)(?:[.!?]|$)',
@@ -133,7 +111,6 @@ class GraphRAGEngine:
                 r'dura[çc][aã]o\s+(?:do\s+curso\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
                 r'carga\s+hor[aá]ria\s+(?:total\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
                 r'(?:quantas?\s+)?horas?\s+(?:tem|precisa|possui)\s+(?:o\s+)?(?:curso\s+)?(?:de\s+)?(.+?)(?:\?|$)',
-                # Padrões conversacionais
                 r'(?:me\s+)?fale\s+(?:sobre\s+)?(?:a\s+)?(?:matriz\s+)?(?:do|da|de)\s+(.+?)(?:\?|$)',
                 r'(?:sobre\s+)?(?:a\s+)?matriz\s+(?:do|da|de)\s+(.+?)(?:\?|$)',
             ],
@@ -177,24 +154,19 @@ class GraphRAGEngine:
         Usa classificação semântica (embeddings) quando disponível,
         com fallback para regex.
         """
-        # 1. Tentar classificação semântica primeiro
         if self._use_semantic_classification and self.intent_classifier._initialized:
             result = self.intent_classifier.classify(question)
 
             if result.intent != 'unknown' and result.confidence >= 0.45:
-                # Correção simbólica da direção docente↔disciplina (modelos
-                # pequenos confundem docente_disciplines/discipline_docentes)
                 intent, term = self._fix_docente_direction(
                     question, result.intent, result.term
                 )
-                # Pós-processamento para casos especiais
                 termo = self._post_process_term(question, intent, term)
                 termo = self._ground_discipline_term(question, intent, termo)
                 termo = self._ground_curso_term(question, intent, termo)
                 termo = self._ground_docente_term(question, intent, termo)
                 return True, intent, termo
 
-        # 2. Fallback para regex (mantém compatibilidade)
         use, intent, termo = self._regex_fallback(question)
         if use and intent and termo:
             intent, termo = self._fix_docente_direction(question, intent, termo)
@@ -203,15 +175,6 @@ class GraphRAGEngine:
             termo = self._ground_docente_term(question, intent, termo)
         return use, intent, termo
 
-    # Intents direcionais em torno de docentes. Modelos pequenos (LLM auxiliar
-    # leve) trocam a direção com frequência (docente_disciplines ↔
-    # discipline_docentes, docente_areas ↔ docentes_by_area), às vezes emitem
-    # o rótulo inválido "disciplina_docentes" e às vezes ALUCINAM o termo
-    # (ex.: copiam o exemplo do prompt "Laboratório de Sistemas
-    # Computacionais: Compiladores"). A direção é decidível SIMBOLICAMENTE
-    # com o termo aterrado NA PERGUNTA: se resolve para uma DISCIPLINA, a
-    # pergunta pede os docentes dela; para uma ÁREA, os especialistas nela;
-    # para um DOCENTE, as áreas/disciplinas dele.
     _DOCENTE_DIRECTION_INTENTS = {
         'docente_disciplines', 'discipline_docentes', 'disciplina_docentes',
         'docente_areas', 'docentes_by_area',
@@ -220,8 +183,6 @@ class GraphRAGEngine:
         'docente_disciplines', 'discipline_docentes', 'disciplina_docentes',
     }
 
-    # Pistas lexicais de que a pergunta é sobre ÁREAS de pesquisa (não sobre
-    # disciplinas lecionadas): "trabalha com", "pesquisa", "área de atuação"…
     _AREA_HINT_RE = re.compile(
         r'\b(trabalh\w*|pesquis\w*|atua\w*|[aá]reas?|especialist\w*|'
         r'especializa\w*)\b',
@@ -237,7 +198,7 @@ class GraphRAGEngine:
         """
         ID do docente para o termo, com guarda de sobreposição de palavras:
         o substring-match do KG é frouxo demais para termos curtos/lixo
-        (ex.: 'o q' ⊂ 'eduardo quinteiro') — exige ao menos uma palavra do
+        (ex.: 'o q' ⊂ 'eduardo quinteiro') - exige ao menos uma palavra do
         termo igual a uma palavra do nome.
         """
         doc_id = self.kg._find_docente_id(termo)
@@ -285,7 +246,6 @@ class GraphRAGEngine:
                     partial.setdefault(w, set()).add(nome)
         if best_nome:
             return best_nome
-        # Nome parcial: aceita apenas quando identifica UM único docente
         unicos = {next(iter(nomes)) for nomes in partial.values() if len(nomes) == 1}
         if len(unicos) == 1:
             return unicos.pop()
@@ -299,23 +259,14 @@ class GraphRAGEngine:
             return intent, termo
         try:
             if termo:
-                # 1) DISCIPLINA — aceita apenas se o termo está NA PERGUNTA:
-                #    termo alucinado pelo LLM não pode decidir a direção.
                 if intent in self._DISCIPLINE_SIDE_INTENTS and \
                         self._mentioned_in_question(question, termo) and \
                         self.kg._find_node(termo, 'disciplina'):
                     return 'discipline_docentes', termo
-                # 2) ÁREA de pesquisa com especialistas → docentes_by_area
-                #    ("professor que trabalha com Redes Complexas" chega como
-                #    discipline_docentes; a área do KG decide a direção certa)
                 if self.kg.get_docentes_by_area(termo):
                     return 'docentes_by_area', termo
-                # 3) DOCENTE → áreas ou disciplinas dele, conforme a pergunta
                 if self._resolve_docente(termo):
                     return self._docente_intent_for_question(question, intent), termo
-            # 4) Termo não aterrou (extração capturou lixo ou o LLM alucinou):
-            #    procura um docente citado na pergunta, inclusive nome parcial
-            #    minúsculo ("a lilian" → "Lilian Berton").
             grounded = self._find_docente_in_text(question)
             if grounded:
                 from .telemetry import incr
@@ -323,12 +274,10 @@ class GraphRAGEngine:
                 return self._docente_intent_for_question(question, intent), grounded
         except Exception:
             pass
-        # Nada aterrou: pelo menos normaliza o rótulo inválido
         if intent == 'disciplina_docentes':
             intent = 'discipline_docentes'
         return intent, termo
 
-    # Intents cujo termo é nome/sigla de curso
     _CURSO_TERM_INTENTS = {
         'eletivas_curso', 'matriz_info', 'coordenador_curso', 'todos_termos_curso',
     }
@@ -364,7 +313,6 @@ class GraphRAGEngine:
                     best_nome, best_len = data.get("nome", ""), len(chave_norm)
         return best_nome
 
-    # Intents cujo termo (ou alvo, no caso de trajectory) é nome de disciplina
     _DISCIPLINE_TERM_INTENTS = {
         'prerequisite_chain', 'dependents', 'discipline_docentes',
         'ementa_disciplina', 'co_prerequisite', 'trajectory_planning',
@@ -385,7 +333,6 @@ class GraphRAGEngine:
         if intent == 'trajectory_planning' and ':' in termo:
             completed, target = termo.rsplit(':', 1)
             if not target.strip():
-                # formato "cursadas:" (sem alvo) é intencional
                 return termo
         if self.kg._find_node(target.strip(), "disciplina"):
             return termo
@@ -396,7 +343,6 @@ class GraphRAGEngine:
         incr("grounding_disciplina")
         return f"{completed}:{grounded}" if completed else grounded
 
-    # Intents cujo termo é nome de docente
     _DOCENTE_TERM_INTENTS = {
         'docente_areas', 'docente_info', 'docente_disciplines',
     }
@@ -435,13 +381,10 @@ class GraphRAGEngine:
         """Pós-processamento do termo extraído para casos especiais."""
         question_lower = question.lower()
         
-        # Caso especial: listar_cursos não precisa de termo
         if intent == 'listar_cursos':
             return ""
         
-        # Caso especial: docente_leciona_disciplina precisa de "docente:disciplina"
         if intent == 'docente_leciona_disciplina':
-            # Tentar extrair docente e disciplina
             match = re.search(
                 r'(?:professor(?:a)?|docente)\s+(.+?)\s+(?:leciona|d[aá]|ensina)\s+(.+?)(?:\?|$)',
                 question_lower
@@ -452,23 +395,17 @@ class GraphRAGEngine:
                 disciplina = re.sub(r'[\?.,!]+$', '', disciplina).strip()
                 return f"{docente}:{disciplina}"
         
-        # Caso especial: disciplinas_termo precisa de "numero:curso"
         if intent == 'disciplinas_termo':
-            # Verificar se já está no formato correto
             if ':' in term:
                 return term
-            # Tentar extrair número do termo
             match = re.search(r'(?:termo|semestre)\s+(\d+)', question_lower)
             if match:
                 numero = match.group(1)
-                # Remover o número do termo extraído
                 curso = re.sub(r'\d+\s*', '', term).strip()
                 if curso:
                     return f"{numero}:{curso}"
 
-        # Caso especial: trajectory_planning com completed+target
         if intent == 'trajectory_planning' and ':' not in term:
-            # "quero chegar em TARGET, já fiz COMPLETED"
             inv = re.search(
                 r'quero\s+chegar\s+em\s+(.+?),\s+(?:j[aá]\s+)?(?:fiz|cursei|conclui|conclu[ií])\s+(.+?)(?:\?|$)',
                 question_lower
@@ -477,7 +414,6 @@ class GraphRAGEngine:
                 target = re.sub(r'[\?.,!]+$', '', inv.group(1)).strip()
                 completed = re.sub(r'[\?.,!]+$', '', inv.group(2)).strip()
                 return f"{completed}:{target}"
-            # "já cursei/fiz X: como chego em Y"
             fwd = re.search(
                 r'(?:j[aá]\s+)?(?:cursei|fiz|conclui|conclu[ií])\s+(.+?)[,:]\s+(?:como\s+)?(?:chego|chegar|fica)\s+(?:em\s+)?(.+?)(?:\?|$)',
                 question_lower
@@ -497,13 +433,10 @@ class GraphRAGEngine:
             for pattern in patterns:
                 match = re.search(pattern, question_lower, re.IGNORECASE)
                 if match:
-                    # Caso especial para listar_cursos (sem grupo de captura)
                     if query_type == 'listar_cursos':
                         return True, query_type, ""
-                    # Caso especial para disciplinas_termo (dois grupos)
                     elif query_type == 'disciplinas_termo' and len(match.groups()) >= 2:
                         termo_num = match.group(1).strip()
-                        # Converter números por extenso para dígitos
                         numeros_extenso = {
                             'primeiro': '1', 'primeira': '1', 'primeir': '1',
                             'segundo': '2', 'segunda': '2', 'segund': '2',
@@ -524,19 +457,15 @@ class GraphRAGEngine:
                         curso = match.group(2).strip()
                         curso = re.sub(r'[\?.,!]+$', '', curso).strip()
                         termo = f"{termo_num}:{curso}"
-                    # Caso especial para docente_leciona_disciplina (dois grupos)
                     elif query_type == 'docente_leciona_disciplina' and len(match.groups()) >= 2:
                         docente = match.group(1).strip()
                         disciplina = match.group(2).strip()
-                        # Limpar pontuação
                         docente = re.sub(r'[\?.,!]+$', '', docente).strip()
                         disciplina = re.sub(r'[\?.,!]+$', '', disciplina).strip()
                         termo = f"{docente}:{disciplina}"
-                    # Caso especial para trajectory_planning com completed+target
                     elif query_type == 'trajectory_planning' and len(match.groups()) >= 2:
                         g1 = re.sub(r'[\?.,!]+$', '', match.group(1)).strip()
                         g2 = re.sub(r'[\?.,!]+$', '', match.group(2)).strip()
-                        # "quero chegar em TARGET, já fiz COMPLETED" → grupos invertidos
                         if re.match(r'quero\s+chegar\s+em\b', question_lower):
                             termo = f"{g2}:{g1}"
                         else:
@@ -571,14 +500,11 @@ class GraphRAGEngine:
         para o alvo (None se não encontrado).
         """
         from .neurosymbolic_validator import _parse_trajectory_term
-        # Strip sentence-level noise that regex may have captured (e.g. "Compiladores. por onde começo")
         termo_clean = re.split(r'[.!]', termo)[0].strip()
         termo_clean = re.sub(
             r'\s+(?:por\s+onde|como\s+fica|começo|inicio|inicio\.?|começo\.?)\b.*',
             '', termo_clean, flags=re.IGNORECASE
         ).strip()
-        # Se o termo completo é encontrado no KG como disciplina, é target puro (sem completed).
-        # Isso evita que ":" em nomes como "Lab X: Y" seja confundido com separador completed:target.
         if self.kg._find_node(termo_clean, "disciplina"):
             completed, target = [], termo_clean
         else:
@@ -588,8 +514,6 @@ class GraphRAGEngine:
 
         node_id = self.kg._find_node(target, "disciplina")
         if node_id is None:
-            # Extração pode ter capturado frase inteira — procurar uma
-            # disciplina conhecida citada dentro do termo bruto
             grounded = self._find_discipline_in_text(target)
             if grounded:
                 node_id = self.kg._find_node(grounded, "disciplina")
@@ -617,7 +541,7 @@ class GraphRAGEngine:
     def _safe_recommended_before(self, termo: str, n: int = 3) -> List[Tuple[str, float]]:
         """
         Regra recommended_before do KGC com guarda: sem embeddings (ou em
-        erro) devolve [] — as respostas simbólicas seguem intactas.
+        erro) devolve [] - as respostas simbólicas seguem intactas.
         """
         try:
             return self.kg.kgc.get_recommended_before(termo, n=n)
@@ -636,7 +560,7 @@ class GraphRAGEngine:
         return (
             f"\n\n**Recomendadas antes (inferidas por conteúdo):** {itens}\n"
             "*Regra `recommended_before`: sim_ementa ≥ θ ∧ ¬ancestral ∧ "
-            "ordem(A) < ordem(B) — não são pré-requisitos formais, o conteúdo "
+            "ordem(A) < ordem(B) - não são pré-requisitos formais, o conteúdo "
             "delas ajuda.*"
         )
 
@@ -646,7 +570,7 @@ class GraphRAGEngine:
 
         Retorna {type, nodes: [{id, nome, fase?, cursada?}], edges: [{source,
         target, confidence}]} para os intents prerequisite_chain, dependents e
-        trajectory_planning — ou None quando não há grafo a exibir. NÃO altera
+        trajectory_planning - ou None quando não há grafo a exibir. NÃO altera
         query_graph: é uma função paralela, somente leitura sobre o KG.
         """
         if query_type not in (
@@ -669,8 +593,6 @@ class GraphRAGEngine:
                         nomes.append(n)
                 nodes = [{"id": n, "nome": n} for n in nomes]
                 edges = self._direct_prereq_edges(nomes)
-                # Arestas inferidas (recommended_before): tracejadas + âmbar
-                # no frontend, confidence = similaridade (< 1.0 sempre).
                 for rec_nome, sim in self._safe_recommended_before(nome):
                     if rec_nome not in vistos:
                         vistos.add(rec_nome)
@@ -711,7 +633,6 @@ class GraphRAGEngine:
                     "edges": edges,
                 }
 
-            # dependents
             dependents = [d for d in self.kg.get_dependent_disciplines(nome) if d]
             if not dependents:
                 return None
@@ -727,7 +648,6 @@ class GraphRAGEngine:
                 "edges": self._direct_prereq_edges(nomes),
             }
 
-        # trajectory_planning
         from .neurosymbolic_validator import InferenceEngine
         completed, target, node_id = self._resolve_trajectory_parts(termo)
         if not target or not node_id:
@@ -739,7 +659,6 @@ class GraphRAGEngine:
         if not phases:
             return None
 
-        # Cursadas: resolver para o nome canônico do KG quando possível
         completed_nomes = []
         for c in completed:
             cid = self.kg._find_node(c, "disciplina")
@@ -771,14 +690,12 @@ class GraphRAGEngine:
         """
         Executa uma query no Knowledge Graph e formata a resposta.
         """
-        # Normalizar termos de disciplina (expande siglas, corrige casing)
         if query_type in ('prerequisite_chain', 'dependents', 'discipline_docentes', 'recommended_before'):
             termo = self._resolve_discipline_term(termo)
 
         if query_type == 'prerequisite_chain':
             chain = self.kg.get_prerequisite_chain(termo)
             if chain:
-                # Formatar como caminho
                 path = f"{termo} ← " + " ← ".join(chain)
                 return f"""**Cadeia de pré-requisitos de {termo}:**
 {path}
@@ -799,7 +716,7 @@ Total: {len(chain)} pré-requisito(s) na cadeia.
             recs = self._safe_recommended_before(termo)
             if recs:
                 linhas = "\n".join(
-                    f"- **{nome}** — similaridade de ementa {sim:.0%}"
+                    f"- **{nome}** - similaridade de ementa {sim:.0%}"
                     for nome, sim in recs
                 )
                 return f"""**Recomendadas antes de {termo} (inferidas por conteúdo):**
@@ -808,7 +725,7 @@ Total: {len(chain)} pré-requisito(s) na cadeia.
 
 Estas disciplinas **não são pré-requisitos formais** de {termo}: a recomendação é inferida pela sobreposição das ementas, respeitando a ordem do currículo e ficando fora da cadeia de pré-requisitos.
 
-*Regra aplicada: `recommended_before` — sim_ementa(A,B) ≥ θ ∧ ¬ancestral(A,B) ∧ ¬ancestral(B,A) ∧ ordem(A) < ordem(B)*"""
+*Regra aplicada: `recommended_before` - sim_ementa(A,B) ≥ θ ∧ ¬ancestral(A,B) ∧ ¬ancestral(B,A) ∧ ordem(A) < ordem(B)*"""
             if not self.kg._find_node(termo, "disciplina"):
                 return (
                     f"Não encontrei a disciplina **{termo}** no sistema. "
@@ -852,13 +769,11 @@ O(A) professor(a) **{termo}** leciona {len(disciplinas)} disciplina(s)."""
                 return f"Não encontrei docentes para **{termo}**."
         
         elif query_type == 'docente_leciona_disciplina':
-            # termo vem como "docente:disciplina"
             if ':' in termo:
                 docente, disciplina = termo.split(':', 1)
                 disciplinas = self.kg.get_disciplines_of_docente(docente)
                 docente_titulo = docente.title()
                 
-                # Mapeamento de siglas comuns para nomes de disciplinas
                 siglas_disciplinas = {
                     'paa': 'projeto e análise de algoritmos',
                     'pcd': 'programação concorrente e distribuída',
@@ -875,9 +790,7 @@ O(A) professor(a) **{termo}** leciona {len(disciplinas)} disciplina(s)."""
                 }
                 
                 if disciplinas:
-                    # Verificar se a disciplina específica está na lista
                     disc_lower = disciplina.lower()
-                    # Expandir sigla se for uma sigla conhecida
                     disc_expanded = siglas_disciplinas.get(disc_lower, disc_lower)
                     
                     encontrou = False
@@ -903,7 +816,7 @@ O(A) professor(a) **{termo}** leciona {len(disciplinas)} disciplina(s)."""
             artigos = self.kg.get_artigos_sobre(termo)
             if artigos:
                 resultado = f"**Artigos sobre '{termo}':**\n\n"
-                for art in artigos[:5]:  # Limitar a 5
+                for art in artigos[:5]:
                     resultado += f"- **Art. {art['numero']}** ({art['documento']}): {art['conteudo']}\n\n"
                 return resultado
             else:
@@ -913,7 +826,7 @@ O(A) professor(a) **{termo}** leciona {len(disciplinas)} disciplina(s)."""
             faqs = self.kg.get_faqs_sobre(termo)
             if faqs:
                 resultado = f"**Perguntas frequentes sobre '{termo}':**\n\n"
-                for faq in faqs[:5]:  # Limitar a 5
+                for faq in faqs[:5]:
                     resultado += f"**P:** {faq['pergunta']}\n**R:** {faq['resposta']}\n\n"
                 return resultado
             else:
@@ -939,12 +852,9 @@ Total: {len(docentes)} docente(s) trabalham com **{termo}**."""
 
 O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
             else:
-                # Termo pode vir sujo ("a lilian") — procurar um docente
-                # citado nele antes de desistir
                 grounded = self._find_docente_in_text(termo)
                 if grounded and self.kg._normalize_text(grounded) != self.kg._normalize_text(termo):
                     return self.query_graph('docente_areas', grounded)
-                # Falha limpa: pede o nome, sem ecoar termo-lixo
                 return (
                     "Não consegui identificar esse docente na base. "
                     "De qual professor você quer saber as áreas de pesquisa? "
@@ -992,7 +902,6 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
         elif query_type == 'coordenador_curso':
             info = self.kg.get_coordenador(termo)
             if info and (info.get('coordenador') or info.get('vice_coordenador')):
-                # Usar 'curso' em vez de 'nome' (retorno de get_coordenador)
                 curso_nome = info.get('curso') or info.get('nome') or termo
                 resultado = f"**Coordenação do curso {curso_nome}**"
                 if info.get('sigla'):
@@ -1025,7 +934,6 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                 return "Não encontrei informações sobre os cursos."
         
         elif query_type == 'disciplinas_termo':
-            # termo vem como "numero:curso"
             if ':' in termo:
                 termo_num, curso = termo.split(':', 1)
                 try:
@@ -1047,7 +955,6 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
         elif query_type == 'todos_termos_curso':
             termos = self.kg.get_todos_termos_do_curso(termo)
             if termos:
-                # Obter informações da matriz
                 info = self.kg.get_info_matriz(termo)
                 curso_nome = info.get('nome', termo.upper()) if info else termo.upper()
                 duracao = info.get('duracao_termos', str(len(termos))) if info else str(len(termos))
@@ -1055,7 +962,6 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                 resultado = f"**Disciplinas da Matriz Curricular de {curso_nome}**\n"
                 resultado += f"*Total de {duracao} termos (semestres)*\n\n"
                 
-                # Ordenar termos
                 for termo_num in sorted(termos.keys()):
                     disciplinas = termos[termo_num]
                     total_creditos = sum(int(d.get('creditos', 0)) for d in disciplinas)
@@ -1069,7 +975,6 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                 return f"Não encontrei disciplinas para o curso **{termo}**."
         
         elif query_type == 'eletivas_curso':
-            # Extrair grupo se especificado (ex: "Grupo 1 do BCC")
             grupo_filtro = None
             curso_limpo = termo
             
@@ -1077,12 +982,10 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
             if grupo_match:
                 num_grupo = grupo_match.group(1)
                 grupo_filtro = f"grupo{num_grupo}"
-                # Remover a parte do grupo para extrair o curso
                 curso_limpo = re.sub(r'\s*(?:grupo\s+|g)\d+\s*(?:de|do|da)?\s*', '', termo, flags=re.IGNORECASE).strip()
             
             eletivas = self.kg.get_eletivas_do_curso(curso_limpo, grupo=grupo_filtro)
             if eletivas:
-                # Agrupar por tipo
                 grupos = {}
                 for e in eletivas:
                     grupo = e.get('grupo', 'outro')
@@ -1095,13 +998,11 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                 else:
                     resultado = f"**Eletivas disponíveis para {curso_limpo.upper()}:**\n\n"
                 
-                # Ordenar grupos para apresentação consistente
                 ordem_grupos = ['eletiva_grupo1', 'eletiva_grupo2', 'eletiva_grupo3', 'eletiva_extensionista']
                 grupos_ordenados = sorted(grupos.keys(), key=lambda x: ordem_grupos.index(x) if x in ordem_grupos else 99)
                 
                 for grupo in grupos_ordenados:
                     disciplinas = grupos[grupo]
-                    # Traduzir nome do grupo
                     nomes_grupos = {
                         'eletiva_grupo1': 'Grupo 1 - Eletivas Limitadas de Ciência da Computação',
                         'eletiva_grupo2': 'Grupo 2 - Eletivas de Matemática e Computação',
@@ -1110,14 +1011,13 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                     }
                     grupo_nome = nomes_grupos.get(grupo, grupo.replace('_', ' ').title())
                     resultado += f"**{grupo_nome}:**\n"
-                    for d in disciplinas:  # Mostrar TODAS as disciplinas
+                    for d in disciplinas:
                         resultado += f"- {d}\n"
                     resultado += "\n"
                 
                 resultado += f"\n**Total:** {len(eletivas)} eletivas disponíveis."
                 return resultado
             else:
-                # Distinguir "curso desconhecido" de "curso sem lista de eletivas na base"
                 curso_node = self.kg._find_node(curso_limpo, "curso") or \
                              self.kg._find_node(curso_limpo, "matriz_curricular")
                 if curso_node:
@@ -1125,11 +1025,9 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                     return (
                         f"A base de dados não lista eletivas específicas para **{nome_curso}**. "
                         "A matriz curricular prevê vagas de eletivas (Eletiva I, II, ...), mas o "
-                        "detalhamento dos grupos de eletivas desse curso não está disponível — "
+                        "detalhamento dos grupos de eletivas desse curso não está disponível - "
                         "consulte a coordenação ou o portal da UNIFESP."
                     )
-                # Termo pode ser lixo de extração ("algumas dessas eletivas") —
-                # tentar achar um curso citado nele antes de desistir
                 grounded = self._find_curso_in_text(curso_limpo)
                 if grounded:
                     return self.query_graph('eletivas_curso', grounded)
@@ -1145,8 +1043,6 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
             if not critical:
                 return "Não encontrei disciplinas com dependentes suficientes no grafo."
 
-            # Filtrar por curso se fornecido — com grounding do termo
-            # (o termo pode vir sujo, ex.: "disciplinas críticas do bcc")
             nome_curso_filtro = None
             if termo.strip():
                 curso_node = self.kg._find_node(termo.strip(), "curso") or \
@@ -1164,8 +1060,6 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                     }
                     critical = [(nome, n) for nome, n in critical if nome.lower() in discs_do_curso]
 
-            # Dedupe por nome normalizado (o KG tem variantes tipo
-            # "Fundamentos de/da Biologia Moderna")
             vistos, unicos = set(), []
             for nome, n_deps in critical:
                 chave = self.kg._normalize_text(nome)
@@ -1183,7 +1077,7 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                 resultado = (
                     "**Disciplinas mais críticas do currículo** "
                     "(pela regra `critical_discipline`: ∀x: |dependentes(x)| ≥ θ)\n\n"
-                    "*Considerando todos os cursos do ICT — cite um curso para filtrar "
+                    "*Considerando todos os cursos do ICT - cite um curso para filtrar "
                     "(ex.: \"disciplinas críticas de BCC\").*\n\n"
                 )
             resultado += "| Disciplina | Dependentes |\n|---|---|\n"
@@ -1221,7 +1115,7 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
             else:
                 return (
                     "Não consegui identificar a disciplina alvo na sua pergunta. "
-                    "Me diga qual disciplina você quer alcançar — por exemplo: "
+                    "Me diga qual disciplina você quer alcançar - por exemplo: "
                     "\"Quero chegar em Compiladores, já fiz Matemática Discreta\"."
                 )
 
@@ -1238,11 +1132,10 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                 msg = f"Você já pode cursar **{target}**"
                 if completed:
                     msg += f" com as disciplinas que já cursou ({', '.join(completed)})"
-                msg += " — todos os pré-requisitos estão atendidos."
+                msg += " - todos os pré-requisitos estão atendidos."
                 return msg
 
             total = sum(len(p) for p in phases)
-            # B2: propagação de incerteza — anotar elos com confiança parcial
             conf_por_disc, path_bound = engine.path_confidence(phases)
 
             resultado = f"**Caminho mínimo para {target}**"
@@ -1267,7 +1160,7 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
             )
             if path_bound < 1.0:
                 resultado += (
-                    f"\n\n*Confiança do caminho (bound inferior): {path_bound:.0%} — "
+                    f"\n\n*Confiança do caminho (bound inferior): {path_bound:.0%} - "
                     "alguns elos de pré-requisito têm confiança parcial no grafo.*"
                 )
             resultado += (

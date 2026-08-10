@@ -54,7 +54,7 @@ def check(desc: str, cond: bool, detail: str = ""):
         print(f"{GREEN}✓{RESET} {desc}")
     else:
         _failed += 1
-        print(f"{RED}✗ {desc}{RESET}" + (f" — {detail}" if detail else ""))
+        print(f"{RED}✗ {desc}{RESET}" + (f" - {detail}" if detail else ""))
 
 
 kg_mod = _import_module("knowledge_graph", "src/knowledge_graph.py")
@@ -77,7 +77,6 @@ check(
 
 print(f"\n{BOLD}── Roteamento e extração (fallback regex) ──{RESET}")
 CASES = [
-    # (pergunta, intent esperado, termo esperado — None ignora)
     ("Quero chegar em Compiladores. Por onde começo?", "trajectory_planning", "compiladores"),
     ("Quero chegar em Compiladores", "trajectory_planning", "compiladores"),
     ("Quero chegar em Compiladores, já fiz Matemática Discreta",
@@ -88,7 +87,6 @@ CASES = [
     ("Para cursar Compiladores, preciso ter feito quais disciplinas no total?",
      "prerequisite_chain", "Compiladores"),
     ("Quais os pré-requisitos de Compiladores?", "prerequisite_chain", "compiladores"),
-    # "professor responsável por <sigla>" → discipline_docentes (bug do beta tester)
     ("Qual o professor responsável por SEDO?", "discipline_docentes", "sedo"),
     ("Quem é o responsável por SEDO?", "discipline_docentes", "sedo"),
     ("Professor responsável pela disciplina de IHC?", "discipline_docentes", "ihc"),

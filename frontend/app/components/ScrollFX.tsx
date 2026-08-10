@@ -2,18 +2,6 @@
 
 import { useEffect } from 'react'
 
-/**
- * ScrollFX — orquestra os efeitos de scroll da landing sem converter a página
- * em client component. Tudo é ligado por data-attributes:
- *
- *   [data-reveal]          fade + translateY ao entrar no viewport (stagger via --fxd)
- *   [data-graph]           SVG do grafo: redesenha arestas / acende nós ao re-entrar
- *   [data-parallax="0.05"] translateY lento proporcional ao scroll
- *   [data-nav]             nav ganha fundo blur + borda ao rolar
- *
- * Com prefers-reduced-motion tudo permanece estático (o efeito nem é armado:
- * sem a classe `fx-ready` no <html>, o CSS não esconde nada).
- */
 export default function ScrollFX() {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -21,7 +9,6 @@ export default function ScrollFX() {
     const root = document.documentElement
     root.classList.add('fx-ready')
 
-    // ── Reveal on scroll ──────────────────────────────────────────────
     const revealEls = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'))
     const revealObserver = new IntersectionObserver(
       (entries) => {
@@ -36,7 +23,6 @@ export default function ScrollFX() {
     )
     revealEls.forEach((el) => revealObserver.observe(el))
 
-    // ── Grafo: redesenho das arestas ao re-entrar no viewport ─────────
     const graph = document.querySelector<HTMLElement>('[data-graph]')
     let graphObserver: IntersectionObserver | undefined
     if (graph) {
@@ -49,7 +35,6 @@ export default function ScrollFX() {
       graphObserver.observe(graph)
     }
 
-    // ── Scroll: barra de progresso, nav, parallax ─────────────────────
     const bar = document.querySelector<HTMLElement>('[data-scroll-progress]')
     const nav = document.querySelector<HTMLElement>('[data-nav]')
     const parallaxEls = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'))

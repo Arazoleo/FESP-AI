@@ -2,9 +2,9 @@
 Crawler dos sites do campus UNIFESP São José dos Campos.
 
 Escopos rastreados (ver SCOPES):
-  - campus.unifesp.br/sjc/  — site institucional (template Joomla/Gantry,
+  - campus.unifesp.br/sjc/  - site institucional (template Joomla/Gantry,
     container `com-content-article__body`);
-  - dae-sjc.unifesp.br/     — DAE / Divisão de Assuntos Educacionais
+  - dae-sjc.unifesp.br/     - DAE / Divisão de Assuntos Educacionais
     (Google Sites: container `role="main"`, corte no `<footer`).
 
 Descobre as páginas seguindo os links internos a partir das seeds (BFS),
@@ -30,7 +30,6 @@ import requests
 logger = logging.getLogger("fespai.crawler")
 
 BASE = "https://campus.unifesp.br"
-# (domínio, prefixo de path) aceitos pelo crawler; URLs fora disso são descartadas.
 SCOPES = [
     ("campus.unifesp.br", "/sjc/"),
     ("dae-sjc.unifesp.br", "/"),
@@ -45,7 +44,6 @@ SEEDS = [
 USER_AGENT = "FESP-AI/1.0 (assistente academico UNIFESP ICT; +https://campus.unifesp.br/sjc)"
 TIMEOUT = 12
 
-# Diretórios/arquivos técnicos e binários que não são conteúdo.
 _SKIP_DIR = re.compile(
     r"/(templates|modules|plugins|media|images|component|components|cache|administrator|api|libraries)/",
     re.IGNORECASE,
@@ -55,10 +53,10 @@ _SKIP_EXT = re.compile(
     re.IGNORECASE,
 )
 
-_BODY_MAX = 8000      # corpo guardado por página SEM headings (fallback)
-_SECTION_MAX = 6000   # corpo guardado por seção de página longa
-_MAX_SECTIONS = 60    # limite de seções por página (proteção)
-_MIN_TEXT = 80        # texto mínimo para valer uma entrada no corpus
+_BODY_MAX = 8000
+_SECTION_MAX = 6000
+_MAX_SECTIONS = 60
+_MIN_TEXT = 80
 
 DEFAULT_CACHE = os.path.join(
     os.getenv("FESPAI_DATA_DIR", "./chroma_db_unifesp"), "sjc_crawl.json"
@@ -77,8 +75,6 @@ def _canonical(url: str) -> Optional[str]:
         return None
     if _SKIP_DIR.search(path) or _SKIP_EXT.search(path):
         return None
-    # Artigos de notícia são cobertos pelo agente de Notícias (RSS ao vivo);
-    # não duplicar no corpus institucional. Mantém só a página-índice /sjc/noticias.
     if host == "campus.unifesp.br" and re.match(r"^/sjc/noticias/.+", path):
         return None
     if path.endswith("/") and len(path) > 1:
@@ -94,7 +90,6 @@ def _extract_title(html: str) -> str:
         return ""
     t = re.sub(r"<[^>]+>", " ", m.group(1))
     t = re.sub(r"\s+", " ", t).strip()
-    # remove sufixo "- UNIFESP" do <title>
     return re.sub(r"\s*[-|]\s*UNIFESP.*$", "", t, flags=re.IGNORECASE).strip()
 
 
@@ -104,7 +99,6 @@ def _article_region(html: str) -> str:
         re.search(r'com-content-article__body"?\s*>', html)
         or re.search(r'class="[^"]*item-page[^"]*"\s*>', html)
         or re.search(r'unifesp-article-introtext"?\s*>', html)
-        # Google Sites (dae-sjc.unifesp.br): conteúdo no container role="main"
         or re.search(r'role="main"[^>]*>', html)
     )
     if not m:
@@ -151,7 +145,7 @@ def _extract_sections(html: str) -> List[Dict]:
 
     Páginas de curso do campus (ex.: BCT) têm dezenas de seções em abas e
     acordeões (apresentação, ingresso, matriz curricular, FAQ...) que somam
-    muito mais que _BODY_MAX — sem o split, tudo depois do corte era perdido.
+    muito mais que _BODY_MAX - sem o split, tudo depois do corte era perdido.
 
     Retorna [] quando a página tem menos de 2 headings (usar _extract_body).
     Cada seção: {"titulo": str ("" para a introdução), "texto": str, "anchor": str}.
@@ -174,7 +168,6 @@ def _extract_sections(html: str) -> List[Dict]:
         texto = _html_to_text(region[m.start():end])
         if len(texto) <= _MIN_TEXT:
             continue
-        # Abas/acordeões do template usam ids "rlta-<slug>" — usar como âncora
         slug = _slugify(titulo)
         anchor = f"rlta-{slug}" if slug and f'id="rlta-{slug}"' in region else ""
         sections.append({
@@ -192,8 +185,6 @@ def _secao(url: str) -> str:
     parts = [x for x in p.path.split("/") if x]
     if p.netloc == "campus.unifesp.br" or not p.netloc:
         return parts[1] if len(parts) >= 2 else "sjc"
-    # Outros domínios (ex.: dae-sjc.unifesp.br): prefixo do domínio + 1ª parte
-    # do path -> "dae-materiais", "dae-estagios", "dae-inicio"...
     prefixo = re.sub(r"-sjc$", "", p.netloc.split(".")[0])
     return f"{prefixo}-{parts[0]}" if parts else prefixo
 
@@ -244,13 +235,11 @@ def crawl_sjc(
         titulo_pagina = _extract_title(html) or canon
         secao = _secao(canon)
 
-        # Páginas longas com headings viram uma entrada por seção — sem isso,
-        # tudo além de _BODY_MAX (matriz curricular, FAQs...) era descartado.
         secoes = _extract_sections(html)
         if secoes:
             for s in secoes:
                 titulo = (
-                    f"{titulo_pagina} — {s['titulo']}" if s["titulo"] else titulo_pagina
+                    f"{titulo_pagina} - {s['titulo']}" if s["titulo"] else titulo_pagina
                 )
                 url_secao = f"{canon}#{s['anchor']}" if s["anchor"] else canon
                 pages.append({

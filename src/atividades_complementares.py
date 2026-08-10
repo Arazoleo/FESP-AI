@@ -1,11 +1,11 @@
 """
-Atividades Complementares (AC) — detalhamento por eixo com resposta simbólica.
+Atividades Complementares (AC) - detalhamento por eixo com resposta simbólica.
 
 Implementa a melhoria derivada do ciclo 2 de usabilidade: respostas sobre
 atividades complementares terminam com uma OFERTA de follow-up ("quer o
 detalhamento por eixo?") e, quando o aluno aceita (ou pede direto), o
 detalhamento vem DIRETO do regulamento estruturado
-(`jsons_regimentos/regulamento_atividades_complementares_bct_2023.json`) —
+(`jsons_regimentos/regulamento_atividades_complementares_bct_2023.json`) -
 caminho simbólico, sem LLM, zero alucinação por construção.
 
 Três peças, consumidas em pontos distintos do pipeline:
@@ -27,19 +27,14 @@ _REGULAMENTO_PATH = (
     / "regulamento_atividades_complementares_bct_2023.json"
 )
 
-# Marcador estável da oferta: o ContextResolver o procura na última resposta
-# do assistente para saber que existe uma oferta pendente. Mudou a frase da
-# oferta? O marcador precisa continuar contido nela.
 OFFER_MARKER = "detalhamento do que conta em cada eixo"
 
 FOLLOWUP_OFFER = (
     "Se quiser, posso trazer o detalhamento do que conta em cada eixo das "
     "atividades complementares (com exemplos de atividades aceitas e limites "
-    "de horas) — é só pedir."
+    "de horas) - é só pedir."
 )
 
-# Pergunta canônica gerada quando o aluno aceita a oferta ("sim, pode").
-# Precisa casar com `is_breakdown_request` para tomar o atalho simbólico.
 BREAKDOWN_CANONICAL_QUESTION = (
     "Detalhe o que conta em cada eixo das atividades complementares"
 )
@@ -57,8 +52,6 @@ def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", _strip_accents((text or "").lower())).strip()
 
 
-# ── Detecção de pergunta sobre AC (para anexar a oferta) ─────────────────────
-
 _AC_RE = re.compile(r"\batividades?\s+complementar(?:es)?\b")
 
 
@@ -67,10 +60,6 @@ def is_ac_question(question: str) -> bool:
     return bool(_AC_RE.search(_norm(question)))
 
 
-# ── Detecção do pedido de detalhamento por eixo ──────────────────────────────
-
-# Pistas de que o aluno quer a QUEBRA por eixo/categoria, não o total de horas
-# ("quantas horas de AC preciso?" continua indo para a FAQ do site).
 _DETAIL_CUES = [
     r"\bcada\s+(?:eixo|categoria)\b",
     r"\bpor\s+(?:eixo|categoria)\b",
@@ -83,8 +72,6 @@ _DETAIL_CUES = [
 ]
 _DETAIL_CUES_RES = [re.compile(p) for p in _DETAIL_CUES]
 
-# Contexto AC exigido junto da pista: "atividade(s) complementar(es)" ou
-# "eixo(s)" explícito (ex.: "o que conta no eixo 1?").
 _AC_CONTEXT_RE = re.compile(r"\batividades?\s+complementar(?:es)?\b|\beixos?\b")
 
 
@@ -99,16 +86,12 @@ def is_breakdown_request(question: str) -> bool:
     return any(p.search(q) for p in _DETAIL_CUES_RES)
 
 
-# ── Aceite curto da oferta ("sim", "pode", "quero, por favor") ───────────────
-
-# Vocabulário de aceite: a mensagem inteira precisa ser composta dele.
 _AFFIRM_WORDS = frozenset({
     "sim", "s", "quero", "pode", "podes", "claro", "por", "favor", "pfv",
     "ok", "okay", "manda", "bora", "isso", "aceito", "beleza", "blz",
     "uhum", "aham", "detalha", "detalhe", "detalhar", "vai", "vamos",
     "ser", "gentileza", "otimo", "perfeito", "top", "traz", "traga", "mostra",
 })
-# Pelo menos uma palavra FORTE de aceite (evita "por favor?" ambíguo sozinho).
 _AFFIRM_STRONG = frozenset({
     "sim", "s", "quero", "pode", "podes", "claro", "ok", "okay", "manda",
     "bora", "aceito", "beleza", "blz", "uhum", "aham", "detalha", "detalhe",
@@ -120,7 +103,7 @@ def is_affirmative_reply(message: str) -> bool:
     """
     True se a mensagem é um aceite curto e inequívoco da oferta.
     Conservador: qualquer palavra fora do vocabulário de aceite (ex.:
-    "sim, mas quantas horas...") desqualifica — a pergunta segue o fluxo normal.
+    "sim, mas quantas horas...") desqualifica - a pergunta segue o fluxo normal.
     """
     words = re.sub(r"[!?.,;:]+", " ", _norm(message)).split()
     if not words or len(words) > 5:
@@ -129,8 +112,6 @@ def is_affirmative_reply(message: str) -> bool:
         return False
     return any(w in _AFFIRM_STRONG for w in words)
 
-
-# ── Resposta determinística: detalhamento por eixo a partir do regulamento ───
 
 _regulamento_cache: dict = {"loaded": False, "data": None}
 
@@ -173,8 +154,8 @@ def build_breakdown_response() -> str:
         eixo = eixos[key]
         limite = eixo.get("limite_horas", "")
         limite_txt = (
-            f" — limite de {limite}" if limite and "não especificado" not in limite.lower()
-            else " — sem limite específico de horas"
+            f" - limite de {limite}" if limite and "não especificado" not in limite.lower()
+            else " - sem limite específico de horas"
         )
         partes.append(f"**{eixo.get('nome', key)}**{limite_txt}")
         for atividade in eixo.get("atividades_aceitas", []):
@@ -203,8 +184,6 @@ def build_breakdown_response() -> str:
     )
     return "\n".join(partes)
 
-
-# ── Oferta pós-resposta ──────────────────────────────────────────────────────
 
 def maybe_append_offer(question: str, response: str) -> str:
     """

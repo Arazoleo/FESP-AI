@@ -12,7 +12,7 @@ propagação automática de bounds de confiança das arestas `PREREQUISITO_DE`.
 
 Operações **não-dedutivas** (planejamento de trajetória, contagem de
 dependentes, queries dinâmicas dependentes de C) permanecem em Python via
-herança de `InferenceEngine` — PyReason não traz ganho ali e o overhead de
+herança de `InferenceEngine` - PyReason não traz ganho ali e o overhead de
 re-inicialização do reasoner global tornaria queries dinâmicas inviáveis.
 """
 
@@ -27,17 +27,6 @@ if TYPE_CHECKING:
 
 
 class PyReasonEngine(InferenceEngine):
-    # Regras dedutivas executadas no PyReason. Predicados:
-    #   prereq(x, y)       — fato direto (não é cabeça de regra)
-    #   prereq_trans(x, z) — derivado recursivamente (transitividade completa)
-    #
-    # `co_prereq` é deixado para a implementação Python original (super()):
-    # a regra Datalog `co_prereq(x, y) <- prereq(x, z), prereq(y, z)` exige
-    # que o sub-grafo preserve fielmente cada aresta paralela do MultiDiGraph
-    # original, o que introduz casos de borda na extração. Como `co_prereq`
-    # é por natureza uma operação de "compartilhamento de dependentes" sem
-    # propagação de incerteza interessante, manter em Python é mais simples
-    # e preserva a semântica canônica do projeto.
     RULES_DATALOG: Dict[str, str] = {
         "prereq_transitivity_base": "prereq_trans(x, z) <-1 prereq(x, y), prereq(y, z)",
         "prereq_transitivity_step": "prereq_trans(x, z) <-1 prereq(x, y), prereq_trans(y, z)",
@@ -48,10 +37,8 @@ class PyReasonEngine(InferenceEngine):
         self._inferred: bool = False
         self._id_to_name: Dict[str, str] = {}
         self._name_to_id: Dict[str, str] = {}
-        # Pré-requisitos transitivos extraídos do reasoner (com bounds de confiança)
         self._transitive_prereqs_bounds: Dict[str, List[Tuple[str, List[float]]]] = {}
 
-    # ── Inicialização lazy do reasoner ────────────────────────────────────────
 
     def _build_subgraph(self) -> nx.DiGraph:
         """Sub-grafo limpo: só disciplinas e arestas PREREQUISITO_DE.
@@ -81,13 +68,6 @@ class PyReasonEngine(InferenceEngine):
             cu, cv = node_map.get(u), node_map.get(v)
             if not cu or not cv:
                 continue
-            # PyReason: edge attribute `prereq=1` → bound [1, 1] interno.
-            # Bounds não-triviais nos atributos (`prereq="0.7,1"`) impedem o
-            # disparo das regras (PyReason converge em t=0 sem derivar nada).
-            # Por isso, o PyReason aqui é usado APENAS para o fecho transitivo
-            # Boolean (a aresta existe ou não); a propagação de confiança é
-            # feita em Python via `get_transitive_prereqs_with_bounds`,
-            # consultando `kg.get_prerequisite_confidence` em cada salto.
             sg.add_edge(cu, cv, prereq=1)
 
         return sg
@@ -150,7 +130,7 @@ class PyReasonEngine(InferenceEngine):
 
         Estratégia:
           (1) PyReason fornece o conjunto de pares (ancestor → descendant)
-              que estão na cadeia transitiva — Boolean, sem bounds.
+              que estão na cadeia transitiva - Boolean, sem bounds.
           (2) Para cada par derivado, calculamos o bound como o `min` das
               confidences ao longo de algum caminho A → ... → D no KG
               original (semântica de "elo mais fraco"). Como há múltiplos
@@ -162,7 +142,6 @@ class PyReasonEngine(InferenceEngine):
 
         seen: Dict[str, set] = {}
 
-        # (1) Fatos iniciais — prereqs diretos com bound da confidence original
         for u, v, _data in sg.edges(data=True):
             src_name = self._id_to_name.get(u)
             dst_name = self._id_to_name.get(v)
@@ -170,13 +149,12 @@ class PyReasonEngine(InferenceEngine):
                 continue
             conf = self.kg.get_prerequisite_confidence(src_name, dst_name)
             if conf <= 0.0:
-                conf = 1.0  # fallback se KG retornar 0 (não deveria)
+                conf = 1.0
             self._transitive_prereqs_bounds.setdefault(dst_name, []).append(
                 (src_name, [conf, 1.0])
             )
             seen.setdefault(dst_name, set()).add(src_name)
 
-        # (2) Arestas derivadas pelas regras prereq_transitivity_{base,step}
         trans_dfs = pr.filter_and_sort_edges(interpretation, ["prereq_trans"])
         if not trans_dfs:
             return
@@ -188,29 +166,25 @@ class PyReasonEngine(InferenceEngine):
             if not src_name or not dst_name:
                 continue
             if src_name in seen.get(dst_name, set()):
-                continue  # já incluído como fato direto
-            # Calcular bound como min-confidence ao longo do melhor caminho
+                continue
             low = self._min_confidence_best_path(src_name, dst_name)
             self._transitive_prereqs_bounds.setdefault(dst_name, []).append(
                 (src_name, [low, 1.0])
             )
             seen.setdefault(dst_name, set()).add(src_name)
 
-        # co_prereq permanece em Python — ver docstring de RULES_DATALOG
 
     def _min_confidence_best_path(self, src_name: str, dst_name: str) -> float:
         """Bound do par transitivo = max sobre caminhos do (min sobre arestas).
 
         Semântica: "qual a maior confiança alcançável em algum caminho de
-        src até dst" — interpretação otimista, padrão para bottleneck path.
+        src até dst" - interpretação otimista, padrão para bottleneck path.
         """
         src_id = self.kg._find_node(src_name, "disciplina")
         dst_id = self.kg._find_node(dst_name, "disciplina")
         if not src_id or not dst_id:
             return 1.0
 
-        # Sub-grafo só de PREREQUISITO_DE, com confidence como peso "negativo"
-        # para usar shortest path (= maior min-confidence)
         prereq_g: nx.DiGraph = nx.DiGraph()
         for u, v, data in self.kg.graph.edges(data=True):
             if data.get("relacao") != "PREREQUISITO_DE":
@@ -226,7 +200,6 @@ class PyReasonEngine(InferenceEngine):
             return 1.0
         if not paths:
             return 1.0
-        # max-bottleneck: máximo, sobre todos caminhos, do mínimo confidence
         best = 0.0
         for path in paths:
             mins = 1.0
@@ -235,7 +208,6 @@ class PyReasonEngine(InferenceEngine):
             best = max(best, mins)
         return best if best > 0 else 1.0
 
-    # ── Lookup helpers ────────────────────────────────────────────────────────
 
     def _find_by_name(self, disciplina: str, table: Dict) -> Optional[str]:
         norm_target = self.kg._normalize_text(disciplina)
@@ -244,7 +216,6 @@ class PyReasonEngine(InferenceEngine):
                 return key
         return None
 
-    # ── API estendida (com bounds) ────────────────────────────────────────────
 
     def get_transitive_prereqs_with_bounds(
         self, disciplina: str
@@ -255,11 +226,7 @@ class PyReasonEngine(InferenceEngine):
         key = self._find_by_name(disciplina, self._transitive_prereqs_bounds)
         return self._transitive_prereqs_bounds.get(key, []) if key else []
 
-    # `find_co_prerequisites`, `critical_disciplines` e `plan_minimal_path`
-    # são herdados de InferenceEngine sem alteração — não são deduções com
-    # propagação de incerteza, então o PyReason não traz ganho.
 
-    # Override do contexto para mencionar o reasoner usado nas regras inferidas
     def _infer_prereq_context(self, disciplina: str) -> str:
         if not self._init_reasoner():
             return super()._infer_prereq_context(disciplina)
@@ -276,7 +243,6 @@ class PyReasonEngine(InferenceEngine):
                 f"{', '.join(strs)}"
             )
 
-        # Transitivos com bounds (PyReason)
         trans = self.get_transitive_prereqs_with_bounds(disciplina)
         if trans:
             partes = []
@@ -300,4 +266,4 @@ class PyReasonEngine(InferenceEngine):
 
         if not lines:
             return ""
-        return "[FATOS INFERIDOS — PyReasonEngine]\n" + "\n".join(f"  • {l}" for l in lines)
+        return "[FATOS INFERIDOS - PyReasonEngine]\n" + "\n".join(f"  • {l}" for l in lines)

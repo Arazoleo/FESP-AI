@@ -20,7 +20,7 @@ def _strip_accents(s: str) -> str:
 
 def _phrase_in(phrase: str, text: str) -> bool:
     """
-    Casamento de frase com word-boundary — nunca por substring.
+    Casamento de frase com word-boundary - nunca por substring.
 
     Por substring, "disciplina" casava dentro de "interdisciplinar", "ei"
     dentro de "aproveitamento" e "nde" dentro de "aprende", roteando errado.
@@ -32,33 +32,24 @@ def _any_phrase(phrases, text: str) -> bool:
     return any(_phrase_in(p, text) for p in phrases)
 
 
-# Intents que o Knowledge Graph pode responder COMPLETAMENTE sem precisar do LLM.
-# Para esses intents, o pipeline usa o KG diretamente (atalho neurossimbólico),
-# eliminando latência e risco de alucinação para perguntas estruturadas.
 SYMBOLIC_DIRECT_INTENTS: frozenset = frozenset({
-    # Matrizes curriculares e estrutura dos cursos
     "listar_cursos",
     "coordenador_curso",
     "disciplinas_termo",
     "todos_termos_curso",
     "eletivas_curso",
     "matriz_info",
-    # Pré-requisitos e dependências (o KG tem a cadeia completa)
     "prerequisite_chain",
     "dependents",
     "co_prerequisite",
     "critical_disciplines",
-    # Recomendadas antes (inferência semântico-simbólica: regra recommended_before)
     "recommended_before",
-    # Planejamento de trajetória (BFS topológico no DAG de pré-requisitos)
     "trajectory_planning",
-    # Quem leciona / docente leciona disciplina (resposta sim/não + lista)
     "discipline_docentes",
     "docente_leciona_disciplina",
     "docentes_by_area",
 })
 
-# Resposta fixa para perguntas meta sobre capacidades do sistema
 META_CAPABILITIES_RESPONSE = """Sim. Tenho acesso a informações da UNIFESP ICT sobre:
 
 - **Disciplinas:** pré-requisitos, ementas, carga horária, docentes e bibliografia
@@ -69,35 +60,28 @@ META_CAPABILITIES_RESPONSE = """Sim. Tenho acesso a informações da UNIFESP ICT
 Pergunte sobre qualquer um desses temas em português."""
 
 
-# ── Conversa social (small talk) → Agente Conversacional ──────────────────────
-# Saudações isoladas (uma palavra)
 _GREETING_WORDS = frozenset({
     "oi", "ola", "olá", "eai", "opa", "alo", "alô", "hey", "hi", "ei",
 })
-# Frases de saudação / abertura
 _GREETING_PHRASES = [
     "bom dia", "boa tarde", "boa noite", "e ai", "e aí", "tudo bem",
     "tudo bom", "tudo certo", "como vai", "como voce esta", "como você está",
     "como vc esta", "beleza", "blz", "salve",
 ]
-# Agradecimentos
 _THANKS_PHRASES = [
     "obrigado", "obrigada", "obg", "valeu", "vlw", "agradeco", "agradeço",
     "grato", "grata",
 ]
-# Despedidas
 _FAREWELL_PHRASES = [
     "tchau", "ate logo", "até logo", "ate mais", "até mais", "ate breve",
     "até breve", "adeus", "falou", "flw", "ate a proxima", "até a próxima",
 ]
-# Perguntas sobre a identidade/natureza do assistente
 _IDENTITY_PHRASES = [
     "quem e voce", "quem é você", "quem e vc", "qual seu nome", "qual o seu nome",
     "voce e um robo", "você é um robô", "voce e uma ia", "você é uma ia",
     "voce e humano", "você é humano", "o que voce e", "o que você é",
     "como voce funciona", "como você funciona", "voce e real", "você é real",
 ]
-# Palavras que denotam pedido de informação — desqualificam "conversa pura"
 _INFO_KEYWORDS = [
     "disciplina", "materia", "matéria", "professor", "docente", "curso",
     "pre-requisito", "pré-requisito", "pre requisito", "prerequisito",
@@ -109,7 +93,7 @@ _INFO_KEYWORDS = [
 def is_conversational(question_lower: str) -> bool:
     """
     True quando a mensagem é conversa social pura (saudação, agradecimento,
-    despedida ou pergunta sobre a identidade do assistente) — e não um pedido
+    despedida ou pergunta sobre a identidade do assistente) - e não um pedido
     de informação. Conservador: mensagens longas ou com termos informativos
     seguem para os agentes especializados / fallback.
     """
@@ -118,22 +102,15 @@ def is_conversational(question_lower: str) -> bool:
         return False
     words = q.split()
 
-    # Identidade do assistente: sempre conversacional, independente do tamanho.
     if any(p in q for p in _IDENTITY_PHRASES):
         return True
 
-    # Saudação isolada (uma palavra).
     if q in _GREETING_WORDS:
         return True
 
-    # Se há claramente um pedido de informação, não é conversa pura.
     if any(kw in q for kw in _INFO_KEYWORDS):
         return False
 
-    # Saudação / agradecimento / despedida em mensagens curtas.
-    # Word-boundary obrigatório: por substring, "ei" casava dentro de
-    # "aproveitamento" e "oi" dentro de "coisa", roteando pergunta real
-    # para o agente de conversa.
     social = _GREETING_PHRASES + _THANKS_PHRASES + _FAREWELL_PHRASES + list(_GREETING_WORDS)
     if len(words) <= 6 and any(
         re.search(rf"\b{re.escape(p)}\b", q) for p in social
@@ -143,7 +120,6 @@ def is_conversational(question_lower: str) -> bool:
     return False
 
 
-# ── Pedido de montar a grade / planejar trajetória → Agente MontarGrade ───────
 _MONTAR_GRADE_PHRASES = [
     "montar grade", "monta grade", "monte grade",
     "montar minha grade", "monta minha grade", "monte minha grade",
@@ -161,10 +137,6 @@ _MONTAR_GRADE_PHRASES = [
     "montar meu semestre", "planejar meus semestres",
 ]
 
-# Perguntas INFORMACIONAIS sobre requisitos/horas de formação não são pedido
-# de montar grade ("quantas horas para me formar no BCT?", "o que preciso
-# para me formar?") — devem seguir o fluxo normal (site/KG tem a resposta,
-# ex.: FAQ de integralização da página do BCT).
 _MONTAR_GRADE_INFO_EXCLUDE = [
     "quantas horas", "quanto tempo", "o que preciso", "o que e preciso",
     "o que necessito", "requisitos para",
@@ -180,7 +152,6 @@ def is_montar_grade(question_lower: str) -> bool:
     return any(_strip_accents(p) in q for p in _MONTAR_GRADE_PHRASES)
 
 
-# ── Pedido de notícias / novidades da UNIFESP → Agente Notícias ───────────────
 _NOTICIAS_PHRASES = [
     "noticia", "noticias", "novidade", "novidades",
     "o que esta acontecendo", "o que ta acontecendo", "o que aconteceu",
@@ -197,7 +168,6 @@ def is_noticias(question_lower: str) -> bool:
     return any(p in q for p in _NOTICIAS_PHRASES)
 
 
-# ── Perguntas institucionais sobre o campus → Agente Web SJC (site completo) ───
 _WEB_SJC_PHRASES = [
     "secretaria", "secretaria academica", "ingresso", "como ingressar",
     "selecao interna", "selecao externa", "transferencia", "reingresso",
@@ -209,18 +179,12 @@ _WEB_SJC_PHRASES = [
     "orgaos assessores", "comissao", "camara de graduacao", "calendario academico",
     "apresentacao do campus", "sobre o campus", "sobre o ict", "mapa do site",
     "servicos", "restaurante universitario", "bandejao", "assistencia estudantil",
-    # Páginas de curso do site (ex.: BCT) — integralização, PPC, comissões
-    # (as FAQs das páginas de curso detalham extensionistas; o regimento não)
     "extensionista", "extensionistas",
     "integralizar", "integralizacao", "projeto pedagogico", "ppc",
     "pos-bct", "pos bct", "matriz de transicao", "comissao de curso",
-    # Formação/integralização do curso (FAQ da página do BCT no site)
-    # Nota: "quantas horas" sozinho ficaria amplo demais ("quantas horas tem
-    # o curso de BCC?" é do KG) — só as formas ligadas a formar/necessitar.
     "me formar no", "me formar em", "formar no bct", "formacao no",
     "formacao do", "quantas horas necessito", "quantas horas preciso",
     "nucleo docente", "nde", "ex-officio", "ex officio",
-    # Procedimentos da secretaria (páginas em /graduacao-todos)
     "atestado", "diploma", "aproveitamento de estudos", "cracha", "crachá",
     "historico escolar", "cancelamento de matricula", "colacao de grau",
     "atualizacao de dados", "certificado de conclusao",
@@ -230,17 +194,13 @@ _WEB_SJC_PHRASES = [
     "peticionamento", "catalogo de disciplinas", "ementario", "oferta de ucs",
     "passe escolar", "trocar de turma", "trocar de turno",
     "troca de turma", "troca de turno",
-    # TCC e páginas de curso (TCC I/II como disciplina fica nas exclusões)
     "tcc", "trabalho de conclusao", "aluno especial",
-    # Órgãos, serviços e infraestrutura do campus (/institucional, /todos-institucional)
     "caltae", "sicad", "gtae", "fapesp", "espaco fisico", "atos normativos",
     "agenda do ict", "agenda do campus", "gestao de contratos", "convenios",
     "desenvolvimento tecnologico", "inovacao tecnologica",
-    # Serviços da biblioteca (páginas em /biblioteca)
     "sala de estudo", "salas de estudo", "plagio", "similaridade",
     "pergamum", "ficha catalografica", "repositorio institucional",
     "doacao de livros", "emprestimo de livro", "devolucao",
-    # DAE — Divisão de Assuntos Educacionais (dae-sjc.unifesp.br)
     "dae", "assuntos educacionais", "apoio ao estudante",
     "materiais de aula", "materiais de apoio", "material de apoio",
     "dicas de estudo", "dicas para ingressantes",
@@ -251,12 +211,6 @@ _WEB_SJC_PHRASES = [
 ]
 
 
-# ── Quebra/distribuição de horas do curso → site (FAQ das páginas de curso) ───
-# O KG só tem a carga horária TOTAL; a distribuição (UCs, extensão,
-# complementares, eletivas) está nas FAQs das páginas de curso do site.
-# Regexes (não frases) porque as formas variam: "essas horas estão
-# distribuídas...", "como as horas do BCT são divididas", "quantas horas de
-# eletivas". Aplicadas sobre texto minúsculo e sem acentos.
 _HOURS_BREAKDOWN_RES = [
     r"\bhoras?\b[^.?!]*\b(?:distribuid|dividid)\w*\b",
     r"\b(?:distribuid|dividid)\w*\b[^.?!]*\bhoras?\b",
@@ -271,17 +225,12 @@ def _is_hours_breakdown(q_sem_acentos: str) -> bool:
     return any(re.search(p, q_sem_acentos) for p in _HOURS_BREAKDOWN_RES)
 
 
-# Se a pergunta cita professor/disciplina, deixe os agentes especialistas tratarem
-# (evita "contato do PROFESSOR X" cair no agente do site por causa de "contato").
 _WEB_SJC_EXCLUDE = [
     "professor", "professora", "docente", "disciplina", "materia", "ementa",
     "pre-requisito", "pre requisito", "prerequisito", "pré-requisito",
     "pre-requisitos", "pre requisitos", "prerequisitos",
     "leciona", "ministra", "carga horaria", "carga horária",
-    # TCC I/II são disciplinas do KG — perguntas sobre elas ficam com os
-    # agentes especialistas; "tcc" genérico (regras/curso) segue para o site
     "tcc i", "tcc ii", "tcc 1", "tcc 2",
-    # Perguntas sobre normas citando o documento → agente de regimentos
     "regimento", "regulamento", "norma", "artigo", "resolucao",
 ]
 
@@ -294,8 +243,6 @@ def is_web_sjc(question_lower: str) -> bool:
     return _any_phrase(_WEB_SJC_PHRASES, q) or _is_hours_breakdown(q)
 
 
-# ── Pergunta descritiva sobre um CURSO → página do curso no site ──────────────
-# "O que é o BCT?", "Como funciona a Engenharia Biomédica?", "Me fale sobre o BCC"
 _COURSE_OVERVIEW_PATTERNS = [
     r"^o\s+que\s+e\s+(?:o\s+curso\s+(?:de\s+)?|o\s+|a\s+)?(.+?)\s*\??$",
     r"^como\s+(?:funciona|e)\s+(?:o\s+curso\s+(?:de\s+)?|o\s+|a\s+)?(.+?)\s*\??$",
@@ -306,7 +253,7 @@ _COURSE_OVERVIEW_PATTERNS = [
 def is_course_overview(question_lower: str, kg) -> bool:
     """
     True quando a pergunta é descritiva ("o que é / como funciona / fale sobre")
-    e a entidade resolve para um CURSO no Knowledge Graph — e não para uma
+    e a entidade resolve para um CURSO no Knowledge Graph - e não para uma
     disciplina. Nesse caso a melhor fonte é a página do curso no site do campus
     (WebSjcAgent), não o agente de disciplinas.
 
@@ -323,13 +270,10 @@ def is_course_overview(question_lower: str, kg) -> bool:
         if not entidade or len(entidade) < 2:
             continue
         try:
-            # Disciplina: match EXATO (nome/sigla). O fallback por substring do
-            # _find_node é greedy demais aqui — "Engenharia Biomédica" (curso)
-            # casaria com "Introdução à Engenharia Biomédica" (disciplina).
             norm = kg._normalize_text(entidade)
             disc_id = kg._index_by_name.get(norm) or kg._index_by_sigla.get(norm)
             if disc_id and kg.graph.nodes[disc_id].get("tipo") == "disciplina":
-                return False  # "O que é Teoria dos Grafos?" → agente de disciplinas
+                return False
             if kg._find_node(entidade, "curso") or kg._find_node(entidade, "matriz_curricular"):
                 return True
         except Exception:
@@ -357,23 +301,19 @@ def get_meta_capability_response(question_lower: str) -> Optional[str]:
         return META_CAPABILITIES_RESPONSE
     return None
 
-# Mapeamento de intent → agente especializado
 INTENT_TO_AGENT: Dict[str, str] = {
-    # ── Docentes ──────────────────────────────────────────
     "docente_info": "docentes",
     "docente_areas": "docentes",
     "docente_disciplines": "docentes",
     "discipline_docentes": "docentes",
     "docentes_by_area": "docentes",
     "docente_leciona_disciplina": "docentes",
-    # ── Cursos / Matrizes Curriculares ────────────────────
     "disciplinas_termo": "cursos",
     "todos_termos_curso": "cursos",
     "matriz_info": "cursos",
     "eletivas_curso": "cursos",
     "listar_cursos": "cursos",
     "coordenador_curso": "cursos",
-    # ── Disciplinas / Pré-requisitos / Trajetória ─────────
     "prerequisite_chain": "disciplinas",
     "recommended_before": "disciplinas",
     "dependents": "disciplinas",
@@ -381,12 +321,10 @@ INTENT_TO_AGENT: Dict[str, str] = {
     "critical_disciplines": "disciplinas",
     "ementa_disciplina": "disciplinas",
     "trajectory_planning": "disciplinas",
-    # ── Regimentos / Normas ───────────────────────────────
     "artigos_sobre": "regimentos",
     "faqs": "regimentos",
 }
 
-# Keywords que forçam o agente de regimentos independente do intent
 REGIMENTO_FORCE_KEYWORDS = [
     "regimento", "regulamento", "norma", "artigo", "resolucao",
     "evacuacao", "incendio", "seguranca", "faq", "perguntas frequentes",
@@ -394,7 +332,6 @@ REGIMENTO_FORCE_KEYWORDS = [
     "trancamento", "aprovacao", "reprovacao",
 ]
 
-# Keywords que forçam o agente de cursos sequenciais
 CURSOS_SEQ_KEYWORDS = [
     "sequencial", "sequenciais", "certificado",
     "fundamentos de ciência", "fundamentos de ciencia",
@@ -403,9 +340,7 @@ CURSOS_SEQ_KEYWORDS = [
     "desenvolvimento de games", "jogos digitais",
 ]
 
-# Frases que indicam claramente query sobre DOCENTES → sempre Agente Docentes
 DISCIPLINE_DOCENTES_PHRASES = [
-    # "quem leciona X?" / "quais docentes dão X?"
     "quais docentes",
     "quais professores",
     "quem leciona",
@@ -421,7 +356,6 @@ DISCIPLINE_DOCENTES_PHRASES = [
     "docentes da",
     "professores do",
     "docentes do",
-    # "me fale sobre o professor X" / "quem é a professora Y" — sujeito é docente
     "sobre o professor",
     "sobre a professora",
     "sobre o docente",
@@ -430,9 +364,6 @@ DISCIPLINE_DOCENTES_PHRASES = [
     "quem é a professora",
     "quem e o professor",
     "quem e a professora",
-    # "qual o professor responsável por SEDO?" / "quem é o responsável pela
-    # disciplina de IHC?" — NOTA: o pipeline checa is_web_sjc ANTES do
-    # phrase_override, então "responsável pela biblioteca" continua no web_sjc.
     "professor responsavel",
     "professor responsável",
     "professora responsavel",
@@ -445,7 +376,6 @@ DISCIPLINE_DOCENTES_PHRASES = [
     "responsável pela matéria",
     "responsavel por",
     "responsável por",
-    # "quais disciplinas X leciona?" — o sujeito da ação é um docente
     "costuma lecionar",
     "costuma ensinar",
     "disciplinas que ele",
@@ -456,7 +386,6 @@ DISCIPLINE_DOCENTES_PHRASES = [
     "disciplinas da professora",
 ]
 
-# Frases que indicam consulta de pré-requisitos → sempre Agente Disciplinas
 PREREQUISITE_PHRASES = [
     "pre-requisito", "pre requisito", "prerequisito",
     "pré-requisito", "pré requisito",
@@ -465,7 +394,6 @@ PREREQUISITE_PHRASES = [
     "depende de", "dependem de",
 ]
 
-# Frases que indicam info/ementa/descrição de DISCIPLINA → Agente Disciplinas (evita ir para Docentes)
 DISCIPLINE_INFO_PHRASES = [
     "fale mais sobre",
     "me fale mais",
@@ -493,7 +421,7 @@ def phrase_override(question_lower: str, current_agent: str = "") -> Optional[st
     """
     Overrides de alta precisão por frase. Retorna o agente forçado ou None.
 
-    Fonte única de verdade para os overrides — usada tanto por route_intent
+    Fonte única de verdade para os overrides - usada tanto por route_intent
     (caminho sem embeddings) quanto pelo pipeline (por cima do roteamento por
     embeddings, substituindo correções hardcoded pontuais).
 
@@ -501,49 +429,36 @@ def phrase_override(question_lower: str, current_agent: str = "") -> Optional[st
     1. Docentes (frases como "quais docentes dão X", "sobre a professora Y")
     2. Pré-requisitos → disciplinas
     3. Info/ementa de disciplina → disciplinas
-       (quando vindo do embedding, só corrige a partir de docentes — não
+       (quando vindo do embedding, só corrige a partir de docentes - não
         sobrescreve uma escolha explícita de cursos/regimentos)
     4. Regimentos (keywords institucionais)
     5. Cursos sequenciais
     """
-    # Override para "quem leciona / quais docentes de X / sobre a professora Y"
     if _any_phrase(DISCIPLINE_DOCENTES_PHRASES, question_lower):
         return "docentes"
 
-    # Override para pré-requisitos / dependências
     if _any_phrase(PREREQUISITE_PHRASES, question_lower):
         return "disciplinas"
 
-    # Override para "fale mais sobre [disciplina]", ementa, descrição de disciplina
     if current_agent in ("", "docentes", "disciplinas") and _any_phrase(
         DISCIPLINE_INFO_PHRASES, question_lower
     ):
         return "disciplinas"
 
-    # Override para keywords de regimento
     if _any_phrase(REGIMENTO_FORCE_KEYWORDS, question_lower):
         return "regimentos"
 
-    # Override para cursos sequenciais
     if _any_phrase(CURSOS_SEQ_KEYWORDS, question_lower):
         return "cursos"
 
     return None
 
 
-# ── Roteador LLM unificado (decisor primário nos casos ambíguos) ──────────────
-# Quando NENHUM fast-path de frases casa, UMA chamada LLM decide agente +
-# intent + entidades num JSON só; as entidades são aterradas no KG
-# (kg._find_node) — o que não resolve é descartado. O embedding router vira
-# desempate/fallback quando o LLM está indisponível ou devolve JSON inválido.
-
 LLM_ROUTE_AGENTS: frozenset = frozenset({
     "disciplinas", "docentes", "cursos", "regimentos",
     "conversa", "montar_grade", "noticias", "web_sjc",
 })
 
-# Intents aceitos do LLM (fora disso o intent é descartado — o pipeline usa o
-# detectado pelo GraphRAG ou "unknown")
 _LLM_ROUTE_INTENTS: frozenset = frozenset(
     {
         "docente_info", "docente_areas", "docente_disciplines",
@@ -562,13 +477,13 @@ _LLM_ROUTE_TEMPLATE = """Voce e o roteador de um assistente academico da UNIFESP
 
 AGENTES DISPONIVEIS:
 - disciplinas: ementas, pre-requisitos, carga horaria e descricao de disciplinas/materias
-- docentes: professores — contato, sala, areas de pesquisa, quem leciona qual disciplina
+- docentes: professores - contato, sala, areas de pesquisa, quem leciona qual disciplina
 - cursos: matrizes curriculares, disciplinas por termo, eletivas, coordenacao de curso
 - regimentos: normas, regimentos, regulamentos, artigos, FAQs institucionais
 - conversa: saudacoes, agradecimentos, small talk sem pedido de informacao
 - montar_grade: pedido explicito de montar/planejar a grade ou trajetoria do aluno
 - noticias: noticias, novidades e eventos da UNIFESP
-- web_sjc: paginas do site do campus — ingresso, secretaria, biblioteca, pos-graduacao, servicos, orgaos, apresentacao dos cursos
+- web_sjc: paginas do site do campus - ingresso, secretaria, biblioteca, pos-graduacao, servicos, orgaos, apresentacao dos cursos
 
 HISTORICO RECENTE DA CONVERSA (pode estar vazio):
 {history}
@@ -620,11 +535,6 @@ def _ground_entity(kg, valor, tipos) -> Optional[str]:
     return None
 
 
-# ── Modelo dedicado de roteamento (FESPAI_ROUTER_MODEL) ──────────────────────
-# O roteamento não precisa do modelo de GERAÇÃO (grande/lento): a decisão é um
-# JSON curto de classificação. FESPAI_ROUTER_MODEL aponta um modelo pequeno
-# (ex.: qwen2.5:1.5b-instruct) usado SÓ pelo llm_route, com num_predict baixo
-# e temperatura 0. Vazio = usa o LLM de geração passado pelo pipeline.
 _ROUTER_LLM_NUM_PREDICT = 150
 _router_llm_singleton = {"key": None, "llm": None}
 
@@ -651,8 +561,6 @@ def _get_router_llm():
         if base_url:
             kwargs["base_url"] = base_url
         try:
-            # Desliga o modo "thinking" (qwen3, deepseek-r1): a decisão de
-            # roteamento é um JSON curto — raciocínio verboso só custa latência.
             llm = OllamaLLM(reasoning=False, **kwargs)
         except Exception:
             llm = OllamaLLM(**kwargs)
@@ -663,11 +571,6 @@ def _get_router_llm():
     return llm
 
 
-# ── Cache LRU de roteamento ──────────────────────────────────────────────────
-# Perguntas repetidas (demo, eval, alunos com dúvidas iguais) não pagam a
-# chamada LLM de novo. Chave = pergunta normalizada (lower, sem acento,
-# espaços colapsados); valor = decisão completa. Só decisões VÁLIDAS entram
-# (None nunca é cacheado — o fallback continua podendo tentar de novo).
 _ROUTE_CACHE_MAX = 500
 _route_cache: "OrderedDict[str, dict]" = OrderedDict()
 
@@ -688,7 +591,6 @@ def _route_cache_get(key: str) -> Optional[dict]:
     if cached is None:
         return None
     _route_cache.move_to_end(key)
-    # Cópia defensiva: o chamador pode mutar o dict sem poluir o cache.
     return {
         "agente": cached["agente"],
         "intent": cached["intent"],
@@ -721,7 +623,7 @@ def llm_route(
 
     Retorna {"agente": <um dos 8>, "intent": <str>, "entidades": {...}} com as
     entidades aterradas no KG (não-resolvidas são descartadas), ou None quando
-    o LLM está indisponível / o JSON é inválido / o agente não existe — nesses
+    o LLM está indisponível / o JSON é inválido / o agente não existe - nesses
     casos o chamador usa o embedding router como fallback.
 
     Latência: (1) cache LRU por pergunta normalizada evita chamadas repetidas;
@@ -803,9 +705,7 @@ def route_intent(intent: str, question_lower: str) -> str:
     if override:
         return override
 
-    # Lookup no mapa de intents classificados pelo IntentClassifier
     if intent in INTENT_TO_AGENT:
         return INTENT_TO_AGENT[intent]
 
-    # Fallback para perguntas gerais
     return "fallback"

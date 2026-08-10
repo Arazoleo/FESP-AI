@@ -1,4 +1,4 @@
-# Usability Evaluation Report — Cycle 2
+# Usability Evaluation Report - Cycle 2
 
 Companion data for *Neuro-Symbolic Graph-RAG for Academic Advising: A Three-Cycle
 Evaluation of a University Web Chatbot* 
@@ -82,7 +82,7 @@ provides no evidence about accessibility for users with disabilities.
 Unassisted success rate: 60/60 (100%).
 
 Success was recorded as task completion. It does not separately certify that the
-returned answer was factually correct — answer correctness is measured
+returned answer was factually correct - answer correctness is measured
 independently in Cycle 3.
 
 ## 6. Perceived ease (1–5)
@@ -190,12 +190,12 @@ Combined with the moderator being the system's developer (see
 [Limitations](#10-limitations)), the absolute score should be read with caution.
 The relative pattern across items and flows is the more informative signal.
 
-## 8. Retrospective accounts — thematic coding
+## 8. Retrospective accounts - thematic coding
 
 Themes were derived from the ten free-form audio accounts. Counts are the number
 of participants who raised each theme spontaneously.
 
-### T1 — Trust grounded in sources, not fluency (6 participants)
+### T1 - Trust grounded in sources, not fluency (6 participants)
 
 P1, P2, P4, P5, P7, P9 justified their willingness to rely on the system by the
 displayed sources and their official institutional origin, not by how well-written
@@ -210,20 +210,20 @@ Representative reasoning:
 - P9: "would trust the answers because it shows the sources, which are UNIFESP's
   own."
 
-### T2 — Trust is graduated, not binary (2 participants)
+### T2 - Trust is graduated, not binary (2 participants)
 
 - **P6** would trust the answers generally but not for enrollment decisions,
   because those are hard to reverse. She also expected the system to *perform*
   actions such as simulating a schedule; it does not, and answers only from
   sources.
-- **P8** would not trust it 100% and would verify via the source links — but her
+- **P8** would not trust it 100% and would verify via the source links - but her
   reservation was directed at the dispersion and inconsistency of the underlying
   institutional documents, not at the system.
 
 In both cases the reservation concerns the stakes of the decision or the quality
 of the source corpus rather than the framework itself.
 
-### T3 — Missing detail on complementary activities (4 participants)
+### T3 - Missing detail on complementary activities (4 participants)
 
 P4, P5, P6, P7 asked for a breakdown of what each category of complementary
 activity accepts. This capability was already on the roadmap for the following
@@ -233,7 +233,7 @@ P5 framed it as an interaction request rather than a content one: instead of
 dumping all categories, the system should *offer* the breakdown at the end of the
 answer, anticipating the follow-up question.
 
-### T4 — Preference for structured output (3 participants)
+### T4 - Preference for structured output (3 participants)
 
 P2, P8, P9 preferred answers organized as topic lists over continuous prose. P2
 specifically praised the syllabus being returned as bullet points. P8 also asked
@@ -241,19 +241,19 @@ for a larger font and stronger emphasis on the course name, and preferred the
 prerequisite chain ordered from the course backward to its foundations rather
 than the reverse.
 
-### T5 — Expectations misaligned with system behavior (2 participants)
+### T5 - Expectations misaligned with system behavior (2 participants)
 
 - **P3** assumed he had to start a new chat to clear conversational context. The
   system already manages context automatically. No functionality was missing; the
   interface did not communicate the behavior.
 - **P4** asked about credit requirements and was routed to the visual planner,
   which *did* contain the requested information, but he expected a textual
-  breakdown. Intent classification was correct — the mismatch concerned response
+  breakdown. Intent classification was correct - the mismatch concerned response
   modality.
 
 Both are framed as communication gaps on the system side rather than user error.
 
-### T6 — Requests for knowledge absent from the corpus (2 participants)
+### T6 - Requests for knowledge absent from the corpus (2 participants)
 
 - **P2**: timetable and room data. Held in a separate project and not part of
   this system's corpus.
@@ -263,12 +263,12 @@ Both are framed as communication gaps on the system side rather than user error.
 These are coverage limitations rather than reasoning failures: information absent
 from the source documents can be neither retrieved nor validated.
 
-### T7 — Conversation history (2 participants)
+### T7 - Conversation history (2 participants)
 
 P1 and P7 asked for access to previous sessions, P7 associating it with login.
 Together with T5, this points to limited visibility of conversational state.
 
-### T8 — No confusion reported (5 participants)
+### T8 - No confusion reported (5 participants)
 
 P1, P5, P6, P7, P9 reported no confusion at all during use. P6 attributed this
 partly to the system asking a clarifying question when a request was ambiguous.

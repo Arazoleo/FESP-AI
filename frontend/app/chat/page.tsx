@@ -17,8 +17,6 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import PrereqGraph, { PrereqGraphData } from '../components/PrereqGraph'
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
-
 interface AgentInfo {
   label: string
   description: string
@@ -32,8 +30,6 @@ interface Message {
   timestamp?: string
   active_agent?: string
   agent_info?: AgentInfo
-  // Grafo de pré-requisitos estruturado (atalho simbólico do backend).
-  // Quando presente, é renderizado como visualização interativa acima do texto.
   graph_data?: PrereqGraphData | null
 }
 
@@ -43,13 +39,8 @@ interface PlanRequest {
   max_creditos?: number
 }
 
-// ─── Constantes ───────────────────────────────────────────────────────────────
-
-// Default '/api' = mesma origem (rotas proxyadas via rewrites do next.config.js)
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
-// Perguntas com resposta verificada nos evals (uma por capacidade:
-// pré-requisitos/KG, docentes, procedimentos do site, notícias ao vivo)
 const SUGGESTIONS = [
   'Quais são os pré-requisitos de Compiladores?',
   'Quem leciona Banco de Dados?',
@@ -57,9 +48,6 @@ const SUGGESTIONS = [
   'Quais as últimas notícias do campus?',
 ]
 
-// Etapas que espelham o pipeline real (src/workflow/pipeline.py):
-// router → agente (KG + retrieval + geração) → verificação neuro-simbólica.
-// Sem streaming de status do backend, o avanço é estimado por tempo.
 const REASONING_STEPS: { label: string; at: number }[] = [
   { label: 'Interpretando a pergunta', at: 0 },
   { label: 'Consultando o Knowledge Graph', at: 800 },
@@ -67,8 +55,6 @@ const REASONING_STEPS: { label: string; at: number }[] = [
   { label: 'Gerando resposta', at: 3500 },
   { label: 'Verificando fatos no grafo', at: 6000 },
 ]
-
-// ─── Rótulo discreto do agente ────────────────────────────────────────────────
 
 function AgentLabel({ agent, agentInfo }: { agent: string; agentInfo?: AgentInfo }) {
   const color = agentInfo?.color || '#9aa8a2'
@@ -86,8 +72,6 @@ function AgentLabel({ agent, agentInfo }: { agent: string; agentInfo?: AgentInfo
   )
 }
 
-// ─── Indicador de raciocínio (linha do tempo do pipeline) ─────────────────────
-
 function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
   const [current, setCurrent] = useState(0)
 
@@ -104,7 +88,7 @@ function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
         Raciocinando
         {firstQuery && (
           <span className="ml-2 normal-case tracking-normal text-paper-mute/70">
-            — primeira consulta pode levar mais tempo
+            - primeira consulta pode levar mais tempo
           </span>
         )}
       </p>
@@ -114,7 +98,6 @@ function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
           const active = i === current
           return (
             <li key={step.label} className="relative flex items-start gap-3 pb-3 last:pb-0">
-              {/* Linha vertical conectando as etapas */}
               {i < REASONING_STEPS.length - 1 && (
                 <span
                   className={`absolute left-[7px] top-[18px] h-full w-px ${
@@ -123,7 +106,6 @@ function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
                   aria-hidden
                 />
               )}
-              {/* Marcador */}
               <span className="relative z-10 mt-[3px] flex h-[15px] w-[15px] flex-shrink-0 items-center justify-center">
                 {done ? (
                   <span className="flex h-[15px] w-[15px] items-center justify-center rounded-full bg-accent/15">
@@ -149,8 +131,6 @@ function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
     </div>
   )
 }
-
-// ─── Markdown com estilo customizado ─────────────────────────────────────────
 
 const mdComponents: React.ComponentProps<typeof ReactMarkdown>['components'] = {
   p: ({ children }) => (
@@ -233,8 +213,6 @@ const mdComponents: React.ComponentProps<typeof ReactMarkdown>['components'] = {
   ),
 }
 
-// ─── Hook: Typewriter ─────────────────────────────────────────────────────────
-
 function useTypewriter(text: string, enabled: boolean, onDone?: () => void) {
   const [displayed, setDisplayed] = useState('')
   const [isDone, setIsDone] = useState(!enabled)
@@ -256,7 +234,6 @@ function useTypewriter(text: string, enabled: boolean, onDone?: () => void) {
       return
     }
 
-    // Velocidade adaptativa: limita a animação total a ~2.5s
     const speed = Math.max(4, Math.min(18, Math.floor(2500 / text.length)))
     let i = 0
 
@@ -275,13 +252,11 @@ function useTypewriter(text: string, enabled: boolean, onDone?: () => void) {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [text, enabled])
 
   return { displayed, isDone }
 }
-
-// ─── Mensagem do assistente ───────────────────────────────────────────────────
 
 function AssistantMessage({
   message,
@@ -309,22 +284,18 @@ function AssistantMessage({
         <AgentLabel agent={message.active_agent} agentInfo={message.agent_info} />
       )}
 
-      {/* Grafo interativo acima do texto — o markdown vira detalhe/fonte */}
       {hasGraph && <PrereqGraph data={message.graph_data!} onAsk={onAsk} />}
 
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
         {textToRender}
       </ReactMarkdown>
 
-      {/* Cursor durante a animação */}
       {isAnimating && !isDone && (
         <span className="caret-blink ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] bg-accent" />
       )}
     </div>
   )
 }
-
-// ─── Página principal ─────────────────────────────────────────────────────────
 
 export default function ChatPage() {
   const router = useRouter()
@@ -335,9 +306,7 @@ export default function ChatPage() {
   const [error, setError] = useState<string | null>(null)
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [activeAgent, setActiveAgent] = useState<{ agent: string; info?: AgentInfo } | null>(null)
-  // Índice da mensagem atualmente sendo animada (-1 = nenhuma)
   const [animatingIndex, setAnimatingIndex] = useState(-1)
-  // URL do planejador de trajetória (canvas ao vivo). null = painel fechado.
   const [plannerUrl, setPlannerUrl] = useState<string | null>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -353,7 +322,7 @@ export default function ChatPage() {
   useEffect(() => {
     createNewConversation()
     inputRef.current?.focus()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [])
 
   useEffect(() => {
@@ -409,7 +378,6 @@ export default function ChatPage() {
 
       setMessages((prev) => {
         const next = [...prev, assistantMessage]
-        // Animar o índice da mensagem recém-adicionada
         setAnimatingIndex(next.length - 1)
         return next
       })
@@ -419,13 +387,11 @@ export default function ChatPage() {
         info: response.data.agent_info,
       })
 
-      // Se o agente pediu para montar a grade, abre o planejador (canvas ao vivo).
       const planReq: PlanRequest | undefined = response.data.plan_request
       if (planReq) {
         const params = new URLSearchParams()
         if (planReq.curso) {
           params.set('curso', planReq.curso)
-          // Com curso detectado, o canvas já monta a grade sozinho.
           params.set('auto', '1')
         }
         if (planReq.completed && planReq.completed.length) {
@@ -448,7 +414,6 @@ export default function ChatPage() {
 
   const handleSend = () => sendMessage(input)
 
-  // Clique num nó do grafo de pré-requisitos: injeta a pergunta e envia.
   const handleGraphAsk = (question: string) => {
     if (isLoading) return
     setInput(question)
@@ -475,8 +440,7 @@ export default function ChatPage() {
   return (
     <div className="relative flex h-screen flex-col overflow-hidden bg-ink text-paper">
 
-      {/* ── Acessibilidade: título da página e skip-link ── */}
-      <h1 className="sr-only">FESP-AI — Assistente acadêmico da UNIFESP ICT</h1>
+      <h1 className="sr-only">FESP-AI - Assistente acadêmico da UNIFESP ICT</h1>
       <a
         href="#chat-main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:border focus:border-accent focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
@@ -484,7 +448,6 @@ export default function ChatPage() {
         Pular para a conversa
       </a>
 
-      {/* ── Header ── */}
       <header className="relative z-20 border-b border-line bg-ink/80 backdrop-blur-xl">
         <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
@@ -552,11 +515,9 @@ export default function ChatPage() {
         </div>
       </header>
 
-      {/* ── Mensagens ── */}
       <main id="chat-main" ref={messagesContainerRef} className="relative z-10 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
 
-          {/* Estado vazio */}
           {messages.length === 0 && !isLoading && (
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -565,7 +526,7 @@ export default function ChatPage() {
               className="flex min-h-[55vh] flex-col justify-center"
             >
               <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-accent">
-                UNIFESP — ICT
+                UNIFESP - ICT
               </p>
               <h2 className="font-display text-3xl font-medium tracking-tightest text-paper sm:text-4xl">
                 O que você quer saber?
@@ -597,7 +558,6 @@ export default function ChatPage() {
             </motion.div>
           )}
 
-          {/* Lista de mensagens */}
           <div className="space-y-8">
             <AnimatePresence initial={false}>
               {messages.map((msg, idx) => (
@@ -628,7 +588,6 @@ export default function ChatPage() {
               ))}
             </AnimatePresence>
 
-            {/* Indicador de raciocínio */}
             <AnimatePresence>
               {isLoading && (
                 <motion.div
@@ -642,7 +601,6 @@ export default function ChatPage() {
               )}
             </AnimatePresence>
 
-            {/* Erro */}
             <AnimatePresence>
               {error && (
                 <motion.div
@@ -662,7 +620,6 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* Botão de scroll */}
         <AnimatePresence>
           {showScrollButton && (
             <motion.button
@@ -679,7 +636,6 @@ export default function ChatPage() {
         </AnimatePresence>
       </main>
 
-      {/* ── Input ── */}
       <footer className="relative z-20 border-t border-line bg-ink/80 backdrop-blur-xl">
         <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6">
           <div className="flex items-end gap-3">
@@ -713,7 +669,6 @@ export default function ChatPage() {
         </div>
       </footer>
 
-      {/* Painel do Planejador de Trajetória (canvas ao vivo) */}
       <AnimatePresence>
         {plannerUrl && (
           <>

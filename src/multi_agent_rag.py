@@ -1,5 +1,5 @@
 """
-MultiAgentRAG — Entry point do sistema multi-agente FESP-AI.
+MultiAgentRAG - Entry point do sistema multi-agente FESP-AI.
 
 Substitui o uso direto de RAGUnifesp.query() pela pipeline LangGraph,
 mantendo compatibilidade total com a API existente.
@@ -20,7 +20,6 @@ class MultiAgentRAG:
     A diferença está no método `query()`, que agora roteia para agentes especializados.
     """
 
-    # Metadados dos agentes para o frontend
     AGENT_METADATA = {
         "disciplinas": {
             "label": "Agente Disciplinas",
@@ -78,7 +77,7 @@ class MultiAgentRAG:
         },
         "symbolic_kg": {
             "label": "Knowledge Graph",
-            "description": "Resposta direta do Knowledge Graph — sem LLM, 0% alucinação",
+            "description": "Resposta direta do Knowledge Graph - sem LLM, 0% alucinação",
             "color": "#0ea5e9",
             "icon": "Network",
         },
@@ -86,10 +85,8 @@ class MultiAgentRAG:
 
     def __init__(self, config: Config = None):
         self.config = config or Config()
-        # RAGUnifesp contém toda a infra (LLM, embeddings, vector store, grafo)
         self._rag = RAGUnifesp(config=self.config)
         self._pipeline = None
-        # Expor atributos necessários para compatibilidade com api.py
         self.llm = None
         self.chain = None
         self.knowledge_graph = None
@@ -101,7 +98,6 @@ class MultiAgentRAG:
         """Inicializa o RAG e constrói a pipeline multi-agente."""
         result = self._rag.sync(force=force)
 
-        # Sincronizar atributos públicos
         self.llm = self._rag.llm
         self.chain = self._rag.chain
         self.knowledge_graph = self._rag.knowledge_graph
@@ -109,14 +105,12 @@ class MultiAgentRAG:
         self.relation_extractor = self._rag.relation_extractor
         self.graph_enricher = self._rag.graph_enricher
 
-        # B5: KGC combina similaridade estrutural + embeddings semânticos
         if self.knowledge_graph is not None and getattr(self._rag, "embeddings", None):
             try:
                 self.knowledge_graph.kgc.set_embeddings(self._rag.embeddings)
             except Exception:
                 pass
 
-        # Construir pipeline LangGraph
         self._build_pipeline()
 
         return result
@@ -148,10 +142,9 @@ class MultiAgentRAG:
         `history`: últimas trocas formatadas ("Aluno: ...\nAssistente: ...") para
         continuidade de diálogo nos prompts dos agentes.
         `original_question`: pergunta como o aluno digitou (antes do
-        ContextResolver) — registrada na fila de misses.
+        ContextResolver) - registrada na fila de misses.
         """
         if not self._pipeline:
-            # Fallback para RAG original se pipeline não disponível
             response = self._rag.query(question)
             return {
                 "response": response,
@@ -159,7 +152,6 @@ class MultiAgentRAG:
                 "agent_metadata": self.AGENT_METADATA["fallback"],
             }
 
-        # Estado inicial
         initial_state = {
             "question": question,
             "enhanced_question": question,
@@ -175,14 +167,8 @@ class MultiAgentRAG:
         }
 
         try:
-            # Loop de segunda chance: se a resposta indica falha ("não
-            # encontrei" etc.), re-roteia UMA vez para o agente alternativo
-            # (symbolic_kg/especialista → web_sjc → fallback). A 2ª resposta
-            # só substitui a 1ª se não casar os padrões de falha.
             from .workflow.second_chance import run_with_second_chance, is_miss_response
             from . import telemetry
-            # FESPAI_SECOND_CHANCE=0 desliga o retry de segunda chance (modo
-            # demo, menos latência); a fila de misses continua funcionando.
             if os.getenv("FESPAI_SECOND_CHANCE", "1") == "0":
                 final_state = self._pipeline.invoke(initial_state)
             else:
@@ -197,8 +183,6 @@ class MultiAgentRAG:
                 )
             active_agent = final_state.get("active_agent", "fallback")
 
-            # Fila de misses: resposta final que ainda indica falha (mesmo
-            # após a segunda chance) vira insumo de curadoria de conteúdo.
             final_response = final_state.get("response", "")
             if is_miss_response(final_response):
                 from .misses_queue import record_miss
@@ -214,10 +198,6 @@ class MultiAgentRAG:
                 )
                 telemetry.incr("miss_registrado")
 
-            # Oferta de follow-up (ciclo 2 de usabilidade): respostas sobre
-            # atividades complementares terminam oferecendo o detalhamento
-            # por eixo — exceto quando a resposta já é o detalhamento ou
-            # indica falha.
             if final_response and not is_miss_response(final_response):
                 from .atividades_complementares import maybe_append_offer
                 offered = maybe_append_offer(
@@ -250,7 +230,6 @@ class MultiAgentRAG:
                 "agent_metadata": self.AGENT_METADATA["fallback"],
             }
 
-    # ── Métodos de compatibilidade com RAGUnifesp ──────────────────────────
 
     def list_sources(self) -> Dict[str, int]:
         return self._rag.list_sources()

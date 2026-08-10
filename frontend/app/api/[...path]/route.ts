@@ -1,20 +1,11 @@
 import { NextRequest } from 'next/server'
 
-// Proxy server-side de /api/* para o backend com timeout LONGO.
-//
-// Substitui o rewrite `/api/:path*` do next.config.js: o proxy interno do
-// Next (undici) corta a conexão upstream em ~30s ("socket hang up"), o que
-// derrubava respostas lentas do pipeline (roteador LLM + geração + retry).
-// Aqui fazemos o fetch nós mesmos com AbortSignal de 300s e repassamos o
-// corpo como stream (pass-through), sem bufferizar a resposta.
-
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || 'http://backend:8000'
-const UPSTREAM_TIMEOUT_MS = 300_000 // 5 min
+const UPSTREAM_TIMEOUT_MS = 300_000
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-// Headers hop-by-hop / controlados pelo fetch — não repassar.
 const SKIP_REQUEST_HEADERS = new Set([
   'host',
   'connection',
@@ -74,7 +65,6 @@ async function proxy(
     }
   })
 
-  // Pass-through do corpo como stream (não bufferiza).
   return new Response(upstream.body, {
     status: upstream.status,
     statusText: upstream.statusText,

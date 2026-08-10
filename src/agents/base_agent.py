@@ -20,10 +20,8 @@ class BaseAgent(ABC):
 
     name: str = "base"
     description: str = ""
-    color: str = "#6b7280"  # Cor para o indicador no frontend
+    color: str = "#6b7280"
 
-    # Regra de ouro anti-alucinação compartilhada por todos os agentes.
-    # Deve aparecer no TOPO de cada prompt, antes do contexto.
     GOLDEN_RULE: str = (
         "⚠️ REGRA DE OURO: Voce so pode usar informacoes que aparecem LITERALMENTE no CONTEXTO abaixo.\n"
         "Nao use conhecimento proprio, nao invente nomes, codigos, emails, salas, cargas horarias, "
@@ -31,14 +29,12 @@ class BaseAgent(ABC):
         "Se a informacao NAO estiver no CONTEXTO, diga com gentileza que nao tem esse dado na base da UNIFESP ICT."
     )
 
-    # Palavras que nunca são nomes de entidade — usadas para detectar termo vazio
     _PRONOUN_WORDS: frozenset = frozenset({
         'ela', 'ele', 'elas', 'eles', 'dela', 'dele', 'delas', 'deles',
         'isso', 'esta', 'este', 'essa', 'esse', 'disso', 'ementa', 'ementas',
         'essa disciplina', 'este professor', 'essa matéria',
     })
 
-    # Clarificações por intent: quando o sistema detecta a intenção mas não o sujeito
     _CLARIFICATION_FOR_INTENT: Dict[str, str] = {
         "ementa_disciplina":    "Sobre qual disciplina você quer ver a ementa?",
         "prerequisite_chain":   "Qual é a disciplina cujos pré-requisitos você quer conhecer?",
@@ -61,14 +57,13 @@ class BaseAgent(ABC):
         self.knowledge_graph = rag_instance.knowledge_graph
         self.graph_rag = rag_instance.graph_rag
 
-        # Camada neurossimbólica: validador simbólico baseado no Knowledge Graph
         self.validator = None
         if self.knowledge_graph is not None:
             try:
                 from ..neurosymbolic_validator import SymbolicValidator
                 self.validator = SymbolicValidator(self.knowledge_graph, llm=self.llm)
             except Exception:
-                pass  # Não bloquear inicialização se validator falhar
+                pass
 
     @abstractmethod
     def retrieve(self, question: str, intent: str, term: str) -> str:
@@ -102,7 +97,7 @@ class BaseAgent(ABC):
         return None
 
     _HISTORY_BLOCK = (
-        "HISTORICO RECENTE DA CONVERSA (apenas para continuidade de dialogo — "
+        "HISTORICO RECENTE DA CONVERSA (apenas para continuidade de dialogo - "
         "NAO e fonte de fatos; fatos vem so do CONTEXTO):\n{history}\n\n"
         "REGRA DE CONTINUIDADE: a conversa JA ESTA EM ANDAMENTO. NAO cumprimente "
         "de novo (nada de 'Ola', 'Oi', 'Tudo bem?'). Responda direto, como quem "
@@ -113,7 +108,7 @@ class BaseAgent(ABC):
     def _apply_history(self, template: str, history: str) -> str:
         """
         Insere o histórico recente + regra de continuidade antes da pergunta.
-        Sem histórico (primeira mensagem), o template fica intacto — e o agente
+        Sem histórico (primeira mensagem), o template fica intacto - e o agente
         pode abrir com a saudação de praxe.
         """
         if not history:
@@ -131,7 +126,6 @@ class BaseAgent(ABC):
         `history` (opcional): últimas trocas da conversa, injetadas no prompt
         para continuidade de diálogo (sem re-saudação a cada turno).
         """
-        # Item 4: clarificação proativa — quando o intent é claro mas o sujeito não foi extraído
         if self._is_empty_term(term) and intent in self._CLARIFICATION_FOR_INTENT:
             return {
                 "response": self._CLARIFICATION_FOR_INTENT[intent],
@@ -144,9 +138,7 @@ class BaseAgent(ABC):
 
         context = self.retrieve(question, intent, term)
 
-        # Guardrail: não invocar o LLM se não há contexto relevante.
         if not context or not context.strip():
-            # KGC: sugerir disciplinas estruturalmente similares em vez de erro genérico
             suggestion = self._kgc_suggestion(term)
             response_text = (
                 suggestion if suggestion else
@@ -163,7 +155,6 @@ class BaseAgent(ABC):
                 "sources": [],
             }
 
-        # ── Simbólico → Neural: enriquecer contexto com fatos verificados do KG ──
         enriched_context = context
         if self.validator and term and intent not in ("", "unknown"):
             kg_enrichment = self.validator.enrich_agent_context(intent, term)
@@ -179,11 +170,9 @@ class BaseAgent(ABC):
             inputs["history"] = history
         response = chain.invoke(inputs)
 
-        # ── Neural → Simbólico → Neural: validar e corrigir (B1) ────────────
         if self.validator and intent not in ("", "unknown"):
             response, _ = self.validator.validate_and_correct(response, intent, term)
 
-        # KGC: se o LLM retornou o fallback "sem informação", sugerir similares
         _NO_INFO_MARKERS = ("Nao tenho essa informacao", "não tenho essa informação")
         if any(m.lower() in response.lower() for m in _NO_INFO_MARKERS):
             suggestion = self._kgc_suggestion(term)
@@ -259,7 +248,6 @@ class BaseAgent(ABC):
             s = re.sub(r"\s+", " ", h).strip()
             if s:
                 cleaned.append(s)
-        # manter ordem e remover duplicatas
         seen = set()
         uniq = []
         for s in cleaned:

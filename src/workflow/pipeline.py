@@ -29,7 +29,6 @@ from .router import (
 )
 from ..telemetry import incr as telemetry_incr
 
-# Intents que o KG pode responder sem nenhum termo (ou com termo vazio)
 _TERM_OPTIONAL_INTENTS: frozenset = frozenset({"listar_cursos", "critical_disciplines"})
 from .embedding_router import EmbeddingAgentRouter
 from ..agents.disciplinas_agent import DisciplinasAgent
@@ -42,7 +41,6 @@ from ..agents.noticias_agent import NoticiasAgent
 from ..agents.web_sjc_agent import WebSjcAgent
 
 
-# Prompt do "humanizer" do symbolic_kg: suaviza o tom SEM alterar os fatos.
 _KG_HUMANIZER_TEMPLATE = """Voce e o assistente virtual da UNIFESP ICT, simpatico e acolhedor. Abaixo esta uma RESPOSTA JA VERIFICADA, extraida diretamente da base de dados oficial. Ela esta correta e completa.
 
 Pergunta do aluno: {question}
@@ -66,17 +64,16 @@ def _kg_facts_preserved(original: str, humanized: str) -> bool:
     """
     Guard barato de pós-verificação do humanizer: True se a saída preservou os
     fatos da resposta original do KG. O LLM ocasionalmente mutila a resposta
-    (ex.: "O cursoisciplinas obrigatórias" — perda de um trecho no decoding).
+    (ex.: "O cursoisciplinas obrigatórias" - perda de um trecho no decoding).
 
     Critérios (perda > 10% → descarta):
       - dígitos: >= 90% dos tokens numéricos da original (multiset) presentes;
       - listas: com 3+ itens na original, >= 90% dos itens com o CONTEÚDO
-        presente na saída (o humanizer pode converter bullets em prosa — o que
+        presente na saída (o humanizer pode converter bullets em prosa - o que
         conta é o conteúdo do item, não o marcador).
     """
     if not humanized or not humanized.strip():
         return False
-    # Tokens numéricos (códigos, cargas horárias, termos) como multiset
     orig_nums = re.findall(r"\d+", original)
     if orig_nums:
         hum_counts = Counter(re.findall(r"\d+", humanized))
@@ -86,7 +83,6 @@ def _kg_facts_preserved(original: str, humanized: str) -> bool:
         )
         if kept < 0.9 * len(orig_nums):
             return False
-    # Itens de lista ("- item", "• item", "1. item"): conteúdo preservado?
     orig_items = re.findall(r"^\s*(?:[-•*]|\d+[.)])\s+(.+)$", original, re.MULTILINE)
     if len(orig_items) >= 3:
         hum_lower = humanized.lower()
@@ -94,7 +90,7 @@ def _kg_facts_preserved(original: str, humanized: str) -> bool:
         for item in orig_items:
             tokens = re.findall(r"[^\W\d_]{4,}", item, re.UNICODE)
             if not tokens:
-                items_ok += 1  # item só de números/símbolos — coberto pelos dígitos
+                items_ok += 1
                 continue
             present = sum(1 for t in tokens if t.lower() in hum_lower)
             if present >= 0.6 * len(tokens):
@@ -110,7 +106,7 @@ def humanize_kg_response(llm, question: str, kg_response: str, history: str = ""
     fatos. Em caso de erro, retorna a resposta original (degradação segura).
     Só deve ser chamada quando Config.HUMANIZE_KG está ativo.
 
-    `history`: trocas anteriores — evita re-saudação ("Olá!") a cada turno.
+    `history`: trocas anteriores - evita re-saudação ("Olá!") a cada turno.
     """
     if not llm or not kg_response or not kg_response.strip():
         return kg_response
@@ -130,8 +126,6 @@ def humanize_kg_response(llm, question: str, kg_response: str, history: str = ""
         prompt = ChatPromptTemplate.from_template(template)
         chain = prompt | llm | StrOutputParser()
         softened = chain.invoke(inputs).strip()
-        # Guard pós-verificação: se o LLM mutilou a resposta (perdeu >10% dos
-        # dígitos ou dos itens de lista), descarta e usa a original do KG.
         if not _kg_facts_preserved(kg_response, softened):
             return kg_response
         return softened
@@ -149,7 +143,6 @@ def build_pipeline(rag_instance):
     Returns:
         Compiled LangGraph app
     """
-    # Instanciar agentes com acesso ao rag
     agents = {
         "disciplinas": DisciplinasAgent(rag_instance),
         "docentes": DocentesAgent(rag_instance),
@@ -161,25 +154,20 @@ def build_pipeline(rag_instance):
         "web_sjc": WebSjcAgent(rag_instance),
     }
 
-    # Roteador por embeddings (prioridade sobre intent/keywords quando confiança alta)
     embedding_router = None
     if getattr(rag_instance, "_rag", None) and getattr(rag_instance._rag, "embeddings", None):
         embedding_router = EmbeddingAgentRouter(rag_instance._rag.embeddings, confidence_threshold=0.58)
         embedding_router.initialize()
 
-    # ── Nó: Router ──────────────────────────────────────────────────────────
     def router_node(state: AgentState) -> AgentState:
         """Classifica a intent e decide qual agente chamar."""
         question = state.get("enhanced_question") or state.get("question", "")
         question_lower = question.lower()
 
-        # Segunda chance (retry-on-miss): o loop externo já decidiu o agente
-        # alternativo — roteia direto, sem reclassificar.
         forced = state.get("forced_agent")
         if forced and (forced in agents or forced == "fallback"):
             return {**state, "active_agent": forced}
 
-        # Perguntas meta sobre capacidades do sistema → resposta fixa
         meta_response = get_meta_capability_response(question_lower)
         if meta_response:
             return {
@@ -188,11 +176,6 @@ def build_pipeline(rag_instance):
                 "active_agent": "meta",
             }
 
-        # Detalhamento por eixo das atividades complementares → resposta
-        # simbólica direta do regulamento estruturado (follow-up do ciclo 2
-        # de usabilidade). Antes dos demais fast-paths: as keywords de
-        # regimento/site levariam a pergunta para RAG documental, cujo corpus
-        # não tem a quebra por eixo.
         from ..atividades_complementares import (
             is_breakdown_request,
             build_breakdown_response,
@@ -212,8 +195,6 @@ def build_pipeline(rag_instance):
                     "sources": ["Regulamento de Atividades Complementares do BCT (2023)"],
                 }
 
-        # Conversa social (saudações, agradecimentos, despedidas, identidade) →
-        # agente conversacional, antes do roteamento por embeddings/intent.
         if is_conversational(question_lower):
             return {
                 **state,
@@ -223,7 +204,6 @@ def build_pipeline(rag_instance):
                 "active_agent": "conversa",
             }
 
-        # Pedido de montar a grade / planejar trajetória → agente dedicado.
         if is_montar_grade(question_lower):
             return {
                 **state,
@@ -233,7 +213,6 @@ def build_pipeline(rag_instance):
                 "active_agent": "montar_grade",
             }
 
-        # Pedido de notícias / novidades da UNIFESP → agente de notícias.
         if is_noticias(question_lower):
             return {
                 **state,
@@ -243,7 +222,6 @@ def build_pipeline(rag_instance):
                 "active_agent": "noticias",
             }
 
-        # Pergunta institucional sobre o campus → agente do site (cobertura completa).
         if is_web_sjc(question_lower):
             return {
                 **state,
@@ -253,9 +231,6 @@ def build_pipeline(rag_instance):
                 "active_agent": "web_sjc",
             }
 
-        # Pergunta descritiva sobre um CURSO ("O que é o BCT?") → página do curso
-        # no site. Desambiguação simbólica via KG: se a entidade fosse uma
-        # disciplina ("O que é Teoria dos Grafos?"), segue o fluxo normal.
         if is_course_overview(question_lower, rag_instance.knowledge_graph):
             return {
                 **state,
@@ -270,9 +245,6 @@ def build_pipeline(rag_instance):
         confidence = 0.0
         active_agent = ""
 
-        # 1) Detecção de intent/termo do GraphRAG + Atalho Neurossimbólico.
-        # Para intents determinísticos, o KG responde diretamente sem LLM —
-        # elimina latência de inferência e risco de alucinação.
         detected_intent, detected_term = "", ""
         if rag_instance.graph_rag:
             use_graph, di, dt = rag_instance.graph_rag.should_use_graph(question)
@@ -286,8 +258,6 @@ def build_pipeline(rag_instance):
                         detected_intent, detected_term
                     )
                     if kg_response:
-                        # Grafo estruturado para o frontend renderizar como
-                        # visualização interativa (SVG) acima do texto.
                         graph_data = None
                         if detected_intent in (
                             "prerequisite_chain", "dependents",
@@ -299,8 +269,6 @@ def build_pipeline(rag_instance):
                                 )
                             except Exception:
                                 graph_data = None
-                        # Humanização opcional: suaviza o tom sem alterar os fatos.
-                        # Desligada por padrão (paper puro); ative com FESPAI_HUMANIZE_KG=1.
                         response_text = kg_response
                         if getattr(rag_instance.config, "HUMANIZE_KG", False):
                             response_text = humanize_kg_response(
@@ -319,24 +287,15 @@ def build_pipeline(rag_instance):
                             "graph_data": graph_data,
                         }
 
-        # 2) Sugestão do embedding router (barata) — contexto do phrase_override
-        # e fallback/desempate quando o LLM está indisponível.
         emb_agent, emb_conf = "", 0.0
         if embedding_router:
             emb_agent, emb_conf = embedding_router.route(question)
 
-        # 3) Fast-path: overrides de alta precisão por frase (cache barato).
-        # Fonte única em router.phrase_override.
         override = phrase_override(question_lower, emb_agent)
         if override:
             active_agent = override
             confidence = max(emb_conf, 0.9)
         else:
-            # 4) Nenhum fast-path casou → roteador LLM unificado como decisor
-            # primário: UMA chamada decide agente + intent + entidades, com as
-            # entidades aterradas no KG (o que não resolve é descartado).
-            # FESPAI_LLM_ROUTE=0 pula o roteador LLM (modo demo, menos
-            # latência) e cai direto no embedding router/heurísticas.
             routed_llm = None
             if os.getenv("FESPAI_LLM_ROUTE", "1") != "0":
                 routed_llm = llm_route(
@@ -354,13 +313,10 @@ def build_pipeline(rag_instance):
                 term = term_from_llm_route(routed_llm)
                 telemetry_incr("llm_route_decisor")
             elif emb_agent:
-                # LLM indisponível/JSON inválido → embedding router decide.
                 active_agent = emb_agent
                 confidence = emb_conf
                 telemetry_incr("llm_route_fallback_embedding")
 
-        # Preencher intent/term com a detecção do GraphRAG quando faltarem —
-        # são úteis para os lookups internos dos agentes.
         if detected_intent and intent == "unknown":
             intent = detected_intent
         if detected_term and not term:
@@ -376,7 +332,6 @@ def build_pipeline(rag_instance):
             "active_agent": active_agent,
         }
 
-    # ── Nó: Agente de Disciplinas ────────────────────────────────────────────
     def disciplinas_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["disciplinas"].answer(
@@ -391,7 +346,6 @@ def build_pipeline(rag_instance):
             "sources": result.get("sources", []),
         }
 
-    # ── Nó: Agente de Docentes ────────────────────────────────────────────────
     def docentes_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["docentes"].answer(
@@ -406,7 +360,6 @@ def build_pipeline(rag_instance):
             "sources": result.get("sources", []),
         }
 
-    # ── Nó: Agente de Cursos ──────────────────────────────────────────────────
     def cursos_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["cursos"].answer(
@@ -421,7 +374,6 @@ def build_pipeline(rag_instance):
             "sources": result.get("sources", []),
         }
 
-    # ── Nó: Agente de Regimentos ──────────────────────────────────────────────
     def regimentos_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["regimentos"].answer(
@@ -436,7 +388,6 @@ def build_pipeline(rag_instance):
             "sources": result.get("sources", []),
         }
 
-    # ── Nó: Agente Conversacional (saudações, agradecimentos, small talk) ─────
     def conversa_node(state: AgentState) -> AgentState:
         question = state.get("question", "")
         result = agents["conversa"].answer(question, "", "", history=state.get("history", ""))
@@ -448,7 +399,6 @@ def build_pipeline(rag_instance):
             "sources": [],
         }
 
-    # ── Nó: Agente Montar Grade (planejador de trajetória) ────────────────────
     def montar_grade_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["montar_grade"].answer(question, state.get("intent", ""), "", history=state.get("history", ""))
@@ -461,7 +411,6 @@ def build_pipeline(rag_instance):
             "plan_request": result.get("plan_request"),
         }
 
-    # ── Nó: Agente de Notícias (retrieval ao vivo, fonte oficial) ─────────────
     def noticias_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["noticias"].answer(question, state.get("intent", ""), "", history=state.get("history", ""))
@@ -473,7 +422,6 @@ def build_pipeline(rag_instance):
             "sources": result.get("sources", []),
         }
 
-    # ── Nó: Agente Web SJC (cobertura completa do site do campus) ─────────────
     def web_sjc_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["web_sjc"].answer(question, state.get("intent", ""), "", history=state.get("history", ""))
@@ -485,7 +433,6 @@ def build_pipeline(rag_instance):
             "sources": result.get("sources", []),
         }
 
-    # ── Nó: Fallback (RAG genérico) ───────────────────────────────────────────
     def fallback_node(state: AgentState) -> AgentState:
         """Fallback usa a lógica RAG original para perguntas não classificadas."""
         question = state.get("enhanced_question") or state.get("question", "")
@@ -495,11 +442,9 @@ def build_pipeline(rag_instance):
             response = f"Desculpe, não consegui processar sua pergunta: {e}"
         return {**state, "response": response, "active_agent": "fallback"}
 
-    # ── Nó: Meta (resposta fixa para "você tem acesso a X?") ──────────────────
     def meta_node(state: AgentState) -> AgentState:
         return state
 
-    # ── Nó: Symbolic KG (resposta direta do Knowledge Graph, sem LLM) ────────
     def symbolic_kg_node(state: AgentState) -> AgentState:
         """
         Nó neurossimbólico: a resposta já foi gerada diretamente pelo KG
@@ -508,7 +453,6 @@ def build_pipeline(rag_instance):
         """
         return state
 
-    # ── Função de roteamento condicional ──────────────────────────────────────
     def select_agent(state: AgentState) -> str:
         agent = state.get("active_agent", "fallback")
         if agent in ("meta", "symbolic_kg"):
@@ -517,7 +461,6 @@ def build_pipeline(rag_instance):
             return agent
         return "fallback"
 
-    # ── Construir grafo ───────────────────────────────────────────────────────
     graph = StateGraph(AgentState)
 
     graph.add_node("router", router_node)

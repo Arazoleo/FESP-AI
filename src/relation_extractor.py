@@ -48,7 +48,6 @@ class RelationExtractor:
     - UTILIZA: Disciplina -> Conceito
     """
     
-    # Relações válidas por tipo de entidade
     VALID_RELATIONS = {
         ('DOCENTE', 'DISCIPLINA'): ['LECIONA', 'COORDENA_DISCIPLINA'],
         ('DOCENTE', 'AREA'): ['ESPECIALISTA_EM', 'PESQUISA'],
@@ -61,7 +60,6 @@ class RelationExtractor:
         ('AREA', 'AREA'): ['SUBAREA_DE', 'RELACIONADA_COM'],
     }
     
-    # Prompt otimizado para extração de relações acadêmicas
     EXTRACTION_PROMPT = """Você é um especialista em extração de informações de textos acadêmicos.
 
 Analise o texto abaixo e extraia TODAS as relações entre entidades.
@@ -126,9 +124,9 @@ IMPORTANTE:
                 self.llm = OllamaLLM(
                     model=model_name,
                     base_url=ollama_base_url,
-                    temperature=0.1,  # Baixa temperatura para consistência
+                    temperature=0.1,
                     num_predict=2048,
-                    timeout=120  # Timeout maior para textos longos
+                    timeout=120
                 )
             else:
                 self.llm = OllamaLLM(
@@ -147,7 +145,6 @@ IMPORTANTE:
     def _parse_llm_response(self, response: str) -> List[Dict]:
         """Parse a resposta do LLM para extrair o JSON."""
         try:
-            # Tentar encontrar JSON na resposta
             json_match = re.search(r'\{[\s\S]*\}', response)
             if json_match:
                 data = json.loads(json_match.group())
@@ -160,24 +157,19 @@ IMPORTANTE:
         """Valida se a relação extraída é válida."""
         required_fields = ['subject', 'subject_type', 'relation', 'object', 'object_type']
         
-        # Verificar campos obrigatórios
         for field in required_fields:
             if field not in rel or not rel[field]:
                 return False
         
-        # Verificar tipos de entidade válidos
         valid_types = {'DOCENTE', 'DISCIPLINA', 'AREA', 'CURSO', 'CONCEITO', 'ORGAO'}
         if rel['subject_type'] not in valid_types or rel['object_type'] not in valid_types:
             return False
         
-        # Verificar se a relação é válida para os tipos de entidade
         type_pair = (rel['subject_type'], rel['object_type'])
         valid_relations = self.VALID_RELATIONS.get(type_pair, [])
         
-        # Permitir relações genéricas
         if rel['relation'] not in valid_relations and rel['relation'] != 'RELACIONADO_COM':
             logger.debug(f"Relação '{rel['relation']}' não válida para {type_pair}")
-            # Não invalidar, mas ajustar para relação genérica
             rel['relation'] = 'RELACIONADO_COM'
         
         return True
@@ -187,7 +179,6 @@ IMPORTANTE:
         name = name.strip()
         
         if entity_type == 'DOCENTE':
-            # Remover títulos comuns
             name = re.sub(r'^(Prof\.?a?|Dr\.?a?|Doutor\.?a?|Mestre?)\s*', '', name, flags=re.IGNORECASE)
             name = name.strip()
         
@@ -208,7 +199,6 @@ IMPORTANTE:
             return []
         
         try:
-            # Limitar texto para evitar timeout
             text_truncated = text[:4000] if len(text) > 4000 else text
             
             response = self.chain.invoke({"text": text_truncated})
@@ -261,7 +251,6 @@ IMPORTANTE:
             relations = self.extract_from_text(content, min_confidence)
             all_relations.extend(relations)
         
-        # Remover duplicatas
         unique_relations = self._deduplicate_relations(all_relations)
         
         logger.info(f"Total: {len(unique_relations)} relações únicas extraídas de {len(documents)} documentos")
@@ -288,7 +277,6 @@ IMPORTANTE:
         graph_relations = []
         
         for rel in relations:
-            # Mapear tipo para prefixo do KnowledgeGraph
             type_prefix = {
                 'DOCENTE': 'DOC',
                 'DISCIPLINA': 'DISC',
@@ -310,7 +298,7 @@ IMPORTANTE:
                 'target_name': rel.object,
                 'relation': rel.relation,
                 'confidence': rel.confidence,
-                'extracted': True  # Flag para identificar relações extraídas vs manuais
+                'extracted': True
             })
         
         return graph_relations
@@ -348,7 +336,6 @@ class KnowledgeGraphEnricher:
         added = 0
         for rel in graph_rels:
             try:
-                # Criar nós se não existirem
                 if not self.kg.graph.has_node(rel['source_id']):
                     self.kg.graph.add_node(
                         rel['source_id'],
@@ -365,7 +352,6 @@ class KnowledgeGraphEnricher:
                         extracted=True
                     )
                 
-                # Adicionar aresta
                 self.kg.graph.add_edge(
                     rel['source_id'],
                     rel['target_id'],
@@ -410,11 +396,9 @@ class KnowledgeGraphEnricher:
         by_type = {}
         
         for rel in self.added_relations:
-            # Contar por tipo de relação
             r = rel['relation']
             by_relation[r] = by_relation.get(r, 0) + 1
             
-            # Contar por tipo de entidade
             for t in [rel['source_type'], rel['target_type']]:
                 by_type[t] = by_type.get(t, 0) + 1
         
@@ -424,4 +408,3 @@ class KnowledgeGraphEnricher:
             'by_type': by_type,
             'avg_confidence': sum(r['confidence'] for r in self.added_relations) / len(self.added_relations)
         }
-

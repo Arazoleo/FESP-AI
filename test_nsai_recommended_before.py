@@ -12,7 +12,7 @@ Cobre:
     (ex.: Lógica de Programação × Compiladores) e a direção respeita ordem()
   - Par real calibrado: Arquitetura e Organização de Computadores →
     Sistemas Operacionais (sim 0.68 com embeddinggemma; aqui simulado com
-    um modelo fake determinístico — a similaridade real foi validada na
+    um modelo fake determinístico - a similaridade real foi validada na
     calibração de θ)
   - Intent recommended_before ("o que é bom fazer antes de X?") sem roubar
     "o que preciso fazer antes de X" (prerequisite_chain)
@@ -64,7 +64,7 @@ def check(desc: str, cond: bool, detail: str = ""):
         print(f"{GREEN}✓{RESET} {desc}")
     else:
         _failed += 1
-        print(f"{RED}✗ {desc}{RESET}" + (f" — {detail}" if detail else ""))
+        print(f"{RED}✗ {desc}{RESET}" + (f" - {detail}" if detail else ""))
 
 
 kg_mod = _import_module("knowledge_graph", "src/knowledge_graph.py")
@@ -156,7 +156,6 @@ check(
     "Compiladores" not in {n for n, _ in recs_logica},
 )
 
-# Direção: ordem(A) < ordem(B) para todo par retornado
 paa_data = kg.graph.nodes[paa_id]
 recs_paa = kg.kgc.get_recommended_before("PAA", n=10_000)
 direcao_ok = True
@@ -171,7 +170,7 @@ check(
     bool(recs_paa) and direcao_ok,
 )
 check(
-    "LFA (termo 5) nunca é recomendada antes de PAA (termo 4) — direção",
+    "LFA (termo 5) nunca é recomendada antes de PAA (termo 4) - direção",
     "Linguagens Formais e Autômatos" not in {n for n, _ in recs_paa},
 )
 check(
@@ -220,7 +219,6 @@ CASES = [
     ("O que ajuda a fazer antes de Compiladores?", "recommended_before", "compiladores"),
     ("Quais disciplinas são recomendadas antes de Banco de Dados?",
      "recommended_before", "banco de dados"),
-    # NÃO pode roubar prerequisite_chain:
     ("O que preciso fazer antes de PAA?", "prerequisite_chain", None),
     ("Quais os pré-requisitos de PAA?", "prerequisite_chain", "paa"),
     ("O que devo cursar antes de Compiladores?", "prerequisite_chain", None),
@@ -318,7 +316,6 @@ check(
     str(gp_rec)[:160],
 )
 
-# Voltar ao estado sem embeddings: payload não deve quebrar
 kg.kgc.set_embeddings(None)
 kg.kgc._emb_model = None
 kg.kgc.invalidate_cache()

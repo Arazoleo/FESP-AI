@@ -3,9 +3,6 @@ import Link from 'next/link'
 import { ArrowRight, ArrowDown } from 'lucide-react'
 import ScrollFX from './components/ScrollFX'
 
-// ─── Motivo visual: grafo de conhecimento ─────────────────────────────────────
-// Nós e arestas nomeados com entidades reais do KG do FESP-AI.
-
 const NODES: {
   id: string
   x: number
@@ -94,8 +91,6 @@ function KnowledgeGraphFigure({ className }: { className?: string }) {
   )
 }
 
-// ─── Conteúdo ─────────────────────────────────────────────────────────────────
-
 const PIPELINE_STEPS = [
   {
     n: '01',
@@ -145,13 +140,10 @@ const DOMAINS = [
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen bg-ink text-paper">
-      {/* Efeitos de scroll (barra de progresso, reveals, parallax, nav) */}
       <ScrollFX />
 
-      {/* Grade de fundo sutil */}
       <div className="pointer-events-none fixed inset-0 bg-grid-faint" aria-hidden />
 
-      {/* ── Nav ── */}
       <header data-nav className="site-nav sticky top-0 z-40">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
@@ -175,12 +167,11 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ── Hero ── */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-20 sm:pt-28">
         <div className="grid items-center gap-16 lg:grid-cols-[1.15fr_1fr]">
           <div>
             <p className="animate-rise rise-1 mb-6 font-mono text-xs uppercase tracking-[0.25em] text-accent">
-              UNIFESP — Instituto de Ciência e Tecnologia
+              UNIFESP - Instituto de Ciência e Tecnologia
             </p>
             <h1 className="animate-rise rise-2 font-display text-5xl font-medium leading-[1.05] tracking-tightest sm:text-6xl lg:text-7xl">
               Perguntas acadêmicas.
@@ -190,7 +181,7 @@ export default function LandingPage() {
             <p className="animate-rise rise-3 mt-8 max-w-xl text-lg leading-relaxed text-paper-dim">
               O FESP-AI responde sobre a vida acadêmica do campus São José dos
               Campos consultando um grafo de conhecimento montado a partir de
-              documentos oficiais — e confere os fatos antes de responder.
+              documentos oficiais - e confere os fatos antes de responder.
             </p>
             <div className="animate-rise rise-4 mt-10 flex flex-wrap items-center gap-6">
               <Link
@@ -221,7 +212,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Como funciona ── */}
       <section id="como-funciona" className="relative z-10 border-t border-line">
         <div className="mx-auto max-w-6xl px-6 py-24">
           <div data-reveal className="mb-14 max-w-2xl">
@@ -252,7 +242,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Domínios ── */}
       <section className="relative z-10 border-t border-line">
         <div className="mx-auto max-w-6xl px-6 py-24">
           <div data-reveal className="mb-14 max-w-2xl">
@@ -295,14 +284,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
       <footer className="relative z-10 border-t border-line">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div data-reveal className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <span className="font-mono text-sm tracking-widest text-paper">FESP-AI</span>
               <p className="mt-2 text-sm text-paper-mute">
-                Projeto acadêmico — UNIFESP, Instituto de Ciência e Tecnologia,
+                Projeto acadêmico - UNIFESP, Instituto de Ciência e Tecnologia,
                 São José dos Campos.
               </p>
             </div>

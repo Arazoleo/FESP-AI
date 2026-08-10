@@ -39,8 +39,6 @@ if TYPE_CHECKING:
     from .knowledge_graph import KnowledgeGraph
 
 
-# ── Conjuntos de intents por comportamento ────────────────────────────────────
-
 ENRICH_DISCIPLINE_INTENTS: frozenset = frozenset({
     "ementa_disciplina",
     "prerequisite_chain",
@@ -60,13 +58,10 @@ ENRICH_DOCENTE_INTENTS: frozenset = frozenset({
 VALIDATE_PREREQ_INTENTS: frozenset = frozenset({"prerequisite_chain"})
 VALIDATE_DOCENTE_INTENTS: frozenset = frozenset({"discipline_docentes", "docente_disciplines"})
 
-# Limiar de confiança: abaixo disso a resposta usa linguagem de incerteza
 CONF_HIGH = 1.0
 CONF_MEDIUM = 0.8
 CONF_LOW = 0.6
 
-
-# ── ValidationResult ──────────────────────────────────────────────────────────
 
 @dataclass
 class ValidationResult:
@@ -74,10 +69,8 @@ class ValidationResult:
     violations: List[str] = field(default_factory=list)
     verified_facts: List[str] = field(default_factory=list)
     confidence_scores: Dict[str, float] = field(default_factory=dict)
-    # B1 — Reescrita corretiva
     was_corrected: bool = False
     correction_details: List[str] = field(default_factory=list)
-    # B4 — Rastreamento de regras de inferência aplicadas
     inference_rules_applied: List[str] = field(default_factory=list)
 
     def to_annotation(self) -> str:
@@ -93,7 +86,6 @@ class ValidationResult:
             )
         elif self.verified_facts:
             lines.append("*Verificado no Knowledge Graph:* " + " · ".join(self.verified_facts[:3]))
-        # B2 — Propagação de incerteza
         low_conf = {k: v for k, v in self.confidence_scores.items() if v < CONF_HIGH}
         if low_conf:
             conf_strs = [
@@ -105,8 +97,6 @@ class ValidationResult:
             lines.append("*Atenção:* " + " · ".join(self.violations[:2]))
         return "\n".join(lines)
 
-
-# ── InferenceEngine (B4) ──────────────────────────────────────────────────────
 
 class InferenceEngine:
     """
@@ -133,10 +123,6 @@ class InferenceEngine:
         "minimal_path": (
             "∀target,C: min{|path|: cursando(path) → desbloqueado(target, C∪path)}"
         ),
-        # Recomendação semântico-simbólica: conteúdo sobreposto (embeddings de
-        # NOME+EMENTA), fora da cadeia do DAG, respeitando a ordem do currículo
-        # (termo da matriz ou, na falta, profundidade no DAG). θ calibrado
-        # empiricamente (KGCompletion.REC_BEFORE_THRESHOLD).
         "recommended_before": (
             "∀a,b: sim_ementa(a,b) ≥ θ ∧ ¬ancestral(a,b) ∧ ¬ancestral(b,a) "
             "∧ ordem(a) < ordem(b) → recommended_before(a,b)"
@@ -146,7 +132,6 @@ class InferenceEngine:
     def __init__(self, kg: "KnowledgeGraph"):
         self.kg = kg
 
-    # ── Regra: unlock_condition ───────────────────────────────────────────────
 
     def can_take(self, discipline: str, completed: List[str]) -> bool:
         """Verifica se todos os pré-requisitos diretos de `discipline` estão em `completed`."""
@@ -160,7 +145,6 @@ class InferenceEngine:
         """Aplica unlock_condition a todas as disciplinas do KG."""
         return self.kg.get_unlocked_disciplines(completed)
 
-    # ── Regra: minimal_path ───────────────────────────────────────────────────
 
     def plan_minimal_path(
         self,
@@ -182,7 +166,6 @@ class InferenceEngine:
         if self.can_take(target, completed):
             return [[target]]
 
-        # Todos os ancestrais de target não ainda cursados
         all_ancestors = set(self.kg.get_all_ancestors(target))
         completed_norm = {self.kg._normalize_text(c) for c in completed}
         missing = {
@@ -191,12 +174,11 @@ class InferenceEngine:
         }
         missing.add(target)
 
-        # BFS topológico: a cada iteração, pegar disciplinas prontas para cursar
         resolved_norm = set(completed_norm)
         remaining = set(missing)
         phases: List[List[str]] = []
 
-        for _ in range(30):  # limite de segurança
+        for _ in range(30):
             if not remaining:
                 break
             ready = [
@@ -207,7 +189,7 @@ class InferenceEngine:
                 )
             ]
             if not ready:
-                break  # ciclo ou inconsistência
+                break
             phases.append(ready)
             for disc in ready:
                 resolved_norm.add(self.kg._normalize_text(disc))
@@ -219,11 +201,11 @@ class InferenceEngine:
         self, phases: List[List[str]]
     ) -> Tuple[Dict[str, float], float]:
         """
-        B2 — Propagação de incerteza no caminho mínimo.
+        B2 - Propagação de incerteza no caminho mínimo.
 
         Para cada disciplina do caminho, o menor `confidence` das arestas de
         pré-requisito que a habilitam; e o bound inferior do caminho inteiro
-        (mínimo global — semântica de bounds [low, 1.0] do PyReason).
+        (mínimo global - semântica de bounds [low, 1.0] do PyReason).
 
         Returns:
             (confianca_por_disciplina, bound_inferior_do_caminho)
@@ -243,7 +225,6 @@ class InferenceEngine:
                     overall = min(overall, worst)
         return per_disc, overall
 
-    # ── Regra: critical_discipline ────────────────────────────────────────────
 
     def critical_disciplines(
         self, min_dependents: int = 3
@@ -264,7 +245,6 @@ class InferenceEngine:
                 result.append((nome, n_dependentes))
         return sorted(result, key=lambda x: -x[1])
 
-    # ── Regra: recommended_before ─────────────────────────────────────────────
 
     def get_recommended_before(self, discipline: str, n: int = 3) -> List[Tuple[str, float]]:
         """
@@ -280,7 +260,6 @@ class InferenceEngine:
         except Exception:
             return []
 
-    # ── Regra: co_prerequisite ────────────────────────────────────────────────
 
     def find_co_prerequisites(self, discipline: str) -> List[str]:
         """
@@ -296,7 +275,6 @@ class InferenceEngine:
                     co_prereqs.add(p)
         return sorted(co_prereqs)
 
-    # ── Derivação de fatos para contexto do LLM ───────────────────────────────
 
     def derive_facts_for_context(self, intent: str, term: str) -> str:
         """
@@ -318,7 +296,6 @@ class InferenceEngine:
         critical = dict(self.critical_disciplines(min_dependents=3))
         prereqs = self.kg.get_prerequisite_chain(disciplina, max_depth=1)
 
-        # Pré-requisitos críticos (têm muitos dependentes)
         critical_prereqs = [(p, critical[p]) for p in prereqs if p in critical]
         if critical_prereqs:
             strs = [f"{p} ({n} dependentes)" for p, n in critical_prereqs]
@@ -326,7 +303,6 @@ class InferenceEngine:
                 f"[Regra critical_discipline] Pré-requisitos críticos: {', '.join(strs)}"
             )
 
-        # Co-pré-requisitos
         co = self.find_co_prerequisites(disciplina)
         if co:
             lines.append(
@@ -336,7 +312,7 @@ class InferenceEngine:
 
         if not lines:
             return ""
-        return "[FATOS INFERIDOS — InferenceEngine]\n" + "\n".join(f"  • {l}" for l in lines)
+        return "[FATOS INFERIDOS - InferenceEngine]\n" + "\n".join(f"  • {l}" for l in lines)
 
     def _infer_unlock_context(self, term: str) -> str:
         completed = [d.strip() for d in term.split(",") if d.strip()]
@@ -363,17 +339,14 @@ class InferenceEngine:
             f"[Regra minimal_path] Caminho mínimo para {target}: "
             f"{len(phases)} fase(s), {total} disciplina(s)."
         )
-        # B2: propagar incerteza dos elos do caminho
         _, bound = self.path_confidence(phases)
         if bound < CONF_HIGH:
             linha += (
-                f"\n[Regra minimal_path — incerteza] Bound inferior de confiança "
+                f"\n[Regra minimal_path - incerteza] Bound inferior de confiança "
                 f"do caminho: {bound:.0%} (há elos de pré-requisito com confiança parcial)."
             )
         return linha
 
-
-# ── SymbolicValidator ─────────────────────────────────────────────────────────
 
 class SymbolicValidator:
     def __init__(self, kg: "KnowledgeGraph", llm=None, engine: Optional[InferenceEngine] = None):
@@ -382,8 +355,6 @@ class SymbolicValidator:
         self._normalize = kg._normalize_text
         self._known_disciplines: Optional[Set[str]] = None
         self._known_docentes: Optional[Set[str]] = None
-        # B4: motor de inferência. Default = PyReason quando disponível
-        # (FESPAI_REASONER=python força fallback).
         self.engine = engine if engine is not None else _build_default_engine(kg)
 
     def invalidate_cache(self):
@@ -408,7 +379,6 @@ class SymbolicValidator:
             }
         return self._known_docentes
 
-    # ── Enriquecimento de contexto (Simbólico → Neural) ───────────────────────
 
     def enrich_agent_context(self, intent: str, term: str) -> str:
         """
@@ -418,7 +388,6 @@ class SymbolicValidator:
         if not term or term in ("", "unknown"):
             return ""
 
-        # Fatos verificados (explícitos no KG)
         if intent == "unlocked_disciplines":
             kg_facts = self._build_unlocked_facts(term)
         elif intent in ENRICH_DISCIPLINE_INTENTS:
@@ -428,7 +397,6 @@ class SymbolicValidator:
         else:
             kg_facts = ""
 
-        # B4: fatos inferidos pelas regras de inferência
         inferred_facts = self.engine.derive_facts_for_context(intent, term)
 
         parts = [p for p in [kg_facts, inferred_facts] if p]
@@ -446,7 +414,6 @@ class SymbolicValidator:
             prereq_strs = []
             for p in prereqs_diretos:
                 conf = self.kg.get_prerequisite_confidence(p, disciplina)
-                # B2: só exibir confiança quando o atributo está presente (0 < conf < 1)
                 if 0.0 < conf < CONF_HIGH:
                     prereq_strs.append(f"{p} (confiança {conf:.0%})")
                 else:
@@ -476,11 +443,10 @@ class SymbolicValidator:
             return ""
 
         facts_block = (
-            f"[FATOS VERIFICADOS NO KNOWLEDGE GRAPH — {disciplina}]\n"
+            f"[FATOS VERIFICADOS NO KNOWLEDGE GRAPH - {disciplina}]\n"
             + "\n".join(f"  • {line}" for line in lines)
         )
 
-        # KGC: enriquecimento estrutural
         try:
             kgc_block = self.kg.kgc.get_enrichment_block(disciplina, max_similar=3)
             if kgc_block:
@@ -512,7 +478,7 @@ class SymbolicValidator:
             return ""
 
         return (
-            f"[FATOS VERIFICADOS NO KNOWLEDGE GRAPH — {docente}]\n"
+            f"[FATOS VERIFICADOS NO KNOWLEDGE GRAPH - {docente}]\n"
             + "\n".join(f"  • {line}" for line in lines)
         )
 
@@ -522,7 +488,7 @@ class SymbolicValidator:
             return ""
 
         unlocked = self.kg.get_unlocked_disciplines(completed)
-        header = "[FATOS VERIFICADOS NO KNOWLEDGE GRAPH — Disciplinas Desbloqueadas]\n"
+        header = "[FATOS VERIFICADOS NO KNOWLEDGE GRAPH - Disciplinas Desbloqueadas]\n"
         header += f"  • Cursadas: {', '.join(completed)}\n"
         if unlocked:
             header += f"  • Desbloqueadas agora: {', '.join(unlocked[:10])}"
@@ -530,7 +496,6 @@ class SymbolicValidator:
             header += "  • Nenhuma disciplina totalmente desbloqueada com estas cursadas"
         return header
 
-    # ── Validação + Correção (Neural → Simbólico → Neural) ───────────────────
 
     def validate_and_correct(
         self,
@@ -539,7 +504,7 @@ class SymbolicValidator:
         term: str,
     ) -> Tuple[str, ValidationResult]:
         """
-        B1 — Reescrita corretiva:
+        B1 - Reescrita corretiva:
         Valida a resposta do LLM e, quando há violações verificáveis,
         gera uma resposta substituta baseada exclusivamente em fatos do KG.
 
@@ -549,11 +514,9 @@ class SymbolicValidator:
         validation = self.validate_response(response, intent, term)
 
         if not validation.violations:
-            # Sem violações: anotar fatos verificados e propagação de incerteza
             annotation = validation.to_annotation()
             return (response + annotation if annotation else response), validation
 
-        # Há violações: tentar reescrita corretiva
         corrected: Optional[str] = None
 
         if intent in VALIDATE_PREREQ_INTENTS and term:
@@ -561,8 +524,6 @@ class SymbolicValidator:
         elif intent in VALIDATE_DOCENTE_INTENTS and term:
             corrected = self._correct_docente_response(term, validation)
 
-        # B1 genérico: para os demais intents, reescrever via LLM ancorado
-        # nos fatos verificados do KG (em vez de apenas anotar a violação)
         if corrected is None:
             corrected = self._correct_generic_response(response, intent, term, validation)
 
@@ -580,7 +541,6 @@ class SymbolicValidator:
             annotation = validation.to_annotation()
             return (corrected + annotation if annotation else corrected), validation
 
-        # Não foi possível corrigir: retornar com anotação de violação
         annotation = validation.to_annotation()
         return (response + annotation if annotation else response), validation
 
@@ -599,19 +559,18 @@ class SymbolicValidator:
 
         if not prereqs_diretos:
             parts.append(
-                "**Diretos:** nenhum — pode ser cursada sem pré-requisitos prévios."
+                "**Diretos:** nenhum - pode ser cursada sem pré-requisitos prévios."
             )
         else:
             diretos_strs = []
             for p in prereqs_diretos:
                 conf = self.kg.get_prerequisite_confidence(p, disciplina)
-                # B2: só propagar incerteza quando o atributo existe (0 < conf < 1)
                 if 0.0 < conf < CONF_LOW:
                     validation.confidence_scores[p] = conf
-                    diretos_strs.append(f"{p} *(possivelmente — {conf:.0%})*")
+                    diretos_strs.append(f"{p} *(possivelmente - {conf:.0%})*")
                 elif 0.0 < conf < CONF_MEDIUM:
                     validation.confidence_scores[p] = conf
-                    diretos_strs.append(f"{p} *(provavelmente — {conf:.0%})*")
+                    diretos_strs.append(f"{p} *(provavelmente - {conf:.0%})*")
                 else:
                     diretos_strs.append(p)
             parts.append("**Diretos:** " + ", ".join(diretos_strs))
@@ -644,7 +603,7 @@ class SymbolicValidator:
         validation: ValidationResult,
     ) -> Optional[str]:
         """
-        B1 genérico — reescrita corretiva para intents sem corretor dedicado.
+        B1 genérico - reescrita corretiva para intents sem corretor dedicado.
 
         Usa o LLM para reescrever a resposta, ancorado exclusivamente nos fatos
         verificados do KG. Sem LLM ou sem fatos disponíveis, retorna None
@@ -681,7 +640,7 @@ class SymbolicValidator:
         """Gera resposta corrigida para claims de docentes com violações."""
         docentes = self.kg.get_docentes_of_discipline(disciplina)
         if not docentes:
-            return None  # Sem dados para corrigir
+            return None
 
         lines = [f"**Docentes de {disciplina}** (verificados no Knowledge Graph):"]
         for d in docentes:
@@ -690,7 +649,6 @@ class SymbolicValidator:
         validation.inference_rules_applied.append("docente_verification")
         return "\n".join(lines)
 
-    # ── NSAI-1: validação de claims via LLM (LLM propõe, KG julga) ───────────
 
     _CLAIM_EXTRACT_PROMPT = (
         "Extraia da resposta abaixo os fatos verificaveis sobre disciplinas da "
@@ -769,7 +727,6 @@ class SymbolicValidator:
                 return f"'{valor}' não é pré-requisito (nem transitivo) de {entidade} no KG"
         return None
 
-    # ── Validação pura (backward compat) ─────────────────────────────────────
 
     def validate_response(self, response: str, intent: str, term: str) -> ValidationResult:
         if intent in VALIDATE_PREREQ_INTENTS and term:
@@ -778,7 +735,6 @@ class SymbolicValidator:
             result = self._validate_docente_claims(response, term)
         else:
             result = self._validate_generic(response)
-            # NSAI-1: verificação de claims no nível de fatos (desligável via env)
             if os.environ.get("FESPAI_CLAIM_CHECK", "1") != "0":
                 self.validate_claims_llm(response, result)
 
@@ -789,7 +745,7 @@ class SymbolicValidator:
             )
             if not node_id:
                 result.verified_facts.append(
-                    f"'{term}' não encontrado no KG — resposta sem verificação simbólica"
+                    f"'{term}' não encontrado no KG - resposta sem verificação simbólica"
                 )
 
         return result
@@ -879,9 +835,6 @@ class SymbolicValidator:
 
         return result
 
-    # Padrões conservadores de menção explícita a disciplina.
-    # Exigem nome próprio (inicial maiúscula) após "disciplina/matéria" para
-    # não gerar falsos positivos com frases genéricas ("disciplina de graduação").
     _DISC_MENTION_PATTERNS = [
         r"disciplina\s+(?:de\s+)?[\"“']?([A-ZÀ-Ú][A-Za-zÀ-Úà-ú0-9\s\-]{3,50}?)[\"”']?(?=\s*[,.;:\n(]|$)",
         r"mat[ée]ria\s+(?:de\s+)?[\"“']?([A-ZÀ-Ú][A-Za-zÀ-Úà-ú0-9\s\-]{3,50}?)[\"”']?(?=\s*[,.;:\n(]|$)",
@@ -904,8 +857,6 @@ class SymbolicValidator:
                 f"{confirmed_disc} disciplina(s) e {confirmed_doc} docente(s) verificados no KG"
             )
 
-        # B1: disciplinas citadas explicitamente que não existem no KG → violação
-        # (habilita a reescrita corretiva genérica em validate_and_correct)
         for pattern in self._DISC_MENTION_PATTERNS:
             for m in re.finditer(pattern, response):
                 name_raw = m.group(1).strip()
@@ -951,12 +902,6 @@ class SymbolicValidator:
         }
 
 
-# ── Seleção de engine ─────────────────────────────────────────────────────────
-
-# Cache de engines por KG. O PyReason mantém state global (pr.reset/load_graph),
-# então múltiplas instâncias para o mesmo KG se atropelariam. Além disso, o
-# JIT do numba paga ~20s na primeira inferência — não queremos pagar isso N
-# vezes (uma por agente). O cache garante one-engine-per-KG.
 _engine_cache: Dict[int, "InferenceEngine"] = {}
 
 
@@ -993,8 +938,6 @@ def clear_engine_cache() -> None:
     """Limpa o cache de engines. Chamar após reconstruir o KG."""
     _engine_cache.clear()
 
-
-# ── Utilitários ───────────────────────────────────────────────────────────────
 
 def _parse_trajectory_term(term: str) -> Tuple[List[str], str]:
     """

@@ -2,14 +2,11 @@
 
 import { useMemo } from 'react'
 
-// ─── Tipos (espelham GraphRAGEngine.graph_payload no backend) ────────────────
-
 export interface PrereqGraphNode {
   id: string
   nome: string
   fase?: number
   cursada?: boolean
-  /** Nó adicionado por inferência (regra recommended_before), não pela matriz. */
   inferida?: boolean
 }
 
@@ -17,7 +14,6 @@ export interface PrereqGraphEdge {
   source: string
   target: string
   confidence: number
-  /** Aresta inferida por conteúdo (recommended_before): tracejada + âmbar. */
   inferida?: boolean
 }
 
@@ -29,11 +25,8 @@ export interface PrereqGraphData {
 
 interface Props {
   data: PrereqGraphData
-  /** Callback do chat: recebe a pergunta pronta ("Quais os pré-requisitos de X?"). */
   onAsk?: (question: string) => void
 }
-
-// ─── Constantes de layout ────────────────────────────────────────────────────
 
 const NODE_H = 34
 const V_GAP = 22
@@ -43,16 +36,15 @@ const HEADER_H = 26
 const MAX_LABEL = 26
 const CHAR_W = 6.8
 
-// Paleta (tokens do tailwind.config.js — SVG usa valores literais)
 const C = {
-  pillFill: '#101513', // ink-raise
-  pillStroke: 'rgba(236, 242, 239, 0.14)', // line-strong
-  pillStrokeRoot: 'rgba(52, 211, 153, 0.55)', // accent
-  text: '#ecf2ef', // paper
-  textMute: '#9aa8a2', // paper-dim
+  pillFill: '#101513',
+  pillStroke: 'rgba(236, 242, 239, 0.14)',
+  pillStrokeRoot: 'rgba(52, 211, 153, 0.55)',
+  text: '#ecf2ef',
+  textMute: '#9aa8a2',
   edge: 'rgba(236, 242, 239, 0.28)',
   accent: '#34d399',
-  amber: '#fbbf24', // arestas inferidas (recommended_before)
+  amber: '#fbbf24',
   amberDim: 'rgba(251, 191, 36, 0.55)',
 } as const
 
@@ -64,8 +56,6 @@ function pillWidth(node: PrereqGraphNode): number {
   const label = truncate(node.nome)
   return Math.round(label.length * CHAR_W + 30 + (node.cursada ? 18 : 0))
 }
-
-// ─── Layout em camadas ───────────────────────────────────────────────────────
 
 interface LaidNode extends PrereqGraphNode {
   x: number
@@ -92,14 +82,11 @@ function computeLayout(data: PrereqGraphData) {
   )
   const hasFases = nodes.some((n) => typeof n.fase === 'number')
 
-  // Camada de cada nó: `fase` (trajectory) ou profundidade topológica
-  // (maior caminho a partir das fontes — Kahn com relaxamento).
   const layerOf = new Map<string, number>()
   if (hasFases) {
     nodes.forEach((n) => layerOf.set(n.id, n.fase ?? 0))
   } else {
     nodes.forEach((n) => layerOf.set(n.id, 0))
-    // Relaxamento iterativo (grafos pequenos; DAG por construção no KG)
     for (let pass = 0; pass < nodes.length; pass++) {
       let changed = false
       for (const e of edges) {
@@ -113,7 +100,6 @@ function computeLayout(data: PrereqGraphData) {
     }
   }
 
-  // Agrupar por camada (colunas da esquerda → direita)
   const layerIds = Array.from(new Set(Array.from(layerOf.values()))).sort(
     (a, b) => a - b,
   )
@@ -157,8 +143,6 @@ function computeLayout(data: PrereqGraphData) {
   return { laid, edges, colHeaders, width, height }
 }
 
-// ─── Componente ──────────────────────────────────────────────────────────────
-
 export default function PrereqGraph({ data, onAsk }: Props) {
   const layout = useMemo(() => computeLayout(data), [data])
 
@@ -182,7 +166,6 @@ export default function PrereqGraph({ data, onAsk }: Props) {
         </span>
       </div>
 
-      {/* Scroll horizontal quando o grafo é mais largo que o balão */}
       <div className="overflow-x-auto p-3">
         <svg
           width={width}
@@ -217,7 +200,6 @@ export default function PrereqGraph({ data, onAsk }: Props) {
             </marker>
           </defs>
 
-          {/* Cabeçalhos de coluna (trajectory: Cursadas / Fase N) */}
           {colHeaders.map((h) => (
             <text
               key={h.label + h.x}
@@ -233,7 +215,6 @@ export default function PrereqGraph({ data, onAsk }: Props) {
             </text>
           ))}
 
-          {/* Arestas */}
           {edges.map((e, i) => {
             const s = laid.get(e.source)
             const t = laid.get(e.target)
@@ -292,7 +273,6 @@ export default function PrereqGraph({ data, onAsk }: Props) {
             )
           })}
 
-          {/* Nós (pílulas clicáveis) */}
           {Array.from(laid.values()).map((n, i) => {
             const label = truncate(n.nome)
             const isRoot = n.id === rootId
@@ -349,7 +329,6 @@ export default function PrereqGraph({ data, onAsk }: Props) {
                     {label}
                   </text>
                 </g>
-                {/* Nome completo no hover (nativo do SVG) */}
                 <title>{n.nome}</title>
               </g>
             )
@@ -357,7 +336,6 @@ export default function PrereqGraph({ data, onAsk }: Props) {
         </svg>
       </div>
 
-      {/* Legenda: arestas âmbar tracejadas = recomendação inferida por conteúdo */}
       {hasInferidas && (
         <div className="border-t border-line px-4 py-2 text-[10.5px] text-paper-mute">
           <span
@@ -368,7 +346,7 @@ export default function PrereqGraph({ data, onAsk }: Props) {
             }}
             aria-hidden
           />
-          <span style={{ color: C.amber }}>recomendada NN%</span> — inferida
+          <span style={{ color: C.amber }}>recomendada NN%</span> - inferida
           pela sobreposição de ementas (não é pré-requisito formal)
         </div>
       )}

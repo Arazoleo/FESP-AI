@@ -65,15 +65,12 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
       initial={{ opacity: 0, scale: 0.8 }}
       animate={containerAnimation}
     >
-      {/* Avatar com efeitos avançados */}
       <div className="flex-shrink-0 relative">
-        {/* Glow animado */}
         <motion.div
           className="absolute inset-0 bg-gradient-unifesp rounded-full blur-xl"
           animate={pulseAnimation}
         />
 
-        {/* Avatar principal com morphing */}
         <motion.div
           className="relative w-12 h-12 bg-gradient-unifesp rounded-full flex items-center justify-center shadow-glow-xl border-2 border-white/20"
           animate={morphAnimation}
@@ -84,7 +81,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
             <Bot className="w-7 h-7 text-white drop-shadow-lg" />
           </motion.div>
 
-          {/* Partículas orbitais */}
           <motion.div
             className="absolute inset-0"
             animate={{ rotate: 360 }}
@@ -101,7 +97,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
           </motion.div>
         </motion.div>
 
-        {/* Indicador de atividade pulsante */}
         <motion.div
           className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary-400 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center"
           animate={{
@@ -122,7 +117,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
         </motion.div>
       </div>
 
-      {/* Conteúdo do loading */}
       <motion.div
         className="bg-white/90 dark:bg-slate-800/90 rounded-3xl px-6 py-5 border border-primary-200/50 dark:border-primary-800/50 shadow-xl backdrop-blur-sm max-w-md"
         initial={{ x: -20, opacity: 0 }}
@@ -130,7 +124,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <div className="flex items-center gap-4">
-          {/* Spinner principal */}
           <motion.div
             className="relative"
             animate={{ rotate: 360 }}
@@ -144,7 +137,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
             />
           </motion.div>
 
-          {/* Texto animado */}
           <div className="space-y-1">
             <motion.div
               className="flex items-center gap-2"
@@ -156,7 +148,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
                 Processando
               </span>
 
-              {/* Pontos animados */}
               <div className="flex gap-1">
                 {dots.map((i) => (
                   <motion.div
@@ -168,7 +159,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
               </div>
             </motion.div>
 
-            {/* Subtexto */}
             <motion.p
               className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2"
               initial={{ opacity: 0, y: 10 }}
@@ -193,7 +183,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
           </div>
         </div>
 
-        {/* Barra de progresso sutil */}
         <motion.div
           className="mt-4 h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden"
           initial={{ opacity: 0 }}
@@ -214,7 +203,6 @@ const AdvancedLoader = ({ isInitialLoad = false }: AdvancedLoaderProps) => {
           />
         </motion.div>
 
-        {/* Efeito de shimmer */}
         <motion.div
           className="absolute inset-0 rounded-3xl opacity-20 pointer-events-none"
           animate={{

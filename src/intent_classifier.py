@@ -19,7 +19,7 @@ class ClassificationResult:
     intent: str
     term: str
     confidence: float
-    method: str  # 'regex', 'embeddings', ou 'llm'
+    method: str
 
 
 class IntentClassifier:
@@ -30,7 +30,6 @@ class IntentClassifier:
     3. Extração de termos inteligente
     """
     
-    # Exemplos de treinamento por intenção (quanto mais, melhor)
     INTENT_EXAMPLES = {
         'ementa_disciplina': [
             "o que é Geometria Analítica",
@@ -71,7 +70,6 @@ class IntentClassifier:
             "cadeia de pré-requisitos de estrutura de dados",
             "quais matérias devo fazer antes de redes",
             "requisitos para fazer programação orientada a objetos",
-            # Paráfrases adicionais
             "o que eu preciso pra fazer IA",
             "preciso de o que pra fazer compiladores",
             "antes de cursar redes preciso de o que",
@@ -166,7 +164,6 @@ class IntentClassifier:
             "disciplinas por termo de engenharia",
             "matriz curricular completa de ciência da computação",
             "listar todas matérias do curso",
-            # Paráfrases adicionais
             "grade de ciência da computação",
             "grade curricular de computação",
             "disciplinas do curso de BCC",
@@ -198,7 +195,6 @@ class IntentClassifier:
             "cursos disponíveis no ICT",
             "listar cursos de graduação",
             "quais são os cursos da unifesp",
-            # Mais específicos para evitar confusão
             "que cursos tem na unifesp",
             "cursos oferecidos pelo ICT",
             "lista de cursos da unifesp sjc",
@@ -237,16 +233,11 @@ class IntentClassifier:
         ],
     }
     
-    # Regex rápido para casos óbvios (fallback/boost)
     QUICK_PATTERNS = {
-        # recommended_before ANTES de ementa_disciplina: "o que é BOM fazer
-        # antes de X" casaria com o "o que é" da ementa. Exige bom/útil/ajuda/
-        # recomendado/vale a pena — NUNCA preciso/devo, que é prerequisite_chain.
         'recommended_before': (
             r'(?:bom|legal|[uú]til|recomendad\w*|indicad\w*|vale\s+a\s+pena|ajuda(?:ria)?)\s+'
             r'(?:a\s+)?(?:fazer|cursar|estudar|ter\s+feito)?\s*antes\s+de\b'
         ),
-        # ementa_disciplina tem PRIORIDADE sobre prerequisite_chain — "o que é X?" ≠ pré-req
         'ementa_disciplina': (
             r'ementa\b'
             r'|o\s+que\s+[eé]\s+'
@@ -285,7 +276,6 @@ class IntentClassifier:
         ),
     }
     
-    # Padrões para extração de termos por intenção
     TERM_PATTERNS = {
         'ementa_disciplina': [
             r'o\s+que\s+[eé]\s+(?:o\s+|a\s+)?([A-Za-zÀ-ú][A-Za-zÀ-ú\s]+?)(?:\?|$)',
@@ -310,9 +300,7 @@ class IntentClassifier:
             r'pr[eé][-\s]?requisitos?\s+(?:de|da|do|para)\s+(.+?)(?:\?|$)',
             r'antes\s+de\s+(?:fazer\s+|cursar\s+)?(.+?)(?:\?|$)',
             r'para\s+(?:fazer|cursar)\s+(.+?)(?:\?|$)',
-            # "E de Compiladores, quais são os pré-requisitos?"
             r'^e\s+(?:de|sobre)\s+(.+?)(?:,|\?|$)',
-            # "E de X? / E sobre X?"
             r'^e\s+(?:de|sobre)\s+(.+?)(?:,|\s+quais?|\s+os?|\?)',
         ],
         'dependents': [
@@ -321,15 +309,12 @@ class IntentClassifier:
             r'(?:o\s+que\s+)?(.+?)\s+desbloqueia(?:\?|$)',
         ],
         'discipline_docentes': [
-            # "Quem leciona Compiladores?" / "Quais docentes dão Cálculo Numérico?"
-            # "professor responsável por SEDO" / "quem é o responsável pela disciplina de IHC"
             r'respons[aá]ve(?:l|is)\s+(?:por|pel[ao])\s+(?:a\s+|o\s+)?(?:disciplina\s+(?:de\s+)?|mat[eé]ria\s+(?:de\s+)?)?(.+?)(?:\?|$)',
             r'(?:leciona|ensina|ministra)\s+(.+?)(?:\?|$)',
             r'd[aá]\s+aula\s+(?:de\s+)?(.+?)(?:\?|$)',
             r'(?:professore?s?|docentes?)\s+(?:d[aã]o|de|da|do)\s+(.+?)(?:\?|$)',
             r'd[aã]o\s+(.+?)(?:\?|$)',
             r'aula\s+de\s+(.+?)(?:\?|$)',
-            # "Quem leciona?" (sem disciplina - deve retornar vazio para pegar do contexto)
         ],
         'docente_disciplines': [
             r'(?:professor(?:a)?|docente)\s+(.+?)\s+(?:leciona|ensina)',
@@ -366,28 +351,18 @@ class IntentClassifier:
             r'disciplinas?\s+(?:do\s+curso\s+)?(?:de|do|da)\s+(.+?)(?:\?|$)',
         ],
         'trajectory_planning': [
-            # "já cursei/fiz X, Y: como chego em Z" — 2 grupos, most specific first
             r'(?:j[aá]\s+)?(?:cursei|fiz|conclui|conclu[ií])\s+(.+?)[,:]\s+(?:como\s+)?(?:chego|chegar|fica)\s+(?:em\s+)?([^.!?]+?)(?:[.!?]|$)',
-            # "já fiz X, Y, como fica?" — completed only
             r'(?:j[aá]\s+)?(?:fiz|conclui|conclu[ií])\s+(.+?)[,.]?\s+(?:como\s+fica|o\s+que\s+falta)\s*\??',
-            # "quero chegar em TARGET, já fiz/cursei COMPLETED" — target first
             r'quero\s+chegar\s+em\s+([^,.!?]+?),\s+(?:j[aá]\s+)?(?:fiz|cursei|conclui|conclu[ií])\s+([^.!?]+?)(?:[.!?]|$)',
-            # "quero chegar em X" — para em qualquer pontuação
             r'quero\s+chegar\s+em\s+([^,.!?]+?)(?:[,.!?]|$)',
-            # "caminho (mínimo) para [chegar em] X"
             r'caminho\s+(?:m[ií]nimo\s+)?para\s+(?:chegar\s+(?:em|at[eé])\s+)?([^.!?]+?)(?:[.!?]|$)',
-            # "como chego em X" / "como chegar em X"
             r'como\s+cheg(?:o|ar)\s+(?:em|at[eé])\s+([^.!?]+?)(?:[.!?]|$)',
-            # "sequência de disciplinas para X"
             r'sequência\s+(?:de\s+disciplinas?\s+)?para\s+(?:cursar\s+)?([^.!?]+?)(?:[.!?]|$)',
-            # "planejamento para cursar X"
             r'planejamento\s+para\s+cursar\s+([^.!?]+?)(?:[.!?]|$)',
-            # generic "para chegar em X" / "até X"
             r'(?:chegar?\s+(?:em|at[eé])|at[eé])\s+([^.!?]+?)(?:[.!?]|$)',
         ],
     }
     
-    # Prompt para extração de intent + termo via LLM
     _LLM_PROMPT = """Você é um extrator de intenção para o assistente da UNIFESP ICT.
 
 Dada a pergunta do usuário, retorne um JSON com:
@@ -396,32 +371,32 @@ Dada a pergunta do usuário, retorne um JSON com:
 - "completed": lista de disciplinas já cursadas (só para trajectory_planning, senão [])
 
 INTENÇÕES:
-ementa_disciplina   — o que é / ementa / conteúdo / explique uma disciplina
-prerequisite_chain  — pré-requisitos para cursar uma disciplina ("o que PRECISO fazer antes de X")
-recommended_before  — o que é BOM/recomendado/útil fazer antes de uma disciplina (não é pré-requisito formal)
-co_prerequisite     — disciplinas que compartilham os mesmos pré-requisitos / co-pré-requisitos
-critical_disciplines — disciplinas mais importantes/críticas do currículo (mais dependentes, mais desbloqueiam)
-dependents          — quais disciplinas dependem de / desbloqueiam outra
-discipline_docentes — quem leciona uma disciplina
-docente_info        — email, sala, contato de um docente
-docente_areas       — áreas de pesquisa de um docente
-docente_disciplines — quais disciplinas um docente leciona
-docentes_by_area    — docentes por área de pesquisa
-disciplinas_termo   — disciplinas de um termo (term: "N:CURSO")
-todos_termos_curso  — grade completa de um curso
-matriz_info         — informações gerais sobre um curso
-eletivas_curso      — eletivas de um curso
-coordenador_curso   — coordenador de um curso
-listar_cursos       — listar cursos disponíveis
-trajectory_planning — caminho/planejamento para chegar em uma disciplina
-artigos_sobre       — artigos do regimento sobre um tema
-faqs                — dúvidas frequentes
+ementa_disciplina   - o que é / ementa / conteúdo / explique uma disciplina
+prerequisite_chain  - pré-requisitos para cursar uma disciplina ("o que PRECISO fazer antes de X")
+recommended_before  - o que é BOM/recomendado/útil fazer antes de uma disciplina (não é pré-requisito formal)
+co_prerequisite     - disciplinas que compartilham os mesmos pré-requisitos / co-pré-requisitos
+critical_disciplines - disciplinas mais importantes/críticas do currículo (mais dependentes, mais desbloqueiam)
+dependents          - quais disciplinas dependem de / desbloqueiam outra
+discipline_docentes - quem leciona uma disciplina
+docente_info        - email, sala, contato de um docente
+docente_areas       - áreas de pesquisa de um docente
+docente_disciplines - quais disciplinas um docente leciona
+docentes_by_area    - docentes por área de pesquisa
+disciplinas_termo   - disciplinas de um termo (term: "N:CURSO")
+todos_termos_curso  - grade completa de um curso
+matriz_info         - informações gerais sobre um curso
+eletivas_curso      - eletivas de um curso
+coordenador_curso   - coordenador de um curso
+listar_cursos       - listar cursos disponíveis
+trajectory_planning - caminho/planejamento para chegar em uma disciplina
+artigos_sobre       - artigos do regimento sobre um tema
+faqs                - dúvidas frequentes
 
 REGRAS:
 - Para trajectory_planning, "term" é a disciplina ALVO e "completed" lista as já cursadas.
 - "term" deve ser copiado da PERGUNTA. NUNCA invente um nome que não foi
   citado pelo usuário; se a pergunta não cita nenhuma entidade, use "term": "".
-- Nomes de disciplinas podem conter ":" — nunca parta o nome pelo ":",
+- Nomes de disciplinas podem conter ":" - nunca parta o nome pelo ":",
   preserve o nome completo em "term".
 
 Pergunta: {question}
@@ -454,9 +429,7 @@ Responda APENAS com JSON válido, sem explicações:"""
         
         for intent, examples in self.INTENT_EXAMPLES.items():
             try:
-                # Gerar embeddings para todos os exemplos
                 embeddings = self.embeddings_model.embed_documents(examples)
-                # Calcular centróide (média) dos embeddings
                 self._intent_embeddings[intent] = np.mean(embeddings, axis=0)
             except Exception as e:
                 print(f"  Erro ao processar {intent}: {e}")
@@ -484,35 +457,27 @@ Responda APENAS com JSON válido, sem explicações:"""
         """Extrai o termo relevante da pergunta baseado na intenção."""
         question_lower = question.lower().strip()
         
-        # Padrões específicos por intenção
         patterns = self.TERM_PATTERNS.get(intent, [])
         
         for pattern in patterns:
             match = re.search(pattern, question_lower, re.IGNORECASE)
             if match:
-                # Pegar o último grupo capturado
                 term = match.group(match.lastindex or 1).strip()
-                # Limpar pontuação
                 term = re.sub(r'[\?.,!]+$', '', term).strip()
-                # Remover preposições finais
                 term = re.sub(r'\s+(da|de|do|na|no|em)$', '', term, flags=re.IGNORECASE).strip()
                 
-                # Caso especial: disciplinas_termo retorna "numero:curso"
                 if intent == 'disciplinas_termo' and match.lastindex == 2:
                     numero = match.group(1)
                     curso = match.group(2).strip()
                     curso = re.sub(r'[\?.,!]+$', '', curso).strip()
                     return f"{numero}:{curso}"
 
-                # Caso especial: trajectory_planning com completed+target
                 if intent == 'trajectory_planning' and match.lastindex == 2:
                     g1 = re.sub(r'[\?.,!]+$', '', match.group(1)).strip()
                     g2 = re.sub(r'[\?.,!]+$', '', match.group(2)).strip()
-                    # "quero chegar em TARGET, já fiz COMPLETED" → grupos invertidos
                     if re.match(r'quero\s+chegar\s+em\b', question_lower):
-                        return f"{g2}:{g1}"  # completed:target
+                        return f"{g2}:{g1}"
                     return f"{g1}:{g2}"
-                # Caso especial: "já fiz X, Y, como fica?" (completed sem target)
                 if intent == 'trajectory_planning':
                     no_target = re.search(
                         r'(?:j[aá]\s+)?(?:fiz|conclui|conclu[ií])\s+(.+?)[,.]?\s+(?:como\s+fica|o\s+que\s+falta)\s*\??',
@@ -525,8 +490,6 @@ Responda APENAS com JSON válido, sem explicações:"""
                 if len(term) >= 2:
                     return term
         
-        # Fallback: extrair substantivos da pergunta
-        # Remover palavras comuns e pegar o que sobrar
         stopwords = {
             'qual', 'quais', 'quem', 'como', 'onde', 'quando', 'que', 'o', 'a', 'os', 'as',
             'de', 'da', 'do', 'em', 'na', 'no', 'para', 'por', 'com', 'são', 'é', 'tem',
@@ -534,7 +497,6 @@ Responda APENAS com JSON válido, sem explicações:"""
             'docente', 'docentes', 'disciplina', 'matéria', 'curso',
             'leciona', 'lecionam', 'ensina', 'ensinam', 'dá', 'dão', 'aula',
             'pré-requisitos', 'requisitos',
-            # Pronomes e determinantes que nunca são o nome de uma disciplina
             'ementa', 'ementas', 'ela', 'ele', 'elas', 'eles', 'dela', 'dele', 'delas', 'deles',
             'isso', 'esta', 'este', 'essa', 'esse', 'disso', 'nessa', 'nesse', 'nessa',
         }
@@ -543,7 +505,7 @@ Responda APENAS com JSON válido, sem explicações:"""
         terms = [w for w in words if w not in stopwords and len(w) > 2]
 
         if terms:
-            return ' '.join(terms[-3:])  # Últimas 3 palavras relevantes
+            return ' '.join(terms[-3:])
         
         return ""
     
@@ -556,19 +518,15 @@ Responda APENAS com JSON válido, sem explicações:"""
             prompt = self._LLM_PROMPT.format(question=question)
             raw = self.llm.invoke(prompt)
             text = raw.content if hasattr(raw, 'content') else str(raw)
-            # Extrair JSON mesmo se o modelo adicionou texto extra
             json_match = re.search(r'\{[^{}]+\}', text, re.DOTALL)
             if not json_match:
                 return None
             data = json.loads(json_match.group())
-            # `or ''`: o modelo pode devolver "intent"/"term": null (JSON) —
-            # .strip() direto em None estourava e descartava a classificação
             intent = (data.get('intent') or '').strip()
             term = (data.get('term') or '').strip()
             completed = data.get('completed') or []
             if not intent:
                 return None
-            # Para trajectory_planning, montar "completed:target"
             if intent == 'trajectory_planning' and term:
                 if completed:
                     term = f"{', '.join(completed)}:{term}"
@@ -587,31 +545,26 @@ Responda APENAS com JSON válido, sem explicações:"""
         Classifica a intenção de uma pergunta.
 
         Ordem de prioridade:
-        1. Regex rápido (QUICK_PATTERNS) — padrões explícitos, confiança máxima.
+        1. Regex rápido (QUICK_PATTERNS) - padrões explícitos, confiança máxima.
            Usa LLM apenas para extrair o termo, não para reclassificar.
-        2. Embeddings semânticos — reconhece paráfrases.
+        2. Embeddings semânticos - reconhece paráfrases.
            Usa LLM para confirmar/refinar (pode sobrescrever embeddings).
-        3. LLM — classificação completa quando os anteriores não respondem.
+        3. LLM - classificação completa quando os anteriores não respondem.
         """
         question_lower = question.lower().strip()
 
-        # 1. Regex explícito: alta precisão no INTENT — mas a extração do TERMO
-        #    é LLM-first (o regex de termo produz lixo em frases fora do padrão;
-        #    o LLM entende a frase inteira e o grounding no KG valida depois)
         quick_intent = self._quick_regex_check(question)
         if quick_intent:
             llm_result = self._llm_classify(question)
             if llm_result and llm_result.term:
                 if llm_result.intent == quick_intent:
-                    return llm_result  # LLM concordou por completo
-                # Intent do regex (prior de alta precisão) + termo do LLM
+                    return llm_result
                 return ClassificationResult(
                     intent=quick_intent,
                     term=llm_result.term,
                     confidence=0.85,
                     method='regex+llm_term',
                 )
-            # Sem LLM disponível: fallback para extração por regex
             term = self._extract_term(question, quick_intent)
             return ClassificationResult(
                 intent=quick_intent,
@@ -620,7 +573,6 @@ Responda APENAS com JSON válido, sem explicações:"""
                 method='regex',
             )
 
-        # 2. Embeddings semânticos para paráfrases não cobertas pelo regex
         if self._initialized and self.embeddings_model:
             try:
                 question_embedding = np.array(
@@ -636,7 +588,6 @@ Responda APENAS com JSON válido, sem explicações:"""
                         best_intent = intent
 
                 if best_score >= 0.45:
-                    # LLM pode sobrescrever embeddings (captura nuances como co_prerequisite)
                     llm_result = self._llm_classify(question)
                     if llm_result:
                         return llm_result
@@ -651,7 +602,6 @@ Responda APENAS com JSON válido, sem explicações:"""
             except Exception as e:
                 print(f"[IntentClassifier] Erro nos embeddings: {e}")
 
-        # 3. LLM como classificador completo
         llm_result = self._llm_classify(question)
         if llm_result:
             return llm_result
@@ -666,4 +616,3 @@ Responda APENAS com JSON válido, sem explicações:"""
     def classify_batch(self, questions: List[str]) -> List[ClassificationResult]:
         """Classifica múltiplas perguntas de uma vez."""
         return [self.classify(q) for q in questions]
-

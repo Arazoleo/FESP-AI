@@ -15,13 +15,9 @@ import time
 import unicodedata
 from typing import Callable, Optional
 
-# Se a 1ª tentativa demorar mais que isso (segundos), pula a segunda chance:
-# empilhar outro ciclo completo (roteador LLM + geração) dobraria a latência
-# e estouraria timeouts de proxy/túnel na demo pública.
 RETRY_LATENCY_BUDGET_S = 60.0
 
 
-# Padrões de falha (aplicados sobre o texto minúsculo e sem acentos)
 _MISS_PATTERNS = [
     r"nao\s+encontrei",
     r"nao\s+tenho\s+esse\s+dado",
@@ -47,10 +43,6 @@ def is_miss_response(text: str) -> bool:
     return any(p.search(folded) for p in _MISS_RES)
 
 
-# Heurística de fallback: quem tenta em seguida quando o agente falhou.
-#   symbolic_kg → web_sjc → fallback (RAG genérico)
-#   agentes especialistas → web_sjc
-# "conversa", "meta" e "fallback" não têm segunda chance (nada melhor a tentar).
 RETRY_FALLBACK = {
     "symbolic_kg": "web_sjc",
     "disciplinas": "web_sjc",
@@ -88,7 +80,6 @@ def run_with_second_chance(
     if not is_miss_response(first.get("response", "")):
         return first
     if first_elapsed > RETRY_LATENCY_BUDGET_S:
-        # Guard de latência: não empilhar retry sobre uma resposta já lenta.
         if telemetry_incr:
             telemetry_incr("retry_pulado_latencia")
         return first
@@ -114,5 +105,4 @@ def run_with_second_chance(
         return {**second, "retry_from_agent": failed_agent, "retry_count": 1}
     if telemetry_incr:
         telemetry_incr("retry_sem_sucesso")
-    # retry_agent_tried: quem tentou (e também falhou) — vai para a fila de misses
     return {**first, "retry_count": 1, "retry_agent_tried": retry_agent}
