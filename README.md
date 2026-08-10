@@ -42,7 +42,7 @@ flowchart TD
 - **B4: Regras FOL explícitas com traço** - respostas simbólicas citam as regras aplicadas (`prereq_transitivity`, `minimal_path`, `unlock_condition`);
 - **B5: KGC estrutural + semântico** - completação do grafo combinando similaridade estrutural (0.6) e embeddings semânticos (0.4).
 
-**Outras peças:** fusão multi-fonte **KG ↔ site** com regra de precedência (em divergência, vale o KG e a resposta avisa que a página pode estar desatualizada); **crawler multi-domínio** do site do campus com seccionamento por headings (páginas longas viram uma entrada de corpus por seção h2/h3, com âncora); **telemetria** do loop neurossimbólico (grounding, correções B1, reescritas LLM, claims) em `GET /telemetry`; `kg.lint()` no build do grafo (duplicatas, ciclos no DAG, pré-requisitos pendurados).
+**Outras peças:** fusão multi-fonte **KG ↔ site** com regra de precedência (em divergência, vale o KG e a resposta avisa que a página pode estar desatualizada); **crawler multi-domínio** do site do campus com seccionamento por headings (páginas longas viram uma entrada de corpus por seção h2/h3, com âncora); **telemetria** do loop neurossimbólico (grounding, correções B1, reescritas LLM, claims) em `GET /telemetry`; `kg.lint()` no build do grafo (duplicatas, ciclos no DAG, pré-requisitos pendurados); **follow-up proativo de atividades complementares** — respostas sobre AC terminam oferecendo o detalhamento por eixo e o aceite ("sim, pode") vira resposta simbólica direta do regulamento estruturado, sem LLM (melhoria derivada do ciclo 2 de usabilidade).
 
 ## Avaliação (três ciclos)
 
@@ -61,7 +61,7 @@ O sistema foi avaliado em três ciclos iterativos — interface, interação e c
 | B3 — Graph-RAG | 57,9% | 60,5% | 36,8% |
 | **B4 — NS Graph-RAG (este sistema)** | **84,2%** | **87,7%** | **8,8%** |
 
-Nas 25 queries neurossimbólicas: routing **100%**, verificação simbólica **96%**, com o caminho simbólico respondendo em 1,56 s contra 4,76 s dos caminhos neurais. Anotação humana dupla (κ ≈ 0,54) com cross-check por LLM-as-judge (> 4,7/5 nas quatro dimensões). O benchmark usou `ministral-3:8b`; o sistema em produção roda `gemma4`, que preserva a ordenação dos baselines.
+Nas 25 queries neurossimbólicas: routing **100%**, verificação simbólica **96%**, com o caminho simbólico respondendo em 1,56 s contra 4,76 s dos caminhos neurais. Anotação humana dupla (κ ≈ 0,54) com cross-check por LLM-as-judge (> 4,7/5 nas quatro dimensões). O benchmark usou `ministral-3:8b`; o sistema em produção roda `gemma4:12b`, que preserva a ordenação dos baselines.
 
 Reprodução (backend de pé em `localhost:8000`): `eval/eval_baselines.py` (B1–B3), `eval/eval_neurosymbolic.py --judge` (B4, routing e verificação), `eval/eval_llm_judge.py` (cross-check).
 
@@ -76,7 +76,7 @@ cp .env.example .env        # escolha MODEL_NAME / EMBEDDING_MODEL
 docker compose up -d        # backend :8000 + frontend :3000
 ```
 
-Requer Ollama acessível (local ou cloud: veja `OLLAMA_CLOUD.md`) com os modelos baixados (`ollama pull gemma4:31b-cloud` e `ollama pull embeddinggemma`).
+Requer Ollama acessível (local ou cloud: veja `OLLAMA_CLOUD.md`) com os modelos baixados (`ollama pull gemma4:31b-cloud` e `ollama pull embeddinggemma`). O modelo original do sistema — usado em produção e reportado no artigo — é o `gemma4:12b`; o default `gemma4:31b-cloud` atende os testes atuais via Ollama Cloud (ajuste `MODEL_NAME` no `.env` para rodar o original localmente).
 
 **Endpoints principais** (`http://localhost:8000`, docs interativas em `/docs`):
 
@@ -98,6 +98,7 @@ python3 test_conversation_history.py  # histórico multi-turno nos prompts
 python3 test_graph_term_extraction.py # grounding de termos no KG
 python3 test_neurosymbolic.py         # validador neurossimbólico
 python3 test_planner.py               # planner de grade (BFS topológico)
+python3 test_ac_followup.py           # follow-up de atividades complementares
 python3 test_pyreason_bounds.py       # propagação de bounds via PyReason
 python3 test_pyreason_parity.py       # paridade PyReason × referência Python
 ```

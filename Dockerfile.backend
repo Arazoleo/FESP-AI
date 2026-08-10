@@ -26,6 +26,7 @@ COPY markdown_disciplinas/ ./markdown_disciplinas/
 COPY markdown_regimentos/ ./markdown_regimentos/
 COPY markdown_docentes/ ./markdown_docentes/
 COPY markdown_cursos/ ./markdown_cursos/
+COPY jsons_regimentos/ ./jsons_regimentos/
 COPY start_api.py .
 
 # Criar diretório para persistência do ChromaDB

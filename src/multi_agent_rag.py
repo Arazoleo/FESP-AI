@@ -214,6 +214,19 @@ class MultiAgentRAG:
                 )
                 telemetry.incr("miss_registrado")
 
+            # Oferta de follow-up (ciclo 2 de usabilidade): respostas sobre
+            # atividades complementares terminam oferecendo o detalhamento
+            # por eixo — exceto quando a resposta já é o detalhamento ou
+            # indica falha.
+            if final_response and not is_miss_response(final_response):
+                from .atividades_complementares import maybe_append_offer
+                offered = maybe_append_offer(
+                    original_question or question, final_response
+                )
+                if offered != final_response:
+                    final_state["response"] = offered
+                    telemetry.incr("ac_offer_appended")
+
             return {
                 "response": final_state.get("response", ""),
                 "active_agent": active_agent,

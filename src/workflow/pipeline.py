@@ -188,6 +188,30 @@ def build_pipeline(rag_instance):
                 "active_agent": "meta",
             }
 
+        # Detalhamento por eixo das atividades complementares → resposta
+        # simbólica direta do regulamento estruturado (follow-up do ciclo 2
+        # de usabilidade). Antes dos demais fast-paths: as keywords de
+        # regimento/site levariam a pergunta para RAG documental, cujo corpus
+        # não tem a quebra por eixo.
+        from ..atividades_complementares import (
+            is_breakdown_request,
+            build_breakdown_response,
+        )
+        if is_breakdown_request(question):
+            ac_response = build_breakdown_response()
+            if ac_response:
+                telemetry_incr("ac_breakdown_direct")
+                return {
+                    **state,
+                    "response": ac_response,
+                    "intent": "ac_breakdown",
+                    "term": "",
+                    "confidence": 1.0,
+                    "active_agent": "symbolic_kg",
+                    "context": ac_response,
+                    "sources": ["Regulamento de Atividades Complementares do BCT (2023)"],
+                }
+
         # Conversa social (saudações, agradecimentos, despedidas, identidade) →
         # agente conversacional, antes do roteamento por embeddings/intent.
         if is_conversational(question_lower):

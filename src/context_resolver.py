@@ -14,6 +14,12 @@ import logging
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 
+from .atividades_complementares import (
+    OFFER_MARKER as _AC_OFFER_MARKER,
+    BREAKDOWN_CANONICAL_QUESTION as _AC_BREAKDOWN_QUESTION,
+    is_affirmative_reply as _is_affirmative_reply,
+)
+
 logger = logging.getLogger(__name__)
 
 # Cursos reconhecidos (siglas e nomes) — mesma alternância dos curso_patterns
@@ -90,6 +96,11 @@ class ConversationContext:
     docentes_list: List[str] = field(default_factory=list)
     disciplinas_list: List[str] = field(default_factory=list)
 
+    # Oferta pendente do assistente (ex.: "quer o detalhamento por eixo?").
+    # Setada/limpada a cada mensagem do assistente; um aceite curto do usuário
+    # ("sim, pode") é reescrito para a pergunta canônica correspondente.
+    pending_offer: Optional[str] = None
+
     # Proveniência (bug T8): True quando a disciplina ativa foi definida
     # EXPLICITAMENTE pelo usuário ("e sobre Banco de Dados?"). Enquanto True,
     # menções heurísticas em respostas do assistente ("...pré-requisito para
@@ -101,6 +112,13 @@ class ConversationContext:
     def update_from_message(self, message: str, role: str = "user"):
         """Atualiza contexto baseado em uma mensagem."""
         message_lower = message.lower()
+
+        # Ofertas de follow-up: só a ÚLTIMA mensagem do assistente conta —
+        # uma resposta nova sem oferta limpa a pendência anterior.
+        if role == "assistant":
+            self.pending_offer = (
+                "ac_breakdown" if _AC_OFFER_MARKER in message else None
+            )
 
         # (T8) Troca explícita de entidade pelo usuário tem precedência:
         # mensagens do assistente não podem reverter a disciplina ativa.
@@ -396,7 +414,19 @@ class ContextResolver:
         modified = False
         
         question_lower = question.lower()
-        
+
+        # 0-pre. Aceite de oferta pendente: a última resposta do assistente
+        # ofereceu o detalhamento por eixo das atividades complementares e o
+        # usuário aceitou com uma mensagem curta ("sim", "pode, por favor") →
+        # reescrever para a pergunta canônica, que toma o atalho simbólico.
+        if context.pending_offer == "ac_breakdown" and _is_affirmative_reply(question):
+            context.pending_offer = None
+            resolved = _AC_BREAKDOWN_QUESTION
+            logger.info(
+                f"[CONTEXT][oferta-ac] aceite '{question}' → '{resolved}'"
+            )
+            return resolved, True
+
         # 0. Se a pergunta menciona explicitamente um nome próprio com "com a/o X",
         #    atualizar context.docente ANTES de resolver pronomes.
         #    Isso evita substituir "dela" pelo docente errado do contexto.
