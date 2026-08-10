@@ -20,3 +20,4 @@ class AgentState(TypedDict, total=False):
     forced_agent: str
     plan_request: Optional[Dict[str, Any]]
     graph_data: Optional[Dict[str, Any]]
+    list_data: Optional[Dict[str, Any]]

@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import PrereqGraph, { PrereqGraphData } from './PrereqGraph'
 import {
   X,
   BookOpen,
@@ -43,6 +44,7 @@ interface Props {
   apiUrl: string
   onClose: () => void
   onNavigate: (nome: string) => void
+  onOpenDocente?: (nome: string) => void
   onAsk: (question: string) => void
 }
 
@@ -93,11 +95,35 @@ export default function DisciplineDrawer({
   apiUrl,
   onClose,
   onNavigate,
+  onOpenDocente,
   onAsk,
 }: Props) {
   const [details, setDetails] = useState<DisciplineDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const miniGraph = useMemo<PrereqGraphData | null>(() => {
+    if (!details) return null
+    const edges = [
+      ...details.prerequisitos.map((p) => ({
+        source: p.nome,
+        target: details.nome,
+        confidence: p.confidence,
+      })),
+      ...details.desbloqueia.map((d) => ({
+        source: details.nome,
+        target: d,
+        confidence: 1,
+      })),
+    ]
+    if (!edges.length) return null
+    const nodes = [
+      { id: details.nome, nome: details.nome },
+      ...details.prerequisitos.map((p) => ({ id: p.nome, nome: p.nome })),
+      ...details.desbloqueia.map((d) => ({ id: d, nome: d })),
+    ]
+    return { nodes, edges }
+  }, [details])
 
   useEffect(() => {
     let ativo = true
@@ -198,6 +224,15 @@ export default function DisciplineDrawer({
 
           {!loading && !error && details && (
             <>
+              {miniGraph && (
+                <PrereqGraph
+                  data={miniGraph}
+                  onSelect={(n) => {
+                    if (n !== details.nome) onNavigate(n)
+                  }}
+                />
+              )}
+
               {details.ementa && (
                 <Section icon={<BookOpen className="h-3.5 w-3.5" />} title="Ementa">
                   <p className="text-[13.5px] leading-relaxed text-paper-dim">
@@ -208,13 +243,15 @@ export default function DisciplineDrawer({
 
               {details.docentes.length > 0 && (
                 <Section icon={<Users className="h-3.5 w-3.5" />} title="Docentes">
-                  <ul className="space-y-1.5">
+                  <div className="flex flex-wrap gap-1.5">
                     {details.docentes.map((d) => (
-                      <li key={d} className="text-[13.5px] text-paper">
-                        {d}
-                      </li>
+                      <Pill
+                        key={d}
+                        label={d}
+                        onClick={onOpenDocente ? () => onOpenDocente(d) : undefined}
+                      />
                     ))}
-                  </ul>
+                  </div>
                 </Section>
               )}
 

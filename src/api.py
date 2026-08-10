@@ -186,6 +186,8 @@ class ChatResponse(BaseModel):
     agent_info: Optional[AgentInfo] = None
     plan_request: Optional[Dict] = None
     graph_data: Optional[Dict] = None
+    list_data: Optional[Dict] = None
+    suggestions: Optional[List[str]] = None
 
 
 class ConversationResponse(BaseModel):
@@ -374,6 +376,8 @@ async def chat(request: ChatRequest):
         agent_metadata = result.get("agent_info") or result.get("agent_metadata", {})
         plan_request = result.get("plan_request")
         graph_data = result.get("graph_data")
+        list_data = result.get("list_data")
+        suggestions = result.get("suggestions")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao processar pergunta: {str(e)}")
     
@@ -405,6 +409,8 @@ async def chat(request: ChatRequest):
         agent_info=agent_info,
         plan_request=plan_request,
         graph_data=graph_data,
+        list_data=list_data,
+        suggestions=suggestions,
     )
 
 
@@ -704,6 +710,42 @@ async def discipline_details(nome: str):
         "cursos": sorted(cursos),
         "matrizes": matrizes,
         "eletiva_em": sorted(eletiva_em),
+    }
+
+
+@app.get("/docente-details")
+async def docente_details(nome: str):
+    """Detalhes estruturados de um docente direto do Knowledge Graph."""
+    if rag is None or not rag.knowledge_graph:
+        raise HTTPException(status_code=503, detail="Knowledge Graph não disponível")
+    kg = rag.knowledge_graph
+    node_id = kg._find_node(nome, "docente")
+    if not node_id:
+        raise HTTPException(status_code=404, detail=f"Docente não encontrado: {nome}")
+
+    g = kg.graph
+    data = g.nodes[node_id]
+    nome_oficial = data.get("nome") or nome
+
+    disciplinas, areas = set(), set()
+    for _, v, d in g.out_edges(node_id, data=True):
+        rel = d.get("relacao")
+        vizinho = g.nodes[v].get("nome") or v
+        if rel == "LECIONA":
+            disciplinas.add(vizinho)
+        elif rel == "ESPECIALISTA_EM":
+            areas.add(vizinho)
+
+    areas_str = data.get("areas") or ""
+    if not areas and areas_str:
+        areas = {a.strip() for a in areas_str.split(",") if a.strip()}
+
+    return {
+        "nome": nome_oficial,
+        "email": data.get("email") or None,
+        "sala": data.get("sala") or None,
+        "areas": sorted(areas),
+        "disciplinas": sorted(disciplinas),
     }
 
 

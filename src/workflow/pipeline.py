@@ -291,6 +291,11 @@ def build_pipeline(rag_instance):
                                 )
                             except Exception:
                                 graph_data = None
+                        list_data = None
+                        if detected_intent in ("eletivas_curso", "disciplinas_termo"):
+                            list_data = rag_instance.graph_rag.list_payload(
+                                detected_intent, detected_term
+                            )
                         response_text = kg_response
                         if getattr(rag_instance.config, "HUMANIZE_KG", False):
                             response_text = humanize_kg_response(
@@ -307,6 +312,7 @@ def build_pipeline(rag_instance):
                             "context": kg_response,
                             "sources": ["Knowledge Graph"],
                             "graph_data": graph_data,
+                            "list_data": list_data,
                         }
 
         emb_agent, emb_conf = "", 0.0

@@ -17,6 +17,8 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import PrereqGraph, { PrereqGraphData } from '../components/PrereqGraph'
 import DisciplineDrawer from '../components/DisciplineDrawer'
+import DocenteDrawer from '../components/DocenteDrawer'
+import DisciplineChips, { DisciplineListData } from '../components/DisciplineChips'
 
 interface AgentInfo {
   label: string
@@ -32,6 +34,8 @@ interface Message {
   active_agent?: string
   agent_info?: AgentInfo
   graph_data?: PrereqGraphData | null
+  list_data?: DisciplineListData | null
+  suggestions?: string[] | null
 }
 
 interface PlanRequest {
@@ -265,12 +269,14 @@ function AssistantMessage({
   onAnimationDone,
   onAsk,
   onSelectDiscipline,
+  showSuggestions,
 }: {
   message: Message
   isAnimating: boolean
   onAnimationDone: () => void
   onAsk?: (question: string) => void
   onSelectDiscipline?: (nome: string) => void
+  showSuggestions?: boolean
 }) {
   const { displayed, isDone } = useTypewriter(
     message.content,
@@ -280,6 +286,7 @@ function AssistantMessage({
 
   const textToRender = isAnimating ? displayed : message.content
   const hasGraph = !!message.graph_data?.nodes?.length
+  const doneTyping = !isAnimating || isDone
 
   return (
     <div className="text-[15px]">
@@ -302,6 +309,25 @@ function AssistantMessage({
       {isAnimating && !isDone && (
         <span className="caret-blink ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] bg-accent" />
       )}
+
+      {doneTyping && message.list_data && onSelectDiscipline && (
+        <DisciplineChips data={message.list_data} onSelect={onSelectDiscipline} />
+      )}
+
+      {doneTyping && showSuggestions && !!message.suggestions?.length && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {message.suggestions.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => onAsk?.(s)}
+              className="rounded-full border border-accent/30 bg-accent/5 px-3.5 py-1.5 text-[12.5px] text-accent transition-colors hover:bg-accent/15"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -318,6 +344,7 @@ export default function ChatPage() {
   const [animatingIndex, setAnimatingIndex] = useState(-1)
   const [plannerUrl, setPlannerUrl] = useState<string | null>(null)
   const [selectedDiscipline, setSelectedDiscipline] = useState<string | null>(null)
+  const [selectedDocente, setSelectedDocente] = useState<string | null>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -384,6 +411,8 @@ export default function ChatPage() {
         active_agent: response.data.active_agent,
         agent_info: response.data.agent_info,
         graph_data: response.data.graph_data,
+        list_data: response.data.list_data,
+        suggestions: response.data.suggestions,
       }
 
       setMessages((prev) => {
@@ -432,7 +461,18 @@ export default function ChatPage() {
 
   const handleDrawerAsk = (question: string) => {
     setSelectedDiscipline(null)
+    setSelectedDocente(null)
     handleGraphAsk(question)
+  }
+
+  const openDisciplina = (nome: string) => {
+    setSelectedDocente(null)
+    setSelectedDiscipline(nome)
+  }
+
+  const openDocente = (nome: string) => {
+    setSelectedDiscipline(null)
+    setSelectedDocente(nome)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -596,7 +636,8 @@ export default function ChatPage() {
                         isAnimating={idx === animatingIndex}
                         onAnimationDone={handleAnimationDone}
                         onAsk={handleGraphAsk}
-                        onSelectDiscipline={setSelectedDiscipline}
+                        onSelectDiscipline={openDisciplina}
+                        showSuggestions={idx === messages.length - 1 && !isLoading}
                       />
                     </div>
                   )}
@@ -739,7 +780,21 @@ export default function ChatPage() {
             nome={selectedDiscipline}
             apiUrl={API_URL}
             onClose={() => setSelectedDiscipline(null)}
-            onNavigate={setSelectedDiscipline}
+            onNavigate={openDisciplina}
+            onOpenDocente={openDocente}
+            onAsk={handleDrawerAsk}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedDocente && (
+          <DocenteDrawer
+            key={selectedDocente}
+            nome={selectedDocente}
+            apiUrl={API_URL}
+            onClose={() => setSelectedDocente(null)}
+            onOpenDisciplina={openDisciplina}
             onAsk={handleDrawerAsk}
           />
         )}

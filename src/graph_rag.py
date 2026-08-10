@@ -564,6 +564,63 @@ class GraphRAGEngine:
             "delas ajuda.*"
         )
 
+    _GRUPO_HINTS = {
+        'eletiva_grupo1': 'Grupo 1',
+        'eletiva_grupo2': 'Grupo 2',
+        'eletiva_grupo3': 'Grupo 3',
+        'eletiva_extensionista': 'Extensionista',
+    }
+
+    def list_payload(self, query_type: str, termo: str) -> Optional[Dict]:
+        """
+        Lista estruturada de disciplinas para o frontend renderizar como
+        componentes clicáveis (abre o painel de detalhes da disciplina).
+        """
+        try:
+            if query_type == 'eletivas_curso':
+                grupo_filtro = None
+                curso_limpo = termo
+                m = re.search(r'(?:grupo\s+|g)(\d+)', termo, re.IGNORECASE)
+                if m:
+                    grupo_filtro = f"grupo{m.group(1)}"
+                    curso_limpo = re.sub(
+                        r'\s*(?:grupo\s+|g)\d+\s*(?:de|do|da)?\s*', '', termo,
+                        flags=re.IGNORECASE,
+                    ).strip()
+                eletivas = self.kg.get_eletivas_do_curso(curso_limpo, grupo=grupo_filtro)
+                if not eletivas:
+                    return None
+                return {
+                    "type": "discipline_list",
+                    "title": f"Eletivas de {curso_limpo.upper()}",
+                    "items": [
+                        {
+                            "nome": e["nome"],
+                            "hint": self._GRUPO_HINTS.get(e.get("grupo")),
+                        }
+                        for e in eletivas
+                    ],
+                }
+            if query_type == 'disciplinas_termo' and ':' in termo:
+                t, curso = termo.split(':', 1)
+                discs = self.kg.get_disciplinas_do_termo(curso, int(t))
+                if not discs:
+                    return None
+                return {
+                    "type": "discipline_list",
+                    "title": f"Termo {t} de {curso.upper()}",
+                    "items": [
+                        {
+                            "nome": d["nome"],
+                            "hint": f"{d['creditos']} créd." if d.get("creditos") else None,
+                        }
+                        for d in discs
+                    ],
+                }
+        except Exception:
+            return None
+        return None
+
     def graph_payload(self, query_type: str, termo: str) -> Optional[Dict]:
         """
         Versão estruturada de query_graph para renderização de grafo no frontend.

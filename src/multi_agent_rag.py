@@ -207,6 +207,13 @@ class MultiAgentRAG:
                     final_state["response"] = offered
                     telemetry.incr("ac_offer_appended")
 
+            from .followups import suggest_followups
+            suggestions = suggest_followups(
+                final_state.get("intent", ""),
+                final_state.get("term", ""),
+                final_state.get("response", ""),
+            )
+
             return {
                 "response": final_state.get("response", ""),
                 "active_agent": active_agent,
@@ -217,6 +224,8 @@ class MultiAgentRAG:
                 "sources": final_state.get("sources", []),
                 "plan_request": final_state.get("plan_request"),
                 "graph_data": final_state.get("graph_data"),
+                "list_data": final_state.get("list_data"),
+                "suggestions": suggestions,
                 "agent_metadata": self.AGENT_METADATA.get(
                     active_agent, self.AGENT_METADATA["fallback"]
                 ),
