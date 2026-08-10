@@ -176,6 +176,11 @@ def build_breakdown_response() -> str:
             f"{ace.get('carga_horaria_maxima', '108 horas')}."
         )
 
+    partes.append(
+        "Guia prático da DAE (documentação aceita, submissão via SEI e formulários): "
+        "https://dae-sjc.unifesp.br/materiais/atividades-complementares-bct"
+    )
+
     fonte = data.get("titulo", "Regulamento de Atividades Complementares do BCT")
     aprovacao = data.get("data_aprovacao", "")
     partes.append("")

@@ -16,6 +16,7 @@ import math
 import time
 import unicodedata
 import logging
+from urllib.parse import urlparse, unquote
 from typing import Dict, Any, List, Tuple, Optional
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -66,6 +67,16 @@ def _tokens(s: str) -> set:
     }
 
 
+def _slug_text(url: str) -> str:
+    path = unquote(urlparse(url or "").path)
+    path = path.split("#", 1)[0]
+    return re.sub(r"[-_/]+", " ", path).strip()
+
+
+def _slug_tokens(url: str) -> set:
+    return _tokens(_slug_text(url))
+
+
 def _cosine(a: List[float], b: List[float]) -> float:
     num = sum(x * y for x, y in zip(a, b))
     na = math.sqrt(sum(x * x for x in a))
@@ -88,7 +99,12 @@ def search_site_sections(question: str, top_k: int = 2) -> List[Dict]:
     for a in list(qt):
         qt |= _ACRONYM_EXPANSION.get(a, set())
     scored = [
-        (2.0 * len(qt & _tokens(p["titulo"])) + len(qt & _tokens(p["texto"][:1000])), p)
+        (
+            2.0 * len(qt & _tokens(p["titulo"]))
+            + 1.5 * len(qt & _slug_tokens(p["url"]))
+            + len(qt & _tokens(p["texto"][:1000])),
+            p,
+        )
         for p in corpus
     ]
     scored.sort(key=lambda x: -x[0])
@@ -210,7 +226,10 @@ class WebSjcAgent(BaseAgent):
         if not emb or not corpus:
             return None
         try:
-            textos = [f"{p['titulo']}. {p['texto'][:600]}" for p in corpus]
+            textos = [
+                f"{p['titulo']}. {_slug_text(p['url'])}. {p['texto'][:600]}"
+                for p in corpus
+            ]
             self._page_vecs = emb.embed_documents(textos)
         except Exception as e:
             logger.warning("[web_sjc] embeddings indisponíveis, usando keyword: %s", e)
@@ -233,7 +252,12 @@ class WebSjcAgent(BaseAgent):
         for a in list(qt):
             qt |= _ACRONYM_EXPANSION.get(a, set())
         scored = [
-            (2.0 * len(qt & _tokens(p["titulo"])) + len(qt & _tokens(p["texto"][:1000])), p)
+            (
+                2.0 * len(qt & _tokens(p["titulo"]))
+                + 1.5 * len(qt & _slug_tokens(p["url"]))
+                + len(qt & _tokens(p["texto"][:1000])),
+                p,
+            )
             for p in corpus
         ]
         scored.sort(key=lambda x: -x[0])
