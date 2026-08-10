@@ -3,13 +3,15 @@
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688)
 ![LangGraph](https://img.shields.io/badge/LangGraph-multi--agente-orange)
-![Ollama](https://img.shields.io/badge/Ollama-gemma4%20%2B%20embeddinggemma-black)
+![Ollama](https://img.shields.io/badge/Ollama-gemma4%3A12b%20%2B%20embeddinggemma-black)
 ![PyReason](https://img.shields.io/badge/PyReason-inferência%20FOL-purple)
 ![Status](https://img.shields.io/badge/status-pesquisa-lightgrey)
 
+**Demo pública: [fesp-ai.vercel.app](https://fesp-ai.vercel.app/)**
+
 O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto de Ciência e Tecnologia da UNIFESP (campus São José dos Campos). Ele combina um **Knowledge Graph** curricular (disciplinas, pré-requisitos, docentes, cursos), **regras de inferência FOL** executadas via **PyReason** e um **LLM** (Ollama), orquestrados por um pipeline **multi-agente em LangGraph**: com RAG híbrido (vetorial + BM25) sobre ementas e regimentos e um corpus vivo do **site institucional do campus**. A tese central: o LLM interpreta e redige, mas **quem julga os fatos é o grafo** - reduzindo alucinação em respostas acadêmicas críticas (pré-requisitos, matrizes curriculares, docentes).
 
-> **Nota:** este repositório acompanha o artigo *Neuro-Symbolic Graph-RAG for Academic Advising: A Three-Cycle Evaluation of a University Web Chatbot* (CTIC - WebMedia 2026). Os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo; o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
+> **Nota:** este repositório acompanha o artigo *Neuro-Symbolic Graph-RAG for Academic Advising: A Three-Cycle Evaluation of a University Web Chatbot* (CTIC - WebMedia 2026). A demo pública está em [fesp-ai.vercel.app](https://fesp-ai.vercel.app/), os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo, e o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
 
 ![FESP-AI em execução](docs/screenshot-app.png)
 
@@ -67,7 +69,7 @@ Reprodução (backend de pé em `localhost:8000`): `eval/eval_baselines.py` (B1�
 
 ## Stack
 
-Python 3.11 · FastAPI · LangGraph/LangChain · Ollama (**gemma4** geração + **embeddinggemma** embeddings) · ChromaDB (+ BM25) · NetworkX · PyReason · Next.js (frontend).
+Python 3.11 · FastAPI · LangGraph/LangChain · Ollama (**gemma4:12b** geração + **embeddinggemma** embeddings) · ChromaDB (+ BM25) · NetworkX · PyReason · Next.js (frontend).
 
 ## Como rodar
 
@@ -78,7 +80,7 @@ docker compose up -d        # backend :8000 + frontend :3000
 
 Para publicar a demo gratuita (Tailscale Funnel + frontend no Vercel), veja [`deploy/DEPLOY.md`](deploy/DEPLOY.md).
 
-Requer Ollama acessível (local ou cloud: veja `OLLAMA_CLOUD.md`) com os modelos baixados (`ollama pull gemma4:31b-cloud` e `ollama pull embeddinggemma`). O modelo original do sistema - usado em produção e reportado no artigo - é o `gemma4:12b`; o default `gemma4:31b-cloud` atende os testes atuais via Ollama Cloud (ajuste `MODEL_NAME` no `.env` para rodar o original localmente).
+Requer Ollama acessível com os modelos baixados (`ollama pull gemma4:12b` e `ollama pull embeddinggemma`). Defina `MODEL_NAME=gemma4:12b` no `.env`.
 
 **Endpoints principais** (`http://localhost:8000`, docs interativas em `/docs`):
 
