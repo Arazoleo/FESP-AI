@@ -47,6 +47,9 @@ paper_conversations_output.json
 # Artefatos de pesquisa pesados
 drag_article.pdf
 
+# Artigos em preparação/submissão — não versionar no repositório público
+paper/
+
 # arquivos locais de desenvolvimento
 posgrad/
 /llm.py

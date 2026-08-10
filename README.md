@@ -9,6 +9,8 @@
 
 O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto de Ciência e Tecnologia da UNIFESP (campus São José dos Campos). Ele combina um **Knowledge Graph** curricular (disciplinas, pré-requisitos, docentes, cursos), **regras de inferência FOL** executadas via **PyReason** e um **LLM** (Ollama), orquestrados por um pipeline **multi-agente em LangGraph**: com RAG híbrido (vetorial + BM25) sobre ementas e regimentos e um corpus vivo do **site institucional do campus**. A tese central: o LLM interpreta e redige, mas **quem julga os fatos é o grafo** - reduzindo alucinação em respostas acadêmicas críticas (pré-requisitos, matrizes curriculares, docentes).
 
+> **Nota:** este repositório acompanha o artigo *Neuro-Symbolic Graph-RAG for Academic Advising: A Three-Cycle Evaluation of a University Web Chatbot* (CTIC — WebMedia 2026). Os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo; o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
+
 ![FESP-AI em execução](docs/screenshot-app.png)
 
 ## Arquitetura e Metodologia
@@ -42,16 +44,26 @@ flowchart TD
 
 **Outras peças:** fusão multi-fonte **KG ↔ site** com regra de precedência (em divergência, vale o KG e a resposta avisa que a página pode estar desatualizada); **crawler multi-domínio** do site do campus com seccionamento por headings (páginas longas viram uma entrada de corpus por seção h2/h3, com âncora); **telemetria** do loop neurossimbólico (grounding, correções B1, reescritas LLM, claims) em `GET /telemetry`; `kg.lint()` no build do grafo (duplicatas, ciclos no DAG, pré-requisitos pendurados).
 
-## Resultados
+## Avaliação (três ciclos)
 
-| Métrica | Resultado |
-|---|---|
-| Routing accuracy (82 queries, gabarito com alternativas) | **96%** (79/82) |
-| Verificação simbólica das respostas no caminho simbólico | **89%** (47/53) |
-| Eval conversacional do site (10 conversas multi-turno) | **29/29** (100%) |
-| LLM-as-judge: correctness/groundedness no caminho simbólico | **5.0 / 5.0** |
+O sistema foi avaliado em três ciclos iterativos — interface, interação e camada de raciocínio — cada um alimentando correções na camada examinada.
 
-Números do run mais recente de `eval/eval_neurosymbolic.py` (07/2026) e de `eval/eval_site_conversations.py`; histórico e detalhes em `BACKLOG.md`.
+**Ciclo 1 — Acessibilidade (WCAG 2.1).** Conformidade avaliada com o AMAWeb (validador institucional da UNIFESP): landing page 9,8/10 e chat 9,0/10 na primeira rodada; os cinco erros apontados (contraste do texto secundário, h1 e skip link ausentes no chat) foram corrigidos e o re-teste não reportou erros.
+
+**Ciclo 2 — Usabilidade (n = 10, formativo).** Dez estudantes de sete cursos do ICT executaram seis fluxos de tarefa com **100% de sucesso não assistido**; SUS médio **90,0** (mediana 90,0, DP 2,0). Resultados consolidados, matriz SUS por participante e codificação temática das entrevistas em [`docs/usability_report.md`](docs/usability_report.md); instrumento de sessão em [`docs/teste_usabilidade.md`](docs/teste_usabilidade.md).
+
+**Ciclo 3 — Consistência de respostas.** Benchmark de 57 perguntas curadas (8 categorias temáticas, gabarito de documentos oficiais) + 25 queries dirigidas às regras FOL, sobre um KG de 690 nós e 1584 arestas construído de 236 arquivos institucionais. Baselines progressivos com o mesmo corpus e modelo de geração:
+
+| Sistema | Acc estrita | Acc ponderada | Erro |
+|---|---|---|---|
+| B1 — LLM-only | 7,0% | 19,3% | 68,4% |
+| B2 — RAG padrão | 7,0% | 28,1% | 50,9% |
+| B3 — Graph-RAG | 57,9% | 60,5% | 36,8% |
+| **B4 — NS Graph-RAG (este sistema)** | **84,2%** | **87,7%** | **8,8%** |
+
+Nas 25 queries neurossimbólicas: routing **100%**, verificação simbólica **96%**, com o caminho simbólico respondendo em 1,56 s contra 4,76 s dos caminhos neurais. Anotação humana dupla (κ ≈ 0,54) com cross-check por LLM-as-judge (> 4,7/5 nas quatro dimensões). O benchmark usou `ministral-3:8b`; o sistema em produção roda `gemma4`, que preserva a ordenação dos baselines.
+
+Reprodução (backend de pé em `localhost:8000`): `eval/eval_baselines.py` (B1–B3), `eval/eval_neurosymbolic.py --judge` (B4, routing e verificação), `eval/eval_llm_judge.py` (cross-check).
 
 ## Stack
 
@@ -114,8 +126,8 @@ python3 eval/eval_baselines.py               # baselines: LLM-only, RAG padrão,
 │   ├── context_resolver.py        # anáforas e herança de contexto entre turnos
 │   └── telemetry.py               # contadores do loop neurossimbólico
 ├── frontend/                      # chat Next.js
-├── eval/                          # scripts de avaliação e tabelas do paper
-├── paper/                         # LaTeX (paper, ENIAC, slides)
+├── eval/                          # scripts de avaliação (baselines B1–B4, judge, benchmark)
+├── docs/                          # relatório de usabilidade + instrumento de sessão
 ├── markdown_*/                    # dados curriculares (fonte do KG e do RAG)
 ├── test_*.py                      # testes de regressão offline
 └── BACKLOG.md                     # histórico de features e backlog
