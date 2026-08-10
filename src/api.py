@@ -710,6 +710,8 @@ async def discipline_details(nome: str):
         "cursos": sorted(cursos),
         "matrizes": matrizes,
         "eletiva_em": sorted(eletiva_em),
+        "conceitos_abordados": kg.get_conceitos_abordados(nome_oficial),
+        "base_recomendada": kg.get_base_recomendada(nome_oficial),
     }
 
 

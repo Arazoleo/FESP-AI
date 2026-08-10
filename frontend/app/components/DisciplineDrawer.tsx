@@ -25,6 +25,12 @@ interface Matriz {
   creditos?: number | string | null
 }
 
+interface BaseRecomendada {
+  nome: string
+  conceitos: string[]
+  confidence: number
+}
+
 export interface DisciplineDetails {
   nome: string
   codigo?: string | null
@@ -37,6 +43,8 @@ export interface DisciplineDetails {
   cursos: string[]
   matrizes: Matriz[]
   eletiva_em: string[]
+  conceitos_abordados?: string[]
+  base_recomendada?: BaseRecomendada[]
 }
 
 interface Props {
@@ -274,11 +282,45 @@ export default function DisciplineDrawer({
                 )}
               </Section>
 
+              {!!details.base_recomendada?.length && (
+                <Section icon={<Lock className="h-3.5 w-3.5" />} title="Base recomendada">
+                  <p className="mb-2 text-[11.5px] text-paper-mute">
+                    Não são pré-requisitos formais, mas a disciplina pressupõe
+                    estes conceitos:
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {details.base_recomendada.map((b) => (
+                      <Pill
+                        key={b.nome}
+                        label={b.nome}
+                        hint={b.conceitos.join(', ')}
+                        onClick={() => onNavigate(b.nome)}
+                      />
+                    ))}
+                  </div>
+                </Section>
+              )}
+
               {details.desbloqueia.length > 0 && (
                 <Section icon={<Unlock className="h-3.5 w-3.5" />} title="Desbloqueia">
                   <div className="flex flex-wrap gap-1.5">
                     {details.desbloqueia.map((d) => (
                       <Pill key={d} label={d} onClick={() => onNavigate(d)} />
+                    ))}
+                  </div>
+                </Section>
+              )}
+
+              {!!details.conceitos_abordados?.length && (
+                <Section icon={<BookOpen className="h-3.5 w-3.5" />} title="Conceitos abordados">
+                  <div className="flex flex-wrap gap-1.5">
+                    {details.conceitos_abordados.map((c) => (
+                      <span
+                        key={c}
+                        className="rounded-full border border-line bg-ink px-3 py-1.5 text-[12.5px] text-paper-dim"
+                      >
+                        {c}
+                      </span>
                     ))}
                   </div>
                 </Section>

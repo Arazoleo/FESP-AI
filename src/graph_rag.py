@@ -564,6 +564,28 @@ class GraphRAGEngine:
             "delas ajuda.*"
         )
 
+    def _base_recomendada_section(self, termo: str) -> str:
+        """
+        Seção "Base recomendada" (regra R6, mediada por conceito) para anexar
+        à resposta de prerequisite_chain. Vazia quando nada é inferido.
+        """
+        try:
+            recs = self.kg.get_base_recomendada(termo)
+        except Exception:
+            recs = []
+        if not recs:
+            return ""
+        itens = ", ".join(
+            f"**{r['nome']}** ({', '.join(r['conceitos'])}; conf. {r['confidence']:.0%})"
+            for r in recs
+        )
+        return (
+            f"\n\n**Base recomendada (conceitos pressupostos):** {itens}\n"
+            "*Regra `base_recomendada`: REQUER_BASE(d, c) ∧ ABORDA(d2, c) ∧ "
+            "¬ancestral ∧ ordem(d2) < ordem(d) - não são pré-requisitos "
+            "formais, mas a disciplina pressupõe esses conceitos.*"
+        )
+
     _GRUPO_HINTS = {
         'eletiva_grupo1': 'Grupo 1',
         'eletiva_grupo2': 'Grupo 2',
@@ -660,6 +682,22 @@ class GraphRAGEngine:
                         "source": rec_nome,
                         "target": nome,
                         "confidence": round(sim, 2),
+                        "inferida": True,
+                    })
+                try:
+                    base = self.kg.get_base_recomendada(nome)
+                except Exception:
+                    base = []
+                for r in base:
+                    if r["nome"] not in vistos:
+                        vistos.add(r["nome"])
+                        nodes.append({
+                            "id": r["nome"], "nome": r["nome"], "inferida": True,
+                        })
+                    edges.append({
+                        "source": r["nome"],
+                        "target": nome,
+                        "confidence": round(r["confidence"], 2),
                         "inferida": True,
                     })
                 return {
@@ -762,11 +800,12 @@ Para cursar **{termo}**, você precisa ter cursado anteriormente:
 
 Total: {len(chain)} pré-requisito(s) na cadeia.
 
-*Regras aplicadas: `prereq_transitivity` (fecho transitivo verificado em {len(chain)} aresta(s) do Knowledge Graph)*{self._recommended_before_section(termo)}"""
+*Regras aplicadas: `prereq_transitivity` (fecho transitivo verificado em {len(chain)} aresta(s) do Knowledge Graph)*{self._recommended_before_section(termo)}{self._base_recomendada_section(termo)}"""
             else:
                 return (
                     f"**{termo}** não possui pré-requisitos ou não foi encontrada no sistema."
                     f"{self._recommended_before_section(termo)}"
+                    f"{self._base_recomendada_section(termo)}"
                 )
 
         elif query_type == 'recommended_before':

@@ -1,0 +1,33 @@
+{
+  "aborda": {
+    "probabilidade": ["Probabilidade e Estatística"],
+    "estatística": ["Probabilidade e Estatística"],
+    "álgebra linear": ["Álgebra Linear"],
+    "lógica": ["Lógica de Programação", "Matemática Discreta"],
+    "programação": ["Lógica de Programação"],
+    "estruturas de dados": ["Algoritmos e Estruturas de Dados I"],
+    "grafos": ["Teoria dos Grafos"],
+    "cálculo": ["Cálculo em Uma Variável"]
+  },
+  "requer_base": {
+    "Inteligência Artificial": {
+      "probabilidade": 1.0,
+      "estatística": 1.0,
+      "álgebra linear": 1.0
+    },
+    "Aprendizado de Máquina": {
+      "probabilidade": 1.0,
+      "estatística": 1.0,
+      "álgebra linear": 1.0
+    },
+    "Computação Gráfica": {
+      "álgebra linear": 1.0
+    },
+    "Processamento de Imagens": {
+      "álgebra linear": 0.9
+    },
+    "Redes de Computadores": {
+      "grafos": 0.7
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import networkx as nx
+import json
 import re
 import unicodedata
 from typing import List, Dict, Optional, Set, Tuple
@@ -112,6 +113,18 @@ class KnowledgeGraph:
                 self._process_docentes_file(md_file)
         
         try:
+            conc_stats = self.load_conceitos()
+            if conc_stats.get("conceitos"):
+                print(
+                    f"[KG conceitos] {conc_stats['conceitos']} conceitos, "
+                    f"{conc_stats['aborda']} arestas ABORDA, "
+                    f"{conc_stats['requer_base']} arestas REQUER_BASE "
+                    f"({conc_stats['ignorados']} entradas ignoradas)"
+                )
+        except Exception as e:
+            print(f"[KG conceitos] falhou: {e}")
+
+        try:
             issues = self.lint()
             problemas = {k: len(v) for k, v in issues.items() if v}
             if problemas:
@@ -140,6 +153,168 @@ class KnowledgeGraph:
         print(f"  - {stats['artigos']} artigos")
         print(f"  - Total: {stats['total_nos']} nós, {stats['total_arestas']} arestas")
     
+    def _conceito_id(self, nome: str) -> str:
+        return f"CONC:{self._normalize_text(nome)}"
+
+    def _ensure_conceito(self, nome: str) -> str:
+        """
+        Nó de conceito com namespace próprio (id CONC:, tipo 'conceito').
+        Nunca entra nos índices de nome/sigla/código, então não colide nem
+        sombreia disciplinas homônimas na resolução de entidades.
+        """
+        cid = self._conceito_id(nome)
+        if not self.graph.has_node(cid):
+            self.graph.add_node(cid, tipo="conceito", nome=nome.strip().lower())
+        return cid
+
+    def load_conceitos(self, path: str = None) -> Dict[str, int]:
+        """
+        Carrega a camada de conceitos (seed curado + extrações validadas).
+
+        Aterramento obrigatório: cada disciplina citada é resolvida via
+        _find_node com tipo 'disciplina'; entradas que não resolvem são
+        descartadas e contadas em 'ignorados' (nenhum nó fantasma é criado).
+        """
+        stats = {"conceitos": 0, "aborda": 0, "requer_base": 0, "ignorados": 0}
+        seed_path = Path(path) if path else Path(__file__).parent / "conceitos_seed.json"
+        if not seed_path.exists():
+            return stats
+        with open(seed_path, encoding="utf-8") as f:
+            data = json.load(f)
+
+        antes = {n for n, d in self.graph.nodes(data=True) if d.get("tipo") == "conceito"}
+
+        def _resolver_disciplina(nome: str) -> Optional[str]:
+            node_id = self._find_node(nome, "disciplina")
+            if node_id and self.graph.nodes[node_id].get("tipo") == "disciplina":
+                return node_id
+            return None
+
+        def _tem_aresta(origem: str, destino: str, relacao: str) -> bool:
+            return self._has_edge_relation(
+                self.graph.get_edge_data(origem, destino) or {}, relacao
+            )
+
+        for conceito, disciplinas in (data.get("aborda") or {}).items():
+            for item in disciplinas or []:
+                if isinstance(item, dict):
+                    nome_d = item.get("disciplina", "")
+                    conf = float(item.get("confidence", 1.0))
+                else:
+                    nome_d, conf = str(item), 1.0
+                d_id = _resolver_disciplina(nome_d)
+                if not d_id:
+                    stats["ignorados"] += 1
+                    continue
+                cid = self._ensure_conceito(conceito)
+                if not _tem_aresta(d_id, cid, "ABORDA"):
+                    self.graph.add_edge(d_id, cid, relacao="ABORDA", confidence=conf)
+                    stats["aborda"] += 1
+
+        for nome_d, conceitos in (data.get("requer_base") or {}).items():
+            d_id = _resolver_disciplina(nome_d)
+            if not d_id:
+                stats["ignorados"] += 1
+                continue
+            for conceito, conf in (conceitos or {}).items():
+                cid = self._ensure_conceito(conceito)
+                if not _tem_aresta(d_id, cid, "REQUER_BASE"):
+                    self.graph.add_edge(
+                        d_id, cid, relacao="REQUER_BASE", confidence=float(conf)
+                    )
+                    stats["requer_base"] += 1
+
+        depois = {n for n, d in self.graph.nodes(data=True) if d.get("tipo") == "conceito"}
+        stats["conceitos"] = len(depois - antes)
+        return stats
+
+    def _termo_num(self, node_data: dict) -> Optional[int]:
+        m = re.match(r"(\d+)", str(node_data.get("termo") or ""))
+        return int(m.group(1)) if m else None
+
+    def _prereq_ancestors(self, node_id: str) -> set:
+        vistos, fila = set(), [node_id]
+        while fila:
+            atual = fila.pop()
+            for u, _, d in self.graph.in_edges(atual, data=True):
+                if d.get("relacao") == "PREREQUISITO_DE" and u not in vistos:
+                    vistos.add(u)
+                    fila.append(u)
+        return vistos
+
+    def get_conceitos_abordados(self, disciplina: str) -> List[str]:
+        d_id = self._find_node(disciplina, "disciplina")
+        if not d_id:
+            return []
+        return sorted({
+            self.graph.nodes[v].get("nome", v)
+            for _, v, d in self.graph.out_edges(d_id, data=True)
+            if d.get("relacao") == "ABORDA"
+        })
+
+    def get_conceitos_requeridos(self, disciplina: str) -> List[Dict]:
+        d_id = self._find_node(disciplina, "disciplina")
+        if not d_id:
+            return []
+        requeridos = {}
+        for _, v, d in self.graph.out_edges(d_id, data=True):
+            if d.get("relacao") == "REQUER_BASE":
+                nome_c = self.graph.nodes[v].get("nome", v)
+                conf = float(d.get("confidence", 1.0))
+                requeridos[nome_c] = max(conf, requeridos.get(nome_c, 0.0))
+        return [
+            {"conceito": c, "confidence": conf}
+            for c, conf in sorted(requeridos.items())
+        ]
+
+    def get_base_recomendada(self, disciplina: str) -> List[Dict]:
+        """
+        Regra R6 (base recomendada mediada por conceito):
+        REQUER_BASE(d, c) ∧ ABORDA(d2, c) ∧ ¬prereq_trans(d2, d) ∧
+        ordem(d2) < ordem(d) → base_recomendada(d2, d),
+        com confiança min(conf_requer, conf_aborda).
+        """
+        d_id = self._find_node(disciplina, "disciplina")
+        if not d_id:
+            return []
+        requer = {}
+        for _, v, d in self.graph.out_edges(d_id, data=True):
+            if d.get("relacao") == "REQUER_BASE":
+                conf = float(d.get("confidence", 1.0))
+                requer[v] = max(conf, requer.get(v, 0.0))
+        if not requer:
+            return []
+
+        ancestrais = self._prereq_ancestors(d_id)
+        termo_d = self._termo_num(self.graph.nodes[d_id])
+
+        resultados: Dict[str, Dict] = {}
+        for cid, conf_req in requer.items():
+            conceito_nome = self.graph.nodes[cid].get("nome", cid)
+            for u, _, d in self.graph.in_edges(cid, data=True):
+                if d.get("relacao") != "ABORDA":
+                    continue
+                if u == d_id or u in ancestrais:
+                    continue
+                termo_u = self._termo_num(self.graph.nodes[u])
+                if termo_d is not None and termo_u is not None and termo_u >= termo_d:
+                    continue
+                conf = min(conf_req, float(d.get("confidence", 1.0)))
+                r = resultados.setdefault(u, {
+                    "nome": self.graph.nodes[u].get("nome", u),
+                    "conceitos": set(),
+                    "confidence": 0.0,
+                    "termo": termo_u,
+                })
+                r["conceitos"].add(conceito_nome)
+                r["confidence"] = max(r["confidence"], conf)
+
+        saida = [
+            {**r, "conceitos": sorted(r["conceitos"])}
+            for r in resultados.values()
+        ]
+        return sorted(saida, key=lambda x: (-x["confidence"], x["nome"]))
+
     def lint(self) -> Dict[str, list]:
         """
         NSAI-2: lint de consistência simbólica do grafo.
