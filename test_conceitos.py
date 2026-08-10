@@ -123,14 +123,43 @@ check(
     not (nomes_base & prereqs_formais),
     str(nomes_base & prereqs_formais),
 )
+_kg_vazio = KnowledgeGraph()
+_kg_vazio.graph.add_node("DISC:X", tipo="disciplina", nome="Disciplina X")
+_kg_vazio._index_node("DISC:X", {"nome": "Disciplina X"})
 check(
     "disciplina sem REQUER_BASE retorna lista vazia",
-    kg.get_base_recomendada("Teoria dos Grafos") == [],
+    _kg_vazio.get_base_recomendada("Disciplina X") == [],
 )
 check(
     "disciplina inexistente retorna lista vazia",
     kg.get_base_recomendada("Disciplina Que Nao Existe XYZ") == [],
 )
+
+print(f"\n{BOLD}4b. Cobertura por ancestral e melhor mediador por conceito{RESET}")
+base_ml = kg.get_base_recomendada("Aprendizado de Máquina e Reconhecimento de Padrões")
+nomes_ml = {b["nome"] for b in base_ml}
+check(
+    "conceito coberto pela cadeia formal não gera ruído (sem Desenvolvimento de Games)",
+    not any("Games" in n for n in nomes_ml),
+    str(nomes_ml),
+)
+check("resultado limitado a 6 disciplinas", len(base_ml) <= 6, str(len(base_ml)))
+
+base_ia_full = kg.get_base_recomendada("Inteligência Artificial")
+ia_id = kg._find_node("Inteligência Artificial", "disciplina")
+ancestrais_ia = kg._prereq_ancestors(ia_id)
+invariante_ok = True
+for rec in base_ia_full:
+    for conceito in rec["conceitos"]:
+        cid = kg._conceito_id(conceito)
+        for u, _, dd in kg.graph.in_edges(cid, data=True):
+            if dd.get("relacao") == "ABORDA" and u in ancestrais_ia:
+                invariante_ok = False
+check(
+    "invariante: nenhum conceito recomendado é ensinado por ancestral formal",
+    invariante_ok,
+)
+check("IA limitada a 6 recomendações", len(base_ia_full) <= 6)
 
 print(f"\n{BOLD}5. Consultas auxiliares{RESET}")
 check(
@@ -162,6 +191,68 @@ os.unlink(fake_path)
 check("todas as entradas inválidas ignoradas", stats["ignorados"] == 2, str(stats))
 check("nenhuma aresta criada", stats["aborda"] == 0 and stats["requer_base"] == 0)
 check("nenhum nó novo criado", kg.graph.number_of_nodes() == antes_nos)
+
+print(f"\n{BOLD}7. Extrator neural: parsing com vocabulário controlado{RESET}")
+_spec2 = importlib.util.spec_from_file_location(
+    "src.conceito_extractor", ROOT / "src/conceito_extractor.py"
+)
+_ext = importlib.util.module_from_spec(_spec2)
+_ext.__package__ = "src"
+sys.modules["src.conceito_extractor"] = _ext
+_spec2.loader.exec_module(_ext)
+
+vocab = _ext.carregar_vocabulario()
+check("vocabulário carregado do seed", "probabilidade" in vocab and "álgebra linear" in vocab)
+
+raw_ok = '{"aborda": ["Probabilidade", "conceito inventado"], "requer_base": {"cálculo": 0.9, "outro inventado": 0.8}, "novos_sugeridos": ["teoria dos jogos"]}'
+parsed = _ext.parse_conceitos_llm(raw_ok, vocab)
+check("conceito do vocabulário aceito em aborda", parsed["aborda"] == ["probabilidade"], str(parsed))
+check("requer_base do vocabulário com confiança", parsed["requer_base"] == {"cálculo": 0.9}, str(parsed))
+check(
+    "fora do vocabulário vira sugestão, nunca aresta",
+    set(parsed["novos"]) == {"conceito inventado", "outro inventado", "teoria dos jogos"},
+    str(parsed["novos"]),
+)
+check("JSON inválido retorna vazio",
+      _ext.parse_conceitos_llm("resposta sem json", vocab) == {"aborda": [], "requer_base": {}, "novos": []})
+check("confiança fora de [0,1] é limitada",
+      _ext.parse_conceitos_llm('{"requer_base": {"cálculo": 5}}', vocab)["requer_base"]["cálculo"] == 1.0)
+
+saida = _ext.montar_saida({"Disciplina X": parsed}, "modelo-teste")
+check("saída agrega por conceito com confiança 0.7 em aborda",
+      saida["aborda"]["probabilidade"][0] == {"disciplina": "Disciplina X", "confidence": 0.7})
+check("novos sugeridos ficam em chave de curadoria (_novos_sugeridos)",
+      "teoria dos jogos" in saida["_novos_sugeridos"])
+
+print(f"\n{BOLD}8. Carga de extrações: clamp 0.8 e precedência do seed{RESET}")
+extraido_fake = {
+    "aborda": {"probabilidade": [{"disciplina": "Cálculo em Uma Variável", "confidence": 0.99}]},
+    "requer_base": {"Inteligência Artificial": {"probabilidade": 0.95, "cálculo": 0.6}},
+}
+with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as f:
+    _json.dump(extraido_fake, f, ensure_ascii=False)
+    ext_path = f.name
+kg.load_conceitos(ext_path, clamp=0.8)
+os.unlink(ext_path)
+
+calc_id = kg._find_node("Cálculo em Uma Variável", "disciplina")
+prob_cid = kg._conceito_id("probabilidade")
+conf_aborda = None
+for _, v, d in kg.graph.out_edges(calc_id, data=True):
+    if v == prob_cid and d.get("relacao") == "ABORDA":
+        conf_aborda = d.get("confidence")
+check("confiança extraída limitada a 0.8", conf_aborda == 0.8, str(conf_aborda))
+
+ia_id = kg._find_node("Inteligência Artificial", "disciplina")
+conf_seed = None
+for _, v, d in kg.graph.out_edges(ia_id, data=True):
+    if v == prob_cid and d.get("relacao") == "REQUER_BASE":
+        conf_seed = d.get("confidence")
+check("aresta curada do seed (conf. 1.0) NÃO é sobrescrita pela extração",
+      conf_seed == 1.0, str(conf_seed))
+req_ia_pos = {r["conceito"]: r["confidence"] for r in kg.get_conceitos_requeridos("Inteligência Artificial")}
+check("aresta nova da extração entra com clamp (cálculo 0.6)",
+      req_ia_pos.get("cálculo") == 0.6, str(req_ia_pos))
 
 total = _passed + _failed
 cor = GREEN if _failed == 0 else RED

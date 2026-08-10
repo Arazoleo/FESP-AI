@@ -1,0 +1,3893 @@
+{
+  "_meta": {
+    "gerado_por": "conceito_extractor",
+    "modelo": "gemma4:31b-cloud"
+  },
+  "_novos_sugeridos": {
+    "administração de empresas": [
+      "Empreendedorismo em Biotecnologia"
+    ],
+    "algoritmos": [
+      "Lógica de Programação"
+    ],
+    "algoritmos gulosos": [
+      "Tópicos em Tecnologia da Computação IV (Desafios de Programação)"
+    ],
+    "alinhamento de sequências": [
+      "Algoritmos em Bioinformática",
+      "Bioinformática Avançada",
+      "Introdução à Bioinformática"
+    ],
+    "alocação dinâmica": [
+      "Algoritmos e Estruturas de Dados I"
+    ],
+    "amplificadores operacionais": [
+      "Circuitos Elétricos II",
+      "Condicionamento Analógico de Sinais",
+      "Laboratório de Circuitos Elétricos"
+    ],
+    "análise assintótica": [
+      "Algoritmos e Estruturas de Dados II",
+      "Projeto e Análise de Algoritmos"
+    ],
+    "análise complexa": [
+      "Funções Analíticas",
+      "Métodos Matemáticos para a Engenharia"
+    ],
+    "análise de circuitos": [
+      "Laboratório de Circuitos Elétricos"
+    ],
+    "análise de erro": [
+      "Cálculo Numérico"
+    ],
+    "análise de fourier": [
+      "Processamento de Sinais"
+    ],
+    "análise de frequência": [
+      "Circuitos Elétricos II",
+      "Controle de Sistemas Dinâmicos"
+    ],
+    "análise de regressão": [
+      "Econometria"
+    ],
+    "análise de requisitos": [
+      "Engenharia de Software"
+    ],
+    "análise de viabilidade econômica": [
+      "Tópicos Especiais em Ciência e Engenharia de Materiais III – Engenharia Econômica"
+    ],
+    "análise funcional": [
+      "Métodos Matemáticos para a Engenharia"
+    ],
+    "análise léxica": [
+      "Compiladores",
+      "Laboratório de Sistemas Computacionais: Compiladores"
+    ],
+    "análise matricial": [
+      "Álgebra Linear Computacional"
+    ],
+    "análise numérica": [
+      "Tópicos em Matemática Computacional I"
+    ],
+    "análise real": [
+      "Análise Real I",
+      "Análise Real II",
+      "Equações Diferenciais Parciais",
+      "Espaços Métricos",
+      "Otimização Não Linear"
+    ],
+    "análise semântica": [
+      "Compiladores"
+    ],
+    "análise sintática": [
+      "Compiladores",
+      "Laboratório de Sistemas Computacionais: Compiladores"
+    ],
+    "análise térmica": [
+      "Técnicas Experimentais"
+    ],
+    "análise vetorial": [
+      "Cálculo em Várias Variáveis"
+    ],
+    "anéis": [
+      "Elementos de Álgebra"
+    ],
+    "aritmética modular": [
+      "Teoria dos Números e Criptografia"
+    ],
+    "autovalores e autovetores": [
+      "Álgebra Linear"
+    ],
+    "autômatos": [
+      "Linguagens Formais e Autômatos"
+    ],
+    "backpropagation": [
+      "Introdução às Redes Neurais Artificiais"
+    ],
+    "balanço de massa e energia": [
+      "Fundamentos em Engenharia Bioquímica"
+    ],
+    "bancos de dados distribuídos": [
+      "Aspectos de Implementação de Banco de Dados"
+    ],
+    "biocombustíveis": [
+      "Biotecnologia de Energias Renováveis I"
+    ],
+    "biocompatibilidade": [
+      "Biomateriais",
+      "Ciência e Engenharia de Biomateriais"
+    ],
+    "biodiversidade": [
+      "Introdução à Ecologia"
+    ],
+    "bioeletrogênese": [
+      "Fisiologia Humana I"
+    ],
+    "bioengenharia": [
+      "Engenharia Médica Aplicada",
+      "Instrumentos Biomédicos",
+      "Instrumentos Eletromédicos"
+    ],
+    "bioestatística": [
+      "Introdução à Bioinformática"
+    ],
+    "biofísica": [
+      "Biologia Estrutural"
+    ],
+    "biogeoquímica": [
+      "Introdução à Ecologia"
+    ],
+    "bioinformática": [
+      "Algoritmos em Bioinformática",
+      "Modelagem Molecular",
+      "Proteômica"
+    ],
+    "bioinorgânica": [
+      "Química Inorgânica"
+    ],
+    "biologia celular": [
+      "Biologia Molecular da Célula",
+      "Biologia do Desenvolvimento",
+      "Fundamentos de Biologia Moderna"
+    ],
+    "biologia de sistemas": [
+      "Introdução à Biologia de Sistemas"
+    ],
+    "biologia molecular": [
+      "Biologia Molecular da Célula Avançada",
+      "Biologia Molecular do Gene",
+      "Bioquímica Analítica",
+      "Bioquímica I",
+      "Biotecnologia Animal",
+      "Biotecnologia Vegetal",
+      "Introdução à Biotecnologia",
+      "Laboratório de Biologia Molecular e Celular",
+      "Laboratório de Bioquímica",
+      "Modelos Animais"
+    ],
+    "biomateriais": [
+      "Engenharia Tecidual e Medicina Regenerativa"
+    ],
+    "biometria": [
+      "Segurança da Informação"
+    ],
+    "biopotenciais": [
+      "Transdução de Grandezas Biomédicas"
+    ],
+    "bioprocessos": [
+      "Engenharia Bioquímica 1",
+      "Engenharia Bioquímica 2",
+      "Fundamentos em Engenharia Bioquímica",
+      "Laboratório de Engenharia Bioquímica",
+      "Microbiologia Aplicada e Industrial"
+    ],
+    "biorreatores": [
+      "Engenharia Bioquímica 1",
+      "Laboratório de Engenharia Bioquímica"
+    ],
+    "biorreceptores": [
+      "Biossensores"
+    ],
+    "biorremediação": [
+      "Biotecnologia Ambiental I"
+    ],
+    "biossegurança": [
+      "Bioética e Biossegurança",
+      "Laboratório de Bioquímica Analítica",
+      "Laboratório de Microbiologia"
+    ],
+    "biossensores": [
+      "Biossensores"
+    ],
+    "biossinais": [
+      "Projetos em Engenharia Biomédica"
+    ],
+    "biotecnologia": [
+      "Biotecnologia de Energias Renováveis I",
+      "Engenharia Bioquímica 2",
+      "Imunologia Aplicada",
+      "Microbiologia Aplicada e Industrial",
+      "Modelos Animais"
+    ],
+    "bioética": [
+      "Bioética e Biossegurança",
+      "Introdução à Biotecnologia"
+    ],
+    "blockchain": [
+      "Tópicos em Tecnologia da Computação I: Carteiras Digitais"
+    ],
+    "botânica": [
+      "Botânica e Fisiologia Vegetal"
+    ],
+    "busca heurística": [
+      "Inteligência Artificial"
+    ],
+    "caracterização de materiais": [
+      "Técnicas Experimentais"
+    ],
+    "cerâmicas": [
+      "Cerâmicas Refratárias",
+      "Processamento de Materiais Cerâmicos"
+    ],
+    "ciclo de vida de sistemas": [
+      "Laboratório de Sistemas Computacionais: Engenharia de Sistemas"
+    ],
+    "ciclo de vida de software": [
+      "Engenharia de Software"
+    ],
+    "cinemática": [
+      "Fenômenos Mecânicos",
+      "Sistemas Mecânicos"
+    ],
+    "cinética enzimática": [
+      "Bioquímica I",
+      "Engenharia Bioquímica 1",
+      "Laboratório de Engenharia Bioquímica"
+    ],
+    "cinética microbiana": [
+      "Microbiologia Aplicada e Industrial"
+    ],
+    "cinética química": [
+      "Estrutura e Propriedades de Polímeros",
+      "Química Geral",
+      "Síntese de Polímeros",
+      "Vidros, Vitrocerâmicos e Vidrados"
+    ],
+    "citologia": [
+      "Anatomia",
+      "Botânica e Fisiologia Vegetal",
+      "Laboratório de Biologia Molecular e Celular"
+    ],
+    "ciência dos materiais": [
+      "Biomateriais",
+      "Cerâmicas Refratárias",
+      "Ciência e Engenharia de Biomateriais",
+      "Ciência e Tecnologia dos Materiais",
+      "Corrosão e Degradação de Materiais",
+      "Engenharia de Produtos Cerâmicos",
+      "Ensaios de Materiais",
+      "Estrutura e Propriedades de Polímeros",
+      "Introdução a Engenharia de Materiais",
+      "Introdução aos Materiais Elétricos",
+      "Introdução à Análise de Falhas em Metais",
+      "Introdução à Nanotecnologia",
+      "Materiais Cerâmicos",
+      "Materiais Compósitos",
+      "Materiais Metálicos",
+      "Materiais Poliméricos",
+      "Materiais de Construção Civil",
+      "Matérias-Primas Cerâmicas",
+      "Metalurgia Extrativa",
+      "Metalurgia Física",
+      "Metalurgia Mecânica",
+      "Metalurgia do Pó",
+      "Processamento de Materiais Cerâmicos",
+      "Processamento de Materiais Metálicos",
+      "Processamento de Termorrígidos e Elastômeros",
+      "Reciclagem de Materiais",
+      "Reologia dos Materiais",
+      "Resistência dos Materiais",
+      "Resolução de Problemas Fabris na Engenharia de Materiais",
+      "Seleção de Materiais",
+      "Tecnologia em Tintas e Vernizes",
+      "Termodinâmica dos Sólidos",
+      "Tratamentos Térmicos",
+      "Tópicos Especiais em Ciência e Engenharia de Materiais IV - Aditivação de Termoplásticos",
+      "Vidros, Vitrocerâmicos e Vidrados"
+    ],
+    "ciências climáticas": [
+      "Mudança no Clima e Sociedade"
+    ],
+    "combinatória": [
+      "Matemática Discreta",
+      "Teoria dos Grafos"
+    ],
+    "competências socioemocionais": [
+      "Soft Skills Baseada em Neurociência"
+    ],
+    "compiladores": [
+      "Laboratório de Sistemas Computacionais: Compiladores"
+    ],
+    "complexidade computacional": [
+      "Metaheurísticas em Otimização Combinatória",
+      "Projeto e Análise de Algoritmos"
+    ],
+    "complexidade de algoritmos": [
+      "Algoritmos e Estruturas de Dados II",
+      "Teoria dos Grafos",
+      "Tópicos em Tecnologia da Computação IV (Desafios de Programação)"
+    ],
+    "computação gráfica": [
+      "Desenvolvimento de Games"
+    ],
+    "comunicações digitais": [
+      "Laboratório de Sistemas Computacionais: Comunicação Digital"
+    ],
+    "concorrência": [
+      "Programação Orientada a Objetos"
+    ],
+    "conjunto de instruções": [
+      "Arquitetura e Organização de Computadores"
+    ],
+    "conjuntos": [
+      "Elementos de Álgebra"
+    ],
+    "contabilidade nacional": [
+      "Macroeconomia"
+    ],
+    "controle de concorrência": [
+      "Aspectos de Implementação de Banco de Dados"
+    ],
+    "corpos": [
+      "Elementos de Álgebra"
+    ],
+    "criptografia": [
+      "Segurança da Informação",
+      "Teoria dos Números e Criptografia",
+      "Tópicos em Tecnologia da Computação I: Carteiras Digitais"
+    ],
+    "cristalografia": [
+      "Biologia Estrutural",
+      "Ciência e Tecnologia dos Materiais",
+      "Materiais Cerâmicos",
+      "Materiais Metálicos",
+      "Metalurgia Física",
+      "Vidros, Vitrocerâmicos e Vidrados"
+    ],
+    "cromatografia": [
+      "Bioquímica Analítica",
+      "Laboratório de Bioquímica Analítica",
+      "Proteômica"
+    ],
+    "cultura celular": [
+      "Biotecnologia Animal",
+      "Engenharia Tecidual e Medicina Regenerativa"
+    ],
+    "cultura de tecidos": [
+      "Biotecnologia Vegetal"
+    ],
+    "curvas": [
+      "Introdução à Geometria Diferencial"
+    ],
+    "células-tronco": [
+      "Engenharia Tecidual e Medicina Regenerativa"
+    ],
+    "decidibilidade": [
+      "Linguagens Formais e Autômatos"
+    ],
+    "deep learning": [
+      "Introdução às Redes Neurais Artificiais"
+    ],
+    "derivadas": [
+      "Cálculo em Uma Variável",
+      "Laboratório de Matemática"
+    ],
+    "desenho técnico": [
+      "Desenho Técnico Básico"
+    ],
+    "desenvolvimento sustentável": [
+      "Iniciação aos PEPICTII"
+    ],
+    "design de interface": [
+      "Interação Humano-Computador e Experiência do Usuário (UX)"
+    ],
+    "design de produto": [
+      "Seleção de Materiais"
+    ],
+    "diagramas de fase": [
+      "Materiais Cerâmicos"
+    ],
+    "dielétricos": [
+      "Introdução aos Materiais Elétricos"
+    ],
+    "difração de raios-x": [
+      "Técnicas Experimentais"
+    ],
+    "dinâmica": [
+      "Biomecânica",
+      "Fenômenos Mecânicos"
+    ],
+    "dinâmica de sistemas": [
+      "Introdução à Biologia de Sistemas",
+      "Sistemas Mecânicos"
+    ],
+    "diodos": [
+      "Eletrônica",
+      "Fundamentos de Eletrônica Aplicada"
+    ],
+    "direitos humanos": [
+      "Bioética e Biossegurança"
+    ],
+    "ecologia": [
+      "Biotecnologia Ambiental I",
+      "Introdução à Ecologia",
+      "Mudança no Clima e Sociedade",
+      "Tecnologia e Meio Ambiente"
+    ],
+    "economia da inovação": [
+      "Ciência, Tecnologia, Sociedade e Ambiente"
+    ],
+    "economia da tecnologia": [
+      "Tópicos em Ciência e Tecnologia II"
+    ],
+    "eletrofisiologia": [
+      "Introdução à Neurociência"
+    ],
+    "eletroforese": [
+      "Laboratório de Bioquímica Analítica"
+    ],
+    "eletromagnetismo": [
+      "Fenômenos Eletromagnéticos",
+      "Fenômenos Eletromagnéticos Experimental",
+      "Física Geral"
+    ],
+    "eletroquímica": [
+      "Corrosão e Degradação de Materiais",
+      "Química Geral",
+      "Química Inorgânica"
+    ],
+    "eletrônica digital": [
+      "Laboratório de Eletrônica Digital"
+    ],
+    "embriologia": [
+      "Biologia do Desenvolvimento"
+    ],
+    "empreendedorismo": [
+      "Desenvolvimento de Novos Negócios em Engenharia Biomédica",
+      "Empreendedorismo",
+      "Tópicos Especiais em Ciência e Engenharia de Materiais III – Engenharia Econômica"
+    ],
+    "engenharia biomolecular": [
+      "Bioengenharia"
+    ],
+    "engenharia biomédica": [
+      "Desenvolvimento de Novos Negócios em Engenharia Biomédica",
+      "Introdução à Engenharia Biomédica"
+    ],
+    "engenharia bioquímica": [
+      "Biotecnologia de Energias Renováveis I",
+      "Introdução à Biotecnologia",
+      "Laboratório de Engenharia Bioquímica"
+    ],
+    "engenharia clínica": [
+      "Engenharia Clínica Hospitalar Aplicada"
+    ],
+    "engenharia de materiais": [
+      "Experimentando a Engenharia de Materiais"
+    ],
+    "engenharia de produção": [
+      "Engenharia de Produtos Cerâmicos"
+    ],
+    "engenharia de sistemas": [
+      "Laboratório de Sistemas Computacionais: Engenharia de Sistemas"
+    ],
+    "engenharia de tecidos": [
+      "Ciência e Engenharia de Biomateriais",
+      "Engenharia Tecidual e Medicina Regenerativa"
+    ],
+    "engenharia econômica": [
+      "Tópicos Especiais em Ciência e Engenharia de Materiais III – Engenharia Econômica"
+    ],
+    "engenharia imunológica": [
+      "Bioengenharia"
+    ],
+    "engenharia química": [
+      "Reciclagem de Materiais"
+    ],
+    "enzimologia": [
+      "Bioquímica II"
+    ],
+    "equações diferenciais ordinárias": [
+      "Métodos Numéricos para Equações Diferenciais"
+    ],
+    "equações diferenciais parciais": [
+      "Métodos Numéricos para Equações Diferenciais"
+    ],
+    "equilíbrio de fases": [
+      "Termodinâmica dos Sólidos"
+    ],
+    "equilíbrio químico": [
+      "Química Analítica",
+      "Química Geral",
+      "Química Geral Experimental",
+      "Termodinâmica Química"
+    ],
+    "equipamentos médicos": [
+      "Engenharia Clínica Hospitalar Aplicada"
+    ],
+    "escalonamento de processos": [
+      "Sistemas Operacionais"
+    ],
+    "escrita acadêmica": [
+      "Trabalho de Conclusão de Curso I"
+    ],
+    "espaço dual": [
+      "Álgebra Linear II"
+    ],
+    "espaços de hilbert": [
+      "Métodos Matemáticos para a Engenharia"
+    ],
+    "espaços vetoriais": [
+      "Álgebra Linear",
+      "Álgebra Linear II"
+    ],
+    "espectrometria de massas": [
+      "Laboratório de Bioquímica Analítica",
+      "Proteômica"
+    ],
+    "espectroscopia": [
+      "Bioquímica Analítica",
+      "Laboratório de Bioquímica Analítica",
+      "Técnicas Experimentais",
+      "Tópicos em Ressonância Magnética Nuclear"
+    ],
+    "estabilidade de lyapunov": [
+      "Controle de Sistemas Dinâmicos"
+    ],
+    "estabilidade de sistemas": [
+      "Condicionamento Analógico de Sinais",
+      "Equações Diferenciais Ordinárias",
+      "Laboratório de Controle Aplicado"
+    ],
+    "estatística descritiva": [
+      "Probabilidade e Estatística"
+    ],
+    "estequiometria": [
+      "Engenharia Bioquímica 1",
+      "Matérias-Primas Cerâmicas",
+      "Química Geral",
+      "Química Geral Experimental",
+      "Química Orgânica",
+      "Química Orgânica Experimental",
+      "Síntese de Polímeros",
+      "Vidros, Vitrocerâmicos e Vidrados"
+    ],
+    "estudo de pós": [
+      "Metalurgia do Pó"
+    ],
+    "estática": [
+      "Biomecânica",
+      "Fenômenos Mecânicos",
+      "Mecânica Geral",
+      "Resistência dos Materiais"
+    ],
+    "evolução": [
+      "Biologia Geral",
+      "Introdução à Ecologia"
+    ],
+    "experiência do usuário": [
+      "Interação Humano-Computador e Experiência do Usuário (UX)"
+    ],
+    "expressões regulares": [
+      "Linguagens Formais e Autômatos"
+    ],
+    "extensão universitária": [
+      "Experimentando a Engenharia de Materiais",
+      "Iniciação aos PEPICTII",
+      "Prática em Projetos Extensionistas I",
+      "Práticas em Projetos Extensionistas II"
+    ],
+    "farmacocinética": [
+      "Fundamentos em Química Medicinal"
+    ],
+    "farmacologia": [
+      "Biologia Molecular da Célula Avançada",
+      "Fisiopatologia Cardiorrespiratória",
+      "Fundamentos em Química Medicinal"
+    ],
+    "fatoração de matrizes": [
+      "Álgebra Linear Computacional"
+    ],
+    "fenômenos de transporte": [
+      "Engenharia Bioquímica 1",
+      "Engenharia Bioquímica 2",
+      "Fundamentos em Engenharia Bioquímica",
+      "Processamento de Materiais Cerâmicos"
+    ],
+    "filosofia da ciência": [
+      "Ciência, Tecnologia e Sociedade"
+    ],
+    "filtros analógicos": [
+      "Condicionamento Analógico de Sinais"
+    ],
+    "filtros digitais": [
+      "Processamento de Sinais"
+    ],
+    "fisiopatologia": [
+      "Fisiopatologia Cardiorrespiratória",
+      "Fisiopatologia Clínica dos Sistemas Humanos"
+    ],
+    "forense digital": [
+      "Segurança da Informação"
+    ],
+    "fpga": [
+      "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores",
+      "Laboratório de Sistemas Computacionais: Comunicação Digital",
+      "Laboratório de Sistemas Computacionais: Sistemas Operacionais"
+    ],
+    "fractografia": [
+      "Introdução à Análise de Falhas em Metais"
+    ],
+    "funções": [
+      "Cálculo em Uma Variável"
+    ],
+    "funções multilineares": [
+      "Álgebra Linear II"
+    ],
+    "física atômica": [
+      "Física Moderna"
+    ],
+    "física quântica": [
+      "Física Geral"
+    ],
+    "game design": [
+      "Cultura dos Jogos Digitais",
+      "Desenvolvimento de Games"
+    ],
+    "game engines": [
+      "Desenvolvimento de Games"
+    ],
+    "genética": [
+      "Biologia Molecular da Célula",
+      "Biologia do Desenvolvimento",
+      "Biotecnologia Animal",
+      "Biotecnologia Vegetal",
+      "Imunologia Geral",
+      "Laboratório de Biologia Molecular e Celular",
+      "Laboratório de Bioquímica",
+      "Microbiologia Geral",
+      "Modelos Animais"
+    ],
+    "genética molecular": [
+      "Biologia Molecular do Gene",
+      "Fundamentos de Biologia Moderna"
+    ],
+    "genômica": [
+      "Algoritmos em Bioinformática",
+      "Bioinformática Avançada",
+      "Introdução à Bioinformática"
+    ],
+    "geodésicas": [
+      "Introdução à Geometria Diferencial"
+    ],
+    "geografia": [
+      "Mudança no Clima e Sociedade"
+    ],
+    "geometria descritiva": [
+      "Desenho Técnico Básico"
+    ],
+    "geometria diferencial": [
+      "Introdução à Geometria Diferencial"
+    ],
+    "geração de código": [
+      "Compiladores",
+      "Laboratório de Sistemas Computacionais: Compiladores"
+    ],
+    "gerenciamento de memória": [
+      "Sistemas Operacionais"
+    ],
+    "gestão ambiental": [
+      "Tecnologia e Meio Ambiente"
+    ],
+    "gestão da qualidade": [
+      "Resolução de Problemas Fabris na Engenharia de Materiais"
+    ],
+    "gestão de inovação": [
+      "Empreendedorismo em Biotecnologia"
+    ],
+    "gestão de manutenção": [
+      "Engenharia Clínica Hospitalar Aplicada"
+    ],
+    "gestão de negócios": [
+      "Desenvolvimento de Novos Negócios em Engenharia Biomédica",
+      "Empreendedorismo"
+    ],
+    "gestão de pessoas": [
+      "Fundamentos de Administração",
+      "Soft Skills Baseada em Neurociência"
+    ],
+    "gestão de projetos": [
+      "Engenharia de Produtos Cerâmicos",
+      "Engenharia de Software",
+      "Laboratório de Sistemas Computacionais: Engenharia de Sistemas",
+      "Projetos em Engenharia de Computação",
+      "Prática em Projetos Extensionistas I",
+      "Práticas em Projetos Extensionistas II"
+    ],
+    "gestão de resíduos": [
+      "Reciclagem de Materiais"
+    ],
+    "gpgpu": [
+      "Programação Concorrente e Distribuída"
+    ],
+    "gramáticas formais": [
+      "Linguagens Formais e Autômatos"
+    ],
+    "gravimetria": [
+      "Química Analítica"
+    ],
+    "hdl": [
+      "Laboratório de Sistemas Computacionais: Circuitos Digitais"
+    ],
+    "heurísticas": [
+      "Introdução à Pesquisa Operacional"
+    ],
+    "hierarquia de memória": [
+      "Arquitetura e Organização de Computadores"
+    ],
+    "histologia": [
+      "Anatomia"
+    ],
+    "história da ciência": [
+      "Tópicos em Ciência e Tecnologia II"
+    ],
+    "história da computação": [
+      "Cultura dos Jogos Digitais"
+    ],
+    "homeostase": [
+      "Fisiologia Humana I"
+    ],
+    "identidade descentralizada": [
+      "Tópicos em Tecnologia da Computação I: Carteiras Digitais"
+    ],
+    "imagem médica": [
+      "Instrumentos Biomédicos"
+    ],
+    "imunologia": [
+      "Biologia Molecular da Célula",
+      "Biologia Molecular da Célula Avançada",
+      "Imunologia Aplicada",
+      "Imunologia Geral"
+    ],
+    "indução matemática": [
+      "Matemática Discreta"
+    ],
+    "inferência bayesiana": [
+      "Aprendizado de Máquina e Reconhecimento de Padrões"
+    ],
+    "inferência estatística": [
+      "Econometria",
+      "Inferência e Análise de Regressão",
+      "Probabilidade e Estatística"
+    ],
+    "inovação tecnológica": [
+      "Tópicos em Ciência e Tecnologia II"
+    ],
+    "instalações elétricas": [
+      "Introdução à Eletrotécnica"
+    ],
+    "instrumentação biomédica": [
+      "Engenharia Médica Aplicada",
+      "Instrumentos Eletromédicos",
+      "Projetos em Engenharia Biomédica",
+      "Transdução de Grandezas Biomédicas"
+    ],
+    "integrais": [
+      "Cálculo em Uma Variável",
+      "Laboratório de Matemática"
+    ],
+    "inteligência emocional": [
+      "Neurociência Aplicada ao Cotidiano",
+      "Soft Skills Baseada em Neurociência"
+    ],
+    "interfaces de comunicação": [
+      "Sistemas Embarcados"
+    ],
+    "isa": [
+      "Laboratório de Sistemas Computacionais: Compiladores"
+    ],
+    "legislação": [
+      "Bioética e Biossegurança"
+    ],
+    "legislação sanitária": [
+      "Engenharia Clínica Hospitalar Aplicada"
+    ],
+    "ligações químicas": [
+      "Química Orgânica"
+    ],
+    "limites": [
+      "Cálculo em Uma Variável",
+      "Laboratório de Matemática"
+    ],
+    "lógica fuzzy": [
+      "Tópicos em Matemática Computacional II"
+    ],
+    "lógica programável": [
+      "Laboratório de Sistemas Computacionais: Comunicação Digital"
+    ],
+    "macroeconomia": [
+      "Introdução à Economia"
+    ],
+    "map-reduce": [
+      "Programação Concorrente e Distribuída"
+    ],
+    "matemática": [
+      "Tópicos em Ressonância Magnética Nuclear"
+    ],
+    "matemática computacional": [
+      "Tópicos em Matemática Computacional I"
+    ],
+    "matemática financeira": [
+      "Tópicos Especiais em Ciência e Engenharia de Materiais III – Engenharia Econômica"
+    ],
+    "mecânica clássica": [
+      "Física Geral"
+    ],
+    "mecânica de fluidos": [
+      "Física Geral"
+    ],
+    "mecânica dos fluidos": [
+      "Fenômenos de Transporte",
+      "Fenômenos de Transporte Aplicados a Sistemas Biológicos",
+      "Fenômenos do Contínuo",
+      "Fenômenos do Contínuo Experimental",
+      "Reologia dos Materiais"
+    ],
+    "mecânica dos sólidos": [
+      "Introdução à Análise de Falhas em Metais",
+      "Resistência dos Materiais"
+    ],
+    "mecânica quântica": [
+      "Física Moderna",
+      "Introdução à Nanotecnologia",
+      "Modelagem Molecular",
+      "Tópicos em Ressonância Magnética Nuclear"
+    ],
+    "medicina regenerativa": [
+      "Engenharia Tecidual e Medicina Regenerativa"
+    ],
+    "melhoramento genético": [
+      "Biotecnologia Vegetal"
+    ],
+    "meta-heurísticas": [
+      "Introdução à Pesquisa Operacional"
+    ],
+    "metabolismo": [
+      "Bioquímica I",
+      "Bioquímica II",
+      "Microbiologia Aplicada e Industrial"
+    ],
+    "metabolismo celular": [
+      "Fisiologia Humana I"
+    ],
+    "metabolismo vegetal": [
+      "Botânica e Fisiologia Vegetal"
+    ],
+    "metaheurísticas": [
+      "Metaheurísticas em Otimização Combinatória"
+    ],
+    "metalurgia": [
+      "Ensaios de Materiais",
+      "Introdução à Análise de Falhas em Metais",
+      "Materiais Metálicos",
+      "Metalurgia Física",
+      "Metalurgia Mecânica",
+      "Metalurgia do Pó",
+      "Processamento de Materiais Metálicos",
+      "Tratamentos Térmicos"
+    ],
+    "metodologia científica": [
+      "Trabalho de Conclusão de Curso I"
+    ],
+    "metodologia de pesquisa": [
+      "Iniciação aos PEPICTII"
+    ],
+    "metodologia pbl": [
+      "Projetos em Engenharia de Computação"
+    ],
+    "metrologia": [
+      "Fenômenos Eletromagnéticos Experimental",
+      "Fenômenos Mecânicos Experimental",
+      "Fenômenos do Contínuo Experimental"
+    ],
+    "micologia": [
+      "Microbiologia Geral"
+    ],
+    "microbiologia": [
+      "Biotecnologia Ambiental I",
+      "Imunologia Aplicada",
+      "Imunologia Geral",
+      "Introdução à Biotecnologia",
+      "Laboratório de Bioquímica",
+      "Laboratório de Engenharia Bioquímica",
+      "Laboratório de Microbiologia",
+      "Microbiologia Geral"
+    ],
+    "microbiologia ambiental": [
+      "Biotecnologia Ambiental II"
+    ],
+    "microcontroladores": [
+      "Sistemas Embarcados"
+    ],
+    "microeconomia": [
+      "Introdução à Economia",
+      "Macroeconomia"
+    ],
+    "microfabricação": [
+      "Biossensores"
+    ],
+    "microscopia": [
+      "Técnicas Experimentais"
+    ],
+    "mineralogia": [
+      "Matérias-Primas Cerâmicas"
+    ],
+    "modelagem de dados": [
+      "Banco de Dados"
+    ],
+    "modelagem de software": [
+      "Projeto Orientado a Objetos"
+    ],
+    "modelagem matemática": [
+      "Equações Diferenciais Ordinárias",
+      "Introdução à Biologia de Sistemas",
+      "Introdução à Neurociência",
+      "Resolução de Problemas via Modelagem Matemática I",
+      "Resolução de Problemas via Modelagem Matemática II"
+    ],
+    "modelo osi": [
+      "Redes de Computadores",
+      "Tópicos em Tecnologia da Computação II – Comunicação de Dados na Internet e em Redes Futuras"
+    ],
+    "modelos de markov escondidos": [
+      "Bioinformática Avançada"
+    ],
+    "modelos lineares": [
+      "Aprendizado de Máquina e Reconhecimento de Padrões"
+    ],
+    "modulação": [
+      "Laboratório de Sistemas Computacionais: Comunicação Digital"
+    ],
+    "morfologia": [
+      "Biologia Geral"
+    ],
+    "máquinas de estados": [
+      "Laboratório de Sistemas Computacionais: Circuitos Digitais"
+    ],
+    "máquinas de estados finitos": [
+      "Circuitos Digitais"
+    ],
+    "método de diferenças finitas": [
+      "Métodos Numéricos para Equações Diferenciais"
+    ],
+    "método de elementos finitos": [
+      "Métodos Avançados em Processamento de Imagens Biomédicas",
+      "Métodos Numéricos para Equações Diferenciais"
+    ],
+    "nanomateriais": [
+      "Introdução à Nanotecnologia"
+    ],
+    "narrativa digital": [
+      "Desenvolvimento de Games"
+    ],
+    "narratologia": [
+      "Cultura dos Jogos Digitais"
+    ],
+    "neurociência": [
+      "Biologia Molecular da Célula Avançada",
+      "Introdução à Neurociência",
+      "Neurociência Aplicada ao Cotidiano",
+      "Soft Skills Baseada em Neurociência"
+    ],
+    "neuroimagem": [
+      "Introdução à Neurociência"
+    ],
+    "normalização": [
+      "Banco de Dados"
+    ],
+    "normas técnicas": [
+      "Engenharia Clínica Hospitalar Aplicada",
+      "Materiais de Construção Civil"
+    ],
+    "normas técnicas de segurança": [
+      "Introdução à Eletrotécnica"
+    ],
+    "notação assintótica": [
+      "Algoritmos e Estruturas de Dados I"
+    ],
+    "np-completude": [
+      "Projeto e Análise de Algoritmos"
+    ],
+    "números complexos": [
+      "Circuitos Elétricos I",
+      "Matemática Geral"
+    ],
+    "operadores adjuntos": [
+      "Álgebra Linear II"
+    ],
+    "operações unitárias": [
+      "Engenharia Bioquímica 2",
+      "Fundamentos em Engenharia Bioquímica"
+    ],
+    "organização de computadores": [
+      "Arquitetura e Organização de Computadores"
+    ],
+    "orientação a objetos": [
+      "Projeto Orientado a Objetos"
+    ],
+    "osteointegração": [
+      "Biomateriais"
+    ],
+    "otimização combinatória": [
+      "Metaheurísticas em Otimização Combinatória"
+    ],
+    "otimização convexa": [
+      "Otimização Não Linear"
+    ],
+    "otimização robusta": [
+      "Tópicos em Matemática Computacional II"
+    ],
+    "padrões de projeto": [
+      "Programação Orientada a Objetos",
+      "Projeto Orientado a Objetos"
+    ],
+    "patologia": [
+      "Fisiopatologia Clínica dos Sistemas Humanos",
+      "Imunologia Aplicada"
+    ],
+    "patologia das construções": [
+      "Materiais de Construção Civil"
+    ],
+    "pesquisa operacional": [
+      "Otimização Inteira"
+    ],
+    "planejamento estratégico": [
+      "Fundamentos de Administração"
+    ],
+    "plano de negócios": [
+      "Empreendedorismo",
+      "Empreendedorismo em Biotecnologia"
+    ],
+    "poluição": [
+      "Tecnologia e Meio Ambiente"
+    ],
+    "polímeros": [
+      "Estrutura e Propriedades de Polímeros",
+      "Materiais Poliméricos",
+      "Processamento de Termorrígidos e Elastômeros",
+      "Síntese de Polímeros",
+      "Tecnologia em Tintas e Vernizes",
+      "Tópicos Especiais em Ciência e Engenharia de Materiais IV - Aditivação de Termoplásticos"
+    ],
+    "políticas públicas": [
+      "Ciência, Tecnologia e Sociedade",
+      "Ciência, Tecnologia, Sociedade e Ambiente",
+      "Mudança no Clima e Sociedade",
+      "Tópicos em Ciência e Tecnologia II"
+    ],
+    "ponteiros": [
+      "Algoritmos e Estruturas de Dados I"
+    ],
+    "potencial químico": [
+      "Termodinâmica Química"
+    ],
+    "privacidade de dados": [
+      "Segurança da Informação"
+    ],
+    "processamento de consultas": [
+      "Aspectos de Implementação de Banco de Dados"
+    ],
+    "processamento de imagens": [
+      "Métodos Avançados em Processamento de Imagens Biomédicas",
+      "Processamento de Imagens"
+    ],
+    "processamento de linguagem natural": [
+      "Inteligência Artificial"
+    ],
+    "processamento de sinais biomédicos": [
+      "Instrumentos Eletromédicos"
+    ],
+    "processos de fabricação": [
+      "Engenharia de Produtos Cerâmicos",
+      "Resolução de Problemas Fabris na Engenharia de Materiais"
+    ],
+    "processos de manufatura": [
+      "Seleção de Materiais"
+    ],
+    "processos eletrometalúrgicos": [
+      "Metalurgia Extrativa"
+    ],
+    "processos hidrometalúrgicos": [
+      "Metalurgia Extrativa"
+    ],
+    "processos organizacionais": [
+      "Fundamentos de Administração"
+    ],
+    "processos pirometalúrgicos": [
+      "Metalurgia Extrativa"
+    ],
+    "programação competitiva": [
+      "Tópicos em Tecnologia da Computação IV (Desafios de Programação)"
+    ],
+    "programação concorrente": [
+      "Programação Concorrente e Distribuída"
+    ],
+    "programação dinâmica": [
+      "Projeto e Análise de Algoritmos",
+      "Tópicos em Tecnologia da Computação IV (Desafios de Programação)"
+    ],
+    "programação inteira": [
+      "Introdução à Pesquisa Operacional"
+    ],
+    "programação linear": [
+      "Introdução à Pesquisa Operacional",
+      "Otimização Inteira",
+      "Otimização Linear"
+    ],
+    "programação orientada a objetos": [
+      "Programação Orientada a Objetos"
+    ],
+    "propagação de incertezas": [
+      "Fenômenos do Contínuo Experimental"
+    ],
+    "propriedade intelectual": [
+      "Desenvolvimento de Novos Negócios em Engenharia Biomédica",
+      "Empreendedorismo em Biotecnologia"
+    ],
+    "propriedades dos materiais": [
+      "Introdução a Engenharia de Materiais"
+    ],
+    "propriedades mecânicas": [
+      "Seleção de Materiais"
+    ],
+    "propriedades térmicas": [
+      "Cerâmicas Refratárias"
+    ],
+    "proteômica": [
+      "Introdução à Bioinformática"
+    ],
+    "protocolos de comunicação": [
+      "Internet das Coisas"
+    ],
+    "protocolos de rede": [
+      "Redes de Computadores",
+      "Tópicos em Tecnologia da Computação II – Comunicação de Dados na Internet e em Redes Futuras"
+    ],
+    "prototipagem": [
+      "Projetos em Engenharia Biomédica"
+    ],
+    "psicologia cognitiva": [
+      "Interação Humano-Computador e Experiência do Usuário (UX)",
+      "Neurociência Aplicada ao Cotidiano"
+    ],
+    "química analítica": [
+      "Bioquímica Analítica"
+    ],
+    "química de coordenação": [
+      "Química Inorgânica"
+    ],
+    "química do estado sólido": [
+      "Química Inorgânica"
+    ],
+    "química inorgânica": [
+      "Química Inorgânica"
+    ],
+    "química orgânica": [
+      "Fundamentos em Química Medicinal",
+      "Materiais Poliméricos",
+      "Química Orgânica Experimental",
+      "Tópicos Especiais em Ciência e Engenharia de Materiais IV - Aditivação de Termoplásticos"
+    ],
+    "radiologia": [
+      "Instrumentos Biomédicos"
+    ],
+    "rasterização": [
+      "Computação Gráfica"
+    ],
+    "reconhecimento de padrões": [
+      "Aprendizado de Máquina e Reconhecimento de Padrões"
+    ],
+    "recuperação de falhas": [
+      "Aspectos de Implementação de Banco de Dados"
+    ],
+    "redes complexas": [
+      "Introdução à Biologia de Sistemas"
+    ],
+    "redes neurais artificiais": [
+      "Introdução às Redes Neurais Artificiais"
+    ],
+    "regressão linear": [
+      "Inferência e Análise de Regressão"
+    ],
+    "renderização": [
+      "Computação Gráfica"
+    ],
+    "reologia": [
+      "Processamento de Materiais Cerâmicos",
+      "Reologia dos Materiais",
+      "Tecnologia em Tintas e Vernizes"
+    ],
+    "representação do conhecimento": [
+      "Inteligência Artificial"
+    ],
+    "resistência dos materiais": [
+      "Biomecânica",
+      "Ensaios de Materiais",
+      "Materiais Compósitos",
+      "Mecânica Geral",
+      "Metalurgia Mecânica",
+      "Processamento de Materiais Metálicos"
+    ],
+    "ressonância magnética nuclear": [
+      "Biologia Estrutural",
+      "Tópicos em Ressonância Magnética Nuclear"
+    ],
+    "revisão bibliográfica": [
+      "Trabalho de Conclusão de Curso I"
+    ],
+    "robótica": [
+      "Inteligência Artificial"
+    ],
+    "saneamento básico": [
+      "Biotecnologia Ambiental II"
+    ],
+    "segmentação de imagens": [
+      "Métodos Avançados em Processamento de Imagens Biomédicas"
+    ],
+    "segurança laboratorial": [
+      "Química Geral Experimental"
+    ],
+    "semicondutores": [
+      "Eletrônica",
+      "Fundamentos de Eletrônica Aplicada",
+      "Introdução aos Materiais Elétricos",
+      "Laboratório de Circuitos Elétricos"
+    ],
+    "semiologia": [
+      "Fisiopatologia Cardiorrespiratória",
+      "Fisiopatologia Clínica dos Sistemas Humanos"
+    ],
+    "sensores e atuadores": [
+      "Internet das Coisas",
+      "Sistemas Embarcados"
+    ],
+    "sinais e sistemas": [
+      "Análise de Sinais"
+    ],
+    "sinterização": [
+      "Metalurgia do Pó"
+    ],
+    "sistema cardiovascular": [
+      "Fisiologia Humana II"
+    ],
+    "sistema digestório": [
+      "Fisiologia Humana II"
+    ],
+    "sistema endócrino": [
+      "Fisiologia Humana II"
+    ],
+    "sistema renal": [
+      "Fisiologia Humana II"
+    ],
+    "sistema respiratório": [
+      "Fisiologia Humana II"
+    ],
+    "sistemas de apoio à decisão clínica": [
+      "Engenharia Médica Aplicada"
+    ],
+    "sistemas de arquivos": [
+      "Sistemas Operacionais"
+    ],
+    "sistemas de memória": [
+      "Sistemas Embarcados"
+    ],
+    "sistemas de numeração": [
+      "Circuitos Digitais"
+    ],
+    "sistemas de potência": [
+      "Introdução à Eletrotécnica"
+    ],
+    "sistemas de tempo real": [
+      "Internet das Coisas"
+    ],
+    "sistemas digitais": [
+      "Laboratório de Eletrônica Digital",
+      "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores",
+      "Laboratório de Sistemas Computacionais: Circuitos Digitais"
+    ],
+    "sistemas distribuídos": [
+      "Programação Concorrente e Distribuída"
+    ],
+    "sistemas embarcados": [
+      "Internet das Coisas",
+      "Laboratório de Controle Aplicado"
+    ],
+    "sistemática": [
+      "Biologia Geral"
+    ],
+    "sociologia": [
+      "Ciência, Tecnologia e Sociedade"
+    ],
+    "sociologia da tecnologia": [
+      "Ciência, Tecnologia, Sociedade e Ambiente"
+    ],
+    "sociologia dos jogos": [
+      "Cultura dos Jogos Digitais"
+    ],
+    "sql": [
+      "Banco de Dados"
+    ],
+    "superfícies": [
+      "Introdução à Geometria Diferencial"
+    ],
+    "sustentabilidade": [
+      "Biotecnologia Ambiental I",
+      "Biotecnologia de Energias Renováveis I",
+      "Ciência, Tecnologia, Sociedade e Ambiente",
+      "Materiais de Construção Civil",
+      "Mudança no Clima e Sociedade",
+      "Reciclagem de Materiais",
+      "Tecnologia e Meio Ambiente"
+    ],
+    "séries": [
+      "Matemática Geral"
+    ],
+    "séries de fourier": [
+      "Equações Diferenciais Parciais",
+      "Métodos Matemáticos para a Engenharia",
+      "Séries e Equações Diferenciais Ordinárias"
+    ],
+    "séries numéricas": [
+      "Séries e Equações Diferenciais Ordinárias"
+    ],
+    "taxonomia": [
+      "Biologia Geral"
+    ],
+    "tcp/ip": [
+      "Redes de Computadores",
+      "Tópicos em Tecnologia da Computação II – Comunicação de Dados na Internet e em Redes Futuras"
+    ],
+    "teorema central do limite": [
+      "Probabilidade"
+    ],
+    "teoria assintótica": [
+      "Econometria"
+    ],
+    "teoria de amostragem": [
+      "Processamento de Sinais"
+    ],
+    "teoria de controle": [
+      "Controle de Sistemas Dinâmicos",
+      "Laboratório de Controle Aplicado"
+    ],
+    "teoria de erros": [
+      "Fenômenos Mecânicos Experimental"
+    ],
+    "teoria de grupos": [
+      "Elementos de Álgebra"
+    ],
+    "teoria de mecanismos": [
+      "Sistemas Mecânicos"
+    ],
+    "teoria dos conjuntos": [
+      "Análise Real I",
+      "Análise Real II",
+      "Matemática Discreta",
+      "Tópicos em Matemática Computacional II"
+    ],
+    "teoria dos números": [
+      "Teoria dos Números e Criptografia"
+    ],
+    "teoria econômica": [
+      "Introdução à Economia",
+      "Macroeconomia"
+    ],
+    "teoria geral da administração": [
+      "Fundamentos de Administração"
+    ],
+    "termodinâmica de materiais": [
+      "Ciência e Tecnologia dos Materiais"
+    ],
+    "termodinâmica estatística": [
+      "Modelagem Molecular"
+    ],
+    "termodinâmica química": [
+      "Matérias-Primas Cerâmicas",
+      "Química Orgânica",
+      "Termodinâmica dos Sólidos"
+    ],
+    "testes de software": [
+      "Engenharia de Software"
+    ],
+    "tipos abstratos de dados": [
+      "Algoritmos e Estruturas de Dados I"
+    ],
+    "titulação": [
+      "Química Geral Experimental"
+    ],
+    "tokenização": [
+      "Tópicos em Tecnologia da Computação I: Carteiras Digitais"
+    ],
+    "tomografia": [
+      "Métodos Avançados em Processamento de Imagens Biomédicas"
+    ],
+    "topologia": [
+      "Análise Real I",
+      "Análise Real II",
+      "Espaços Métricos"
+    ],
+    "trabalho em equipe": [
+      "Prática em Projetos Extensionistas I",
+      "Práticas em Projetos Extensionistas II"
+    ],
+    "transdução": [
+      "Biossensores"
+    ],
+    "transferência de calor": [
+      "Fenômenos de Transporte",
+      "Fenômenos de Transporte Aplicados a Sistemas Biológicos"
+    ],
+    "transferência de massa": [
+      "Fenômenos de Transporte Aplicados a Sistemas Biológicos"
+    ],
+    "transformada de fourier": [
+      "Análise de Sinais",
+      "Equações Diferenciais Parciais",
+      "Processamento de Imagens",
+      "Tópicos em Ressonância Magnética Nuclear"
+    ],
+    "transformada de laplace": [
+      "Circuitos Elétricos II",
+      "Controle de Sistemas Dinâmicos",
+      "Equações Diferenciais Ordinárias",
+      "Laboratório de Controle Aplicado",
+      "Métodos Matemáticos para a Engenharia"
+    ],
+    "transformada wavelet": [
+      "Métodos Avançados em Processamento de Imagens Biomédicas"
+    ],
+    "transformada z": [
+      "Análise de Sinais"
+    ],
+    "transformações geométricas": [
+      "Computação Gráfica"
+    ],
+    "transformações lineares": [
+      "Álgebra Linear",
+      "Álgebra Linear II"
+    ],
+    "transistores": [
+      "Eletrônica",
+      "Fundamentos de Eletrônica Aplicada"
+    ],
+    "tratamento de efluentes": [
+      "Biotecnologia Ambiental II"
+    ],
+    "tratamento de minérios": [
+      "Metalurgia Extrativa"
+    ],
+    "trigonometria": [
+      "Geometria Analítica"
+    ],
+    "técnicas laboratoriais": [
+      "Laboratório de Microbiologia",
+      "Química Orgânica Experimental"
+    ],
+    "ultrassom": [
+      "Métodos Avançados em Processamento de Imagens Biomédicas"
+    ],
+    "uml": [
+      "Programação Orientada a Objetos",
+      "Projeto Orientado a Objetos"
+    ],
+    "usabilidade": [
+      "Interação Humano-Computador e Experiência do Usuário (UX)"
+    ],
+    "variáveis aleatórias": [
+      "Probabilidade"
+    ],
+    "variáveis complexas": [
+      "Funções Analíticas"
+    ],
+    "verilog": [
+      "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores",
+      "Laboratório de Sistemas Computacionais: Sistemas Operacionais"
+    ],
+    "vhdl": [
+      "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores",
+      "Laboratório de Sistemas Computacionais: Sistemas Operacionais"
+    ],
+    "viabilidade financeira": [
+      "Empreendedorismo em Biotecnologia"
+    ],
+    "virologia": [
+      "Microbiologia Geral"
+    ],
+    "viscoelasticidade": [
+      "Estrutura e Propriedades de Polímeros",
+      "Reologia dos Materiais"
+    ],
+    "visão computacional": [
+      "Processamento de Imagens"
+    ],
+    "volumetria": [
+      "Química Analítica"
+    ],
+    "zoologia": [
+      "Biotecnologia Animal"
+    ],
+    "álgebra abstrata": [
+      "Elementos de Álgebra"
+    ],
+    "álgebra booleana": [
+      "Circuitos Digitais"
+    ],
+    "árvores binárias": [
+      "Algoritmos e Estruturas de Dados I"
+    ],
+    "ética": [
+      "Bioética e Biossegurança",
+      "Ciência, Tecnologia e Sociedade",
+      "Ciência, Tecnologia, Sociedade e Ambiente"
+    ],
+    "ética animal": [
+      "Modelos Animais"
+    ],
+    "ética na pesquisa": [
+      "Trabalho de Conclusão de Curso I"
+    ],
+    "óptica": [
+      "Física Moderna"
+    ],
+    "ótica": [
+      "Física Geral"
+    ]
+  },
+  "aborda": {
+    "anatomia": [
+      {
+        "disciplina": "Anatomia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia do Desenvolvimento",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Engenharia Tecidual e Medicina Regenerativa",
+        "confidence": 0.7
+      }
+    ],
+    "aprendizado de máquina": [
+      {
+        "disciplina": "Aprendizado de Máquina e Reconhecimento de Padrões",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Bioinformática Avançada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Inteligência Artificial",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução às Redes Neurais Artificiais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Métodos Avançados em Processamento de Imagens Biomédicas",
+        "confidence": 0.7
+      }
+    ],
+    "arquitetura de computadores": [
+      {
+        "disciplina": "Arquitetura e Organização de Computadores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Internet das Coisas",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Compiladores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Sistemas Embarcados",
+        "confidence": 0.7
+      }
+    ],
+    "banco de dados": [
+      {
+        "disciplina": "Algoritmos em Bioinformática",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Aspectos de Implementação de Banco de Dados",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Banco de Dados",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Bioinformática",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Proteômica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tópicos em Tecnologia da Computação I: Carteiras Digitais",
+        "confidence": 0.7
+      }
+    ],
+    "biologia": [
+      {
+        "disciplina": "Bioengenharia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Estrutural",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Molecular da Célula",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Molecular da Célula Avançada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Molecular do Gene",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia do Desenvolvimento",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biomecânica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biossensores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Ambiental I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Ambiental II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Animal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Vegetal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Botânica e Fisiologia Vegetal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Empreendedorismo em Biotecnologia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Engenharia Tecidual e Medicina Regenerativa",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos de Transporte Aplicados a Sistemas Biológicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fundamentos de Biologia Moderna",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Imunologia Aplicada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Imunologia Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Bioinformática",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Biologia de Sistemas",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Biotecnologia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Ecologia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Neurociência",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Biologia Molecular e Celular",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Bioquímica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Microbiologia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Microbiologia Aplicada e Industrial",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Microbiologia Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Modelos Animais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Neurociência Aplicada ao Cotidiano",
+        "confidence": 0.7
+      }
+    ],
+    "bioquímica": [
+      {
+        "disciplina": "Bioengenharia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Estrutural",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Molecular da Célula",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Molecular da Célula Avançada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biologia Molecular do Gene",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Bioquímica Analítica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Bioquímica I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Bioquímica II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Ambiental I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Animal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Vegetal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia de Energias Renováveis I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Engenharia Bioquímica 1",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Engenharia Bioquímica 2",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Engenharia Tecidual e Medicina Regenerativa",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fundamentos de Biologia Moderna",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fundamentos em Engenharia Bioquímica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fundamentos em Química Medicinal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Imunologia Aplicada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Imunologia Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Bioinformática",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Biotecnologia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Biologia Molecular e Celular",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Bioquímica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Bioquímica Analítica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Engenharia Bioquímica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Microbiologia Aplicada e Industrial",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Microbiologia Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Modelagem Molecular",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Modelos Animais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Geral",
+        "confidence": 0.7
+      }
+    ],
+    "circuitos": [
+      {
+        "disciplina": "Circuitos Digitais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Circuitos Elétricos I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Circuitos Elétricos II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Condicionamento Analógico de Sinais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos Eletromagnéticos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fundamentos de Eletrônica Aplicada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Instrumentos Biomédicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Eletrotécnica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Circuitos Elétricos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Eletrônica Digital",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Circuitos Digitais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Sistemas Embarcados",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Transdução de Grandezas Biomédicas",
+        "confidence": 0.7
+      }
+    ],
+    "ciência de dados": [
+      {
+        "disciplina": "Inteligência Artificial",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução às Redes Neurais Artificiais",
+        "confidence": 0.7
+      }
+    ],
+    "computação paralela": [
+      {
+        "disciplina": "Programação Concorrente e Distribuída",
+        "confidence": 0.7
+      }
+    ],
+    "cálculo": [
+      {
+        "disciplina": "Análise Real I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Análise Real II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Cálculo em Uma Variável",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Cálculo em Várias Variáveis",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Matemática",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Matemática Geral",
+        "confidence": 0.7
+      }
+    ],
+    "eletrônica": [
+      {
+        "disciplina": "Circuitos Elétricos I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Condicionamento Analógico de Sinais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Eletrônica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos Eletromagnéticos Experimental",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fundamentos de Eletrônica Aplicada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Instrumentos Biomédicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Instrumentos Eletromédicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução aos Materiais Elétricos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Eletrotécnica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Circuitos Elétricos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Eletrônica Digital",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Sistemas Embarcados",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Transdução de Grandezas Biomédicas",
+        "confidence": 0.7
+      }
+    ],
+    "engenharia de software": [
+      {
+        "disciplina": "Engenharia de Software",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Engenharia de Sistemas",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Programação Orientada a Objetos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Projeto Orientado a Objetos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Projetos em Engenharia de Computação",
+        "confidence": 0.7
+      }
+    ],
+    "equações diferenciais": [
+      {
+        "disciplina": "Controle de Sistemas Dinâmicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Equações Diferenciais Ordinárias",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Equações Diferenciais Parciais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Matemática Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Métodos Numéricos para Equações Diferenciais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Séries e Equações Diferenciais Ordinárias",
+        "confidence": 0.7
+      }
+    ],
+    "estatística": [
+      {
+        "disciplina": "Bioinformática Avançada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Econometria",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Inferência e Análise de Regressão",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Bioinformática",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Probabilidade e Estatística",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Analítica",
+        "confidence": 0.7
+      }
+    ],
+    "estruturas de dados": [
+      {
+        "disciplina": "Algoritmos e Estruturas de Dados I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Algoritmos e Estruturas de Dados II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Lógica de Programação",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Projeto e Análise de Algoritmos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tópicos em Tecnologia da Computação IV (Desafios de Programação)",
+        "confidence": 0.7
+      }
+    ],
+    "fisiologia": [
+      {
+        "disciplina": "Biologia Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Animal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Botânica e Fisiologia Vegetal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Engenharia Tecidual e Medicina Regenerativa",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos de Transporte Aplicados a Sistemas Biológicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fisiologia Humana I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fisiologia Humana II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fisiopatologia Cardiorrespiratória",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fisiopatologia Clínica dos Sistemas Humanos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fundamentos de Biologia Moderna",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Neurociência",
+        "confidence": 0.7
+      }
+    ],
+    "física": [
+      {
+        "disciplina": "Biologia Estrutural",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biomecânica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biossensores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Ciência e Tecnologia dos Materiais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Desenvolvimento de Games",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos Eletromagnéticos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos Eletromagnéticos Experimental",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos Mecânicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Física Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Física Moderna",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Instrumentos Biomédicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Modelagem Molecular",
+        "confidence": 0.7
+      }
+    ],
+    "geometria analítica": [
+      {
+        "disciplina": "Computação Gráfica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Geometria Analítica",
+        "confidence": 0.7
+      }
+    ],
+    "grafos": [
+      {
+        "disciplina": "Algoritmos e Estruturas de Dados I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Algoritmos e Estruturas de Dados II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Aprendizado de Máquina e Reconhecimento de Padrões",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Bioinformática Avançada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Biologia de Sistemas",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Pesquisa Operacional",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Matemática Discreta",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Projeto e Análise de Algoritmos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Teoria dos Grafos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tópicos em Tecnologia da Computação IV (Desafios de Programação)",
+        "confidence": 0.7
+      }
+    ],
+    "interação humano-computador": [
+      {
+        "disciplina": "Cultura dos Jogos Digitais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Interação Humano-Computador e Experiência do Usuário (UX)",
+        "confidence": 0.7
+      }
+    ],
+    "lógica": [
+      {
+        "disciplina": "Circuitos Digitais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Eletrônica Digital",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Linguagens Formais e Autômatos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Lógica de Programação",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Matemática Discreta",
+        "confidence": 0.7
+      }
+    ],
+    "mecânica": [
+      {
+        "disciplina": "Fenômenos Mecânicos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos Mecânicos Experimental",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Mecânica Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Sistemas Mecânicos",
+        "confidence": 0.7
+      }
+    ],
+    "métodos numéricos": [
+      {
+        "disciplina": "Cálculo Numérico",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Métodos Matemáticos para a Engenharia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Métodos Numéricos para Equações Diferenciais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Resolução de Problemas via Modelagem Matemática I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Resolução de Problemas via Modelagem Matemática II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tópicos em Matemática Computacional I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Álgebra Linear Computacional",
+        "confidence": 0.7
+      }
+    ],
+    "otimização": [
+      {
+        "disciplina": "Compiladores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Econometria",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Pesquisa Operacional",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Compiladores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Metaheurísticas em Otimização Combinatória",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Otimização Inteira",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Otimização Linear",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Otimização Não Linear",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Resolução de Problemas via Modelagem Matemática I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Resolução de Problemas via Modelagem Matemática II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tópicos em Matemática Computacional I",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tópicos em Matemática Computacional II",
+        "confidence": 0.7
+      }
+    ],
+    "probabilidade": [
+      {
+        "disciplina": "Aprendizado de Máquina e Reconhecimento de Padrões",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Introdução à Pesquisa Operacional",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Probabilidade",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Probabilidade e Estatística",
+        "confidence": 0.7
+      }
+    ],
+    "processamento de sinais": [
+      {
+        "disciplina": "Análise de Sinais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Circuitos Elétricos II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Condicionamento Analógico de Sinais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Engenharia Médica Aplicada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Controle Aplicado",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Comunicação Digital",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Métodos Avançados em Processamento de Imagens Biomédicas",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Processamento de Imagens",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Processamento de Sinais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Transdução de Grandezas Biomédicas",
+        "confidence": 0.7
+      }
+    ],
+    "programação": [
+      {
+        "disciplina": "Algoritmos em Bioinformática",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Bioinformática Avançada",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Desenvolvimento de Games",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Internet das Coisas",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Laboratório de Controle Aplicado",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Lógica de Programação",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Programação Orientada a Objetos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Sistemas Embarcados",
+        "confidence": 0.7
+      }
+    ],
+    "química": [
+      {
+        "disciplina": "Biossensores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Biotecnologia Ambiental II",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Ciência e Tecnologia dos Materiais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Corrosão e Degradação de Materiais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fundamentos em Química Medicinal",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Metalurgia Extrativa",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Analítica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Geral Experimental",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Inorgânica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Orgânica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Orgânica Experimental",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Síntese de Polímeros",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tecnologia em Tintas e Vernizes",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Termodinâmica Química",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Termodinâmica dos Sólidos",
+        "confidence": 0.7
+      }
+    ],
+    "redes de computadores": [
+      {
+        "disciplina": "Internet das Coisas",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Redes de Computadores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tópicos em Tecnologia da Computação II – Comunicação de Dados na Internet e em Redes Futuras",
+        "confidence": 0.7
+      }
+    ],
+    "segurança da informação": [
+      {
+        "disciplina": "Segurança da Informação",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Teoria dos Números e Criptografia",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Tópicos em Tecnologia da Computação I: Carteiras Digitais",
+        "confidence": 0.7
+      }
+    ],
+    "sistemas operacionais": [
+      {
+        "disciplina": "Laboratório de Sistemas Computacionais: Sistemas Operacionais",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Sistemas Operacionais",
+        "confidence": 0.7
+      }
+    ],
+    "teoria da computação": [
+      {
+        "disciplina": "Compiladores",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Linguagens Formais e Autômatos",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Projeto e Análise de Algoritmos",
+        "confidence": 0.7
+      }
+    ],
+    "termodinâmica": [
+      {
+        "disciplina": "Fenômenos do Contínuo",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Fenômenos do Contínuo Experimental",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Física Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Metalurgia Extrativa",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Analítica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Química Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Termodinâmica Química",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Termodinâmica dos Sólidos",
+        "confidence": 0.7
+      }
+    ],
+    "álgebra linear": [
+      {
+        "disciplina": "Computação Gráfica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Geometria Analítica",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Matemática Geral",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Álgebra Linear",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Álgebra Linear Computacional",
+        "confidence": 0.7
+      },
+      {
+        "disciplina": "Álgebra Linear II",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "requer_base": {
+    "Algoritmos e Estruturas de Dados I": {
+      "estatística": 0.5,
+      "lógica": 0.8,
+      "programação": 1.0
+    },
+    "Algoritmos e Estruturas de Dados II": {
+      "estatística": 0.5,
+      "estruturas de dados": 0.9,
+      "lógica": 0.8,
+      "programação": 1.0
+    },
+    "Algoritmos em Bioinformática": {
+      "biologia": 1.0,
+      "estruturas de dados": 0.9,
+      "probabilidade": 0.6,
+      "álgebra linear": 0.7
+    },
+    "Anatomia": {
+      "biologia": 0.9
+    },
+    "Análise Real I": {
+      "cálculo": 1.0,
+      "estatística": 0.5,
+      "lógica": 0.8
+    },
+    "Análise Real II": {
+      "cálculo": 1.0,
+      "geometria analítica": 0.6,
+      "lógica": 0.8,
+      "álgebra linear": 0.5
+    },
+    "Análise de Sinais": {
+      "cálculo": 1.0,
+      "estatística": 0.6,
+      "probabilidade": 0.5,
+      "programação": 0.7,
+      "álgebra linear": 0.9
+    },
+    "Aprendizado de Máquina e Reconhecimento de Padrões": {
+      "cálculo": 0.9,
+      "estatística": 0.9,
+      "programação": 0.8,
+      "álgebra linear": 1.0
+    },
+    "Arquitetura e Organização de Computadores": {
+      "lógica": 1.0,
+      "programação": 0.8,
+      "sistemas operacionais": 0.5
+    },
+    "Aspectos de Implementação de Banco de Dados": {
+      "estruturas de dados": 0.9,
+      "grafos": 0.6,
+      "programação": 0.8,
+      "sistemas operacionais": 0.8
+    },
+    "Banco de Dados": {
+      "estruturas de dados": 0.7,
+      "lógica": 0.9,
+      "programação": 0.6
+    },
+    "Bioengenharia": {
+      "estatística": 0.6,
+      "física": 0.7,
+      "química": 0.9
+    },
+    "Bioinformática Avançada": {
+      "biologia": 1.0,
+      "bioquímica": 0.9,
+      "probabilidade": 0.8,
+      "programação": 0.6,
+      "álgebra linear": 0.7
+    },
+    "Biologia Estrutural": {
+      "biologia": 0.9,
+      "bioquímica": 0.9,
+      "física": 0.7,
+      "química": 0.8
+    },
+    "Biologia Geral": {
+      "bioquímica": 0.7,
+      "química": 0.8
+    },
+    "Biologia Molecular da Célula": {
+      "biologia": 1.0,
+      "bioquímica": 0.8,
+      "química": 0.7
+    },
+    "Biologia Molecular da Célula Avançada": {
+      "biologia": 1.0,
+      "bioquímica": 0.9,
+      "fisiologia": 0.7
+    },
+    "Biologia Molecular do Gene": {
+      "biologia": 1.0,
+      "bioquímica": 0.8,
+      "química": 0.7
+    },
+    "Biologia do Desenvolvimento": {
+      "biologia": 1.0,
+      "bioquímica": 0.8
+    },
+    "Biomateriais": {
+      "biologia": 0.9,
+      "bioquímica": 0.8,
+      "física": 0.7,
+      "química": 0.9
+    },
+    "Biomecânica": {
+      "anatomia": 0.8,
+      "cálculo": 0.7,
+      "fisiologia": 0.6,
+      "física": 1.0
+    },
+    "Bioquímica Analítica": {
+      "biologia": 1.0,
+      "estatística": 0.7,
+      "química": 1.0
+    },
+    "Bioquímica I": {
+      "biologia": 1.0,
+      "cálculo": 0.6,
+      "estatística": 0.5,
+      "química": 1.0
+    },
+    "Bioquímica II": {
+      "biologia": 1.0,
+      "bioquímica": 0.9,
+      "química": 1.0
+    },
+    "Biossensores": {
+      "bioquímica": 0.9,
+      "eletrônica": 0.7,
+      "estatística": 0.6
+    },
+    "Biotecnologia Ambiental I": {
+      "biologia": 1.0,
+      "bioquímica": 0.8,
+      "estatística": 0.5,
+      "química": 0.7
+    },
+    "Biotecnologia Ambiental II": {
+      "bioquímica": 0.9,
+      "estatística": 0.6,
+      "física": 0.7
+    },
+    "Biotecnologia Animal": {
+      "anatomia": 0.7,
+      "biologia": 1.0,
+      "bioquímica": 0.8
+    },
+    "Biotecnologia Vegetal": {
+      "biologia": 1.0,
+      "bioquímica": 0.8,
+      "estatística": 0.6
+    },
+    "Biotecnologia de Energias Renováveis I": {
+      "biologia": 1.0,
+      "bioquímica": 0.7,
+      "estatística": 0.5,
+      "química": 1.0
+    },
+    "Bioética e Biossegurança": {
+      "biologia": 0.7
+    },
+    "Botânica e Fisiologia Vegetal": {
+      "biologia": 1.0,
+      "bioquímica": 0.8,
+      "química": 0.7
+    },
+    "Cerâmicas Refratárias": {
+      "física": 0.7,
+      "química": 0.9,
+      "termodinâmica": 0.8
+    },
+    "Circuitos Digitais": {
+      "eletrônica": 0.8,
+      "programação": 0.5
+    },
+    "Circuitos Elétricos I": {
+      "cálculo": 1.0,
+      "física": 0.9,
+      "álgebra linear": 0.7
+    },
+    "Circuitos Elétricos II": {
+      "circuitos": 1.0,
+      "cálculo": 0.9,
+      "equações diferenciais": 0.9,
+      "física": 0.8,
+      "álgebra linear": 0.6
+    },
+    "Ciência e Engenharia de Biomateriais": {
+      "biologia": 0.8,
+      "bioquímica": 0.7,
+      "física": 0.8,
+      "química": 1.0
+    },
+    "Ciência e Tecnologia dos Materiais": {
+      "cálculo": 0.6,
+      "física": 0.8,
+      "química": 0.9
+    },
+    "Compiladores": {
+      "arquitetura de computadores": 0.6,
+      "estruturas de dados": 1.0,
+      "grafos": 0.7,
+      "lógica": 0.8,
+      "programação": 1.0
+    },
+    "Computação Gráfica": {
+      "estruturas de dados": 0.7,
+      "geometria analítica": 0.9,
+      "programação": 1.0,
+      "álgebra linear": 0.9
+    },
+    "Condicionamento Analógico de Sinais": {
+      "circuitos": 0.8,
+      "cálculo": 1.0,
+      "física": 0.9,
+      "álgebra linear": 0.7
+    },
+    "Controle de Sistemas Dinâmicos": {
+      "cálculo": 1.0,
+      "física": 0.7,
+      "métodos numéricos": 0.5,
+      "álgebra linear": 0.9
+    },
+    "Corrosão e Degradação de Materiais": {
+      "física": 0.7,
+      "química": 1.0,
+      "termodinâmica": 0.9
+    },
+    "Cultura dos Jogos Digitais": {
+      "programação": 0.5
+    },
+    "Cálculo Numérico": {
+      "cálculo": 1.0,
+      "equações diferenciais": 0.7,
+      "programação": 0.8,
+      "álgebra linear": 1.0
+    },
+    "Cálculo em Uma Variável": {
+      "geometria analítica": 0.9,
+      "lógica": 0.7,
+      "álgebra linear": 0.6
+    },
+    "Cálculo em Várias Variáveis": {
+      "cálculo": 1.0,
+      "geometria analítica": 0.9,
+      "álgebra linear": 0.7
+    },
+    "Desenho Técnico Básico": {
+      "geometria analítica": 0.9
+    },
+    "Desenvolvimento de Games": {
+      "estruturas de dados": 0.7,
+      "geometria analítica": 0.8,
+      "lógica": 0.7,
+      "programação": 0.9,
+      "álgebra linear": 0.8
+    },
+    "Desenvolvimento de Novos Negócios em Engenharia Biomédica": {
+      "anatomia": 0.6,
+      "biologia": 0.7,
+      "fisiologia": 0.7
+    },
+    "Econometria": {
+      "cálculo": 0.7,
+      "estatística": 0.8,
+      "probabilidade": 1.0,
+      "álgebra linear": 1.0
+    },
+    "Elementos de Álgebra": {
+      "lógica": 0.9
+    },
+    "Eletrônica": {
+      "circuitos": 1.0,
+      "cálculo": 0.7,
+      "física": 0.8,
+      "álgebra linear": 0.5
+    },
+    "Empreendedorismo em Biotecnologia": {
+      "biologia": 0.8,
+      "bioquímica": 0.6,
+      "estatística": 0.5
+    },
+    "Engenharia Bioquímica 1": {
+      "biologia": 1.0,
+      "cálculo": 0.9,
+      "estatística": 0.7,
+      "otimização": 0.6,
+      "química": 1.0
+    },
+    "Engenharia Bioquímica 2": {
+      "bioquímica": 1.0,
+      "cálculo": 0.8,
+      "estatística": 0.6,
+      "métodos numéricos": 0.5,
+      "termodinâmica": 0.7
+    },
+    "Engenharia Clínica Hospitalar Aplicada": {
+      "eletrônica": 0.8,
+      "física": 0.7,
+      "segurança da informação": 0.5
+    },
+    "Engenharia Médica Aplicada": {
+      "anatomia": 0.8,
+      "eletrônica": 0.6,
+      "estatística": 0.6,
+      "fisiologia": 0.9,
+      "programação": 0.7
+    },
+    "Engenharia Tecidual e Medicina Regenerativa": {
+      "biologia": 1.0,
+      "bioquímica": 0.9,
+      "fisiologia": 0.8,
+      "química": 0.7
+    },
+    "Engenharia de Produtos Cerâmicos": {
+      "física": 0.7,
+      "química": 0.9,
+      "termodinâmica": 0.6
+    },
+    "Engenharia de Software": {
+      "banco de dados": 0.6,
+      "estruturas de dados": 0.8,
+      "lógica": 0.7,
+      "programação": 1.0
+    },
+    "Ensaios de Materiais": {
+      "cálculo": 0.7,
+      "física": 0.9,
+      "mecânica": 1.0,
+      "química": 0.6
+    },
+    "Equações Diferenciais Ordinárias": {
+      "cálculo": 1.0,
+      "métodos numéricos": 0.6,
+      "álgebra linear": 0.9
+    },
+    "Equações Diferenciais Parciais": {
+      "cálculo": 1.0,
+      "estatística": 0.5,
+      "métodos numéricos": 0.6,
+      "álgebra linear": 0.8
+    },
+    "Espaços Métricos": {
+      "cálculo": 1.0,
+      "geometria analítica": 0.7,
+      "álgebra linear": 0.9
+    },
+    "Estrutura e Propriedades de Polímeros": {
+      "cálculo": 0.6,
+      "física": 0.8,
+      "química": 1.0,
+      "termodinâmica": 0.7
+    },
+    "Experimentando a Engenharia de Materiais": {
+      "física": 0.6,
+      "química": 0.7
+    },
+    "Fenômenos Eletromagnéticos": {
+      "cálculo": 1.0,
+      "física": 0.7,
+      "geometria analítica": 0.8,
+      "álgebra linear": 0.9
+    },
+    "Fenômenos Eletromagnéticos Experimental": {
+      "cálculo": 0.9,
+      "estatística": 0.7,
+      "física": 0.8,
+      "programação": 0.5
+    },
+    "Fenômenos Mecânicos": {
+      "cálculo": 1.0,
+      "física": 0.6,
+      "geometria analítica": 0.9,
+      "álgebra linear": 0.7
+    },
+    "Fenômenos Mecânicos Experimental": {
+      "cálculo": 0.8,
+      "estatística": 0.7,
+      "física": 0.9,
+      "geometria analítica": 0.6
+    },
+    "Fenômenos de Transporte": {
+      "cálculo": 1.0,
+      "equações diferenciais": 0.9,
+      "física": 1.0,
+      "mecânica": 0.8,
+      "termodinâmica": 0.7
+    },
+    "Fenômenos de Transporte Aplicados a Sistemas Biológicos": {
+      "bioquímica": 0.7,
+      "cálculo": 1.0,
+      "equações diferenciais": 0.8,
+      "física": 1.0,
+      "termodinâmica": 0.9
+    },
+    "Fenômenos do Contínuo": {
+      "cálculo": 1.0,
+      "equações diferenciais": 0.8,
+      "estatística": 0.6,
+      "física": 1.0,
+      "mecânica": 0.8
+    },
+    "Fenômenos do Contínuo Experimental": {
+      "cálculo": 1.0,
+      "estatística": 0.8,
+      "física": 1.0,
+      "métodos numéricos": 0.6
+    },
+    "Fisiologia Humana I": {
+      "anatomia": 0.8,
+      "biologia": 1.0,
+      "bioquímica": 0.9,
+      "física": 0.6
+    },
+    "Fisiologia Humana II": {
+      "anatomia": 1.0,
+      "biologia": 0.9,
+      "bioquímica": 0.8,
+      "física": 0.6
+    },
+    "Fisiopatologia Cardiorrespiratória": {
+      "anatomia": 1.0,
+      "biologia": 0.8,
+      "bioquímica": 0.7,
+      "fisiologia": 1.0
+    },
+    "Fisiopatologia Clínica dos Sistemas Humanos": {
+      "anatomia": 1.0,
+      "biologia": 0.7,
+      "bioquímica": 0.8,
+      "fisiologia": 1.0
+    },
+    "Fundamentos de Biologia Moderna": {
+      "química": 0.9
+    },
+    "Fundamentos de Eletrônica Aplicada": {
+      "cálculo": 0.7,
+      "física": 0.9,
+      "álgebra linear": 0.5
+    },
+    "Fundamentos em Engenharia Bioquímica": {
+      "cálculo": 1.0,
+      "equações diferenciais": 0.7,
+      "física": 0.9,
+      "otimização": 0.6,
+      "química": 0.9,
+      "termodinâmica": 0.8
+    },
+    "Fundamentos em Química Medicinal": {
+      "biologia": 0.8,
+      "bioquímica": 0.7,
+      "química": 1.0
+    },
+    "Funções Analíticas": {
+      "cálculo": 1.0,
+      "geometria analítica": 0.7,
+      "álgebra linear": 0.8
+    },
+    "Física Geral": {
+      "cálculo": 1.0,
+      "geometria analítica": 0.8,
+      "probabilidade": 0.5,
+      "álgebra linear": 0.8
+    },
+    "Física Moderna": {
+      "cálculo": 1.0,
+      "equações diferenciais": 0.7,
+      "física": 0.9,
+      "álgebra linear": 0.8
+    },
+    "Geometria Analítica": {
+      "lógica": 0.8,
+      "programação": 0.5
+    },
+    "Imunologia Aplicada": {
+      "biologia": 1.0,
+      "bioquímica": 0.9,
+      "estatística": 0.6,
+      "fisiologia": 0.8
+    },
+    "Imunologia Geral": {
+      "anatomia": 0.6,
+      "biologia": 1.0,
+      "bioquímica": 0.8,
+      "fisiologia": 0.7
+    },
+    "Inferência e Análise de Regressão": {
+      "cálculo": 0.8,
+      "probabilidade": 1.0,
+      "álgebra linear": 0.7
+    },
+    "Instrumentos Biomédicos": {
+      "anatomia": 0.6,
+      "circuitos": 0.7,
+      "eletrônica": 0.8,
+      "fisiologia": 0.6,
+      "física": 1.0
+    },
+    "Instrumentos Eletromédicos": {
+      "anatomia": 0.9,
+      "bioquímica": 0.6,
+      "circuitos": 0.8,
+      "fisiologia": 0.9,
+      "física": 0.7
+    },
+    "Inteligência Artificial": {
+      "estatística": 0.8,
+      "estruturas de dados": 0.7,
+      "grafos": 0.7,
+      "lógica": 0.6,
+      "probabilidade": 0.8,
+      "programação": 1.0,
+      "álgebra linear": 0.7
+    },
+    "Interação Humano-Computador e Experiência do Usuário (UX)": {
+      "engenharia de software": 0.6,
+      "estatística": 0.5,
+      "programação": 0.7
+    },
+    "Internet das Coisas": {
+      "circuitos": 0.8,
+      "eletrônica": 0.9,
+      "estruturas de dados": 0.7,
+      "lógica": 0.6
+    },
+    "Introdução a Engenharia de Materiais": {
+      "física": 0.8,
+      "química": 0.9
+    },
+    "Introdução aos Materiais Elétricos": {
+      "física": 1.0,
+      "química": 0.8
+    },
+    "Introdução à Análise de Falhas em Metais": {
+      "física": 0.9,
+      "química": 0.7
+    },
+    "Introdução à Bioinformática": {
+      "biologia": 0.9,
+      "bioquímica": 0.8,
+      "probabilidade": 0.7,
+      "programação": 0.8
+    },
+    "Introdução à Biologia de Sistemas": {
+      "bioquímica": 0.9,
+      "cálculo": 0.7,
+      "estatística": 0.7,
+      "programação": 0.6,
+      "álgebra linear": 0.6
+    },
+    "Introdução à Biotecnologia": {
+      "biologia": 0.9,
+      "química": 0.8
+    },
+    "Introdução à Ecologia": {
+      "biologia": 0.8,
+      "estatística": 0.5,
+      "química": 0.6
+    },
+    "Introdução à Economia": {
+      "cálculo": 0.6,
+      "estatística": 0.7,
+      "lógica": 0.5
+    },
+    "Introdução à Eletrotécnica": {
+      "cálculo": 0.7,
+      "física": 1.0,
+      "álgebra linear": 0.5
+    },
+    "Introdução à Engenharia Biomédica": {
+      "biologia": 0.9,
+      "física": 0.7,
+      "química": 0.6
+    },
+    "Introdução à Geometria Diferencial": {
+      "cálculo": 1.0,
+      "geometria analítica": 0.9,
+      "álgebra linear": 1.0
+    },
+    "Introdução à Nanotecnologia": {
+      "cálculo": 0.7,
+      "física": 1.0,
+      "química": 1.0,
+      "termodinâmica": 0.6
+    },
+    "Introdução à Neurociência": {
+      "cálculo": 0.9,
+      "física": 0.6,
+      "probabilidade": 0.5,
+      "álgebra linear": 0.7
+    },
+    "Introdução à Pesquisa Operacional": {
+      "cálculo": 0.7,
+      "estatística": 0.5,
+      "programação": 0.6,
+      "álgebra linear": 1.0
+    },
+    "Introdução às Redes Neurais Artificiais": {
+      "cálculo": 1.0,
+      "estatística": 0.8,
+      "probabilidade": 0.9,
+      "programação": 0.8,
+      "álgebra linear": 1.0
+    },
+    "Laboratório de Biologia Molecular e Celular": {
+      "biologia": 1.0,
+      "bioquímica": 0.9,
+      "fisiologia": 0.6
+    },
+    "Laboratório de Bioquímica": {
+      "biologia": 0.8,
+      "química": 1.0
+    },
+    "Laboratório de Bioquímica Analítica": {
+      "biologia": 0.8,
+      "estatística": 0.6,
+      "química": 1.0
+    },
+    "Laboratório de Circuitos Elétricos": {
+      "cálculo": 0.8,
+      "física": 1.0,
+      "álgebra linear": 0.6
+    },
+    "Laboratório de Controle Aplicado": {
+      "circuitos": 0.8,
+      "cálculo": 1.0,
+      "eletrônica": 0.8,
+      "equações diferenciais": 1.0,
+      "métodos numéricos": 0.6,
+      "álgebra linear": 0.9
+    },
+    "Laboratório de Eletrônica Digital": {
+      "física": 0.7,
+      "programação": 0.5
+    },
+    "Laboratório de Engenharia Bioquímica": {
+      "biologia": 0.9,
+      "bioquímica": 1.0,
+      "cálculo": 0.7,
+      "estatística": 0.6,
+      "física": 0.5
+    },
+    "Laboratório de Matemática": {
+      "geometria analítica": 0.8,
+      "lógica": 0.6,
+      "álgebra linear": 0.7
+    },
+    "Laboratório de Microbiologia": {
+      "biologia": 0.9,
+      "química": 0.7
+    },
+    "Laboratório de Sistemas Computacionais: Arquitetura e Organização de Computadores": {
+      "circuitos": 0.7,
+      "lógica": 0.8,
+      "programação": 0.9
+    },
+    "Laboratório de Sistemas Computacionais: Circuitos Digitais": {
+      "arquitetura de computadores": 0.6,
+      "lógica": 1.0,
+      "programação": 0.7
+    },
+    "Laboratório de Sistemas Computacionais: Compiladores": {
+      "estruturas de dados": 0.9,
+      "lógica": 0.7,
+      "programação": 1.0,
+      "teoria da computação": 0.8
+    },
+    "Laboratório de Sistemas Computacionais: Comunicação Digital": {
+      "arquitetura de computadores": 0.7,
+      "circuitos": 0.9,
+      "eletrônica": 0.9,
+      "física": 0.6,
+      "lógica": 0.8,
+      "programação": 0.7
+    },
+    "Laboratório de Sistemas Computacionais: Engenharia de Sistemas": {
+      "arquitetura de computadores": 0.7,
+      "programação": 0.8,
+      "sistemas operacionais": 0.6
+    },
+    "Laboratório de Sistemas Computacionais: Sistemas Operacionais": {
+      "arquitetura de computadores": 1.0,
+      "circuitos": 0.7,
+      "estruturas de dados": 0.7,
+      "lógica": 0.9,
+      "programação": 1.0
+    },
+    "Linguagens Formais e Autômatos": {
+      "estruturas de dados": 0.6,
+      "lógica": 0.8,
+      "programação": 0.7
+    },
+    "Lógica de Programação": {
+      "lógica": 0.5
+    },
+    "Macroeconomia": {
+      "cálculo": 0.9,
+      "estatística": 0.7,
+      "álgebra linear": 0.6
+    },
+    "Matemática Discreta": {
+      "programação": 0.5
+    },
+    "Matemática Geral": {
+      "geometria analítica": 0.8,
+      "lógica": 0.7
+    },
+    "Materiais Cerâmicos": {
+      "física": 0.8,
+      "química": 1.0,
+      "termodinâmica": 0.7
+    },
+    "Materiais Compósitos": {
+      "física": 0.8,
+      "mecânica": 0.7,
+      "química": 0.9
+    },
+    "Materiais Metálicos": {
+      "física": 0.8,
+      "química": 0.9,
+      "termodinâmica": 0.7
+    },
+    "Materiais Poliméricos": {
+      "cálculo": 0.6,
+      "física": 0.8,
+      "química": 1.0,
+      "termodinâmica": 0.7
+    },
+    "Materiais de Construção Civil": {
+      "física": 0.7,
+      "química": 0.8
+    },
+    "Matérias-Primas Cerâmicas": {
+      "estatística": 0.5,
+      "física": 0.7,
+      "química": 1.0
+    },
+    "Mecânica Geral": {
+      "cálculo": 0.7,
+      "física": 1.0,
+      "geometria analítica": 0.9,
+      "álgebra linear": 0.8
+    },
+    "Metaheurísticas em Otimização Combinatória": {
+      "estatística": 0.7,
+      "estruturas de dados": 0.7,
+      "grafos": 0.8,
+      "lógica": 0.6,
+      "probabilidade": 0.8,
+      "programação": 1.0
+    },
+    "Metalurgia Extrativa": {
+      "cálculo": 0.6,
+      "física": 0.7,
+      "química": 1.0,
+      "termodinâmica": 0.8
+    },
+    "Metalurgia Física": {
+      "física": 0.9,
+      "química": 0.9,
+      "termodinâmica": 0.8
+    },
+    "Metalurgia Mecânica": {
+      "cálculo": 0.7,
+      "física": 0.9,
+      "mecânica": 1.0,
+      "química": 0.8
+    },
+    "Metalurgia do Pó": {
+      "física": 0.8,
+      "química": 0.9,
+      "termodinâmica": 0.7
+    },
+    "Microbiologia Aplicada e Industrial": {
+      "biologia": 0.9,
+      "bioquímica": 0.8,
+      "cálculo": 0.5,
+      "estatística": 0.6
+    },
+    "Microbiologia Geral": {
+      "biologia": 1.0,
+      "bioquímica": 0.7,
+      "química": 0.6
+    },
+    "Modelagem Molecular": {
+      "biologia": 0.9,
+      "cálculo": 0.8,
+      "estatística": 0.6,
+      "programação": 0.5,
+      "química": 1.0,
+      "álgebra linear": 0.7
+    },
+    "Modelos Animais": {
+      "biologia": 1.0,
+      "bioquímica": 0.7,
+      "estatística": 0.6
+    },
+    "Mudança no Clima e Sociedade": {
+      "biologia": 0.7,
+      "estatística": 0.5,
+      "física": 0.5,
+      "química": 0.6
+    },
+    "Métodos Avançados em Processamento de Imagens Biomédicas": {
+      "anatomia": 0.6,
+      "cálculo": 1.0,
+      "estatística": 0.8,
+      "fisiologia": 0.6,
+      "física": 0.7,
+      "programação": 0.9,
+      "álgebra linear": 1.0
+    },
+    "Métodos Matemáticos para a Engenharia": {
+      "cálculo": 1.0,
+      "equações diferenciais": 0.8,
+      "geometria analítica": 0.7,
+      "álgebra linear": 0.9
+    },
+    "Métodos Numéricos para Equações Diferenciais": {
+      "cálculo": 1.0,
+      "física": 0.6,
+      "programação": 0.7,
+      "álgebra linear": 0.9
+    },
+    "Neurociência Aplicada ao Cotidiano": {
+      "biologia": 0.6,
+      "fisiologia": 0.5
+    },
+    "Otimização Inteira": {
+      "cálculo": 0.7,
+      "lógica": 0.6,
+      "programação": 0.8,
+      "álgebra linear": 1.0
+    },
+    "Otimização Linear": {
+      "cálculo": 0.7,
+      "programação": 0.5,
+      "álgebra linear": 1.0
+    },
+    "Otimização Não Linear": {
+      "cálculo": 1.0,
+      "programação": 0.6,
+      "álgebra linear": 1.0
+    },
+    "Probabilidade": {
+      "cálculo": 1.0,
+      "estatística": 0.7,
+      "álgebra linear": 0.8
+    },
+    "Probabilidade e Estatística": {
+      "cálculo": 0.9,
+      "lógica": 0.7,
+      "álgebra linear": 0.6
+    },
+    "Processamento de Imagens": {
+      "cálculo": 0.8,
+      "estatística": 0.6,
+      "probabilidade": 0.5,
+      "programação": 0.9,
+      "álgebra linear": 1.0
+    },
+    "Processamento de Materiais Cerâmicos": {
+      "física": 0.8,
+      "métodos numéricos": 0.5,
+      "química": 0.9,
+      "termodinâmica": 0.7
+    },
+    "Processamento de Materiais Metálicos": {
+      "física": 0.9,
+      "mecânica": 0.7,
+      "química": 0.8,
+      "termodinâmica": 0.7
+    },
+    "Processamento de Sinais": {
+      "cálculo": 1.0,
+      "estatística": 0.7,
+      "física": 0.6,
+      "probabilidade": 0.7,
+      "programação": 0.8,
+      "álgebra linear": 0.9
+    },
+    "Processamento de Termorrígidos e Elastômeros": {
+      "física": 0.7,
+      "química": 0.9,
+      "termodinâmica": 0.6
+    },
+    "Programação Concorrente e Distribuída": {
+      "arquitetura de computadores": 1.0,
+      "estruturas de dados": 0.8,
+      "programação": 1.0,
+      "redes de computadores": 0.7,
+      "sistemas operacionais": 1.0
+    },
+    "Programação Orientada a Objetos": {
+      "estruturas de dados": 0.7,
+      "lógica": 0.9,
+      "programação": 1.0
+    },
+    "Projeto Orientado a Objetos": {
+      "estruturas de dados": 0.8,
+      "lógica": 0.7,
+      "programação": 1.0
+    },
+    "Projeto e Análise de Algoritmos": {
+      "estatística": 0.6,
+      "lógica": 0.9,
+      "programação": 1.0,
+      "álgebra linear": 0.5
+    },
+    "Projetos em Engenharia Biomédica": {
+      "anatomia": 0.7,
+      "circuitos": 0.6,
+      "eletrônica": 0.9,
+      "fisiologia": 0.8,
+      "processamento de sinais": 0.6,
+      "programação": 0.7
+    },
+    "Projetos em Engenharia de Computação": {
+      "arquitetura de computadores": 0.8,
+      "banco de dados": 0.6,
+      "circuitos": 0.7,
+      "eletrônica": 0.7,
+      "estruturas de dados": 0.8,
+      "programação": 1.0,
+      "redes de computadores": 0.6,
+      "sistemas operacionais": 0.7
+    },
+    "Proteômica": {
+      "biologia": 1.0,
+      "bioquímica": 1.0,
+      "estatística": 0.7,
+      "programação": 0.6
+    },
+    "Prática em Projetos Extensionistas I": {
+      "engenharia de software": 0.5,
+      "programação": 0.5
+    },
+    "Práticas em Projetos Extensionistas II": {
+      "engenharia de software": 0.6,
+      "programação": 0.5
+    },
+    "Química Analítica": {
+      "cálculo": 0.7,
+      "estatística": 0.5,
+      "química": 1.0
+    },
+    "Química Geral": {
+      "cálculo": 0.7,
+      "estatística": 0.5,
+      "física": 0.8
+    },
+    "Química Geral Experimental": {
+      "estatística": 0.7,
+      "programação": 0.5
+    },
+    "Química Inorgânica": {
+      "estatística": 0.5,
+      "física": 0.7,
+      "química": 1.0
+    },
+    "Química Orgânica": {
+      "biologia": 0.5,
+      "física": 0.7,
+      "química": 1.0
+    },
+    "Química Orgânica Experimental": {
+      "física": 0.6,
+      "química": 1.0
+    },
+    "Reciclagem de Materiais": {
+      "física": 0.6,
+      "química": 0.9
+    },
+    "Redes de Computadores": {
+      "arquitetura de computadores": 0.6,
+      "estatística": 0.5,
+      "lógica": 0.5,
+      "programação": 0.8,
+      "sistemas operacionais": 0.7
+    },
+    "Reologia dos Materiais": {
+      "cálculo": 0.9,
+      "equações diferenciais": 0.7,
+      "física": 0.8,
+      "química": 0.6
+    },
+    "Resistência dos Materiais": {
+      "cálculo": 0.9,
+      "física": 1.0,
+      "mecânica": 1.0,
+      "álgebra linear": 0.7
+    },
+    "Resolução de Problemas Fabris na Engenharia de Materiais": {
+      "estatística": 0.6,
+      "física": 0.8,
+      "métodos numéricos": 0.5,
+      "química": 0.8
+    },
+    "Resolução de Problemas via Modelagem Matemática I": {
+      "cálculo": 1.0,
+      "estatística": 0.8,
+      "probabilidade": 0.8,
+      "programação": 0.7,
+      "álgebra linear": 1.0
+    },
+    "Resolução de Problemas via Modelagem Matemática II": {
+      "cálculo": 1.0,
+      "equações diferenciais": 0.7,
+      "estatística": 0.8,
+      "probabilidade": 0.8,
+      "programação": 0.6,
+      "álgebra linear": 1.0
+    },
+    "Segurança da Informação": {
+      "biologia": 0.5,
+      "lógica": 0.6,
+      "programação": 0.7,
+      "redes de computadores": 0.9,
+      "sistemas operacionais": 0.8
+    },
+    "Seleção de Materiais": {
+      "estatística": 0.6,
+      "física": 0.9,
+      "otimização": 0.7,
+      "química": 0.8
+    },
+    "Sistemas Embarcados": {
+      "arquitetura de computadores": 0.6,
+      "circuitos": 0.7,
+      "lógica": 1.0,
+      "programação": 0.9
+    },
+    "Sistemas Mecânicos": {
+      "cálculo": 1.0,
+      "equações diferenciais": 0.7,
+      "física": 1.0,
+      "geometria analítica": 0.9,
+      "álgebra linear": 0.8
+    },
+    "Sistemas Operacionais": {
+      "arquitetura de computadores": 1.0,
+      "estruturas de dados": 0.8,
+      "lógica": 0.7,
+      "programação": 0.9
+    },
+    "Soft Skills Baseada em Neurociência": {
+      "biologia": 0.6
+    },
+    "Séries e Equações Diferenciais Ordinárias": {
+      "cálculo": 1.0,
+      "estatística": 0.5,
+      "álgebra linear": 0.7
+    },
+    "Síntese de Polímeros": {
+      "química": 1.0,
+      "termodinâmica": 0.7
+    },
+    "Tecnologia e Meio Ambiente": {
+      "biologia": 0.7,
+      "física": 0.5,
+      "química": 0.7
+    },
+    "Tecnologia em Tintas e Vernizes": {
+      "física": 0.7,
+      "química": 1.0
+    },
+    "Teoria dos Grafos": {
+      "estruturas de dados": 0.7,
+      "lógica": 0.9,
+      "programação": 0.6,
+      "teoria da computação": 0.5
+    },
+    "Teoria dos Números e Criptografia": {
+      "estatística": 0.5,
+      "lógica": 0.9,
+      "programação": 0.7
+    },
+    "Termodinâmica Química": {
+      "cálculo": 1.0,
+      "física": 0.8,
+      "química": 0.8
+    },
+    "Termodinâmica dos Sólidos": {
+      "cálculo": 1.0,
+      "física": 0.9,
+      "química": 0.7
+    },
+    "Trabalho de Conclusão de Curso I": {
+      "ciência de dados": 0.5,
+      "engenharia de software": 0.6,
+      "estatística": 0.7,
+      "programação": 0.9
+    },
+    "Transdução de Grandezas Biomédicas": {
+      "anatomia": 0.7,
+      "cálculo": 0.8,
+      "estatística": 0.6,
+      "fisiologia": 0.8,
+      "física": 0.9
+    },
+    "Tratamentos Térmicos": {
+      "física": 0.7,
+      "química": 0.9,
+      "termodinâmica": 0.8
+    },
+    "Técnicas Experimentais": {
+      "cálculo": 0.6,
+      "estatística": 0.5,
+      "física": 0.9,
+      "química": 0.8
+    },
+    "Tópicos Especiais em Ciência e Engenharia de Materiais III – Engenharia Econômica": {
+      "cálculo": 0.7,
+      "estatística": 0.5
+    },
+    "Tópicos Especiais em Ciência e Engenharia de Materiais IV - Aditivação de Termoplásticos": {
+      "física": 0.7,
+      "química": 1.0,
+      "termodinâmica": 0.6
+    },
+    "Tópicos em Ciência e Tecnologia II": {
+      "programação": 0.5,
+      "redes de computadores": 0.5
+    },
+    "Tópicos em Matemática Computacional I": {
+      "cálculo": 1.0,
+      "estatística": 0.7,
+      "probabilidade": 0.7,
+      "programação": 0.9,
+      "álgebra linear": 1.0
+    },
+    "Tópicos em Matemática Computacional II": {
+      "cálculo": 1.0,
+      "estatística": 0.8,
+      "métodos numéricos": 0.7,
+      "probabilidade": 0.9,
+      "programação": 0.7,
+      "álgebra linear": 1.0
+    },
+    "Tópicos em Ressonância Magnética Nuclear": {
+      "física": 1.0,
+      "processamento de sinais": 0.6,
+      "química": 0.9,
+      "álgebra linear": 0.6
+    },
+    "Tópicos em Tecnologia da Computação I: Carteiras Digitais": {
+      "estruturas de dados": 0.7,
+      "lógica": 0.6,
+      "programação": 0.9,
+      "redes de computadores": 0.8
+    },
+    "Tópicos em Tecnologia da Computação II – Comunicação de Dados na Internet e em Redes Futuras": {
+      "lógica": 0.6,
+      "programação": 0.8,
+      "sistemas operacionais": 0.7
+    },
+    "Tópicos em Tecnologia da Computação IV (Desafios de Programação)": {
+      "estatística": 0.6,
+      "geometria analítica": 0.7,
+      "lógica": 0.9,
+      "probabilidade": 0.6,
+      "programação": 1.0,
+      "álgebra linear": 0.5
+    },
+    "Vidros, Vitrocerâmicos e Vidrados": {
+      "física": 0.8,
+      "química": 1.0,
+      "termodinâmica": 0.7
+    },
+    "Álgebra Linear": {
+      "cálculo": 0.7,
+      "lógica": 0.6
+    },
+    "Álgebra Linear Computacional": {
+      "cálculo": 0.9,
+      "estatística": 0.5,
+      "programação": 0.8
+    },
+    "Álgebra Linear II": {
+      "cálculo": 0.7,
+      "álgebra linear": 1.0
+    }
+  }
+}

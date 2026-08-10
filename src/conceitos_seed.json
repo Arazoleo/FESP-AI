@@ -1,4 +1,16 @@
 {
+  "vocabulario": [
+    "probabilidade", "estatística", "álgebra linear", "cálculo", "lógica",
+    "programação", "estruturas de dados", "grafos", "otimização",
+    "banco de dados", "redes de computadores", "sistemas operacionais",
+    "engenharia de software", "arquitetura de computadores",
+    "computação paralela", "aprendizado de máquina", "processamento de sinais",
+    "eletrônica", "circuitos", "física", "química", "biologia", "bioquímica",
+    "geometria analítica", "equações diferenciais", "métodos numéricos",
+    "teoria da computação", "segurança da informação",
+    "interação humano-computador", "termodinâmica", "mecânica",
+    "ciência de dados", "anatomia", "fisiologia"
+  ],
   "aborda": {
     "probabilidade": ["Probabilidade e Estatística"],
     "estatística": ["Probabilidade e Estatística"],

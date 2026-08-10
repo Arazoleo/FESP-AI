@@ -167,23 +167,38 @@ class KnowledgeGraph:
             self.graph.add_node(cid, tipo="conceito", nome=nome.strip().lower())
         return cid
 
-    def load_conceitos(self, path: str = None) -> Dict[str, int]:
+    def load_conceitos(self, path: str = None, clamp: float = None) -> Dict[str, int]:
         """
-        Carrega a camada de conceitos (seed curado + extrações validadas).
+        Carrega a camada de conceitos: seed curado (confiança livre) e, no modo
+        padrão, o arquivo de extrações neurais com confiança limitada a 0.8
+        (curadoria sempre domina; arestas existentes nunca são sobrescritas).
 
         Aterramento obrigatório: cada disciplina citada é resolvida via
         _find_node com tipo 'disciplina'; entradas que não resolvem são
         descartadas e contadas em 'ignorados' (nenhum nó fantasma é criado).
         """
         stats = {"conceitos": 0, "aborda": 0, "requer_base": 0, "ignorados": 0}
-        seed_path = Path(path) if path else Path(__file__).parent / "conceitos_seed.json"
-        if not seed_path.exists():
-            return stats
-        with open(seed_path, encoding="utf-8") as f:
-            data = json.load(f)
+        base = Path(__file__).parent
+        if path:
+            arquivos = [(Path(path), clamp)]
+        else:
+            arquivos = [
+                (base / "conceitos_seed.json", None),
+                (base / "conceitos_extraidos.json", 0.8),
+            ]
 
         antes = {n for n, d in self.graph.nodes(data=True) if d.get("tipo") == "conceito"}
+        for arquivo, arquivo_clamp in arquivos:
+            if not arquivo.exists():
+                continue
+            with open(arquivo, encoding="utf-8") as f:
+                data = json.load(f)
+            self._load_conceitos_data(data, arquivo_clamp, stats)
+        depois = {n for n, d in self.graph.nodes(data=True) if d.get("tipo") == "conceito"}
+        stats["conceitos"] = len(depois - antes)
+        return stats
 
+    def _load_conceitos_data(self, data: dict, clamp: Optional[float], stats: Dict[str, int]):
         def _resolver_disciplina(nome: str) -> Optional[str]:
             node_id = self._find_node(nome, "disciplina")
             if node_id and self.graph.nodes[node_id].get("tipo") == "disciplina":
@@ -195,13 +210,17 @@ class KnowledgeGraph:
                 self.graph.get_edge_data(origem, destino) or {}, relacao
             )
 
+        def _conf(valor: float) -> float:
+            conf = max(0.0, min(float(valor), 1.0))
+            return min(conf, clamp) if clamp is not None else conf
+
         for conceito, disciplinas in (data.get("aborda") or {}).items():
             for item in disciplinas or []:
                 if isinstance(item, dict):
                     nome_d = item.get("disciplina", "")
-                    conf = float(item.get("confidence", 1.0))
+                    conf = _conf(item.get("confidence", 1.0))
                 else:
-                    nome_d, conf = str(item), 1.0
+                    nome_d, conf = str(item), _conf(1.0)
                 d_id = _resolver_disciplina(nome_d)
                 if not d_id:
                     stats["ignorados"] += 1
@@ -220,17 +239,49 @@ class KnowledgeGraph:
                 cid = self._ensure_conceito(conceito)
                 if not _tem_aresta(d_id, cid, "REQUER_BASE"):
                     self.graph.add_edge(
-                        d_id, cid, relacao="REQUER_BASE", confidence=float(conf)
+                        d_id, cid, relacao="REQUER_BASE", confidence=_conf(conf)
                     )
                     stats["requer_base"] += 1
-
-        depois = {n for n, d in self.graph.nodes(data=True) if d.get("tipo") == "conceito"}
-        stats["conceitos"] = len(depois - antes)
-        return stats
 
     def _termo_num(self, node_data: dict) -> Optional[int]:
         m = re.match(r"(\d+)", str(node_data.get("termo") or ""))
         return int(m.group(1)) if m else None
+
+    def _matrizes_de(self, node_id: str) -> Set[str]:
+        return {
+            u for u, _, d in self.graph.in_edges(node_id, data=True)
+            if d.get("relacao") in ("INCLUI", "ELETIVA_DE")
+        }
+
+    def _termo_na_matriz(self, matriz_id: str, disc_id: str) -> Optional[int]:
+        edge_data = self.graph.get_edge_data(matriz_id, disc_id) or {}
+        for e in edge_data.values():
+            if e.get("relacao") == "INCLUI":
+                m = re.match(r"(\d+)", str(e.get("termo") or ""))
+                if m:
+                    return int(m.group(1))
+        return None
+
+    def _ordem_permite(self, d_id: str, u_id: str) -> bool:
+        """
+        Ordem só é comparável dentro da MESMA matriz curricular, usando o termo
+        da aresta INCLUI daquela matriz (o atributo de nó pode vir de outro
+        contexto, ex.: pós-graduação). Eletivas e pares sem termo comparável
+        não são bloqueados.
+        """
+        compartilhadas = self._matrizes_de(d_id) & self._matrizes_de(u_id)
+        if not compartilhadas:
+            return True
+        algum_comparavel = False
+        for mz in compartilhadas:
+            td = self._termo_na_matriz(mz, d_id)
+            tu = self._termo_na_matriz(mz, u_id)
+            if td is None or tu is None:
+                continue
+            algum_comparavel = True
+            if tu < td:
+                return True
+        return not algum_comparavel
 
     def _prereq_ancestors(self, node_id: str) -> set:
         vistos, fila = set(), [node_id]
@@ -288,32 +339,50 @@ class KnowledgeGraph:
         ancestrais = self._prereq_ancestors(d_id)
         termo_d = self._termo_num(self.graph.nodes[d_id])
 
-        resultados: Dict[str, Dict] = {}
+        melhores: Dict[str, Dict] = {}
         for cid, conf_req in requer.items():
             conceito_nome = self.graph.nodes[cid].get("nome", cid)
+            coberto = any(
+                d.get("relacao") == "ABORDA" and u in ancestrais
+                for u, _, d in self.graph.in_edges(cid, data=True)
+            )
+            if coberto:
+                continue
+            candidatos = []
             for u, _, d in self.graph.in_edges(cid, data=True):
                 if d.get("relacao") != "ABORDA":
                     continue
                 if u == d_id or u in ancestrais:
                     continue
                 termo_u = self._termo_num(self.graph.nodes[u])
-                if termo_d is not None and termo_u is not None and termo_u >= termo_d:
+                if not self._ordem_permite(d_id, u):
                     continue
-                conf = min(conf_req, float(d.get("confidence", 1.0)))
-                r = resultados.setdefault(u, {
-                    "nome": self.graph.nodes[u].get("nome", u),
-                    "conceitos": set(),
-                    "confidence": 0.0,
-                    "termo": termo_u,
-                })
-                r["conceitos"].add(conceito_nome)
-                r["confidence"] = max(r["confidence"], conf)
+                conf_aborda = float(d.get("confidence", 1.0))
+                candidatos.append((u, termo_u, conf_aborda))
+            if not candidatos:
+                continue
+            candidatos.sort(key=lambda c: (
+                -c[2],
+                c[1] if c[1] is not None else 99,
+                self.graph.nodes[c[0]].get("nome", c[0]),
+            ))
+            u, termo_u, conf_aborda = candidatos[0]
+            conf = min(conf_req, conf_aborda)
+            r = melhores.setdefault(u, {
+                "nome": self.graph.nodes[u].get("nome", u),
+                "conceitos": set(),
+                "confidence": 0.0,
+                "termo": termo_u,
+            })
+            r["conceitos"].add(conceito_nome)
+            r["confidence"] = max(r["confidence"], conf)
 
         saida = [
             {**r, "conceitos": sorted(r["conceitos"])}
-            for r in resultados.values()
+            for r in melhores.values()
         ]
-        return sorted(saida, key=lambda x: (-x["confidence"], x["nome"]))
+        saida.sort(key=lambda x: (-x["confidence"], x["nome"]))
+        return saida[:6]
 
     def lint(self) -> Dict[str, list]:
         """
