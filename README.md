@@ -50,7 +50,7 @@ O sistema foi avaliado em três ciclos iterativos — interface, interação e c
 
 **Ciclo 1 — Acessibilidade (WCAG 2.1).** Conformidade avaliada com o AMAWeb (validador institucional da UNIFESP): landing page 9,8/10 e chat 9,0/10 na primeira rodada; os cinco erros apontados (contraste do texto secundário, h1 e skip link ausentes no chat) foram corrigidos e o re-teste não reportou erros.
 
-**Ciclo 2 — Usabilidade (n = 10, formativo).** Dez estudantes de sete cursos do ICT executaram seis fluxos de tarefa com **100% de sucesso não assistido**; SUS médio **90,0** (mediana 90,0, DP 2,0). Resultados consolidados, matriz SUS por participante e codificação temática das entrevistas em [`docs/usability_report.md`](docs/usability_report.md); instrumento de sessão em [`docs/teste_usabilidade.md`](docs/teste_usabilidade.md).
+**Ciclo 2 — Usabilidade (n = 10, formativo).** Dez estudantes de sete cursos do ICT executaram seis fluxos de tarefa com **100% de sucesso não assistido**; SUS médio **90,0** (mediana 90,0, DP 2,0). Protocolo, resultados consolidados, matriz SUS por participante e codificação temática das entrevistas em [`docs/usability_report.md`](docs/usability_report.md).
 
 **Ciclo 3 — Consistência de respostas.** Benchmark de 57 perguntas curadas (8 categorias temáticas, gabarito de documentos oficiais) + 25 queries dirigidas às regras FOL, sobre um KG de 690 nós e 1584 arestas construído de 236 arquivos institucionais. Baselines progressivos com o mesmo corpus e modelo de geração:
 
