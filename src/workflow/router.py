@@ -330,7 +330,20 @@ REGIMENTO_FORCE_KEYWORDS = [
     "evacuacao", "incendio", "seguranca", "faq", "perguntas frequentes",
     "atividade complementar", "atividades complementares",
     "trancamento", "aprovacao", "reprovacao",
+    "indeferimento", "indeferida", "indeferido",
+    "preenchimento de vagas", "prioridade na matricula",
+    "criterios de matricula", "criterios de prioridade",
+    "coeficiente de rendimento", "cr",
+    "vagas em uc", "vagas na uc", "vagas de uma uc",
+    "matricula em uc", "matricula em ucs",
+    "inscricao em uc", "inscricao na uc", "inscricao em ucs",
+    "inscricao em duas uc", "inscricao em duas ucs",
 ]
+
+
+def is_regimento_domain(question_lower: str) -> bool:
+    q = _strip_accents(question_lower)
+    return _any_phrase([_strip_accents(k) for k in REGIMENTO_FORCE_KEYWORDS], q)
 
 CURSOS_SEQ_KEYWORDS = [
     "sequencial", "sequenciais", "certificado",

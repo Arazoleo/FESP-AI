@@ -25,6 +25,7 @@ from .router import (
     is_noticias,
     is_web_sjc,
     is_course_overview,
+    is_regimento_domain,
     SYMBOLIC_DIRECT_INTENTS,
 )
 from ..telemetry import incr as telemetry_incr
@@ -203,6 +204,16 @@ def build_pipeline(rag_instance):
                 "intent": "faqs",
                 "term": "",
                 "confidence": 0.95,
+                "active_agent": "regimentos",
+            }
+
+        if is_regimento_domain(question_lower):
+            telemetry_incr("regimento_domain_direct")
+            return {
+                **state,
+                "intent": "faqs",
+                "term": "",
+                "confidence": 0.9,
                 "active_agent": "regimentos",
             }
 
