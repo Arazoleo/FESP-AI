@@ -49,6 +49,8 @@ drag_article.pdf
 
 paper/
 
+deploy/
+
 # arquivos locais de desenvolvimento
 posgrad/
 /llm.py

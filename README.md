@@ -77,9 +77,6 @@ Python 3.11 · FastAPI · LangGraph/LangChain · Ollama (**gemma4:12b** geraçã
 cp .env.example .env        # escolha MODEL_NAME / EMBEDDING_MODEL
 docker compose up -d        # backend :8000 + frontend :3000
 ```
-
-Para publicar a demo gratuita (Tailscale Funnel + frontend no Vercel), veja [`deploy/DEPLOY.md`](deploy/DEPLOY.md).
-
 Requer Ollama acessível com os modelos baixados (`ollama pull gemma4:12b` e `ollama pull embeddinggemma`). Defina `MODEL_NAME=gemma4:12b` no `.env`.
 
 **Endpoints principais** (`http://localhost:8000`, docs interativas em `/docs`):
