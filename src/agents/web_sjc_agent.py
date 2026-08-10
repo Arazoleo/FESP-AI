@@ -22,7 +22,7 @@ from typing import Dict, Any, List, Tuple, Optional
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-from .base_agent import BaseAgent
+from .base_agent import BaseAgent, fix_response_links
 from ..site_crawler import load_cache, crawl_sjc, BASE
 
 logger = logging.getLogger("fespai.web_sjc")
@@ -318,6 +318,7 @@ class WebSjcAgent(BaseAgent):
             if history:
                 inputs["history"] = history
             resp = chain.invoke(inputs).strip()
+            resp = fix_response_links(resp, contexto)
             if not any(p["url"] in resp for p in top):
                 fontes = "\n".join(f"- [{p['titulo']}]({p['url']})" for p in top)
                 resp = f"{resp}\n\n*Fontes:*\n{fontes}"

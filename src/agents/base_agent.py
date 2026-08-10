@@ -8,6 +8,48 @@ import re
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+_URL_RE = re.compile(r"https?://[^\s<>\)\]\"']+")
+
+
+def fix_response_links(response: str, context: str) -> str:
+    """
+    Repara URLs que o LLM truncou ou corrompeu ao citar paginas do contexto.
+    Substituicao conservadora: so quando a ancora (#fragmento) ou o ultimo
+    segmento do caminho identifica UMA unica URL do contexto.
+    """
+    if not response or not context:
+        return response
+    ctx_urls = list(dict.fromkeys(_URL_RE.findall(context)))
+    if not ctx_urls:
+        return response
+
+    def _match(url: str) -> Optional[str]:
+        if url in ctx_urls:
+            return None
+        if "#" in url:
+            frag = url.split("#", 1)[1]
+            cands = [c for c in ctx_urls if "#" in c and c.split("#", 1)[1] == frag]
+            if len(cands) == 1:
+                return cands[0]
+        tail = url.split("#", 1)[0].rstrip("/").rsplit("/", 1)[-1]
+        if len(tail) >= 6:
+            cands = [
+                c for c in ctx_urls
+                if c.split("#", 1)[0].rstrip("/").rsplit("/", 1)[-1] == tail
+            ]
+            if len(cands) == 1:
+                return cands[0]
+        return None
+
+    def _repl(m: "re.Match") -> str:
+        url = m.group(0)
+        stripped = url.rstrip(".,;:!?")
+        sufixo = url[len(stripped):]
+        fixed = _match(stripped)
+        return (fixed + sufixo) if fixed else url
+
+    return _URL_RE.sub(_repl, response)
+
 
 class BaseAgent(ABC):
     """
@@ -178,6 +220,8 @@ class BaseAgent(ABC):
             suggestion = self._kgc_suggestion(term)
             if suggestion:
                 response = suggestion
+
+        response = fix_response_links(response, enriched_context)
 
         sources = self._extract_sources_from_context(enriched_context)
         return {

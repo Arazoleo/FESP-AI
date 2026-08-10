@@ -13,7 +13,7 @@ Regulamentar os critérios de preenchimento de vagas em Unidades Curriculares (U
 
 ### DO PREENCHIMENTO DE VAGAS EM UNIDADES CURRICULARES
 
-**Art. 112.** Para o preenchimento das vagas em qualquer Unidade Curricular, serão considerados os seguintes critérios, em ordem de prioridade: I - Seguir o currículo padrão; II - Estar mais próximos de integralizar o curso; III - Não ter reprovação por frequência na Unidade Curricular; IV - Possuir maior CR (Coeficiente de Rendimento); V - Estar vinculado a cursos do mesmo campus; VI - Estar vinculado a cursos de outros campi.
+**Art. 112.** Para o preenchimento das vagas em qualquer Unidade Curricular, serão considerados os seguintes critérios, em ordem de prioridade: I - Seguir o currículo padrão; II - Estar mais próximos de integralizar o curso; III - Não ter reprovação por frequência na Unidade Curricular; IV - Possuir maior CR (Coeficiente de Rendimento); V - Estar vinculado a cursos do mesmo campus; VI - Estar vinculado a cursos de outros campi. Parágrafo único: o estudante cuja rematrícula for concedida após o período regular perderá prioridade no preenchimento das vagas em qualquer Unidade Curricular.
 
 ## Perguntas Frequentes
 
@@ -34,6 +34,9 @@ Regulamentar os critérios de preenchimento de vagas em Unidades Curriculares (U
 
 **Pergunta:** Por que minha inscrição em uma UC foi indeferida?  
 **Resposta:** Os motivos mais comuns de indeferimento são: matrícula em curso, termo ou turno diferente do seu; falta de vagas na UC; falta de pré-requisitos para a UC solicitada; inscrição em duas ou mais UC ofertadas no mesmo dia e horário; ou UC já cursada ou aproveitada.
+
+**Pergunta:** O que acontece com a prioridade de quem faz rematrícula fora do prazo?  
+**Resposta:** Conforme o parágrafo único do artigo 112 do Regimento Interno da Prograd (2014), o estudante cuja rematrícula for concedida após o período regular perde a prioridade no preenchimento das vagas em qualquer Unidade Curricular.
 
 **Pergunta:** O CR influencia na matrícula em UCs?  
 **Resposta:** Sim. Possuir maior CR é o quarto critério de prioridade no preenchimento de vagas de uma UC, depois de seguir o currículo padrão, estar mais próximo de integralizar o curso e não ter reprovação por frequência na UC (art. 112 do Regimento Interno Prograd 2014).
