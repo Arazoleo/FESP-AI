@@ -177,6 +177,7 @@ def build_pipeline(rag_instance):
             }
 
         from ..atividades_complementares import (
+            is_ac_question,
             is_breakdown_request,
             build_breakdown_response,
         )
@@ -194,6 +195,16 @@ def build_pipeline(rag_instance):
                     "context": ac_response,
                     "sources": ["Regulamento de Atividades Complementares do BCT (2023)"],
                 }
+
+        if is_ac_question(question):
+            telemetry_incr("ac_routed_regimentos")
+            return {
+                **state,
+                "intent": "faqs",
+                "term": "",
+                "confidence": 0.95,
+                "active_agent": "regimentos",
+            }
 
         if is_conversational(question_lower):
             return {

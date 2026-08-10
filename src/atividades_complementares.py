@@ -69,6 +69,7 @@ _DETAIL_CUES = [
     r"\btipos\s+de\s+atividades?\b",
     r"\bdetalh\w+\b",
     r"\bexemplos?\s+de\s+atividades?\b",
+    r"\b(?:conta(?:m)?|vale(?:m)?|usar|validar|aproveitar)\b[^?.!]*\bcomo\s+atividades?\s+complementar(?:es)?\b",
 ]
 _DETAIL_CUES_RES = [re.compile(p) for p in _DETAIL_CUES]
 

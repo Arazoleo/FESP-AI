@@ -57,7 +57,7 @@ class RegimentosAgent(BaseAgent):
             return ""
         partes = ["[PAGINAS DO SITE DO CAMPUS - complemento; cite o link ao usar]"]
         for p in secoes:
-            partes.append(f"[{p['titulo']}]\nLink: {p['url']}\n{p['texto'][:1200]}")
+            partes.append(f"[{p['titulo']}]\nLink: {p['url']}\n{p['texto'][:3800]}")
         return "\n\n".join(partes)
 
     def get_prompt_template(self) -> str:

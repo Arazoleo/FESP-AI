@@ -82,11 +82,15 @@ positivos = [
     "Quais atividades são aceitas em cada eixo?",
     "Tipos de atividades complementares",
     "Detalha as atividades complementares por categoria, por favor",
+    "Estágio não obrigatório conta como atividade complementar?",
+    "Posso usar UC optativa como atividade complementar?",
+    "Doação de sangue vale como atividade complementar?",
 ]
 for q in positivos:
     check(f"positivo: '{q[:55]}'", is_breakdown_request(q))
 negativos = [
     "Quantas horas de atividades complementares preciso?",
+    "Quantos certificados de uma mesma instituição posso usar nas AC?",
     "Como funcionam as atividades complementares?",
     "As ACE são obrigatórias?",
     "Quais atividades posso fazer no próximo semestre?",
