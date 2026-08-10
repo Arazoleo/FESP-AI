@@ -1,49 +1,54 @@
-# Demo pública gratuita (Hugging Face Spaces + Vercel)
+# Demo pública gratuita (Tailscale Funnel + Vercel)
 
-Arquitetura: o backend (FastAPI + Ollama local para embeddings + ChromaDB pré-construído) roda num Docker Space gratuito do Hugging Face (2 vCPU, 16 GB RAM, URL fixa). A geração de texto vai direto para o Ollama Cloud via API key, sem GPU. O frontend Next.js roda no Vercel (gratuito, sem hibernação), fazendo proxy server-side para o Space (sem CORS).
+Arquitetura: o backend continua rodando no seu Mac (docker compose + Ollama, como hoje), mas exposto pelo **Tailscale Funnel** em vez do ngrok. O Funnel é gratuito, não pede cartão, tem **URL fixa** (`https://SEU-MAC.SEU-TAILNET.ts.net`) e não tem o limite de sessão de 2 horas que derruba o ngrok free. O frontend Next.js roda no **Vercel** (gratuito, sempre no ar) com uma URL apresentável, fazendo proxy server-side para o Funnel (sem CORS).
 
-## 1. Pré-requisitos (uma vez)
+O ponto único de atenção: o Mac precisa ficar ligado com o backend de pé (mesma condição do ngrok atual). Se o Mac reiniciar, o Docker (restart automático) e o Funnel (configuração persistente) voltam sozinhos.
 
-- Conta no [huggingface.co](https://huggingface.co) (gratuita)
-- Conta no [vercel.com](https://vercel.com) (login com GitHub)
-- API key do Ollama Cloud: [ollama.com/settings/keys](https://ollama.com/settings/keys)
-- `git-lfs` local: `brew install git-lfs`
+## 1. Backend: Tailscale Funnel no Mac (uma vez, ~10 min)
 
-## 2. Backend no Hugging Face Space
-
-1. Crie o Space: [huggingface.co/new-space](https://huggingface.co/new-space)
-   - Space SDK: **Docker** (Blank)
-   - Hardware: **CPU basic** (2 vCPU, 16 GB, free)
-   - Visibilidade: público
-2. Em Settings do Space, seção Variables and secrets, adicione o **secret** `OLLAMA_API_KEY` com sua chave do ollama.com.
-3. Publique o backend:
+1. Instale e faça login:
 
    ```bash
-   ./deploy/push_space.sh https://huggingface.co/spaces/SEU_USUARIO/NOME-DO-SPACE
+   brew install --cask tailscale
+   open -a Tailscale
    ```
 
-   O push pede login: usuário HF + um token de escrita ([huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)).
-4. Aguarde o build (10 a 15 min na primeira vez: instala dependências e baixa o `embeddinggemma`). O ChromaDB vai pré-construído, então o boot é rápido.
-5. Teste: `https://SEU_USUARIO-NOME-DO-SPACE.hf.space/health`
+   Entre com Google ou GitHub na janela que abrir.
 
-Sobre o modelo: o Dockerfile usa `MODEL_NAME=gemma4:31b` (nome do catálogo cloud, sem o sufixo `-cloud` que só existe no daemon local). Se o chat retornar erro de modelo desconhecido, ajuste a variável `MODEL_NAME` nas configurações do Space (valores candidatos: `gemma4:31b-cloud`, ou outro do [catálogo cloud](https://ollama.com/search?c=cloud)).
+2. Suba o backend e o túnel:
 
-## 3. Frontend no Vercel
+   ```bash
+   ./deploy/funnel.sh
+   ```
 
-1. Em [vercel.com/new](https://vercel.com/new), importe o repositório `Arazoleo/FESP-AI`.
+   Na primeira vez, o comando imprime um link para habilitar o Funnel no painel do Tailscale (um clique). Rode de novo depois de habilitar.
+
+3. O script imprime a URL pública fixa, algo como `https://macbook-air-de-leonardo.tail1234.ts.net`. Teste: abra `SUA_URL/health`.
+
+A configuração do Funnel fica salva: depois de reiniciar o Mac, basta o Tailscale e o Docker subirem (ambos iniciam com o login) que a mesma URL volta ao ar.
+
+## 2. Frontend no Vercel
+
+1. Em [vercel.com/new](https://vercel.com/new), faça login com GitHub e importe o repositório `Arazoleo/FESP-AI`.
 2. Configure:
    - Root Directory: `frontend`
-   - Framework: Next.js (detectado)
-   - Environment Variable: `BACKEND_INTERNAL_URL` = `https://SEU_USUARIO-NOME-DO-SPACE.hf.space`
-3. Deploy. A URL final fica tipo `fesp-ai.vercel.app` (renomeável em Settings > Domains).
+   - Framework: Next.js (detectado automaticamente)
+   - Environment Variable: `BACKEND_INTERNAL_URL` = URL do Funnel (ex.: `https://macbook-air-de-leonardo.tail1234.ts.net`)
+3. Deploy. A URL final fica tipo `fesp-ai.vercel.app` (renomeável em Settings > Domains). É essa que vai para o revisor.
 
-## 4. Manter o backend acordado
+Como o proxy é server-side (route handler do Next), o navegador do revisor só fala com o Vercel: sem CORS e sem expor a URL do seu Mac.
 
-O Space free hiberna após cerca de 48 h sem requisições (e acorda sozinho no primeiro acesso, em 1 a 2 min). O workflow `.github/workflows/keepalive.yml` faz um ping em `/health` a cada 12 h e impede a hibernação:
+## 3. Monitoramento
+
+O workflow `.github/workflows/keepalive.yml` pinga `/health` a cada 12 h e falha se o backend estiver fora do ar (você recebe email do GitHub Actions). Para ativar:
 
 - No GitHub: Settings > Secrets and variables > Actions > aba **Variables** > New repository variable
-- Nome: `DEMO_BACKEND_URL`, valor: `https://SEU_USUARIO-NOME-DO-SPACE.hf.space`
+- Nome: `DEMO_BACKEND_URL`, valor: a URL do Funnel
 
-## 5. Atualizar a demo
+## 4. Atualizar a demo
 
-Backend: rode o `push_space.sh` de novo (o Space rebuilda sozinho). Frontend: qualquer push no GitHub redeploya o Vercel automaticamente.
+Backend: `docker compose up -d --build backend` no Mac. Frontend: qualquer push no GitHub redeploya o Vercel sozinho.
+
+## Alternativa 100% nuvem: Hugging Face Space (requer verificação de cartão)
+
+Se um dia quiser tirar o Mac da jogada: os arquivos em `deploy/space/` sobem o backend num Docker Space (CPU Basic, 2 vCPU/16 GB, sem cobrança), com embeddings locais no container e geração via API do Ollama Cloud (`OLLAMA_API_KEY` como secret). O HF pede um método de pagamento para liberar Spaces Docker em contas novas, mas o tier CPU Basic em si não é cobrado. Publicação: `./deploy/push_space.sh https://huggingface.co/spaces/USUARIO/NOME` (requer `git-lfs`). No Vercel, basta trocar `BACKEND_INTERNAL_URL` pela URL do Space.
