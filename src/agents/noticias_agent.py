@@ -1,11 +1,11 @@
 """
-Agente de Notícias — retrieval ao vivo sobre fontes oficiais da UNIFESP.
+Agente de Notícias - retrieval ao vivo sobre fontes oficiais da UNIFESP.
 
 Busca as notícias do campus São José dos Campos (campus.unifesp.br/sjc/noticias)
 via `news_fetcher` e responde citando fonte, data e link.
 
 Atenção: o conteúdo é EXTERNO e não passa pela validação simbólica do KG. Por
-isso o agente sempre ancora a resposta nas notícias buscadas e cita a fonte —
+isso o agente sempre ancora a resposta nas notícias buscadas e cita a fonte -
 nunca inventa fatos fora dos itens recuperados.
 """
 
@@ -26,7 +26,6 @@ def _strip_accents(s: str) -> str:
     )
 
 
-# Pedidos genéricos de listagem → resposta determinística (sem LLM).
 _LISTAGEM_KEYWORDS = (
     "ultimas noticias", "quais noticias", "quais as noticias", "liste as noticias",
     "lista de noticias", "me mostra as noticias", "mostra as noticias",
@@ -34,9 +33,8 @@ _LISTAGEM_KEYWORDS = (
     "noticias da unifesp", "noticias do campus", "noticias recentes",
 )
 
-_FONTE = f"*Fonte: notícias oficiais da UNIFESP SJC — {NEWS_URL}*"
+_FONTE = f"*Fonte: notícias oficiais da UNIFESP SJC - {NEWS_URL}*"
 
-# Stopwords para o ranqueamento de relevância (já sem acento).
 _STOP = frozenset({
     "para", "como", "qual", "quais", "quando", "onde", "sobre", "tem", "esta",
     "estao", "mais", "uma", "que", "com", "por", "dos", "das", "isso", "essa",
@@ -44,7 +42,6 @@ _STOP = frozenset({
     "acontecendo", "rolando", "saber", "quero", "gostaria", "pode", "fala",
 })
 
-# Score mínimo (título conta dobrado) para valer a pena abrir a matéria.
 _DEEP_THRESHOLD = 2
 _DEEP_MAX_ARTIGOS = 2
 
@@ -53,7 +50,7 @@ class NoticiasAgent(BaseAgent):
 
     name = "noticias"
     description = "Busca notícias e novidades oficiais da UNIFESP (campus SJC)"
-    color = "#eab308"  # Amber
+    color = "#eab308"
 
     def retrieve(self, question: str, intent: str, term: str) -> str:
         return ""
@@ -72,7 +69,7 @@ class NoticiasAgent(BaseAgent):
             "nao encontrou isso nas noticias recentes e sugira acompanhar a pagina oficial.\n"
             "- Seja conversacional. Se a noticia trouxer detalhes (datas, local, inscricoes, "
             "programacao), aprofunde-se e explique-os; caso contrario, seja breve. "
-            "No maximo 1 emoji.\n\nResposta:"
+            "NAO use emojis.\n\nResposta:"
         )
 
     def _is_listagem(self, question: str) -> bool:
@@ -82,7 +79,7 @@ class NoticiasAgent(BaseAgent):
     def _format_list(self, itens: List[Dict]) -> str:
         linhas = ["Aqui estão as últimas notícias da UNIFESP (campus São José dos Campos):", ""]
         for it in itens:
-            data = f" — *{it['data']}*" if it.get("data") else ""
+            data = f" - *{it['data']}*" if it.get("data") else ""
             linhas.append(f"- **[{it['titulo']}]({it['url']})**{data}")
             if it.get("resumo"):
                 linhas.append(f"  {it['resumo']}")
@@ -134,16 +131,12 @@ class NoticiasAgent(BaseAgent):
                 f"Você pode vê-las direto na página oficial: {NEWS_URL}"
             )
 
-        # Listagem genérica → resposta determinística (rápida, sem LLM).
         if self._is_listagem(question) or not self.llm:
             return self._result(self._format_list(itens), itens)
 
-        # Pergunta específica → identifica a(s) notícia(s) relevante(s) e, se houver
-        # match claro, ABRE a matéria para responder em profundidade.
         ranked = self._rank(question, itens)
         top_score = ranked[0][0] if ranked else 0
         if top_score >= _DEEP_THRESHOLD:
-            # Corte relativo ao topo: evita abrir matérias só com token genérico em comum.
             cutoff = max(_DEEP_THRESHOLD, (top_score + 1) // 2)
             relevantes = [it for score, it in ranked if score >= cutoff][:_DEEP_MAX_ARTIGOS]
         else:
@@ -159,7 +152,6 @@ class NoticiasAgent(BaseAgent):
                 context = self._build_deep_context(artigos, outras)
                 fontes_extra = relevantes
             else:
-                # Sem match forte: usa os resumos do feed (comportamento base).
                 context = self._build_context(itens)
                 fontes_extra = itens
 
@@ -170,7 +162,6 @@ class NoticiasAgent(BaseAgent):
                 resp = f"{resp}\n\n{_FONTE}"
             return self._result(resp, fontes_extra)
         except Exception:
-            # Degradação segura: cai para a listagem determinística.
             return self._result(self._format_list(itens), itens)
 
     def _result(self, response: str, itens: List[Dict] = None) -> Dict[str, Any]:

@@ -54,7 +54,7 @@ def check(desc: str, cond: bool, detail: str = ""):
         print(f"{GREEN}✓{RESET} {desc}")
     else:
         _failed += 1
-        print(f"{RED}✗ {desc}{RESET}" + (f" — {detail}" if detail else ""))
+        print(f"{RED}✗ {desc}{RESET}" + (f" - {detail}" if detail else ""))
 
 
 kg_mod = _import_module("knowledge_graph", "src/knowledge_graph.py")
@@ -77,7 +77,6 @@ check(
 
 print(f"\n{BOLD}── Roteamento e extração (fallback regex) ──{RESET}")
 CASES = [
-    # (pergunta, intent esperado, termo esperado — None ignora)
     ("Quero chegar em Compiladores. Por onde começo?", "trajectory_planning", "compiladores"),
     ("Quero chegar em Compiladores", "trajectory_planning", "compiladores"),
     ("Quero chegar em Compiladores, já fiz Matemática Discreta",
@@ -88,6 +87,9 @@ CASES = [
     ("Para cursar Compiladores, preciso ter feito quais disciplinas no total?",
      "prerequisite_chain", "Compiladores"),
     ("Quais os pré-requisitos de Compiladores?", "prerequisite_chain", "compiladores"),
+    ("Qual o professor responsável por SEDO?", "discipline_docentes", "sedo"),
+    ("Quem é o responsável por SEDO?", "discipline_docentes", "sedo"),
+    ("Professor responsável pela disciplina de IHC?", "discipline_docentes", "ihc"),
 ]
 for question, exp_intent, exp_term in CASES:
     use, intent, term = engine.should_use_graph(question)
@@ -113,6 +115,35 @@ for question, expected_snippet in E2E:
         answer is not None and expected_snippet in answer,
         f"resposta: {(answer or '(None)').splitlines()[0]!r}",
     )
+
+print(f"\n{BOLD}── Sigla → nome completo e sombreamento por nó fantasma ──{RESET}")
+check(
+    "'sedo' expande para o nome completo da disciplina",
+    engine._resolve_discipline_term("sedo") == "Séries e Equações Diferenciais Ordinárias",
+    engine._resolve_discipline_term("sedo"),
+)
+check(
+    "_find_node pelo nome completo resolve o nó real (com sigla SEDO), "
+    "não o fantasma criado por pré-requisito com typo",
+    (kg.graph.nodes.get(
+        kg._find_node("Séries e Equações Diferenciais Ordinárias", "disciplina") or "", {}
+    ).get("sigla") == "SEDO"),
+    str(kg._find_node("Séries e Equações Diferenciais Ordinárias", "disciplina")),
+)
+check(
+    "docentes de SEDO não são vazios (via sigla e via nome completo)",
+    bool(kg.get_docentes_of_discipline("SEDO"))
+    and kg.get_docentes_of_discipline("SEDO")
+    == kg.get_docentes_of_discipline("Séries e Equações Diferenciais Ordinárias"),
+    str(kg.get_docentes_of_discipline("Séries e Equações Diferenciais Ordinárias")),
+)
+resp_sedo = engine.query_graph("discipline_docentes", "sedo") or ""
+check(
+    "'discipline_docentes'/'sedo' lista os docentes reais",
+    "Docentes de Séries e Equações Diferenciais Ordinárias" in resp_sedo
+    and "Cláudia Aline" in resp_sedo,
+    resp_sedo.splitlines()[0] if resp_sedo else "(vazio)",
+)
 
 print(f"\n{BOLD}── Grounding de termo-lixo no KG ──{RESET}")
 check(
@@ -161,6 +192,78 @@ check(
     engine._find_curso_in_text("eletivas do bcc por favor"),
 )
 
+print(f"\n{BOLD}── Docentes por área e canonicalização de nome parcial ──{RESET}")
+check(
+    "KG: get_docentes_by_area('redes complexas') retorna Lilian Berton",
+    kg.get_docentes_by_area("redes complexas") == ["Lilian Berton"],
+    str(kg.get_docentes_by_area("redes complexas")),
+)
+check(
+    "KG: singular 'rede complexa' também encontra a área",
+    "Lilian Berton" in kg.get_docentes_by_area("rede complexa"),
+    str(kg.get_docentes_by_area("rede complexa")),
+)
+check(
+    "intent errado do LLM (discipline_docentes p/ área) corrige para docentes_by_area",
+    engine._fix_docente_direction(
+        "Tem algum professor que trabalha com Redes Complexas?",
+        "discipline_docentes", "redes complexas",
+    ) == ("docentes_by_area", "redes complexas"),
+    str(engine._fix_docente_direction(
+        "Tem algum professor que trabalha com Redes Complexas?",
+        "discipline_docentes", "redes complexas",
+    )),
+)
+resp_area = engine.query_graph("docentes_by_area", "redes complexas") or ""
+check(
+    "'docentes_by_area'/'redes complexas' lista a Lilian",
+    "Lilian Berton" in resp_area,
+    resp_area.splitlines()[0] if resp_area else "(vazio)",
+)
+check(
+    "termo alucinado (exemplo do prompt) não decide a direção; docente da pergunta aterra",
+    engine._fix_docente_direction(
+        "A lilian trabalha com o q?",
+        "discipline_docentes", "laboratório de sistemas computacionais: compiladores",
+    ) == ("docente_areas", "Lilian Berton"),
+    str(engine._fix_docente_direction(
+        "A lilian trabalha com o q?",
+        "discipline_docentes", "laboratório de sistemas computacionais: compiladores",
+    )),
+)
+check(
+    "'A lilian trabalha com o q?' (regex fallback) aterra no docente canônico",
+    engine.should_use_graph("A lilian trabalha com o q?")[1:]
+    == ("docente_areas", "Lilian Berton"),
+    str(engine.should_use_graph("A lilian trabalha com o q?")),
+)
+check(
+    "docente_areas com nome parcial 'lilian' resolve",
+    "Redes Complexas" in (engine.query_graph("docente_areas", "lilian") or ""),
+    (engine.query_graph("docente_areas", "lilian") or "").splitlines()[0],
+)
+check(
+    "docente_areas com 'a lilian' (não resolve direto) aterra via grounding",
+    "Redes Complexas" in (engine.query_graph("docente_areas", "a lilian") or ""),
+    (engine.query_graph("docente_areas", "a lilian") or "").splitlines()[0],
+)
+resp_lixo = engine.query_graph("docente_areas", "xyzabc qualquer") or ""
+check(
+    "termo-lixo em docente_areas → clarificação limpa (sem eco do lixo)",
+    "qual professor" in resp_lixo.lower() and "xyzabc" not in resp_lixo,
+    resp_lixo,
+)
+check(
+    "'o q' não resolve como docente (guarda de substring do _find_docente_id)",
+    engine._resolve_docente("o q") is None,
+    str(engine._resolve_docente("o q")),
+)
+check(
+    "direção disciplina segue intacta: 'quem leciona SEDO?' → discipline_docentes",
+    engine._fix_docente_direction("quem leciona SEDO?", "discipline_docentes", "sedo")
+    == ("discipline_docentes", "sedo"),
+)
+
 print(f"\n{BOLD}── critical_disciplines: filtro de curso e dedup ──{RESET}")
 crit_bcc = engine.query_graph("critical_disciplines", "bcc")
 check(
@@ -175,6 +278,108 @@ check(
 check(
     "variantes duplicadas do KG são deduplicadas",
     crit_global.count("Biologia Moderna") <= 1,
+)
+
+print(f"\n{BOLD}── graph_payload: grafo estruturado p/ o frontend ──{RESET}")
+gp_chain = engine.graph_payload("prerequisite_chain", "compiladores")
+check(
+    "prerequisite_chain/'compiladores' devolve dict com nodes e edges",
+    isinstance(gp_chain, dict) and gp_chain.get("nodes") and gp_chain.get("edges"),
+    str(gp_chain)[:120],
+)
+chain_nomes = {n["nome"] for n in (gp_chain or {}).get("nodes", [])}
+check(
+    "nodes da cadeia de Compiladores contêm alvo e ancestrais (LFA, Mat. Discreta, Lógica)",
+    chain_nomes == {
+        "Compiladores", "Linguagens Formais e Autômatos",
+        "Matemática Discreta", "Lógica de Programação",
+    },
+    str(chain_nomes),
+)
+check(
+    "edge LFA → Compiladores presente na cadeia",
+    any(
+        e["source"] == "Linguagens Formais e Autômatos" and e["target"] == "Compiladores"
+        for e in gp_chain["edges"]
+    ),
+    str(gp_chain["edges"]),
+)
+check(
+    "toda edge tem confidence numérico em (0, 1]",
+    all(
+        isinstance(e.get("confidence"), (int, float)) and 0 < e["confidence"] <= 1
+        for e in gp_chain["edges"]
+    ),
+    str(gp_chain["edges"]),
+)
+check(
+    "todo node tem id e nome",
+    all(n.get("id") and n.get("nome") for n in gp_chain["nodes"]),
+)
+
+gp_traj = engine.graph_payload(
+    "trajectory_planning", "matemática discreta:compiladores"
+)
+check(
+    "trajectory_planning devolve dict com nodes e edges",
+    isinstance(gp_traj, dict) and gp_traj.get("nodes") and gp_traj.get("edges"),
+    str(gp_traj)[:120],
+)
+check(
+    "todo node do trajectory tem fase (int) e flag cursada",
+    all(
+        isinstance(n.get("fase"), int) and isinstance(n.get("cursada"), bool)
+        for n in gp_traj["nodes"]
+    ),
+    str(gp_traj["nodes"]),
+)
+check(
+    "'Matemática Discreta' aparece como cursada na fase 0",
+    any(
+        n["nome"] == "Matemática Discreta" and n["cursada"] and n["fase"] == 0
+        for n in gp_traj["nodes"]
+    ),
+    str(gp_traj["nodes"]),
+)
+check(
+    "'Compiladores' é o alvo na última fase (não cursada)",
+    any(
+        n["nome"] == "Compiladores"
+        and not n["cursada"]
+        and n["fase"] == max(x["fase"] for x in gp_traj["nodes"])
+        for n in gp_traj["nodes"]
+    ),
+    str(gp_traj["nodes"]),
+)
+check(
+    "edges do trajectory têm confidence",
+    all("confidence" in e for e in gp_traj["edges"]),
+)
+
+gp_dep = engine.graph_payload("dependents", "aed i")
+check(
+    "dependents/'aed i' resolve a sigla e devolve o grafo de desbloqueios",
+    isinstance(gp_dep, dict)
+    and gp_dep["nodes"][0]["nome"] == "Algoritmos e Estruturas de Dados I"
+    and len(gp_dep["nodes"]) > 1,
+    str(gp_dep)[:160],
+)
+check(
+    "toda edge de dependents sai de AED I com confidence",
+    gp_dep["edges"]
+    and all(
+        e["source"] == "Algoritmos e Estruturas de Dados I" and "confidence" in e
+        for e in gp_dep["edges"]
+    ),
+    str(gp_dep["edges"])[:160],
+)
+check(
+    "intent fora do escopo do grafo devolve None",
+    engine.graph_payload("discipline_docentes", "compiladores") is None,
+)
+check(
+    "termo inexistente devolve None (sem grafo a exibir)",
+    engine.graph_payload("prerequisite_chain", "xyz inexistente qualquer") is None,
 )
 
 print(f"\n{BOLD}{_passed} passed, {_failed} failed{RESET}")

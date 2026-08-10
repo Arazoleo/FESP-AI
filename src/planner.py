@@ -5,7 +5,7 @@ Dado um curso, as disciplinas já cursadas e um teto de créditos por semestre,
 monta uma grade semestre a semestre que respeita o DAG de pré-requisitos.
 
 100% simbólico/determinístico: o caminho é derivado do Knowledge Graph, não
-gerado por LLM — portanto não há alucinação. O agente conversacional apenas
+gerado por LLM - portanto não há alucinação. O agente conversacional apenas
 conduz a coleta de dados e narra o resultado; o plano em si vem daqui.
 
 Algoritmo: layering topológico do DAG de pré-requisitos + bin-packing guloso
@@ -15,9 +15,9 @@ das disciplinas prontas em cada semestre, respeitando o teto de créditos.
 from typing import Any, Dict, List, Optional
 
 
-DEFAULT_MAX_CREDITOS = 24      # teto de créditos por semestre (padrão)
-_DEFAULT_CREDITOS = 4          # créditos assumidos quando o dado falta
-_MAX_SEMESTRES = 20            # limite de segurança contra laços
+DEFAULT_MAX_CREDITOS = 24
+_DEFAULT_CREDITOS = 4
+_MAX_SEMESTRES = 20
 
 
 def _to_int(value: Any, default: int) -> int:
@@ -51,14 +51,12 @@ def plan_curriculum(
     completed = completed or []
     max_creditos = max(1, int(max_creditos or DEFAULT_MAX_CREDITOS))
 
-    # 1. Todas as disciplinas do curso, agrupadas por termo sugerido, com créditos.
     termos = kg.get_todos_termos_do_curso(curso)
     if not termos:
         return None
 
     norm = kg._normalize_text
 
-    # Deduplica por nome normalizado, guardando o menor termo sugerido e os créditos.
     info_by_key: Dict[str, Dict[str, Any]] = {}
     for termo_num, discs in termos.items():
         for d in discs:
@@ -77,22 +75,18 @@ def plan_curriculum(
 
     completed_norm = {norm(c) for c in completed if c and c.strip()}
 
-    # Disciplinas cursadas que NÃO pertencem a este curso → aviso (digitação/curso errado).
     completed_desconhecidas = [
         c for c in completed
         if c and c.strip() and norm(c) not in info_by_key
     ]
 
-    # 2. Restantes = disciplinas do curso ainda não cursadas.
     pending = {k: v for k, v in info_by_key.items() if k not in completed_norm}
 
-    # Pré-requisitos diretos de cada pendente (apenas nomes normalizados).
     prereqs: Dict[str, set] = {}
     for key, info in pending.items():
         directs = kg.get_direct_prerequisites(info["nome"])
         prereqs[key] = {norm(p) for p in directs if p}
 
-    # 3. Layering topológico + bin-packing por créditos.
     resolved = set(completed_norm)
     semestres: List[Dict[str, Any]] = []
     remaining = dict(pending)
@@ -101,11 +95,8 @@ def plan_curriculum(
         for p in prereqs[key]:
             if p in resolved:
                 continue
-            # Pré-requisito ainda pendente (faz parte do curso): precisa vir antes.
             if p in remaining:
                 return False
-            # Pré-requisito fora do universo planejável (não é do curso e não foi
-            # marcado como cursado) → assume satisfeito para não travar o plano.
         return True
 
     for _ in range(_MAX_SEMESTRES):
@@ -114,10 +105,8 @@ def plan_curriculum(
 
         ready = [k for k in remaining if is_ready(k)]
         if not ready:
-            break  # ciclo ou inconsistência no grafo
+            break
 
-        # Ordena por termo sugerido, depois mais créditos primeiro (empacota melhor),
-        # depois nome (determinístico).
         ready.sort(key=lambda k: (
             remaining[k]["termo_sugerido"],
             -remaining[k]["creditos"],
@@ -128,7 +117,6 @@ def plan_curriculum(
         creditos_sem = 0
         for key in ready:
             c = remaining[key]["creditos"]
-            # Sempre permite ao menos uma disciplina, mesmo que sozinha estoure o teto.
             if creditos_sem + c <= max_creditos or not chosen:
                 chosen.append(key)
                 creditos_sem += c
@@ -158,7 +146,6 @@ def plan_curriculum(
             resolved.add(key)
             del remaining[key]
 
-    # 4. Avisos.
     avisos: List[str] = []
     if completed_desconhecidas:
         avisos.append(
@@ -173,7 +160,6 @@ def plan_curriculum(
             + ", ".join(nao_planejadas)
         )
 
-    # 5. Nós e arestas para o canvas (vis-network).
     nodes, edges = _build_graph_elements(info_by_key, completed_norm, semestres, prereqs)
 
     return {
@@ -192,7 +178,6 @@ def plan_curriculum(
 
 def _build_graph_elements(info_by_key, completed_norm, semestres, prereqs):
     """Gera nós (com grupo/coluna por semestre) e arestas de pré-requisito."""
-    # Mapa nome_normalizado → semestre planejado (0 = já cursada).
     sem_of_key: Dict[str, int] = {c: 0 for c in completed_norm if c in info_by_key}
     for s in semestres:
         for d in s["disciplinas"]:
@@ -204,17 +189,16 @@ def _build_graph_elements(info_by_key, completed_norm, semestres, prereqs):
         nodes.append({
             "id": info["nome"],
             "label": info["nome"],
-            "semestre": sem,           # 0 = cursada; 1..N = planejada
+            "semestre": sem,
             "creditos": info["creditos"],
             "cursada": sem == 0,
         })
 
-    # Arestas: prereq → disciplina, apenas entre nós presentes no plano.
     present = set(sem_of_key.keys())
     edges = []
     seen = set()
     for key in present:
-        for p in prereqs.get(key, ()):  # prereqs só existe para pendentes
+        for p in prereqs.get(key, ()):
             if p in present:
                 pair = (info_by_key[p]["nome"], info_by_key[key]["nome"])
                 if pair not in seen:

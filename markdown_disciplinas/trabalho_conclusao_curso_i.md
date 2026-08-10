@@ -17,7 +17,7 @@
 
 ## Pré-requisitos
 
-- Projeto em Engenharia de Computação (Código: 6100)
+- Projetos em Engenharia de Computação (Código: 6100)
 
 ## Carga Horária
 

@@ -19,7 +19,6 @@ def _tokenize_pt(text: str) -> List[str]:
     if not text:
         return []
     text = text.lower().strip()
-    # Mantém acentos e números; extrai sequências de letras/números
     tokens = re.findall(r"[a-zà-ú0-9]+", text)
     return [t for t in tokens if len(t) >= 1]
 
@@ -64,8 +63,8 @@ class HybridRetriever(BaseRetriever):
     rrf_k: int = 60
     bm25_corpus: Optional[List[str]] = None
     bm25_ids: Optional[List[str]] = None
-    bm25_model: Optional[Any] = None  # BM25Okapi from rank_bm25
-    db: Optional[Any] = None  # Chroma, para buscar docs por id quando usar BM25
+    bm25_model: Optional[Any] = None
+    db: Optional[Any] = None
 
     def _get_relevant_documents(
         self,
@@ -73,13 +72,11 @@ class HybridRetriever(BaseRetriever):
         *,
         run_manager: Optional[CallbackManagerForRetrieverRun] = None,
     ) -> List[Document]:
-        # Busca vetorial (como hoje)
         docs_v = self.vector_retriever.invoke(query, config={"callbacks": run_manager})
 
         if not self.bm25_model or not self.bm25_ids or not self.db:
             return docs_v[: self.top_k]
 
-        # BM25: top por score (get_scores + argsort para obter índices)
         tokenized_query = _tokenize_pt(query)
         if not tokenized_query:
             return docs_v[: self.top_k]
@@ -91,7 +88,6 @@ class HybridRetriever(BaseRetriever):
             top_indices = []
         bm25_ids = [self.bm25_ids[i] for i in top_indices if i < len(self.bm25_ids)]
 
-        # Buscar documentos no Chroma por id (ChromaDB collection.get)
         docs_b = []
         try:
             coll = getattr(self.db, "_collection", None) or getattr(self.db, "collection", None)
@@ -112,12 +108,10 @@ class HybridRetriever(BaseRetriever):
         except Exception:
             pass
 
-        # Garantir id em metadata para RRF (Chroma às vezes devolve em metadata)
         for d in docs_v:
             if "id" not in d.metadata and hasattr(d, "metadata"):
                 d.metadata["id"] = d.metadata.get("ids", [None])[0] if isinstance(d.metadata.get("ids"), list) else d.metadata.get("ids") or id(d.page_content)
 
-        # RRF
         lists = [docs_v, docs_b]
         merged = _rrf_merge(lists, k=self.rrf_k, top_n=self.top_k, doc_key="id")
         return merged if merged else docs_v[: self.top_k]

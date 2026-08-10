@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Calcula métricas de avaliação para o paper BRACIS.
+Calcula métricas de avaliação do benchmark.
 
-Modo 1 — Direto (percentuais já calculados):
+Modo 1 - Direto (percentuais já calculados):
   python compute_metrics.py --direct
 
-Modo 2 — A partir dos CSVs anotados (label_avaliador1 / label_avaliador2):
+Modo 2 - A partir dos CSVs anotados (label_avaliador1 / label_avaliador2):
   python compute_metrics.py \
     --b1 eval_results_B1_LLM_ONLY_20260409_201510.csv \
     --b2 eval_results_B2_STD_RAG_20260409_215445.csv \
@@ -25,37 +25,33 @@ import sys
 from pathlib import Path
 
 
-# ── Dados informados pelos dois avaliadores ───────────────────────────────────
 EVAL1 = {
-    "B1 — LLM-only":                 {"C": 0.10, "P": 0.30, "I": 0.60},
-    "B2 — Standard RAG":             {"C": 0.10, "P": 0.45, "I": 0.45},
-    "B3 — Graph-RAG":                {"C": 0.65, "P": 0.00, "I": 0.35},
-    "B4 — Neuro-Symbolic Graph-RAG": {"C": 0.90, "P": 0.05, "I": 0.05},
+    "B1 - LLM-only":                 {"C": 0.10, "P": 0.30, "I": 0.60},
+    "B2 - Standard RAG":             {"C": 0.10, "P": 0.45, "I": 0.45},
+    "B3 - Graph-RAG":                {"C": 0.65, "P": 0.00, "I": 0.35},
+    "B4 - Neuro-Symbolic Graph-RAG": {"C": 0.90, "P": 0.05, "I": 0.05},
 }
 
 EVAL2 = {
-    "B1 — LLM-only":                 {"C": 0.05, "P": 0.20, "I": 0.75},
-    "B2 — Standard RAG":             {"C": 0.05, "P": 0.40, "I": 0.55},
-    "B3 — Graph-RAG":                {"C": 0.50, "P": 0.10, "I": 0.40},
-    "B4 — Neuro-Symbolic Graph-RAG": {"C": 0.80, "P": 0.10, "I": 0.10},
+    "B1 - LLM-only":                 {"C": 0.05, "P": 0.20, "I": 0.75},
+    "B2 - Standard RAG":             {"C": 0.05, "P": 0.40, "I": 0.55},
+    "B3 - Graph-RAG":                {"C": 0.50, "P": 0.10, "I": 0.40},
+    "B4 - Neuro-Symbolic Graph-RAG": {"C": 0.80, "P": 0.10, "I": 0.10},
 }
 
-# Média dos dois avaliadores (usada como resultado final no paper)
 MANUAL = {
     name: {k: (EVAL1[name][k] + EVAL2[name][k]) / 2 for k in ("C", "P", "I")}
     for name in EVAL1
 }
 
-N_TOTAL = 57   # número de perguntas no dataset
+N_TOTAL = 57
 
-
-# ── Funções de métricas ───────────────────────────────────────────────────────
 
 def counts_from_pct(pct_dict, n=N_TOTAL):
     """Converte percentuais em contagens inteiras (arredondamento consistente)."""
     c = round(pct_dict["C"] * n)
     p = round(pct_dict["P"] * n)
-    i = n - c - p   # garante soma = n
+    i = n - c - p
     return {"C": c, "P": p, "I": i}
 
 
@@ -65,7 +61,7 @@ def strict_accuracy(counts):
 
 
 def weighted_accuracy(counts):
-    """C=1.0, P=0.5, I=0.0 — métrica primária do paper."""
+    """C=1.0, P=0.5, I=0.0 - métrica primária do paper."""
     n = sum(counts.values())
     return (counts["C"] + 0.5 * counts["P"]) / n
 
@@ -85,14 +81,11 @@ def cohen_kappa(labels1, labels2):
     if n == 0:
         return float("nan")
 
-    # Concordância observada
     p_o = sum(1 for a, b in zip(labels1, labels2) if a == b) / n
 
-    # Contagens marginais
     freq1 = {c: labels1.count(c) / n for c in cats}
     freq2 = {c: labels2.count(c) / n for c in cats}
 
-    # Concordância esperada ao acaso
     p_e = sum(freq1[c] * freq2[c] for c in cats)
 
     if p_e == 1.0:
@@ -108,8 +101,6 @@ def kappa_interpretation(k):
     if k < 0.80:   return "Substancial"
     return "Quase perfeita"
 
-
-# ── Leitura de CSV anotado ────────────────────────────────────────────────────
 
 def read_csv(path):
     rows = list(csv.DictReader(open(path, encoding="utf-8")))
@@ -127,8 +118,6 @@ def read_csv(path):
 def counts_from_labels(labels):
     return {"C": labels.count("C"), "P": labels.count("P"), "I": labels.count("I")}
 
-
-# ── Impressão ─────────────────────────────────────────────────────────────────
 
 SEP = "─" * 78
 
@@ -165,13 +154,13 @@ def print_latex(results, kappas=None):
           r" & \textbf{Strict Acc.} & \textbf{Weighted Acc.} & \textbf{Error Rate} \\")
     print(r"\hline")
 
-    order = ["B1 — LLM-only", "B2 — Standard RAG", "B3 — Graph-RAG",
-             "B4 — Neuro-Symbolic Graph-RAG"]
+    order = ["B1 - LLM-only", "B2 - Standard RAG", "B3 - Graph-RAG",
+             "B4 - Neuro-Symbolic Graph-RAG"]
     short = {
-        "B1 — LLM-only":               r"LLM-only (B1)",
-        "B2 — Standard RAG":           r"Standard RAG (B2)",
-        "B3 — Graph-RAG":              r"Graph-RAG (B3)",
-        "B4 — Neuro-Symbolic Graph-RAG": r"\textbf{Neuro-Sym. Graph-RAG (Ours)}",
+        "B1 - LLM-only":               r"LLM-only (B1)",
+        "B2 - Standard RAG":           r"Standard RAG (B2)",
+        "B3 - Graph-RAG":              r"Graph-RAG (B3)",
+        "B4 - Neuro-Symbolic Graph-RAG": r"\textbf{Neuro-Sym. Graph-RAG (Ours)}",
     }
     for name in order:
         if name not in results:
@@ -199,8 +188,6 @@ def print_latex(results, kappas=None):
     print()
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
-
 def approx_kappa_from_marginals(pct1: dict, pct2: dict) -> tuple[float, float]:
     """
     Calcula Cohen's Kappa superior (máximo overlap dado as distribuições marginais)
@@ -214,7 +201,6 @@ def approx_kappa_from_marginals(pct1: dict, pct2: dict) -> tuple[float, float]:
     cats = ("C", "P", "I")
     p_e     = sum(pct1[c] * pct2[c] for c in cats)
     p_o_max = sum(min(pct1[c], pct2[c]) for c in cats)
-    # estimativa conservadora: 75% do caminho até o máximo possível
     p_o_est = p_e + (p_o_max - p_e) * 0.75
     kappa   = (p_o_est - p_e) / (1 - p_e) if p_e < 1 else 1.0
     return kappa, p_e
@@ -243,7 +229,6 @@ def run_direct():
 
     print_per_evaluator(EVAL1, EVAL2)
 
-    # ── Resultado final: média dos avaliadores ────────────────────────────────
     results = {}
     kappas  = {}
     for name, pct in MANUAL.items():
@@ -263,18 +248,17 @@ def run_direct():
     print_table(results)
     print_latex(results, kappas)
 
-    # ── Ganhos relativos ──────────────────────────────────────────────────────
-    b1_w = results["B1 — LLM-only"]["weighted_acc"]
-    b2_w = results["B2 — Standard RAG"]["weighted_acc"]
-    b3_w = results["B3 — Graph-RAG"]["weighted_acc"]
-    b4_w = results["B4 — Neuro-Symbolic Graph-RAG"]["weighted_acc"]
+    b1_w = results["B1 - LLM-only"]["weighted_acc"]
+    b2_w = results["B2 - Standard RAG"]["weighted_acc"]
+    b3_w = results["B3 - Graph-RAG"]["weighted_acc"]
+    b4_w = results["B4 - Neuro-Symbolic Graph-RAG"]["weighted_acc"]
     print(f"  ── Ganhos relativos (wAcc) ────────────────────────────────")
     print(f"  B2 vs B1 (RAG vs LLM-only)           : +{(b2_w-b1_w)*100:.1f} pp")
     print(f"  B3 vs B2 (Knowledge Graph)            : +{(b3_w-b2_w)*100:.1f} pp")
     print(f"  B4 vs B3 (validação neurossimbólica)  : +{(b4_w-b3_w)*100:.1f} pp")
     print(f"  B4 vs B1 (total)                      : +{(b4_w-b1_w)*100:.1f} pp")
-    b1_err = results["B1 — LLM-only"]["error_rate"]
-    b4_err = results["B4 — Neuro-Symbolic Graph-RAG"]["error_rate"]
+    b1_err = results["B1 - LLM-only"]["error_rate"]
+    b4_err = results["B4 - Neuro-Symbolic Graph-RAG"]["error_rate"]
     print(f"  Redução de erro B1→B4                 : {b1_err*100:.1f}% → {b4_err*100:.1f}%"
           f"  ({(1-b4_err/b1_err)*100:.0f}% de redução)")
     print()
@@ -289,7 +273,6 @@ def run_from_csv(files: dict):
         if not path:
             continue
         rows, l1, l2 = read_csv(path)
-        # Usar label_avaliador1 como primária; se houver l2, usar média
         primary = l1 if l1 else l2
         counts = counts_from_labels(primary)
         results[name] = {
@@ -301,14 +284,14 @@ def run_from_csv(files: dict):
         if l1 and l2 and len(l1) == len(l2):
             k = cohen_kappa(l1, l2)
             kappas[name] = k
-            print(f"  [Kappa] {name}: κ={k:.3f} — {kappa_interpretation(k)}")
+            print(f"  [Kappa] {name}: κ={k:.3f} - {kappa_interpretation(k)}")
 
     print_table(results)
     print_latex(results, kappas)
 
 
 def main():
-    p = argparse.ArgumentParser(description="Métricas de avaliação — BRACIS")
+    p = argparse.ArgumentParser(description="Métricas de avaliação do benchmark")
     p.add_argument("--direct", action="store_true",
                    help="Usar percentuais manuais (sem CSV)")
     p.add_argument("--b1", default="", help="CSV do B1 (LLM-only)")
@@ -321,10 +304,10 @@ def main():
         run_direct()
     else:
         files = {
-            "B1 — LLM-only":               args.b1,
-            "B2 — Standard RAG":           args.b2,
-            "B3 — Graph-RAG":              args.b3,
-            "B4 — Neuro-Symbolic Graph-RAG": args.b4,
+            "B1 - LLM-only":               args.b1,
+            "B2 - Standard RAG":           args.b2,
+            "B3 - Graph-RAG":              args.b3,
+            "B4 - Neuro-Symbolic Graph-RAG": args.b4,
         }
         run_from_csv(files)
 

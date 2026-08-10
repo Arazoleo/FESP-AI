@@ -16,7 +16,7 @@ class DisciplinasAgent(BaseAgent):
 
     name = "disciplinas"
     description = "Especialista em disciplinas, pré-requisitos e ementas"
-    color = "#10b981"  # Emerald
+    color = "#10b981"
 
     GRAPH_INTENTS = {
         "prerequisite_chain",
@@ -27,16 +27,13 @@ class DisciplinasAgent(BaseAgent):
     def retrieve(self, question: str, intent: str, term: str) -> str:
         parts = []
 
-        # 1. Consultar Knowledge Graph para intents estruturados
         if intent in self.GRAPH_INTENTS and term and self.graph_rag:
             graph_result = self._get_graph_context(intent, term)
             if graph_result:
                 parts.append(graph_result)
-                # Para prereqs e dependents, o grafo já tem tudo
                 if intent in ("prerequisite_chain", "dependents"):
                     return "\n\n".join(parts)
 
-        # 2. Buscar no vector store por documentos de disciplina
         raw_name = self._resolve_discipline_name(question, term)
         discipline_name = self._normalize_discipline_name(raw_name) if raw_name else None
         if discipline_name and self.db:
@@ -44,14 +41,10 @@ class DisciplinasAgent(BaseAgent):
             if docs:
                 parts.append(self._format_docs(docs))
 
-        # 3. Fallback: busca semântica genérica
         if not parts and self.rag.retriever:
             docs = self.rag.retriever.invoke(question)
             parts.append(self._format_docs(docs))
 
-        # 4. As duas bases "conversam": seções do site do campus complementam
-        #    perguntas abertas — mas NUNCA os intents estruturados de grafo
-        #    (prereqs/dependents/docentes), para não poluir dados verificados.
         if intent not in self.GRAPH_INTENTS:
             site_ctx = self._site_supplement(question)
             if site_ctx:
@@ -68,7 +61,7 @@ class DisciplinasAgent(BaseAgent):
             return ""
         if not secoes:
             return ""
-        partes = ["[PAGINAS DO SITE DO CAMPUS — complemento; cite o link ao usar]"]
+        partes = ["[PAGINAS DO SITE DO CAMPUS - complemento; cite o link ao usar]"]
         for p in secoes:
             partes.append(f"[{p['titulo']}]\nLink: {p['url']}\n{p['texto'][:1200]}")
         return "\n\n".join(partes)
@@ -78,7 +71,6 @@ class DisciplinasAgent(BaseAgent):
         if term and term not in ("", "unknown"):
             words = set(term.lower().split())
             if not words.issubset(self._PRONOUN_WORDS):
-                # Tentar expansão de sigla/código pelo KG antes de usar o termo bruto
                 expanded = self._expand_via_kg(term)
                 return expanded if expanded else term
         return self.rag._extract_discipline_name(question)
@@ -114,7 +106,6 @@ class DisciplinasAgent(BaseAgent):
                 )
             ]
 
-            # Filtrar por seção relevante para a pergunta
             if any(w in question_lower for w in ("docente", "professor", "quem leciona")):
                 filtered = [d for d in docs if d.metadata.get("secao") == "docentes"]
                 if filtered:
@@ -135,7 +126,6 @@ class DisciplinasAgent(BaseAgent):
                 filtered = [d for d in docs if "bibliografia" in d.metadata.get("secao", "")]
                 if filtered:
                     return filtered[:4]
-            # "O que é X?" / "Me fale sobre X" / "Fale mais sobre [disciplina]" → ementa + info_geral
             if any(
                 w in question_lower
                 for w in (
@@ -164,7 +154,7 @@ class DisciplinasAgent(BaseAgent):
             return []
 
     def get_prompt_template(self) -> str:
-        return """Voce e o assistente virtual da UNIFESP ICT, especialista em DISCIPLINAS e PRE-REQUISITOS — simpatico e acolhedor, como um colega que ajuda os alunos. Fale sempre em PORTUGUES BRASILEIRO, de forma natural e conversacional.
+        return """Voce e o assistente virtual da UNIFESP ICT, especialista em DISCIPLINAS e PRE-REQUISITOS - simpatico e acolhedor, como um colega que ajuda os alunos. Fale sempre em PORTUGUES BRASILEIRO, de forma natural e conversacional.
 
 """ + self.GOLDEN_RULE + """
 
@@ -174,7 +164,7 @@ CONTEXTO DA BASE DE DADOS:
 Pergunta: {question}
 
 INSTRUCOES:
-1. Responda com base EXCLUSIVAMENTE no CONTEXTO acima — nenhuma palavra inventada.
+1. Responda com base EXCLUSIVAMENTE no CONTEXTO acima - nenhuma palavra inventada.
 2. Para pré-requisitos: apresente a cadeia completa de dependencias que aparece no contexto.
 3. Para ementas/conteudo: descreva os topicos presentes no contexto, sem adicionar topicos extras.
 4. Para informacoes gerais: cite somente nome, codigo, carga horaria e docentes que aparecem no contexto.
@@ -183,6 +173,6 @@ INSTRUCOES:
    informacao dele, SEMPRE cite o link. Se divergir dos dados verificados da
    base, prefira os dados verificados e mencione a divergencia.
 
-TOM: caloroso e direto, como num bate-papo. Pode abrir com uma frase amigavel e fechar se colocando a disposicao; no maximo 1 emoji. A precisao dos fatos vem sempre em primeiro lugar.
+TOM: caloroso e direto, como num bate-papo. Pode abrir com uma frase amigavel e fechar se colocando a disposicao; NAO use emojis. A precisao dos fatos vem sempre em primeiro lugar.
 
 Resposta:"""

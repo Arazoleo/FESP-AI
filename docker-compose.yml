@@ -13,19 +13,18 @@ services:
       - ./planner.html:/app/planner.html
       - ./graph_viewer.html:/app/graph_viewer.html
       - ./chroma_db_unifesp:/app/chroma_db_unifesp
-      - ./jsons_disciplinas:/app/jsons_disciplinas
       - ./jsons_regimentos:/app/jsons_regimentos
       - ./markdown_disciplinas:/app/markdown_disciplinas
       - ./markdown_regimentos:/app/markdown_regimentos
       - ./markdown_docentes:/app/markdown_docentes
       - ./markdown_cursos:/app/markdown_cursos
-      # JIT cache do numba (usado pelo PyReason) — persiste entre restarts
+      # JIT cache do numba (usado pelo PyReason) - persiste entre restarts
       # para evitar recompilação de kernels (~20s) a cada boot do container.
       - numba-cache:/app/.numba_cache
     environment:
-      # Ollama: local (Mac) ou na nuvem — para nuvem, defina a URL abaixo
+      # Ollama: local (Mac) ou na nuvem - para nuvem, defina a URL abaixo
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
-      # Modelo de geração — para testar modelo grande na nuvem: MODEL_NAME=llama3.1:70b (ou qwen2.5:72b, etc.)
+      # Modelo de geração - para testar modelo grande na nuvem: MODEL_NAME=llama3.1:70b (ou qwen2.5:72b, etc.)
       - MODEL_NAME=${MODEL_NAME:-gemma4:31b-cloud}
       # Embeddings (recomendado manter mxbai-embed-large; na nuvem deve estar no mesmo Ollama)
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-mxbai-embed-large}
@@ -38,6 +37,17 @@ services:
       # Humanizer do symbolic_kg: 1 = suaviza o tom da resposta do KG via LLM
       # (preservando os fatos). Ligado no app; use 0 para runs puros do paper.
       - FESPAI_HUMANIZE_KG=${FESPAI_HUMANIZE_KG:-1}
+      # Claim-check (verificação de alegações via LLM): 0 = desligado no app,
+      # evita respostas de 5+ min na demo pública.
+      - FESPAI_CLAIM_CHECK=${FESPAI_CLAIM_CHECK:-0}
+      # Segunda chance (retry re-roteado quando a resposta indica falha):
+      # 0 = desligado (demo, menos latência). Fila de misses segue ativa.
+      - FESPAI_SECOND_CHANCE=${FESPAI_SECOND_CHANCE:-1}
+      # Roteador LLM unificado: 0 = pula a chamada LLM e usa o embedding
+      # router/heurísticas (demo, menos latência).
+      - FESPAI_LLM_ROUTE=${FESPAI_LLM_ROUTE:-1}
+      # Modelo dedicado (pequeno) para o roteador LLM. Vazio = usa MODEL_NAME.
+      - FESPAI_ROUTER_MODEL=${FESPAI_ROUTER_MODEL:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -52,7 +62,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      # Vazio = mesma origem: API proxyada via rewrites do next.config.js
+      # (um único túnel público, sem CORS)
+      - NEXT_PUBLIC_API_URL=
       - NODE_ENV=production
     networks:
       - fesp-ai-network

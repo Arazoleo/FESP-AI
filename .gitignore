@@ -37,7 +37,7 @@ node_modules/
 # Claude Code (config local)
 .claude/
 
-# Resultados de eval (gerados por eval/*.py — não versionar)
+# Resultados de eval (gerados por eval/*.py - não versionar)
 eval_*_2026*.json
 eval_*_2026*.csv
 eval_human_gemma4_TO_ANNOTATE.json
@@ -46,6 +46,8 @@ paper_conversations_output.json
 
 # Artefatos de pesquisa pesados
 drag_article.pdf
+
+paper/
 
 # arquivos locais de desenvolvimento
 posgrad/
@@ -69,3 +71,5 @@ posgrad/
 /test_rag.sh
 eval_all_agents_*.json
 
+jsons_disciplinas/
+ajudauni_downloader/

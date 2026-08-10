@@ -18,12 +18,10 @@ class DisciplinaMarkdownParser:
         
         docs = []
         
-        # Extrair metadados completos do cabeçalho
         meta_info = DisciplinaMarkdownParser._extract_all_metadata(content)
         nome = meta_info.get('nome', 'N/A')
         codigo = meta_info.get('codigo', 'N/A')
         
-        # Metadados base enriquecidos
         sigla = meta_info.get('sigla', '')
         base_meta = {
             'tipo_documento': 'disciplina',
@@ -38,18 +36,14 @@ class DisciplinaMarkdownParser:
             'source': filepath
         }
         
-        # Extrair docentes
         docentes = DisciplinaMarkdownParser._extract_docentes(content)
         docentes_str = ', '.join(docentes) if docentes else 'N/A'
         
-        # Extrair pré-requisitos
         pre_requisitos = DisciplinaMarkdownParser._extract_pre_requisitos(content)
         pre_req_str = '; '.join(pre_requisitos) if pre_requisitos else 'Nenhum'
         
-        # Extrair carga horária
         carga_horaria = DisciplinaMarkdownParser._extract_carga_horaria(content)
         
-        # 1. DOCUMENTO PRINCIPAL - Info completa (para perguntas gerais)
         sigla_info = f"\nSigla: {sigla}" if sigla else ""
         info_completa = f"""DISCIPLINA: {nome}
 Código: {codigo}{sigla_info}
@@ -74,7 +68,6 @@ CARGA HORÁRIA:
             metadata={**base_meta, 'secao': 'info_geral', 'docentes': docentes_str, 'pre_requisitos': pre_req_str}
         ))
         
-        # 2. DOCUMENTO ESPECÍFICO DE DOCENTES (para perguntas diretas)
         doc_docentes = f"""DISCIPLINA: {nome} (Código: {codigo})
 QUEM LECIONA / PROFESSORES / DOCENTES:
 {chr(10).join(f'- {d}' for d in docentes) if docentes else 'Informação não disponível'}
@@ -86,7 +79,6 @@ Os professores da disciplina {nome} são: {docentes_str}"""
             metadata={**base_meta, 'secao': 'docentes', 'docentes': docentes_str}
         ))
         
-        # 3. DOCUMENTO ESPECÍFICO DE PRÉ-REQUISITOS
         if pre_requisitos:
             doc_pre_req = f"""DISCIPLINA: {nome} (Código: {codigo})
 PRÉ-REQUISITOS / REQUISITOS / DEPENDÊNCIAS:
@@ -99,7 +91,6 @@ Para cursar {nome}, o aluno deve ter aprovação em: {pre_req_str}"""
                 metadata={**base_meta, 'secao': 'pre_requisitos', 'pre_requisitos': pre_req_str}
             ))
         
-        # 4. DOCUMENTO DE CARGA HORÁRIA
         doc_carga = f"""DISCIPLINA: {nome} (Código: {codigo})
 CARGA HORÁRIA:
 - Carga horária total: {carga_horaria.get('total', 'N/A')}
@@ -114,7 +105,6 @@ A disciplina {nome} tem {carga_horaria.get('total', 'N/A')} de carga horária to
             metadata={**base_meta, 'secao': 'carga_horaria', **carga_horaria}
         ))
         
-        # 5. EMENTA E TÓPICOS
         ementa_match = re.search(r'## Ementa\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
         if ementa_match:
             ementa_raw = ementa_match.group(1).strip()
@@ -139,7 +129,6 @@ O que é estudado em {nome}: {ementa_texto}"""
                 metadata={**base_meta, 'secao': 'ementa', 'topicos': ', '.join(topicos)}
             ))
         
-        # 6. BIBLIOGRAFIA
         biblio_match = re.search(r'## Bibliografia\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
         if biblio_match:
             biblio_text = biblio_match.group(1)
@@ -173,17 +162,15 @@ Livros recomendados ({tipo.lower()}) para {nome}."""
         
         campos = ['Código', 'Campus', 'Curso', 'Tipo', 'Termo', 'Turno', 'Formato', 'Oferta', 'Sigla']
         for campo in campos:
-            # Tenta com (s) para Curso(s) e vários formatos de markdown
             patterns = [
-                rf'\*\*{campo}(?:\(s\))?:\*\*\s*(.+)',  # **Campo:** valor
-                rf'{campo}(?:\(s\))?:\s*(.+)',          # Campo: valor (sem asteriscos)
+                rf'\*\*{campo}(?:\(s\))?:\*\*\s*(.+)',
+                rf'{campo}(?:\(s\))?:\s*(.+)',
             ]
             for pattern in patterns:
                 match = re.search(pattern, content)
                 if match:
                     key = campo.lower().replace('(s)', '').replace('ó', 'o')
                     value = match.group(1).strip()
-                    # Limpar trailing markdown
                     value = re.sub(r'\s*\*\*.*$', '', value).strip()
                     meta[key] = value
                     break
@@ -234,7 +221,6 @@ class RegimentoMarkdownParser:
         
         docs = []
         
-        # Extrair informações do documento
         doc_tipo_match = re.search(r'^# (.+)$', content, re.MULTILINE)
         doc_tipo = doc_tipo_match.group(1) if doc_tipo_match else 'Documento Institucional'
         
@@ -248,7 +234,6 @@ class RegimentoMarkdownParser:
             'source': filepath
         }
         
-        # Informações gerais
         info_parts = [f"DOCUMENTO INSTITUCIONAL UNIFESP: {doc_tipo}"]
         for campo in ['resolucao', 'instituicao', 'campus', 'data_vigencia', 'data_aprovacao', 'status']:
             match = re.search(rf'\*\*{campo.replace("_", " ").title()}:\*\* (.+)', content, re.IGNORECASE)
@@ -257,24 +242,20 @@ class RegimentoMarkdownParser:
         
         docs.append(Document(page_content="\n".join(info_parts), metadata={**base_meta, 'secao': 'info_geral'}))
         
-        # Objetivo
         objetivo_match = re.search(r'## Objetivo\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
         if objetivo_match:
             obj_text = f"DOCUMENTO: {doc_tipo}\nOBJETIVO: {objetivo_match.group(1).strip()}"
             docs.append(Document(page_content=obj_text, metadata={**base_meta, 'secao': 'objetivo'}))
         
-        # Estrutura - Artigos
         estrutura_match = re.search(r'## Estrutura\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
         if estrutura_match:
             estrutura_text = estrutura_match.group(1)
             
-            # Extrair todos os artigos diretamente
             artigos = re.finditer(r'\*\*Art\. (\d+)\.\*\* (.+?)(?=\n\*\*Art\. |\n## |$)', estrutura_text, re.DOTALL)
             for artigo_match in artigos:
                 numero = artigo_match.group(1)
                 conteudo = artigo_match.group(2).strip()
                     
-                # Encontrar o título/seção do artigo
                 pos = artigo_match.start()
                 titulo = "Geral"
                 for titulo_match in re.finditer(r'### (.+?)\n', estrutura_text[:pos]):
@@ -285,12 +266,10 @@ class RegimentoMarkdownParser:
                 meta = {**base_meta, 'secao': 'artigo', 'titulo': titulo, 'artigo': numero}
                 docs.append(Document(page_content=texto, metadata=meta))
                 
-        # FAQs - Parse mais robusto
         faqs_match = re.search(r'## Perguntas Frequentes\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
         if faqs_match:
             faqs_text = faqs_match.group(1)
             
-            # Dividir por linhas que começam com **Pergunta:** ou **Artigo:**
             faq_blocks = re.split(r'(?=\*\*(?:Artigo|Pergunta):\*\*)', faqs_text)
             
             current_artigo = ''
@@ -299,12 +278,10 @@ class RegimentoMarkdownParser:
                 if not block:
                     continue
                 
-                # Verificar se tem artigo
                 artigo_match = re.search(r'\*\*Artigo:\*\*\s*(\d+)', block)
                 if artigo_match:
                     current_artigo = artigo_match.group(1)
                 
-                # Extrair pergunta e resposta
                 pergunta_match = re.search(r'\*\*Pergunta:\*\*\s*(.+?)(?:\s*\n|\s{2,})', block)
                 resposta_match = re.search(r'\*\*Resposta:\*\*\s*(.+?)(?:\s*$|\n\n)', block, re.DOTALL)
                 
@@ -322,7 +299,6 @@ class RegimentoMarkdownParser:
                         metadata={**base_meta, 'secao': 'faq', 'artigo': current_artigo, 'pergunta': pergunta[:50]}
                     ))
         
-        # Documento resumo com informações-chave para busca geral
         resumo = f"""DOCUMENTO INSTITUCIONAL UNIFESP: {doc_tipo}
 Resolução: {resolucao}
 
@@ -350,15 +326,12 @@ class MatrizCurricularParser:
         
         docs = []
         
-        # Extrair título
         titulo_match = re.search(r'^# (.+)$', content, re.MULTILINE)
         titulo = titulo_match.group(1).strip() if titulo_match else Path(filepath).stem
         
-        # Extrair sigla
         sigla_match = re.search(r'\(([A-Z]{2,5})\)', titulo)
         sigla = sigla_match.group(1) if sigla_match else ""
         
-        # Extrair carga horária
         carga_match = re.search(r'\*\*Carga Horária Total:\*\*\s*(\d+)', content)
         carga_total = carga_match.group(1) if carga_match else ""
         
@@ -370,12 +343,10 @@ class MatrizCurricularParser:
             'carga_horaria_total': carga_total
         }
         
-        # Contar quantos termos existem (suporta "### Termo 1", "### 1º Semestre", "### 1º Termo")
         termo_pattern = r'### (?:Termo\s+)?(\d+)[º°]?\s*(?:Semestre|Termo)?'
         termos_encontrados = re.findall(termo_pattern, content)
         num_termos = len(termos_encontrados)
         
-        # Documento com resumo
         resumo = f"""# {titulo}
 
 **Sigla:** {sigla}
@@ -400,14 +371,11 @@ A matriz curricular contém:
         
         docs.append(Document(page_content=resumo, metadata={**base_meta, 'secao': 'resumo', 'num_termos': num_termos}))
         
-        # Extrair disciplinas por termo (suporta "### Termo 1", "### 1º Semestre", "### 1º Termo")
-        # Lookahead simplificado: próximo ### com número, ou --- ou ## ou fim
         termo_pattern = r'###\s+(?:Termo\s+)?(\d+)[º°]?\s*(?:Semestre|Termo)?[^\n]*\n(.*?)(?=\n###\s+|\n---|\n## |\Z)'
         termos = re.findall(termo_pattern, content, re.DOTALL)
         
         for termo_num, termo_content in termos:
             termo_doc = f"**Termo {termo_num} - {titulo}**\n\n"
-            # Suporta tabelas com 2 ou 3+ colunas
             disc_pattern = r'\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|'
             disciplinas = re.findall(disc_pattern, termo_content)
             
@@ -422,7 +390,6 @@ A matriz curricular contém:
                     metadata={**base_meta, 'secao': f'termo_{termo_num}', 'termo': termo_num}
                 ))
         
-        # Extrair seções de eletivas
         eletiva_sections = [
             ('Eletivas do Grupo 1', 'eletivas_grupo1'),
             ('Eletivas do Grupo 2', 'eletivas_grupo2'),
@@ -444,25 +411,19 @@ A matriz curricular contém:
 
 def parse_file(filepath: str) -> List[Document]:
     """Função principal para parsear arquivos Markdown."""
-    # Detectar tipo de arquivo
     with open(filepath, 'r', encoding='utf-8') as f:
         first_lines = ''.join(f.readlines()[:10])
     
-    # Regimentos primeiro (para evitar falsos positivos com 'cursos' no path)
     if 'regimentos' in filepath.lower() or 'regimento' in filepath.lower():
         return RegimentoMarkdownParser.parse(filepath)
     
-    # Matriz curricular (apenas arquivos na pasta markdown_cursos OU com título específico)
     if 'Matriz Curricular' in first_lines or 'markdown_cursos' in filepath:
         return MatrizCurricularParser.parse(filepath)
     
-    # Disciplina
     if 'Código:' in first_lines or 'Docentes' in first_lines or 'disciplinas' in filepath:
         return DisciplinaMarkdownParser.parse(filepath)
     
-    # Regimento (fallback)
     if filepath.endswith('.md'):
         return RegimentoMarkdownParser.parse(filepath)
     
     return []
-

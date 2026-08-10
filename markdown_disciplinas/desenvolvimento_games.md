@@ -17,7 +17,7 @@
 
 ## Pré-requisitos
 
-- Algoritmos e Estrutura de Dados I (Código: None)
+- Algoritmos e Estruturas de Dados I (Código: None)
 
 ## Carga Horária
 

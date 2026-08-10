@@ -1,9 +1,11 @@
 """
-MultiAgentRAG — Entry point do sistema multi-agente FESP-AI.
+MultiAgentRAG - Entry point do sistema multi-agente FESP-AI.
 
 Substitui o uso direto de RAGUnifesp.query() pela pipeline LangGraph,
 mantendo compatibilidade total com a API existente.
 """
+
+import os
 
 from typing import Dict, Optional, List
 from .rag import RAGUnifesp
@@ -18,7 +20,6 @@ class MultiAgentRAG:
     A diferença está no método `query()`, que agora roteia para agentes especializados.
     """
 
-    # Metadados dos agentes para o frontend
     AGENT_METADATA = {
         "disciplinas": {
             "label": "Agente Disciplinas",
@@ -76,7 +77,7 @@ class MultiAgentRAG:
         },
         "symbolic_kg": {
             "label": "Knowledge Graph",
-            "description": "Resposta direta do Knowledge Graph — sem LLM, 0% alucinação",
+            "description": "Resposta direta do Knowledge Graph - sem LLM, 0% alucinação",
             "color": "#0ea5e9",
             "icon": "Network",
         },
@@ -84,10 +85,8 @@ class MultiAgentRAG:
 
     def __init__(self, config: Config = None):
         self.config = config or Config()
-        # RAGUnifesp contém toda a infra (LLM, embeddings, vector store, grafo)
         self._rag = RAGUnifesp(config=self.config)
         self._pipeline = None
-        # Expor atributos necessários para compatibilidade com api.py
         self.llm = None
         self.chain = None
         self.knowledge_graph = None
@@ -99,7 +98,6 @@ class MultiAgentRAG:
         """Inicializa o RAG e constrói a pipeline multi-agente."""
         result = self._rag.sync(force=force)
 
-        # Sincronizar atributos públicos
         self.llm = self._rag.llm
         self.chain = self._rag.chain
         self.knowledge_graph = self._rag.knowledge_graph
@@ -107,14 +105,12 @@ class MultiAgentRAG:
         self.relation_extractor = self._rag.relation_extractor
         self.graph_enricher = self._rag.graph_enricher
 
-        # B5: KGC combina similaridade estrutural + embeddings semânticos
         if self.knowledge_graph is not None and getattr(self._rag, "embeddings", None):
             try:
                 self.knowledge_graph.kgc.set_embeddings(self._rag.embeddings)
             except Exception:
                 pass
 
-        # Construir pipeline LangGraph
         self._build_pipeline()
 
         return result
@@ -137,15 +133,18 @@ class MultiAgentRAG:
         result = self.query_with_metadata(question, history=history)
         return result["response"]
 
-    def query_with_metadata(self, question: str, history: str = "") -> Dict:
+    def query_with_metadata(
+        self, question: str, history: str = "", original_question: str = None
+    ) -> Dict:
         """
         Processa a pergunta e retorna resposta + metadados do agente ativo.
 
         `history`: últimas trocas formatadas ("Aluno: ...\nAssistente: ...") para
         continuidade de diálogo nos prompts dos agentes.
+        `original_question`: pergunta como o aluno digitou (antes do
+        ContextResolver) - registrada na fila de misses.
         """
         if not self._pipeline:
-            # Fallback para RAG original se pipeline não disponível
             response = self._rag.query(question)
             return {
                 "response": response,
@@ -153,7 +152,6 @@ class MultiAgentRAG:
                 "agent_metadata": self.AGENT_METADATA["fallback"],
             }
 
-        # Estado inicial
         initial_state = {
             "question": question,
             "enhanced_question": question,
@@ -169,8 +167,45 @@ class MultiAgentRAG:
         }
 
         try:
-            final_state = self._pipeline.invoke(initial_state)
+            from .workflow.second_chance import run_with_second_chance, is_miss_response
+            from . import telemetry
+            if os.getenv("FESPAI_SECOND_CHANCE", "1") == "0":
+                final_state = self._pipeline.invoke(initial_state)
+            else:
+                final_state = run_with_second_chance(
+                    self._pipeline.invoke, initial_state, telemetry.incr
+                )
+            if final_state.get("retry_from_agent"):
+                print(
+                    f"[SecondChance] retry recuperado: "
+                    f"{final_state['retry_from_agent']} → "
+                    f"{final_state.get('active_agent', '?')}"
+                )
             active_agent = final_state.get("active_agent", "fallback")
+
+            final_response = final_state.get("response", "")
+            if is_miss_response(final_response):
+                from .misses_queue import record_miss
+                agentes = [active_agent]
+                tried = final_state.get("retry_agent_tried")
+                if tried and tried not in agentes:
+                    agentes.append(tried)
+                record_miss(
+                    question=original_question or question,
+                    enhanced_question=question,
+                    agentes=agentes,
+                    resposta=final_response,
+                )
+                telemetry.incr("miss_registrado")
+
+            if final_response and not is_miss_response(final_response):
+                from .atividades_complementares import maybe_append_offer
+                offered = maybe_append_offer(
+                    original_question or question, final_response
+                )
+                if offered != final_response:
+                    final_state["response"] = offered
+                    telemetry.incr("ac_offer_appended")
 
             return {
                 "response": final_state.get("response", ""),
@@ -181,6 +216,7 @@ class MultiAgentRAG:
                 "context": final_state.get("context", ""),
                 "sources": final_state.get("sources", []),
                 "plan_request": final_state.get("plan_request"),
+                "graph_data": final_state.get("graph_data"),
                 "agent_metadata": self.AGENT_METADATA.get(
                     active_agent, self.AGENT_METADATA["fallback"]
                 ),
@@ -194,7 +230,6 @@ class MultiAgentRAG:
                 "agent_metadata": self.AGENT_METADATA["fallback"],
             }
 
-    # ── Métodos de compatibilidade com RAGUnifesp ──────────────────────────
 
     def list_sources(self) -> Dict[str, int]:
         return self._rag.list_sources()

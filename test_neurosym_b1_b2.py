@@ -48,7 +48,7 @@ def check(desc, cond, detail=""):
         print(f"{GREEN}✓{RESET} {desc}")
     else:
         _failed += 1
-        print(f"{RED}✗ {desc}{RESET}" + (f" — {detail}" if detail else ""))
+        print(f"{RED}✗ {desc}{RESET}" + (f" - {detail}" if detail else ""))
 
 
 kg_mod = _import_module("knowledge_graph", "src/knowledge_graph.py")
@@ -76,8 +76,6 @@ check(
     f"bound={bound}, per_disc={per_disc}",
 )
 
-# Rebaixar a confiança de uma aresta real da cadeia de Compiladores e verificar
-# que o bound se propaga
 lfa = "Linguagens Formais e Autômatos"
 comp_id = kg._find_node("Compiladores", "disciplina")
 lfa_id = kg._find_node(lfa, "disciplina")
@@ -118,7 +116,6 @@ check(
     ctx,
 )
 
-# Restaurar a confiança para não afetar os checks seguintes
 kg.graph[lfa_id][comp_id][edge_key]["confidence"] = 1.0
 
 print(f"\n{BOLD}── B1: validação genérica detecta disciplina inexistente ──{RESET}")
@@ -146,7 +143,6 @@ check(
 
 print(f"\n{BOLD}── B1: reescrita corretiva genérica ──{RESET}")
 
-# Sem LLM: violação fica só anotada (comportamento anterior preservado)
 final, v = validator.validate_and_correct(resp_bad, "ementa_disciplina", "compiladores")
 check(
     "sem LLM, resposta não é reescrita (só anotada)",
@@ -155,9 +151,8 @@ check(
 
 
 try:
-    import langchain_core.messages  # noqa: F401
+    import langchain_core.messages
 except ImportError:
-    # Ambiente sem langchain: stub mínimo (o corretor só usa HumanMessage(content=...))
     lc = _types.ModuleType("langchain_core")
     lc_msgs = _types.ModuleType("langchain_core.messages")
 

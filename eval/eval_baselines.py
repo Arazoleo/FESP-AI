@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Avaliação dos 3 baselines para o paper BRACIS.
+Avaliação dos 3 baselines do benchmark.
 
 Sistemas avaliados:
-  B1 — LLM-only     : Ollama direto, sem recuperação, sem KG
-  B2 — Standard RAG : Hybrid Retriever (BM25+dense/RRF), sem KG, sem validação
-  B3 — Graph-RAG    : KG + Hybrid Retriever, sem validação neurossimbólica
+  B1 - LLM-only     : Ollama direto, sem recuperação, sem KG
+  B2 - Standard RAG : Hybrid Retriever (BM25+dense/RRF), sem KG, sem validação
+  B3 - Graph-RAG    : KG + Hybrid Retriever, sem validação neurossimbólica
 
 O dataset (57 perguntas) é o mesmo de eval_paper.py.
 
@@ -32,7 +32,6 @@ import sys
 import time
 from datetime import datetime
 
-# ── Dataset (igual ao eval_paper.py) ─────────────────────────────────────────
 DATASET = [
     (1,  "O que é Teoria dos Grafos?",                                        "disciplinas", "ementa",             "factual_simples"),
     (2,  "O que é Matemática Discreta?",                                      "disciplinas", "ementa",             "factual_simples"),
@@ -94,8 +93,6 @@ DATASET = [
 ]
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
 def _save(rows, prefix, system_name):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path  = f"eval_results_{prefix}_{ts}.csv"
@@ -119,8 +116,6 @@ def _save(rows, prefix, system_name):
     print(f"  JSON : {json_path}\n")
     return csv_path
 
-
-# ── B1: LLM-only ──────────────────────────────────────────────────────────────
 
 def run_b1(cases, model="gpt-oss:120b-cloud", ollama_url="http://localhost:11434"):
     """Chama Ollama diretamente, sem nenhum contexto recuperado."""
@@ -159,10 +154,8 @@ def run_b1(cases, model="gpt-oss:120b-cloud", ollama_url="http://localhost:11434
                      "resposta": response, "label_avaliador1": "",
                      "label_avaliador2": "", "notas": "", "erro": error})
 
-    return _save(rows, "B1_LLM_ONLY", "B1 — LLM-only")
+    return _save(rows, "B1_LLM_ONLY", "B1 - LLM-only")
 
-
-# ── B2 e B3: via API /chat_baseline ──────────────────────────────────────────
 
 def run_api_baseline(cases, system: str, base_url: str):
     """
@@ -173,8 +166,8 @@ def run_api_baseline(cases, system: str, base_url: str):
     import requests
 
     labels = {
-        "b2": ("B2_STD_RAG",   "B2 — Standard RAG"),
-        "b3": ("B3_GRAPH_RAG", "B3 — Graph-RAG (sem validação neurossimbólica)"),
+        "b2": ("B2_STD_RAG",   "B2 - Standard RAG"),
+        "b3": ("B3_GRAPH_RAG", "B3 - Graph-RAG (sem validação neurossimbólica)"),
     }
     prefix, name = labels[system]
     print(f"\n[{name}]  perguntas={len(cases)}  endpoint={base_url}/chat_baseline")
@@ -207,10 +200,8 @@ def run_api_baseline(cases, system: str, base_url: str):
     return _save(rows, prefix, name)
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
-
 def main():
-    p = argparse.ArgumentParser(description="Baselines BRACIS — B1, B2, B3")
+    p = argparse.ArgumentParser(description="Baselines - B1, B2, B3")
     p.add_argument("--system", choices=["b1","b2","b3","all"], default="all")
     p.add_argument("--quick",  action="store_true", help="Só os primeiros 15")
     p.add_argument("--model",  default="gpt-oss:120b-cloud",

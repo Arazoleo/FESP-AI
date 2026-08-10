@@ -140,7 +140,7 @@ A Engenharia Biomédica da UNIFESP é um curso de 10 termos (5 anos) com carga h
 | Fundamentos de Administração | 2 |
 | Instrumentos Biomédicos | 4 |
 | Sistemas Embarcados | 4 |
-| Metodologia de Pesquisa e Comunicação Científica | 2 |
+| Metodologia da Pesquisa e Comunicação Científica | 2 |
 
 **Total Termo 8:** 20 créditos
 

@@ -15,7 +15,7 @@ class RegimentosAgent(BaseAgent):
 
     name = "regimentos"
     description = "Especialista em normas, regimentos e regulamentos institucionais"
-    color = "#ef4444"  # Red
+    color = "#ef4444"
 
     GRAPH_INTENTS = {
         "artigos_sobre",
@@ -26,25 +26,20 @@ class RegimentosAgent(BaseAgent):
         parts = []
         question_lower = question.lower()
 
-        # 1. Knowledge Graph para artigos e FAQs estruturados
         if intent in self.GRAPH_INTENTS and term and self.graph_rag:
             graph_result = self._get_graph_context(intent, term)
             if graph_result:
                 parts.append(graph_result)
 
-        # 2. RAG vector store para documentos institucionais (fonte primária)
         if self.db:
             docs = self.rag._retrieve_regimento_docs(question_lower)
             if docs:
                 parts.append(self._format_docs(docs))
 
-        # 3. Fallback: busca semântica
         if not parts and self.rag.retriever:
             docs = self.rag.retriever.invoke(question)
             parts.append(self._format_docs(docs))
 
-        # 4. As duas bases "conversam": procedimentos práticos do site do
-        #    campus complementam as normas dos regimentos.
         site_ctx = self._site_supplement(question)
         if site_ctx:
             parts.append(site_ctx)
@@ -60,13 +55,13 @@ class RegimentosAgent(BaseAgent):
             return ""
         if not secoes:
             return ""
-        partes = ["[PAGINAS DO SITE DO CAMPUS — complemento; cite o link ao usar]"]
+        partes = ["[PAGINAS DO SITE DO CAMPUS - complemento; cite o link ao usar]"]
         for p in secoes:
             partes.append(f"[{p['titulo']}]\nLink: {p['url']}\n{p['texto'][:1200]}")
         return "\n\n".join(partes)
 
     def get_prompt_template(self) -> str:
-        return """Voce e o assistente virtual da UNIFESP ICT, especialista em REGIMENTOS e NORMAS INSTITUCIONAIS — atencioso e claro, ajudando os alunos a entenderem as regras sem juridiques. Fale sempre em PORTUGUES BRASILEIRO, de forma natural e conversacional.
+        return """Voce e o assistente virtual da UNIFESP ICT, especialista em REGIMENTOS e NORMAS INSTITUCIONAIS - atencioso e claro, ajudando os alunos a entenderem as regras sem juridiques. Fale sempre em PORTUGUES BRASILEIRO, de forma natural e conversacional.
 
 """ + self.GOLDEN_RULE + """
 
@@ -90,6 +85,6 @@ REGRA ABSOLUTA: Se a informacao pedida NAO estiver no CONTEXTO acima, diga com g
 tem esse dado na base da UNIFESP ICT.
 NAO invente, suponha ou extrapole NENHUM dado (artigo, prazo, procedimento, etc.).
 
-TOM: acolhedor e direto, como num bate-papo. Pode abrir com uma frase amigavel e fechar se colocando a disposicao; no maximo 1 emoji. Explique a regra de forma simples, mas mantenha a precisao (artigos, prazos e fontes exatos).
+TOM: acolhedor e direto, como num bate-papo. Pode abrir com uma frase amigavel e fechar se colocando a disposicao; NAO use emojis. Explique a regra de forma simples, mas mantenha a precisao (artigos, prazos e fontes exatos).
 
 Resposta:"""

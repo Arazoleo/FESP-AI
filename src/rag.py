@@ -21,6 +21,7 @@ from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
 
 from .config import Config
+from .aux_llm import get_aux_llm
 from .parsers_md import parse_file
 from .hybrid_retriever import HybridRetriever, build_bm25_from_chroma
 
@@ -91,40 +92,37 @@ class RAGUnifesp:
         self.config = config or Config()
         ollama_base_url = self.config.OLLAMA_BASE_URL
         keep_alive_seconds = 3600
-        # Timeout para evitar requests travadas (60 segundos) - apenas para LLM
         llm_timeout = 60
         
+        llm_base_url = (os.getenv("OLLAMA_LLM_BASE_URL") or "").strip() or ollama_base_url
+        llm_kwargs = dict(
+            model=self.config.MODEL_NAME,
+            keep_alive=keep_alive_seconds,
+            num_predict=2048,
+            temperature=0.1,
+            top_k=10,
+            repeat_penalty=1.1,
+            timeout=llm_timeout,
+        )
+        if llm_base_url and llm_base_url != "http://localhost:11434":
+            llm_kwargs["base_url"] = llm_base_url
+        api_key = (os.getenv("OLLAMA_API_KEY") or "").strip()
+        if api_key:
+            llm_kwargs["client_kwargs"] = {
+                "headers": {"Authorization": f"Bearer {api_key}"}
+            }
+        self.llm = OllamaLLM(**llm_kwargs)
+
+        embed_kwargs = dict(
+            model=self.config.EMBEDDING_MODEL,
+            keep_alive=keep_alive_seconds,
+        )
         if ollama_base_url and ollama_base_url != "http://localhost:11434":
-            self.llm = OllamaLLM(
-                model=self.config.MODEL_NAME, 
-                base_url=ollama_base_url,
-                keep_alive=keep_alive_seconds,
-                num_predict=2048,
-                temperature=0.1,
-                top_k=10,
-                repeat_penalty=1.1,
-                timeout=llm_timeout
-            )
-            self.embeddings = BatchedEmbeddings(OllamaEmbeddings(
-                model=self.config.EMBEDDING_MODEL,
-                base_url=ollama_base_url,
-                keep_alive=keep_alive_seconds
-            ))
-        else:
-            self.llm = OllamaLLM(
-                model=self.config.MODEL_NAME, 
-                keep_alive=keep_alive_seconds,
-                num_predict=2048,
-                temperature=0.1,
-                top_k=10,
-                repeat_penalty=1.1,
-                timeout=llm_timeout
-            )
-            self.embeddings = BatchedEmbeddings(OllamaEmbeddings(
-                model=self.config.EMBEDDING_MODEL,
-                keep_alive=keep_alive_seconds
-            ))
-        
+            embed_kwargs["base_url"] = ollama_base_url
+        self.embeddings = BatchedEmbeddings(OllamaEmbeddings(**embed_kwargs))
+
+        self.aux_llm = get_aux_llm() or self.llm
+
         self.db = None
         self.retriever = None
         self.chain = None
@@ -205,9 +203,6 @@ class RAGUnifesp:
             os.path.join(self.config.PERSIST_DIR, "chroma.sqlite3")
         )
 
-        # Guard de dimensão: modelo de embedding trocado → rebuild automático
-        # (deleta só a collection; o restante do diretório, ex. cache do crawler,
-        # é preservado)
         if db_exists and not force:
             self._load_db()
             vazia = False
@@ -216,13 +211,11 @@ class RAGUnifesp:
             except Exception:
                 pass
             if vazia:
-                # Rebuild anterior interrompido (crash pós-delete_collection):
-                # sem este guard, o boot carregaria uma collection vazia em silêncio
-                print("[SYNC] Collection vazia — recriando o banco vetorial.")
+                print("[SYNC] Collection vazia - recriando o banco vetorial.")
                 self.db = None
                 force = True
             elif self._embedding_dim_mismatch():
-                print("[SYNC] Modelo de embedding mudou — recriando o banco vetorial do zero.")
+                print("[SYNC] Modelo de embedding mudou - recriando o banco vetorial do zero.")
                 try:
                     self.db.delete_collection()
                 except Exception:
@@ -271,11 +264,9 @@ class RAGUnifesp:
         try:
             self.knowledge_graph = KnowledgeGraph()
             
-            # Verificar diretórios opcionais
             docentes_dir = getattr(self.config, 'DOCENTES_DIR', None)
             cursos_dir = getattr(self.config, 'CURSOS_DIR', None)
             
-            # Passar diretórios que existem
             docentes_arg = str(docentes_dir) if docentes_dir and os.path.exists(docentes_dir) else None
             cursos_arg = str(cursos_dir) if cursos_dir and os.path.exists(cursos_dir) else None
             
@@ -286,13 +277,10 @@ class RAGUnifesp:
                 cursos_arg
             )
             
-            # Criar GraphRAG com embeddings + LLM para classificação semântica
-            self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings, llm=self.llm)
+            self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings, llm=self.aux_llm)
 
-            # Inicializar classificador de intenção (pré-computa embeddings)
             self.graph_rag.initialize_classifier()
             
-            # Inicializar extrator de relações (usa o mesmo LLM)
             self.relation_extractor = RelationExtractor(llm=self.llm)
             self.graph_enricher = KnowledgeGraphEnricher(self.knowledge_graph, self.relation_extractor)
             
@@ -458,7 +446,6 @@ Resposta:"""
         
         question_lower = question.lower()
         
-        # 1. Obter contexto do GraphRAG (se disponível)
         graph_context = ""
         graph_query_type = None
         if self.graph_rag:
@@ -469,31 +456,22 @@ Resposta:"""
                 if graph_response:
                     graph_context = f"\n\n{graph_response}\n"
         
-        # 2. Para queries estruturadas, o GraphRAG já tem tudo - não precisa RAG tradicional
         graph_only_types = [
-            # Docentes
             'docente_info', 'docente_areas', 'docente_disciplines', 
             'discipline_docentes', 'docentes_by_area', 'docente_leciona_disciplina',
-            # Matriz curricular
             'disciplinas_termo', 'todos_termos_curso', 'matriz_info', 'eletivas_curso',
-            # Cursos
             'listar_cursos', 'coordenador_curso',
-            # Pré-requisitos
             'prerequisite_chain', 'dependents'
         ]
         
-        # Termos que indicam que o grafo não tem a informação completa
-        # e precisamos do RAG vetorial como fallback
         needs_rag_fallback = any(term in question_lower for term in [
             'sequencial', 'sequenciais', 'certificado', 'certificacao',
             'regulamento', 'norma', 'regimento', 'artigo', 'resolucao',
             'evacuacao', 'incendio', 'seguranca', 'faq', 'perguntas frequentes',
-            # Nomes de cursos sequenciais específicos
             'fundamentos de ciência de dados', 'fundamentos de ciencia de dados',
             'métodos estatísticos', 'metodos estatisticos',
             'economia e mercados', 'química aplicada', 'quimica aplicada',
             'desenvolvimento de games', 'jogos digitais',
-            # Detalhes de matriz curricular (documentos tem mais info que o grafo)
             'matriz curricular', 'grade curricular', 'carga horária total', 'carga horaria total',
             'primeiro termo', 'segundo termo', 'terceiro termo', 'quarto termo',
             'quinto termo', 'sexto termo', 'sétimo termo', 'oitavo termo', 'nono termo', 'décimo termo',
@@ -509,23 +487,18 @@ Resposta:"""
         ])
         
         if graph_query_type in graph_only_types and graph_context and not needs_rag_fallback:
-            # Usar apenas o contexto do GraphRAG para evitar confusão
             combined_context = graph_context
         else:
-            # 3. Obter documentos do RAG tradicional
             targeted_docs = self._smart_retrieve(question, question_lower)
             
-            # 4. Combinar contextos
             if targeted_docs:
                 rag_context = self._format_docs(targeted_docs)
             else:
-                # Fallback para retriever padrão
                 docs = self.retriever.invoke(question)
                 rag_context = self._format_docs(docs)
             
             combined_context = graph_context + rag_context
         
-        # 5. SEMPRE passar pelo LLM para gerar resposta natural
         template = """Voce e o assistente virtual da UNIFESP ICT: simpatico, acolhedor e conversacional, como um colega que conhece bem o instituto. Fale sempre em PORTUGUES BRASILEIRO.
 
 {context}
@@ -533,7 +506,7 @@ Resposta:"""
 Pergunta do usuario: {question}
 
 Como conversar:
-- Tom humano, caloroso e natural — use "voce", seja gentil e proximo, como num bate-papo real.
+- Tom humano, caloroso e natural - use "voce", seja gentil e proximo, como num bate-papo real.
 - Se a pessoa so cumprimentar, agradecer ou puxar papo (ex.: "oi", "tudo bem?", "obrigado"), responda na mesma vibe, de forma breve e simpatica, e convide-a a perguntar sobre disciplinas, professores, cursos ou regimentos da UNIFESP ICT. Nao precisa de contexto para isso.
 - Quando responder sobre a UNIFESP, baseie-se SOMENTE nas informacoes do contexto acima.
 - Nunca invente disciplinas, emails, salas, nomes ou dados que nao estejam no contexto.
@@ -541,7 +514,7 @@ Como conversar:
 - Se a informacao nao estiver no contexto, admita com naturalidade (ex.: "Poxa, isso eu nao tenho aqui...") e sugira como a pessoa pode reformular ou onde procurar.
 
 Regras de estilo:
-- Va direto ao que importa, mas sem soar robotico — pode usar uma frase de abertura amigavel quando fizer sentido.
+- Va direto ao que importa, mas sem soar robotico - pode usar uma frase de abertura amigavel quando fizer sentido.
 - Evite jargao desnecessario e respostas longas demais; seja claro e leve.
 
 Resposta:"""
@@ -552,7 +525,6 @@ Resposta:"""
         return chain.invoke({"context": combined_context, "question": question})
     
     def _smart_retrieve(self, question: str, question_lower: str) -> List[Document]:
-        # 1. Perguntas sobre regimentos/institucionais
         regimento_keywords = [
             'atividade complementar', 'atividades complementares', 'ac ', 'ace ',
             'horas complementares', 'eixo', 'carga horaria minima',
@@ -563,7 +535,6 @@ Resposta:"""
             'eleicao', 'mandato', 'diretor', 'chefe',
             'extensao', 'cultura', 'biblioteca', 'sae', 'nae',
             'falta', 'perda de mandato', 'missao',
-            # Matriz curricular e informações detalhadas de cursos
             'matriz curricular', 'grade curricular', 'grade de',
             'termo', 'semestre', 'primeiro termo', 'segundo termo', 
             'terceiro termo', 'quarto termo', 'quinto termo',
@@ -584,7 +555,6 @@ Resposta:"""
             if docs:
                 return docs
         
-        # 2. Perguntas sobre disciplina
         disciplina = self._extract_discipline_name(question)
         if disciplina:
             docs = self._retrieve_discipline_docs(disciplina, question_lower)
@@ -594,19 +564,16 @@ Resposta:"""
         return []
     
     def _extract_discipline_name(self, query: str) -> Optional[str]:
-        # Primeiro, tentar detectar siglas (2-5 letras maiúsculas)
         sigla_patterns = [
-            r'\b([A-Z]{2,5})\b',  # Sigla em maiúsculas isolada
-            r'(?:disciplina|matéria|cadeira)\s+([A-Z]{2,5})\b',  # disciplina SO
-            r'(?:de|da|do|em|sobre)\s+([A-Z]{2,5})\b',  # sobre IA
+            r'\b([A-Z]{2,5})\b',
+            r'(?:disciplina|matéria|cadeira)\s+([A-Z]{2,5})\b',
+            r'(?:de|da|do|em|sobre)\s+([A-Z]{2,5})\b',
         ]
         
         for pattern in sigla_patterns:
             matches = re.findall(pattern, query)
             for sigla in matches:
-                # Ignorar palavras comuns que podem parecer siglas
                 if sigla.upper() not in ['DE', 'DA', 'DO', 'NA', 'NO', 'EM', 'SE', 'OU', 'E', 'A', 'O', 'OS', 'AS']:
-                    # Verificar se é uma sigla válida no banco
                     if self._is_valid_sigla(sigla.upper()):
                         return f"SIGLA:{sigla.upper()}"
         
@@ -643,13 +610,11 @@ Resposta:"""
                 if meta.get('sigla', '').upper() == sigla.upper():
                     return True
         except Exception as e:
-            # Log para debug, mas não falha a operação
             print(f"[WARNING] Erro ao verificar sigla {sigla}: {e}")
         return False
     
     def _retrieve_discipline_docs(self, disciplina: str, question_lower: str) -> List[Document]:
         try:
-            # Verificar se é uma busca por sigla
             if disciplina.startswith('SIGLA:'):
                 sigla = disciplina.replace('SIGLA:', '')
                 results = self._search_by_sigla(sigla)
@@ -743,7 +708,6 @@ Resposta:"""
                         
             score = 0
             
-            # Verificar match por sigla (case-insensitive)
             if sigla_db and disciplina_lower == sigla_db:
                 score = 100
             elif disciplina_lower == disciplina_db_lower or disciplina_normalized == disciplina_db_normalized:
@@ -800,7 +764,6 @@ Resposta:"""
             regimento_docs = []
             scores = []
             
-            # Palavras-chave com pesos
             keywords = {
                 'atividades complementares': 10, 'atividade complementar': 10,
                 'carga horaria': 8, 'horas': 5, '312': 15,
@@ -811,13 +774,11 @@ Resposta:"""
                 'camara': 3, 'congregacao': 3, 'departamento': 2, 'conselho': 2,
                 'sae': 5, 'biblioteca': 3, 'extensao': 3, 'nae': 4,
                 'missao': 3, 'objetivo': 2, 'campus': 2, 'unifesp': 2,
-                # Matriz curricular keywords
                 'matriz': 5, 'semestre': 4, 'termo': 4, 'disciplina': 3,
                 'coordenador': 5, 'creditos': 3, 'primeiro': 3, 'segundo': 3,
                 'eletiva': 8, 'eletivas': 8, 'grupo': 6, 'grupos': 6,
             }
             
-            # Keywords específicos para detectar perguntas sobre matrizes curriculares
             matriz_keywords = ['matriz', 'termo', 'semestre', 'primeiro', 'segundo', 
                              'terceiro', 'quarto', 'quinto', 'sexto', 'sétimo', 'oitavo',
                              'coordenador', 'grade', 'disciplinas do curso', 'engenharia de computação',
@@ -829,11 +790,9 @@ Resposta:"""
             for i, doc_text in enumerate(all_results.get('documents', [])):
                 meta = all_results['metadatas'][i]
                 
-                # Aceitar documentos institucionais OU matrizes curriculares
                 tipo_doc = meta.get('tipo_documento', '')
                 tipo = meta.get('tipo', '')
                 
-                # Se é pergunta sobre matriz, priorizar matrizes curriculares
                 if is_matriz_question:
                     if tipo != 'matriz_curricular' and tipo_doc != 'institucional':
                         continue
@@ -844,32 +803,26 @@ Resposta:"""
                 doc_lower = doc_text.lower()
                 score = 0
                 
-                # Calcular score baseado em keywords
                 for kw, weight in keywords.items():
                     if kw in question_lower and kw in doc_lower:
                         score += weight
                 
-                # Bonus grande para FAQs
                 if meta.get('secao') == 'faq':
                     score += 10
                     
-                    # Bonus extra se pergunta do FAQ contem palavras da questao
                     if 'pergunta' in doc_lower:
                         palavras_pergunta = [p for p in question_lower.split() if len(p) > 3]
                         for palavra in palavras_pergunta:
                             if palavra in doc_lower:
                                 score += 5
                 
-                # Bonus para objetivo do documento
                 if meta.get('secao') == 'objetivo':
                     score += 3
                 
-                # Bonus para matrizes curriculares
                 if tipo == 'matriz_curricular':
                     secao = meta.get('secao', '')
                     sigla = meta.get('sigla', '').lower()
                     
-                    # Se pergunta menciona termo/semestre específico, priorizar esses docs
                     if 'termo_' in secao:
                         termo_num = secao.replace('termo_', '')
                         termos_map = {
@@ -886,13 +839,11 @@ Resposta:"""
                         }
                         for termo_word, termo_val in termos_map.items():
                             if termo_word in question_lower and termo_val == termo_num:
-                                score += 20  # Alto bonus para termo correto
+                                score += 20
                     
-                    # Se pergunta menciona sigla do curso, priorizar
                     if sigla and sigla in question_lower:
                         score += 15
                     
-                    # Se pergunta menciona nome do curso
                     titulo = meta.get('titulo', '').lower()
                     if 'engenharia de computa' in question_lower and 'engenharia de computa' in titulo:
                         score += 15
@@ -903,11 +854,9 @@ Resposta:"""
                     if 'biotecnologia' in question_lower and 'biotecnologia' in titulo:
                         score += 15
                     
-                    # Resumo sempre tem pontos para perguntas gerais
                     if secao == 'resumo':
                         score += 5
                     
-                    # Perguntas sobre eletivas/grupos: priorizar trechos que falam de eletivas
                     if 'eletiva' in question_lower or 'grupo' in question_lower:
                         if 'eletiva' in doc_lower and 'grupo' in doc_lower:
                             score += 12

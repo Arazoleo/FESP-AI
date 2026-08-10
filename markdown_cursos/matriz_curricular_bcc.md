@@ -47,7 +47,7 @@ O Bacharelado em Ciência da Computação (BCC) possui **8 termos** (semestres),
 | Ciência, Tecnologia e Sociedade | 2 |
 | Lógica de Programação | 4 |
 | Química Geral | 4 |
-| Fundamentos da Biologia Moderna | 4 |
+| Fundamentos de Biologia Moderna | 4 |
 
 ### Termo 2 (22 créditos)
 | Disciplina | Créditos |
@@ -159,7 +159,7 @@ O Bacharelado em Ciência da Computação (BCC) possui **8 termos** (semestres),
 - Aprendizado de Máquina e Reconhecimento de Padrões
 - Aspectos de Implementação de Banco de Dados
 - Fenômenos Eletromagnéticos
-- Introdução a Pesquisa Operacional
+- Introdução à Pesquisa Operacional
 - Introdução às Redes Neurais Artificiais
 - Paradigmas de Programação
 - Processamento de Imagens

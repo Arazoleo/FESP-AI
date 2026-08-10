@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grafo de Conhecimento — FESP-AI</title>
+  <title>Grafo de Conhecimento - FESP-AI</title>
   <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -819,7 +819,7 @@
     function edgeColorFor(e) {
       const active = _activeEdges();
       if (active.has(edgeKey(e))) {
-        // Pertence à consulta — diferenciar base/inferred
+        // Pertence à consulta - diferenciar base/inferred
         const isInferred = neuroEnabled &&
           highlightState.inferredEdges.some(x => edgeKey(x) === edgeKey(e));
         return { color: isInferred ? '#f97316' : '#facc15', highlight: '#fde047' };

@@ -2,7 +2,7 @@
 Testes de regressão da continuidade de conversa.
 
 Motivação: cada mensagem começava com "Olá!" porque o histórico nunca chegava
-aos prompts dos agentes — todo turno parecia o primeiro para o LLM.
+aos prompts dos agentes - todo turno parecia o primeiro para o LLM.
 
 Verifica a montagem do prompt (sem invocar LLM):
   - com histórico: bloco HISTORICO + regra de não re-saudação antes da pergunta
@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT))
 
 def _stub_langchain():
     try:
-        import langchain_core  # noqa: F401
+        import langchain_core
         return
     except ImportError:
         pass
@@ -35,8 +35,36 @@ def _stub_langchain():
     sys.modules["langchain_core.output_parsers"] = parsers
 
 
+def _stub_langgraph():
+    try:
+        import langgraph.graph
+        return
+    except ImportError:
+        pass
+
+    class _StateGraph:
+        def __init__(self, *a, **k): pass
+        def add_node(self, *a, **k): pass
+        def set_entry_point(self, *a, **k): pass
+        def add_conditional_edges(self, *a, **k): pass
+        def add_edge(self, *a, **k): pass
+        def compile(self): return None
+
+    root = _types.ModuleType("langgraph")
+    graph = _types.ModuleType("langgraph.graph")
+    graph.StateGraph = _StateGraph
+    graph.END = "END"
+    root.graph = graph
+    sys.modules["langgraph"] = root
+    sys.modules["langgraph.graph"] = graph
+
+
 def _import_module(full_name: str, path: str):
-    for pkg_name, pkg_path in (("src", ROOT / "src"), ("src.agents", ROOT / "src/agents")):
+    for pkg_name, pkg_path in (
+        ("src", ROOT / "src"),
+        ("src.agents", ROOT / "src/agents"),
+        ("src.workflow", ROOT / "src/workflow"),
+    ):
         if pkg_name not in sys.modules:
             pkg = _types.ModuleType(pkg_name)
             pkg.__path__ = [str(pkg_path)]
@@ -61,7 +89,7 @@ def check(desc, cond, detail=""):
         print(f"{GREEN}✓{RESET} {desc}")
     else:
         _failed += 1
-        print(f"{RED}✗ {desc}{RESET}" + (f" — {detail}" if detail else ""))
+        print(f"{RED}✗ {desc}{RESET}" + (f" - {detail}" if detail else ""))
 
 
 _stub_langchain()
@@ -164,10 +192,6 @@ check(
 )
 
 print(f"\n{BOLD}── Troca de entidade mid-conversation (T8) ──{RESET}")
-# Simula o fluxo exato da API: replay do histórico a cada turno + update com a
-# mensagem crua e com a resposta. Bug: a resposta do assistente sobre a NOVA
-# entidade mencionava outra disciplina ("...pré-requisito para cursar X") e o
-# extrator heurístico revertia a troca feita pelo usuário no turno 2.
 t8 = cr_mod.ContextResolver()
 T8_MSG1 = "Quais os pré-requisitos de Redes de Computadores?"
 T8_R1 = "Para você cursar Redes de Computadores, é necessário: Sistemas Operacionais e Algoritmos."
@@ -176,10 +200,8 @@ T8_R2 = (
     "A disciplina de Banco de Dados (Código: 2831) tem 72h. "
     "Ela é pré-requisito para cursar Projetos em Engenharia de Computação."
 )
-# Turno 1
 t8.update_context("t8", T8_MSG1, "user")
 t8.update_context("t8", T8_R1, "assistant")
-# Turno 2 (replay do histórico como a API faz, depois resolve + updates)
 t8_hist2 = [
     {"role": "user", "content": T8_MSG1},
     {"role": "assistant", "content": T8_R1},
@@ -199,7 +221,6 @@ check(
     t8.get_context("t8").disciplina == "Banco de Dados",
     f"obteve {t8.get_context('t8').disciplina!r}",
 )
-# Turno 3 (replay completo, como a API faz a cada turno)
 t8_hist3 = t8_hist2 + [
     {"role": "user", "content": T8_MSG2},
     {"role": "assistant", "content": T8_R2},
@@ -212,7 +233,6 @@ check(
     t8_mod3 and t8_res3 == "Qual a ementa de Banco de Dados?",
     f"obteve {t8_res3!r}",
 )
-# Assistente ainda pode definir a disciplina quando o usuário não nomeou nenhuma
 t8b = cr_mod.ContextResolver()
 t8b.update_context("t8b", "estou meio perdido com o curso", "user")
 t8b.update_context(
@@ -289,6 +309,152 @@ check(
     "sem LLM, fallback regex continua funcionando",
     r3.intent == "eletivas_curso" and r3.method == "regex",
     f"{r3.intent}/{r3.term}/{r3.method}",
+)
+
+print(f"\n{BOLD}── Herança de clarificação de curso (defeito T3) ──{RESET}")
+t3 = cr_mod.ContextResolver()
+T3_Q = "Quantas horas de eletivas?"
+T3_CLARIF = (
+    "De qual curso você quer ver as eletivas? "
+    "Por exemplo: *eletivas de BCC* ou *eletivas do BCT*."
+)
+t3_hist = [
+    {"role": "user", "content": T3_Q},
+    {"role": "assistant", "content": T3_CLARIF},
+]
+for m in t3_hist:
+    t3.update_context("t3", m["content"], m["role"])
+t3_res, t3_mod = t3.resolve_question("do BCT", "t3", t3_hist)
+check(
+    "'do BCT' herda a pergunta pendente ('Quantas horas de eletivas?')",
+    t3_mod and t3_res == "Quantas horas de eletivas do BCT?",
+    f"obteve {t3_res!r}",
+)
+check(
+    "contexto de curso atualizado para BCT",
+    t3.get_context("t3").curso == "BCT",
+    f"obteve {t3.get_context('t3').curso!r}",
+)
+t3b = cr_mod.ContextResolver()
+for m in t3_hist:
+    t3b.update_context("t3b", m["content"], m["role"])
+t3b_res, t3b_mod = t3b.resolve_question("BCT", "t3b", t3_hist)
+check(
+    "'BCT' (sigla sozinha) também herda a pergunta pendente",
+    t3b_mod and t3b_res == "Quantas horas de eletivas do BCT?",
+    f"obteve {t3b_res!r}",
+)
+t3b.update_context("t3b", "BCT", "user")
+check(
+    "'BCT' como resposta de clarificação NÃO vira disciplina",
+    t3b.get_context("t3b").disciplina is None,
+    f"obteve {t3b.get_context('t3b').disciplina!r}",
+)
+t3c = cr_mod.ContextResolver()
+t3c_hist = [
+    {"role": "user", "content": "Quais as eletivas de BCC?"},
+    {"role": "assistant", "content": "As eletivas de BCC são..."},
+]
+t3c_res, t3c_mod = t3c.resolve_question("do BCT", "t3c", t3c_hist)
+check(
+    "última pergunta JÁ tinha curso → 'do BCT' não é combinado",
+    not t3c_mod,
+    f"obteve {t3c_res!r}",
+)
+t3d = cr_mod.ContextResolver()
+t3d_hist = [
+    {"role": "user", "content": "obrigado"},
+    {"role": "assistant", "content": "De nada!"},
+]
+t3d_res, t3d_mod = t3d.resolve_question("do BCT", "t3d", t3d_hist)
+check(
+    "última mensagem não era pergunta → 'do BCT' não é combinado",
+    not t3d_mod,
+    f"obteve {t3d_res!r}",
+)
+
+print(f"\n{BOLD}── Quebra de horas herda o curso do contexto (defeito T2) ──{RESET}")
+t2 = cr_mod.ContextResolver()
+T2_Q1 = "quantas horas para formar no BCT?"
+T2_R1 = "Para integralizar o BCT são necessárias 2400 horas no total."
+t2_hist = [
+    {"role": "user", "content": T2_Q1},
+    {"role": "assistant", "content": T2_R1},
+]
+for m in t2_hist:
+    t2.update_context("t2", m["content"], m["role"])
+t2_res, t2_mod = t2.resolve_question(
+    "mas essas horas estão distribuídas em diferentes atividades?", "t2", t2_hist
+)
+check(
+    "'essas horas estão distribuídas...?' herda o BCT",
+    t2_mod and t2_res == (
+        "Como as horas para integralizar o BCT estão distribuídas entre "
+        "unidades curriculares, extensão e atividades complementares?"
+    ),
+    f"obteve {t2_res!r}",
+)
+t2_res2, t2_mod2 = t2.resolve_question("Quantas horas de eletivas?", "t2", t2_hist)
+check(
+    "'Quantas horas de eletivas?' com curso no contexto herda o BCT",
+    t2_mod2 and t2_res2 == "Quantas horas de eletivas do BCT?",
+    f"obteve {t2_res2!r}",
+)
+t2_res3, t2_mod3 = t2.resolve_question(
+    "Quantas horas de eletivas do BCC?", "t2", t2_hist
+)
+check(
+    "pergunta de horas com curso EXPLÍCITO não é reescrita",
+    not t2_mod3,
+    f"obteve {t2_res3!r}",
+)
+
+print(f"\n{BOLD}── Guard do humanizador (_kg_facts_preserved) ──{RESET}")
+_stub_langgraph()
+pipe_mod = _import_module("src.workflow.pipeline", "src/workflow/pipeline.py")
+KG_MATRIZ = """**Matriz Curricular - Bacharelado Interdisciplinar em Ciência e Tecnologia:**
+
+- **Sigla:** BCT
+- **Duração:** 6 termos (semestres)
+- **Carga Horária Total:** 2400 horas
+- **Coordenador(a):** Profa. Dra. Marli Leite de Moraes
+- **Vice-Coordenador(a):** Prof. Dr. João Marcos Batista Junior
+
+O curso possui disciplinas obrigatórias organizadas por termo, além de eletivas nos Grupos 1, 2, 3 e eletivas extensionistas."""
+BOA_PROSA = (
+    "O BCT (sigla do Bacharelado Interdisciplinar em Ciência e Tecnologia) tem "
+    "duração de 6 termos (semestres) e carga horária total de 2400 horas. A "
+    "coordenação é da Profa. Dra. Marli Leite de Moraes, e o vice-coordenador é o "
+    "Prof. Dr. João Marcos Batista Junior. O curso possui disciplinas "
+    "obrigatórias organizadas por termo, além de eletivas nos Grupos 1, 2, 3 e "
+    "eletivas extensionistas."
+)
+MUTILADA = (
+    "O cursoisciplinas obrigatórias organizadas por termo, além de eletivas nos "
+    "Grupos 1, 2, 3."
+)
+SEM_COORDENACAO = (
+    "O BCT tem 6 termos e 2400 horas no total, com eletivas nos Grupos 1, 2 e 3."
+)
+check(
+    "prosa fiel (bullets → texto corrido, fatos intactos) é aceita",
+    pipe_mod._kg_facts_preserved(KG_MATRIZ, BOA_PROSA),
+)
+check(
+    "saída mutilada (perde dígitos) é rejeitada",
+    not pipe_mod._kg_facts_preserved(KG_MATRIZ, MUTILADA),
+)
+check(
+    "saída que perde itens da lista (coordenação sumiu) é rejeitada",
+    not pipe_mod._kg_facts_preserved(KG_MATRIZ, SEM_COORDENACAO),
+)
+check(
+    "saída vazia é rejeitada",
+    not pipe_mod._kg_facts_preserved(KG_MATRIZ, "  "),
+)
+check(
+    "resposta sem números nem listas passa direto",
+    pipe_mod._kg_facts_preserved("O coordenador é a Profa. Marli.", "Quem coordena é a Profa. Marli!"),
 )
 
 print(f"\n{BOLD}── Humanizador do KG com continuidade ──{RESET}")

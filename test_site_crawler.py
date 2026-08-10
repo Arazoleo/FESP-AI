@@ -1,5 +1,5 @@
 """
-Testes de regressão do site_crawler — seccionamento de páginas longas.
+Testes de regressão do site_crawler - seccionamento de páginas longas.
 
 Motivação: a página do BCT (campus.unifesp.br/sjc/graduacao/cursos/
 bacharelado-interdisciplinar-em-ciencia-e-tecnologia) tem ~74KB de corpo com
@@ -29,7 +29,7 @@ def check(desc, cond, detail=""):
         print(f"{GREEN}✓{RESET} {desc}")
     else:
         _failed += 1
-        print(f"{RED}✗ {desc}{RESET}" + (f" — {detail}" if detail else ""))
+        print(f"{RED}✗ {desc}{RESET}" + (f" - {detail}" if detail else ""))
 
 
 def _page(body: str) -> str:

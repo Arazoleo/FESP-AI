@@ -5,7 +5,7 @@ Fonte primária: feed RSS do Joomla (robusto, estruturado). Fallback: raspagem
 leve do HTML. Resultado em cache (TTL) para não martelar o site nem somar
 latência a cada pergunta.
 
-Esta é uma fonte EXTERNA — o conteúdo não passa pela validação simbólica do KG.
+Esta é uma fonte EXTERNA - o conteúdo não passa pela validação simbólica do KG.
 Por isso o agente sempre cita fonte + data + link ao responder.
 """
 
@@ -26,20 +26,18 @@ NEWS_URL = f"{BASE_URL}{NEWS_PATH}"
 RSS_URL = f"{NEWS_URL}?format=feed&type=rss"
 
 USER_AGENT = "FESP-AI/1.0 (assistente academico UNIFESP ICT; +https://campus.unifesp.br)"
-TIMEOUT = 10  # segundos
-DEFAULT_TTL = 1200  # 20 min (lista de notícias)
-ARTICLE_TTL = 3600  # 1 h (corpo de uma notícia muda raramente)
+TIMEOUT = 10
+DEFAULT_TTL = 1200
+ARTICLE_TTL = 3600
 _RESUMO_MAX = 200
-_ARTICLE_MAX = 4000  # limite de caracteres do corpo enviado ao LLM
+_ARTICLE_MAX = 4000
 
 _MESES_PT = [
     "", "janeiro", "fevereiro", "março", "abril", "maio", "junho",
     "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
 ]
 
-# Cache simples em memória (processo único do backend).
 _cache: Dict[str, object] = {"ts": 0.0, "data": None}
-# Cache de corpos de notícia individuais: url → (timestamp, texto).
 _article_cache: Dict[str, tuple] = {}
 
 
@@ -116,7 +114,6 @@ def _fetch_html() -> Optional[List[Dict]]:
         logger.warning("[news] HTML indisponível: %s", e)
         return None
 
-    # Âncoras para páginas de notícia individuais: /sjc/noticias/<slug>
     pattern = re.compile(
         r'<a[^>]+href="([^"]*?/sjc/noticias/[a-z0-9][^"]+)"[^>]*>(.*?)</a>',
         re.IGNORECASE | re.DOTALL,
@@ -143,7 +140,6 @@ def _extract_article_body(html: str) -> str:
         if not m:
             return ""
     rest = html[m.end():]
-    # Corta no início do próximo particle/rodapé do layout.
     cut = re.search(r'g-content g-particle|<footer|id="g-footer"|class="g-footer"', rest)
     if cut:
         rest = rest[:cut.start()]
@@ -199,12 +195,10 @@ def fetch_news(limit: int = 8, ttl: int = DEFAULT_TTL, force: bool = False) -> L
         itens = _fetch_html()
 
     if itens:
-        # Limpa a chave interna de ordenação antes de expor.
         for it in itens:
             it.pop("_ts", None)
         _cache["ts"] = now
         _cache["data"] = itens
         return itens[:limit]
 
-    # Falha total: devolve cache antigo se existir, senão vazio.
     return (cached or [])[:limit] if cached else []

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script de Avaliação para o Paper BRACIS.
+Script de Avaliação do benchmark.
 
 Roda as 57 perguntas do dataset contra o pipeline e gera:
   - eval_results_PIPELINE.csv   → respostas completas + colunas de label
@@ -31,11 +31,7 @@ except ImportError:
     sys.exit(1)
 
 
-# ── Dataset de avaliação ──────────────────────────────────────────────────────
-# (mesmo do run_mass_tests.py, mas com tipo_query para análise fina)
-
 DATASET = [
-    # id, pergunta, agente_esperado, categoria, tipo_query
     (1,  "O que é Teoria dos Grafos?",                                        "disciplinas", "ementa",            "factual_simples"),
     (2,  "O que é Matemática Discreta?",                                      "disciplinas", "ementa",            "factual_simples"),
     (3,  "Descreva a disciplina Banco de Dados.",                             "disciplinas", "ementa",            "factual_simples"),
@@ -46,7 +42,6 @@ DATASET = [
     (8,  "Me fale sobre a disciplina de Programação Orientada a Objetos.",    "disciplinas", "ementa",            "factual_simples"),
     (9,  "Do que trata Lógica de Programação?",                               "disciplinas", "ementa",            "factual_simples"),
     (10, "Me fale sobre Matemática Discreta.",                                "disciplinas", "ementa",            "factual_simples"),
-    # pré-requisitos / dependentes → composicionais (multi-hop no KG)
     (11, "Quais são os pré-requisitos de Inteligência Artificial?",           "disciplinas", "prereq",            "composicional"),
     (12, "Pré-requisitos de Banco de Dados?",                                 "disciplinas", "prereq",            "composicional"),
     (13, "O que preciso fazer antes de Compiladores?",                        "disciplinas", "prereq",            "composicional"),
@@ -55,14 +50,12 @@ DATASET = [
     (16, "O que posso cursar depois de Algoritmos?",                          "disciplinas", "dependentes",       "composicional"),
     (17, "Cadeia de pré-requisitos de Estrutura de Dados?",                   "disciplinas", "prereq",            "composicional"),
     (18, "Disciplinas necessárias para fazer Cálculo 2?",                     "disciplinas", "prereq",            "composicional"),
-    # docentes: quem leciona
     (19, "Quem leciona Redes de Computadores?",                               "docentes",    "quem_leciona",      "relacional"),
     (20, "Quem leciona Cálculo Numérico?",                                    "docentes",    "quem_leciona",      "relacional"),
     (21, "Quem dá aula de Sistemas Operacionais?",                            "docentes",    "quem_leciona",      "relacional"),
     (22, "Quais professores lecionam Banco de Dados?",                        "docentes",    "quem_leciona",      "relacional"),
     (23, "Docentes de Teoria dos Grafos?",                                    "docentes",    "quem_leciona",      "relacional"),
     (24, "Quem ensina Projeto e Análise de Algoritmos?",                      "docentes",    "quem_leciona",      "relacional"),
-    # docentes: info/contato/áreas
     (25, "Quem é o professor Sanderson?",                                     "docentes",    "info",              "factual_simples"),
     (26, "Qual o email do professor Álvaro?",                                 "docentes",    "email",             "factual_simples"),
     (27, "Sala do professor Didier Vega?",                                    "docentes",    "sala",              "factual_simples"),
@@ -73,13 +66,11 @@ DATASET = [
     (32, "Professores que trabalham com inteligência artificial?",            "docentes",    "por_area",          "relacional"),
     (33, "Quem pesquisa machine learning?",                                   "docentes",    "por_area",          "relacional"),
     (34, "Docentes especialistas em redes?",                                  "docentes",    "por_area",          "relacional"),
-    # docentes: disciplinas que X leciona
     (35, "Quais disciplinas o professor Sanderson leciona?",                  "docentes",    "disciplinas_docente","relacional"),
     (36, "Quais matérias o Sanderson dá?",                                    "docentes",    "disciplinas_docente","relacional"),
     (37, "O Sanderson dá aula de quê?",                                       "docentes",    "disciplinas_docente","relacional"),
     (38, "Disciplinas que o Rodrigo Colnago leciona?",                        "docentes",    "disciplinas_docente","relacional"),
     (39, "O professor Fabrício Olivetti leciona Banco de Dados?",             "docentes",    "sim_nao",           "relacional"),
-    # cursos
     (40, "Quais disciplinas do termo 3 de BCC?",                              "cursos",      "termo",             "composicional"),
     (41, "Disciplinas do termo 5 de Ciência da Computação?",                  "cursos",      "termo",             "composicional"),
     (42, "Quais disciplinas tem no termo 1 de BCC?",                          "cursos",      "termo",             "composicional"),
@@ -93,7 +84,6 @@ DATASET = [
     (50, "Coordenador do curso de Ciência da Computação?",                    "cursos",      "coordenador",       "relacional"),
     (51, "Eletivas de Engenharia de Computação?",                             "cursos",      "eletivas",          "composicional"),
     (52, "Quais são as eletivas de BCC?",                                     "cursos",      "eletivas",          "composicional"),
-    # regimentos
     (53, "Quais artigos falam sobre matrícula?",                              "regimentos",  "artigos",           "factual_simples"),
     (54, "O que diz o regimento sobre estágio?",                              "regimentos",  "artigos",           "factual_simples"),
     (55, "Perguntas frequentes sobre TCC?",                                   "regimentos",  "faq",               "factual_simples"),
@@ -102,13 +92,11 @@ DATASET = [
 ]
 
 
-# ── Runner ────────────────────────────────────────────────────────────────────
-
 def run_pipeline(base_url: str, quick: bool, output_prefix: str):
     cases = DATASET[:15] if quick else DATASET
     n = len(cases)
     print(f"\n{'='*65}")
-    print(f"  Avaliação BRACIS — {n} perguntas via {base_url}")
+    print(f"  Avaliação - {n} perguntas via {base_url}")
     print(f"{'='*65}\n")
 
     rows = []
@@ -145,13 +133,12 @@ def run_pipeline(base_url: str, quick: bool, output_prefix: str):
             "tipo_query":       tipo_query,
             "latencia_s":       elapsed,
             "resposta":         response,
-            "label_avaliador1": "",   # C / P / I
-            "label_avaliador2": "",   # C / P / I
+            "label_avaliador1": "",
+            "label_avaliador2": "",
             "notas":            "",
             "erro":             error,
         })
 
-    # ── Salvar CSV ──────────────────────────────────────────────────────────
     ts  = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path  = f"{output_prefix}_{ts}.csv"
     json_path = f"{output_prefix}_{ts}.json"
@@ -175,7 +162,6 @@ def run_pipeline(base_url: str, quick: bool, output_prefix: str):
             "results": rows,
         }, f, ensure_ascii=False, indent=2)
 
-    # ── Resumo ──────────────────────────────────────────────────────────────
     total      = len(rows)
     agent_hits = sum(1 for r in rows if r["agente_obtido"] == r["agente_esperado"])
     errors     = sum(1 for r in rows if r["erro"])
@@ -196,10 +182,8 @@ def run_pipeline(base_url: str, quick: bool, output_prefix: str):
     print(f"     com: C = Correto | P = Parcialmente Correto | I = Incorreto\n")
 
 
-# ── CLI ───────────────────────────────────────────────────────────────────────
-
 def main():
-    p = argparse.ArgumentParser(description="Avaliação BRACIS — FESP-AI")
+    p = argparse.ArgumentParser(description="Avaliação - FESP-AI")
     p.add_argument("--url",    default="http://localhost:8000", help="URL base da API")
     p.add_argument("--quick",  action="store_true",             help="Só os primeiros 15")
     p.add_argument("--output", default="eval_results_PIPELINE", help="Prefixo do arquivo de saída")

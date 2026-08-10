@@ -1,10 +1,10 @@
 """
-Agente "Montar Grade" — planejador de trajetória curricular.
+Agente "Montar Grade" - planejador de trajetória curricular.
 
 Detecta o pedido de montar a grade, tenta identificar o curso na mensagem e
 sinaliza ao front para abrir o painel do planejador (canvas ao vivo). A coleta
 precisa dos dados (disciplinas já cursadas, teto de créditos) acontece no
-próprio painel, com inputs estruturados — bem mais confiável do que extrair uma
+próprio painel, com inputs estruturados - bem mais confiável do que extrair uma
 lista de disciplinas de texto livre.
 
 O plano em si é calculado pelo módulo simbólico `planner.plan_curriculum`
@@ -20,16 +20,12 @@ from langchain_core.output_parsers import StrOutputParser
 
 from .base_agent import BaseAgent
 
-# Tokens genéricos que não distinguem um curso de outro.
 _GENERIC_CURSO_TOKENS = frozenset({
     "bacharelado", "licenciatura", "curso", "em", "interdisciplinar", "superior",
 })
 
-# Teto de créditos por semestre assumido quando o aluno não informa.
 _DEFAULT_MAX_CREDITOS = 24
 
-# Pistas (já normalizadas: sem acento, sem de/da/do) de que o aluno está
-# declarando disciplinas que JÁ cursou.
 _COMPLETION_CUES = (
     "ja cursei", "ja passei", "ja fiz", "ja conclui", "ja completei",
     "ja tenho", "cursei", "passei em", "completei", "conclui", "tirei",
@@ -41,7 +37,7 @@ class MontarGradeAgent(BaseAgent):
 
     name = "montar_grade"
     description = "Planeja sua trajetória curricular semestre a semestre"
-    color = "#a855f7"  # Purple
+    color = "#a855f7"
 
     def retrieve(self, question: str, intent: str, term: str) -> str:
         return ""
@@ -58,7 +54,7 @@ class MontarGradeAgent(BaseAgent):
             "Se houver um curso identificado, mencione-o. Se ele citou disciplinas "
             "cursadas, de a entender que voce ja as considerou. Diga que ele pode "
             "ajustar curso, disciplinas ou o teto de creditos ali no painel se quiser. "
-            "No maximo 1 emoji. Nao use listas nem texto institucional.\n\nResposta:"
+            "NAO use emojis. Nao use listas nem texto institucional.\n\nResposta:"
         )
 
     def _resolve_curso(self, question: str) -> Optional[str]:
@@ -75,7 +71,6 @@ class MontarGradeAgent(BaseAgent):
             return None
 
         def tok_match(t: str, qtokens: set) -> bool:
-            # Leniência singular/plural: ciencia ~ ciencias.
             return (
                 t in qtokens
                 or (t + "s") in qtokens
@@ -87,7 +82,6 @@ class MontarGradeAgent(BaseAgent):
             nome = (c.get("nome") or "").strip()
             sigla = (c.get("sigla") or "").strip()
 
-            # Sigla como palavra inteira (evita "ec" dentro de "ciencia").
             if sigla and len(sigla) >= 2 and norm(sigla) in qtokens:
                 if 100 > melhor_score:
                     melhor, melhor_score = nome or sigla, 100
@@ -98,14 +92,12 @@ class MontarGradeAgent(BaseAgent):
             if not nnome:
                 continue
 
-            # Nome completo aparece na pergunta.
             if nnome in q:
                 score = 50 + len(nnome)
                 if score > melhor_score:
                     melhor, melhor_score = nome, score
                 continue
 
-            # Overlap de tokens distintivos: todos presentes na pergunta.
             distintos = [
                 t for t in nnome.split()
                 if len(t) > 2 and t not in _GENERIC_CURSO_TOKENS
@@ -131,7 +123,6 @@ class MontarGradeAgent(BaseAgent):
         if not any(cue in nq for cue in _COMPLETION_CUES):
             return []
 
-        # Disciplinas conhecidas (nome normalizado → nome original).
         candidatos = []
         for _, data in kg.graph.nodes(data=True):
             if data.get("tipo") != "disciplina":
@@ -143,8 +134,6 @@ class MontarGradeAgent(BaseAgent):
             if len(nn) >= 4 and nn in nq:
                 candidatos.append((nn, nome))
 
-        # Mais longos primeiro; descarta os contidos em outro já escolhido
-        # (ex.: "calculo" dentro de "calculo 1").
         candidatos.sort(key=lambda x: -len(x[0]))
         escolhidos_norm: List[str] = []
         resultado: List[str] = []
@@ -163,7 +152,7 @@ class MontarGradeAgent(BaseAgent):
             opts = [
                 f"Show! Já tô abrindo o planejador de **{curso}** aqui do lado 👉 "
                 "me diz lá as disciplinas que você já cursou e o teto de créditos.",
-                f"Bora montar sua grade de **{curso}**! 🎓 Abri o painel ao lado — "
+                f"Bora montar sua grade de **{curso}**! 🎓 Abri o painel ao lado - "
                 "é só informar o que você já cursou e quantos créditos por semestre.",
             ]
         else:
@@ -171,7 +160,7 @@ class MontarGradeAgent(BaseAgent):
                 "Boa! Abri o planejador aqui do lado 👉 escolhe o curso, me diz o que "
                 "já cursou e o teto de créditos por semestre que eu desenho sua trajetória.",
                 "Vamos lá! 🎓 No painel ao lado, escolhe o curso e informa as "
-                "disciplinas já cursadas + o teto de créditos — eu cuido do resto.",
+                "disciplinas já cursadas + o teto de créditos - eu cuido do resto.",
             ]
         return random.choice(opts)
 
@@ -179,7 +168,6 @@ class MontarGradeAgent(BaseAgent):
         curso = self._resolve_curso(question)
         completed = self._extract_completed(question)
 
-        # Fala conversacional via LLM, com fallback seguro/variado.
         response = None
         if self.llm:
             try:
@@ -201,7 +189,6 @@ class MontarGradeAgent(BaseAgent):
             "context_length": 0,
             "context": "",
             "sources": [],
-            # Sinaliza ao front para abrir o canvas e já montar a grade sozinho.
             "plan_request": {
                 "curso": curso,
                 "completed": completed,

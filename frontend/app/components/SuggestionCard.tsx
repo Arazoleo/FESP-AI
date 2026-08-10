@@ -34,7 +34,6 @@ export default function SuggestionCard({ question, icon, delay, onClick }: Sugge
       "
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
     >
-      {/* Hover Gradient Background */}
       <div className="
         absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
         bg-gradient-to-br from-emerald-50/80 to-cyan-50/80
@@ -42,9 +41,7 @@ export default function SuggestionCard({ question, icon, delay, onClick }: Sugge
         transition-opacity duration-300
       " />
 
-      {/* Content */}
       <div className="relative flex items-start gap-4">
-        {/* Icon Container */}
         <div className="
           flex-shrink-0 w-11 h-11 rounded-xl
           bg-gradient-to-br from-emerald-500 to-emerald-600
@@ -57,7 +54,6 @@ export default function SuggestionCard({ question, icon, delay, onClick }: Sugge
           <Icon className="w-5 h-5 text-white" />
         </div>
 
-        {/* Text */}
         <div className="flex-1 min-w-0">
           <p className="
             text-sm font-medium leading-relaxed
@@ -69,7 +65,6 @@ export default function SuggestionCard({ question, icon, delay, onClick }: Sugge
           </p>
         </div>
 
-        {/* Arrow Icon */}
         <div className="
           flex-shrink-0 w-8 h-8 rounded-lg
           bg-slate-100 dark:bg-slate-800

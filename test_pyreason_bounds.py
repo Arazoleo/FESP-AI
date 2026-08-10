@@ -52,7 +52,6 @@ PyReasonEngine = pre_mod.PyReasonEngine
 
 banner("Cenário sintético: propagação de bounds em cadeia")
 
-# KG mínimo de teste
 kg = KnowledgeGraph()
 g = kg.graph
 g.add_node("DISC:A", tipo="disciplina", nome="A")
@@ -63,7 +62,6 @@ g.add_edge("DISC:A", "DISC:B", relacao="PREREQUISITO_DE", confidence=1.0)
 g.add_edge("DISC:B", "DISC:C", relacao="PREREQUISITO_DE", confidence=0.7)
 g.add_edge("DISC:C", "DISC:D", relacao="PREREQUISITO_DE", confidence=1.0)
 
-# Reconstruir índices
 kg._index_node("DISC:A", g.nodes["DISC:A"])
 kg._index_node("DISC:B", g.nodes["DISC:B"])
 kg._index_node("DISC:C", g.nodes["DISC:C"])
@@ -89,7 +87,6 @@ for target in ["B", "C", "D"]:
         print(f"  {nome:5s} bound=[{low:.0%}, {high:.0%}]{marker}")
 
 banner("Verificação semântica do paper")
-# A → D deve propagar 0.7 (mínimo da cadeia)
 pairs = eng.get_transitive_prereqs_with_bounds("D")
 a_to_d = next(((n, b) for n, b in pairs if n == "A"), None)
 print(f"prereq_trans(A, D) = {a_to_d}")

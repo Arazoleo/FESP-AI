@@ -1,5 +1,5 @@
 """
-Agente Web SJC — cobertura completa do site do campus São José dos Campos.
+Agente Web SJC - cobertura completa do site do campus São José dos Campos.
 
 Responde perguntas sobre qualquer parte do site institucional (graduação,
 secretaria, ingresso, pós-graduação, biblioteca, contatos, órgãos, etc.) a
@@ -27,15 +27,10 @@ from ..site_crawler import load_cache, crawl_sjc, BASE
 logger = logging.getLogger("fespai.web_sjc")
 
 _TOP_K = 3
-_EXCERPT = 1800  # chars por página no contexto do LLM
-# Limiares mínimos de relevância (evita responder a partir de página irrelevante).
-_MIN_EMBED = 0.55   # teto absoluto (calibrado p/ mxbai; ver margem abaixo)
-# Cada modelo de embedding tem sua escala de cossenos (mxbai: relevante ~0.6+;
-# embeddinggemma: relevante ~0.49, irrelevante ~0.27). Limiar absoluto quebra ao
-# trocar de modelo — o critério robusto é relativo: o top precisa se destacar da
-# MEDIANA do corpus para aquela query por esta margem.
+_EXCERPT = 1800
+_MIN_EMBED = 0.55
 _MIN_EMBED_MARGIN = 0.15
-_MIN_KEYWORD = 2.0  # sobreposição ponderada de palavras-chave
+_MIN_KEYWORD = 2.0
 _STOP = frozenset({
     "para", "como", "qual", "quais", "quando", "onde", "sobre", "tem", "esta",
     "estao", "mais", "uma", "que", "com", "por", "dos", "das", "isso", "essa",
@@ -48,14 +43,10 @@ def _strip_accents(s: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn")
 
 
-# Siglas curtas que importam para o ranking (o filtro de tamanho as descartaria)
 _ACRONYMS = frozenset({
     "bct", "bcc", "ec", "eb", "em", "bmc", "bbt", "nde", "ppc", "tcc", "uc", "ucs",
 })
 
-# Expansão de sigla de curso → tokens do nome completo. Aplicada só ao QUERY no
-# fallback por keywords: os títulos das seções usam o nome por extenso, então
-# "ingresso no BCT" precisa casar com "Bacharelado Interdisciplinar em..."
 _ACRONYM_EXPANSION = {
     "bct": {"bacharelado", "interdisciplinar", "ciencia", "tecnologia"},
     "bcc": {"bacharelado", "ciencia", "computacao"},
@@ -87,7 +78,7 @@ def search_site_sections(question: str, top_k: int = 2) -> List[Dict]:
     Busca por keywords nas seções do corpus do site (sem embeddings).
 
     Reutilizada por outros agentes (ex.: CursosAgent) para complementar
-    respostas do KG com as páginas do site — as duas bases "conversando".
+    respostas do KG com as páginas do site - as duas bases "conversando".
     """
     cache = load_cache()
     if not cache or not cache.get("pages"):
@@ -108,7 +99,7 @@ class WebSjcAgent(BaseAgent):
 
     name = "web_sjc"
     description = "Busca em qualquer página do site do campus UNIFESP SJC"
-    color = "#0ea5e9"  # Sky
+    color = "#0ea5e9"
 
     def __init__(self, rag_instance):
         super().__init__(rag_instance)
@@ -135,10 +126,9 @@ class WebSjcAgent(BaseAgent):
             "- Quando citar uma informacao de pagina do site, indique de qual pagina veio (inclua o link).\n"
             "- Se a resposta nao estiver no material acima, diga com gentileza que nao "
             "encontrou isso no site e sugira o link mais proximo ou os contatos do campus.\n"
-            "- Seja conversacional e direto. No maximo 1 emoji.\n\nResposta:"
+            "- Seja conversacional e direto. NAO use emojis.\n\nResposta:"
         )
 
-    # ── Fusão com o Knowledge Graph (as duas bases "conversam") ───────────────
     def _find_curso_in_question(self, question: str) -> str:
         """Retorna o nome do curso do KG citado na pergunta (nome ou sigla)."""
         kg = self.knowledge_graph
@@ -160,7 +150,7 @@ class WebSjcAgent(BaseAgent):
         Fatos verificados do KG sobre entidades citadas na pergunta.
 
         Quando a pergunta toca as duas bases (ex.: "o que é o BCT?" tem página
-        no site E matriz no KG), o contexto de geração recebe os dois blocos —
+        no site E matriz no KG), o contexto de geração recebe os dois blocos -
         e o prompt dá precedência ao KG em caso de divergência.
         """
         if not self.knowledge_graph or not self.graph_rag:
@@ -177,7 +167,6 @@ class WebSjcAgent(BaseAgent):
                 if resp and "não encontrei" not in resp.lower():
                     blocos.append(resp[:700])
 
-        # Disciplina citada (ex.: pergunta de site que menciona uma UC)
         try:
             disciplina = self.graph_rag._find_discipline_in_text(question)
             if disciplina and self.validator:
@@ -191,24 +180,21 @@ class WebSjcAgent(BaseAgent):
             return ""
         return (
             "### [FATOS VERIFICADOS NO KNOWLEDGE GRAPH]\n"
-            "(fonte de verdade — em caso de conflito com as paginas, siga isto)\n\n"
+            "(fonte de verdade - em caso de conflito com as paginas, siga isto)\n\n"
             + "\n\n".join(blocos)
         )
 
-    # ── Corpus & vetores ──────────────────────────────────────────────────────
     def _ensure_corpus(self) -> List[Dict]:
         cache = load_cache()
-        # Recarrega se houver um cache mais novo (ex.: após POST /crawl-sjc).
         if cache and cache.get("pages"):
             ts = float(cache.get("ts", 0))
             if self._corpus is None or ts > self._corpus_ts:
                 self._corpus = cache["pages"]
                 self._corpus_ts = ts
-                self._page_vecs = None  # invalida vetores para reindexar
+                self._page_vecs = None
             return self._corpus
         if self._corpus is not None:
             return self._corpus
-        # Primeiro uso sem cache: rastreia (capado) e guarda.
         try:
             self._corpus = crawl_sjc(max_pages=300)
             self._corpus_ts = time.time()
@@ -242,7 +228,6 @@ class WebSjcAgent(BaseAgent):
                 return scored
             except Exception:
                 pass
-        # Fallback por palavras-chave (título conta dobrado).
         self._last_mode = "keyword"
         qt = _tokens(question)
         for a in list(qt):
@@ -270,7 +255,6 @@ class WebSjcAgent(BaseAgent):
             "sources": [p["url"] for p in paginas] if paginas else [],
         }
 
-    # ── Resposta ──────────────────────────────────────────────────────────────
     def answer(self, question: str, intent: str, term: str, history: str = "") -> Dict[str, Any]:
         corpus = self._ensure_corpus()
         if not corpus:
@@ -283,7 +267,6 @@ class WebSjcAgent(BaseAgent):
         if self._last_mode == "embed":
             scores_all = [s for s, _ in ranked]
             mediana = scores_all[len(scores_all) // 2] if scores_all else 0.0
-            # Relativo à distribuição do modelo em uso (agnóstico a modelo)
             min_score = min(_MIN_EMBED, mediana + _MIN_EMBED_MARGIN)
         else:
             min_score = _MIN_KEYWORD
@@ -295,7 +278,6 @@ class WebSjcAgent(BaseAgent):
             )
 
         if not self.llm:
-            # Sem LLM: devolve os links mais relevantes.
             linhas = ["Encontrei estas páginas do site do campus que podem ajudar:", ""]
             linhas += [f"- **[{p['titulo']}]({p['url']})**" for p in top]
             return self._result("\n".join(linhas), top)
@@ -305,7 +287,6 @@ class WebSjcAgent(BaseAgent):
             prompt = ChatPromptTemplate.from_template(template)
             chain = prompt | self.llm | StrOutputParser()
             contexto = self._build_context(top)
-            # Fusão: fatos verificados do KG entram antes das páginas do site
             kg_facts = self._kg_verified_facts(question)
             if kg_facts:
                 contexto = kg_facts + "\n\n### [PAGINAS DO SITE]\n\n" + contexto
@@ -313,7 +294,6 @@ class WebSjcAgent(BaseAgent):
             if history:
                 inputs["history"] = history
             resp = chain.invoke(inputs).strip()
-            # Garante rastro da(s) fonte(s).
             if not any(p["url"] in resp for p in top):
                 fontes = "\n".join(f"- [{p['titulo']}]({p['url']})" for p in top)
                 resp = f"{resp}\n\n*Fontes:*\n{fontes}"

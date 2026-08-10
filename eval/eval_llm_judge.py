@@ -44,7 +44,6 @@ def split_validation_annotation(answer: str):
     if idx == -1:
         return s, ""
     tail = s[idx + len(marker) :].strip()
-    # Heurística: anotação típica do validador contém "Verificado no Knowledge Graph" ou "⚠"
     if ("Verificado no Knowledge Graph" in tail) or ("⚠" in tail) or ("Atenção" in tail):
         head = s[:idx].strip()
         return head, tail
@@ -52,7 +51,7 @@ def split_validation_annotation(answer: str):
 
 
 def main():
-    p = argparse.ArgumentParser(description="LLM-as-a-Judge — FESP-AI")
+    p = argparse.ArgumentParser(description="LLM-as-a-Judge - FESP-AI")
     p.add_argument("--url", default="http://localhost:8000", help="URL base da API")
     p.add_argument("--quick", action="store_true", help="Só os primeiros 15")
     p.add_argument("--output", default="eval_results_LLM_JUDGE", help="Prefixo do arquivo de saída")
@@ -66,12 +65,11 @@ def main():
 
     rows = []
     n = len(cases)
-    print(f"\nLLM-as-a-Judge — {n} perguntas via {base_url}\n")
+    print(f"\nLLM-as-a-Judge - {n} perguntas via {base_url}\n")
 
     for idx, (qid, question, agent_exp, categoria, tipo_query) in enumerate(cases, 1):
         print(f"  [{idx:2d}/{n}] {question[:60]}...", end=" ", flush=True)
         t0 = time.time()
-        # defaults para o bloco de append (mesmo em caso de erro)
         data = {}
         answer = ""
         answer_clean = ""
@@ -92,7 +90,6 @@ def main():
             evidence = (data.get("context") or "").strip()
             active_agent = data.get("active_agent", "")
 
-            # Não penalizar o Judge por anotações internas: mover para evidência.
             answer_clean, validation_note = split_validation_annotation(answer)
             evidence_for_judge = evidence
             if validation_note:
@@ -177,4 +174,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

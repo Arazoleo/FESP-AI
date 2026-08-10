@@ -9,18 +9,16 @@ class KnowledgeGraph:
 
     def __init__(self):
         self.graph = nx.MultiDiGraph()
-        # Índices para busca O(1) em vez de O(n)
-        self._index_by_name: Dict[str, str] = {}      # nome_normalizado -> node_id
-        self._index_by_sigla: Dict[str, str] = {}     # sigla_normalizada -> node_id
-        self._index_by_codigo: Dict[str, str] = {}    # codigo_normalizado -> node_id
-        # Mapeamento nome/variante -> sigla para unificar nós de curso (evitar CURSO:X e CURSO:Y para o mesmo curso)
+        self._index_by_name: Dict[str, str] = {}
+        self._index_by_sigla: Dict[str, str] = {}
+        self._index_by_codigo: Dict[str, str] = {}
+        self._authoritative_nodes: Set[str] = set()
         self._curso_name_to_sigla: Dict[str, str] = {}
-        # KGC: inicializado após o grafo ser populado (lazy)
         self._kgc: Optional["KGCompletion"] = None
 
     @property
     def kgc(self) -> "KGCompletion":
-        """Acesso lazy ao KGCompletion — inicializado na primeira chamada."""
+        """Acesso lazy ao KGCompletion - inicializado na primeira chamada."""
         if self._kgc is None:
             self._kgc = KGCompletion(self)
         return self._kgc
@@ -30,38 +28,55 @@ class KnowledgeGraph:
         """Remove acentos e normaliza texto para busca."""
         if not text:
             return ""
-        # NFD decompõe caracteres acentuados
         normalized = unicodedata.normalize('NFD', text.lower().strip())
-        # Remove marcas diacríticas (acentos)
         normalized = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
-        # Remover pontuação simples e normalizar espaços
         normalized = re.sub(r"[^\w\s]", " ", normalized, flags=re.UNICODE)
         normalized = re.sub(r"\s+", " ", normalized).strip()
-        # Remover stopwords muito comuns que atrapalham matching (ex.: "Banco de Dados" vs "Banco Dados")
-        # Mantemos uma lista pequena para evitar colapsar demais os nomes.
         normalized = re.sub(r"\b(de|da|do|das|dos|e)\b", " ", normalized)
         normalized = re.sub(r"\s+", " ", normalized).strip()
         return normalized
     
-    def _index_node(self, node_id: str, data: dict):
-        """Adiciona nó aos índices para busca rápida."""
+    @staticmethod
+    def _has_real_value(value) -> bool:
+        """True se o valor é real (não vazio nem o literal 'None'/'N/A')."""
+        return bool(value) and str(value).strip().lower() not in ("none", "null", "n/a")
+
+    def _index_node(self, node_id: str, data: dict, authoritative: bool = False):
+        """
+        Adiciona nó aos índices para busca rápida.
+
+        `authoritative=True` marca nós definidos pelo próprio arquivo da
+        entidade (título do markdown). Nomes distintos podem colidir após a
+        normalização (ex.: o pré-requisito com typo "Séries e Equações
+        Diferenciais e Ordinárias" colide com a disciplina real "Séries e
+        Equações Diferenciais Ordinárias" porque "e" é stopword) - sem esta
+        regra, um nó fantasma sem arestas LECIONA sombreava a disciplina real
+        no índice e "quem leciona SEDO?" retornava vazio.
+        """
         nome = self._normalize_text(data.get('nome', ''))
-        sigla = self._normalize_text(data.get('sigla') or '')
-        codigo = self._normalize_text(str(data.get('codigo', '')))
-        
-        if nome:
-            self._index_by_name[nome] = node_id
-        if sigla:
-            self._index_by_sigla[sigla] = node_id
-        if codigo:
-            self._index_by_codigo[codigo] = node_id
+        sigla = self._normalize_text(data.get('sigla') or '') if self._has_real_value(data.get('sigla')) else ''
+        codigo = self._normalize_text(str(data.get('codigo', ''))) if self._has_real_value(data.get('codigo')) else ''
+
+        if authoritative:
+            self._authoritative_nodes.add(node_id)
+
+        def _set(index: dict, key: str):
+            if not key:
+                return
+            existing = index.get(key)
+            if existing is None or existing == node_id:
+                index[key] = node_id
+            elif authoritative or existing not in self._authoritative_nodes:
+                index[key] = node_id
+
+        _set(self._index_by_name, nome)
+        _set(self._index_by_sigla, sigla)
+        _set(self._index_by_codigo, codigo)
     
     def _get_edge_relation(self, edge_data: dict) -> Optional[str]:
         """Helper para extrair relação de edge data do MultiDiGraph."""
-        # MultiDiGraph retorna {0: {dados}, 1: {dados}, ...}
         if not edge_data:
             return None
-        # Pegar a primeira aresta
         for edge_key, edge in edge_data.items():
             return edge.get('relacao')
         return None
@@ -77,7 +92,6 @@ class KnowledgeGraph:
 
     def build_from_directories(self, disciplinas_dir: str, regimentos_dir: str, docentes_dir: str = None, cursos_dir: str = None):
         """Constrói o grafo a partir de todos os diretórios."""
-        # 1) Matrizes primeiro → nós canônicos CURSO:sigla e mapeamento nome->sigla (evita duplicatas)
         if cursos_dir:
             cursos_path = Path(cursos_dir)
             for md_file in cursos_path.glob("*.md"):
@@ -97,12 +111,20 @@ class KnowledgeGraph:
             for md_file in docentes_path.glob("*.md"):
                 self._process_docentes_file(md_file)
         
-        # NSAI-2: verificação de consistência simbólica ao final do build
         try:
             issues = self.lint()
             problemas = {k: len(v) for k, v in issues.items() if v}
             if problemas:
                 print(f"[KG lint] Inconsistências detectadas: {problemas}")
+            duplicadas = issues.get("disciplinas_duplicadas") or []
+            if duplicadas:
+                print("=" * 70)
+                print(f"[KG lint] WARNING: {len(duplicadas)} disciplina(s) "
+                      "DUPLICADA(S) no grafo - corrija os nomes na fonte "
+                      "(markdown_disciplinas/ e markdown_cursos/):")
+                for a, b in duplicadas:
+                    print(f"  - {a!r} != {b!r}")
+                print("=" * 70)
         except Exception as e:
             print(f"[KG lint] falhou: {e}")
 
@@ -122,7 +144,7 @@ class KnowledgeGraph:
         """
         NSAI-2: lint de consistência simbólica do grafo.
 
-        Um sistema simbólico vale o que vale seu grafo — detecta:
+        Um sistema simbólico vale o que vale seu grafo - detecta:
         - disciplinas duplicadas por nome normalizado ("de/da Biologia Moderna")
         - ciclos no DAG de pré-requisitos (quebrariam o BFS topológico)
         - disciplinas sem vínculo com curso/matriz nem termo
@@ -203,6 +225,11 @@ class KnowledgeGraph:
 
         docentes = self._extract_list_section(content, 'Docentes')
 
+        ementa = ""
+        ementa_match = re.search(r'##\s+Ementa\s*\n+(.*?)(?=\n#{2,3}\s|\Z)', content, re.DOTALL)
+        if ementa_match:
+            ementa = re.sub(r'\s+', ' ', ementa_match.group(1)).strip()[:800]
+
         prereqs = []
 
         prereq_match = re.search(r'## Pré-requisitos\n\n(.*?)(?=\n## |$)', content, re.DOTALL)
@@ -213,8 +240,8 @@ class KnowledgeGraph:
 
         
         disc_id = f"DISC:{nome}"
-        self.graph.add_node(disc_id, tipo="disciplina", nome=nome, codigo=codigo, sigla=sigla, termo=termo)
-        self._index_node(disc_id, {"nome": nome, "codigo": codigo, "sigla": sigla})
+        self.graph.add_node(disc_id, tipo="disciplina", nome=nome, codigo=codigo, sigla=sigla, termo=termo, ementa=ementa)
+        self._index_node(disc_id, {"nome": nome, "codigo": codigo, "sigla": sigla}, authoritative=True)
         
         for docente in docentes:
             if docente:
@@ -223,7 +250,6 @@ class KnowledgeGraph:
                 self.graph.add_edge(doc_id, disc_id, relacao="LECIONA", confidence=1.0)
         
 
-        # ICT é instituto, não curso — não criar nó CURSO:ICT
         for curso in cursos:
             if not curso:
                 continue
@@ -241,10 +267,20 @@ class KnowledgeGraph:
                 self.graph.add_edge(curso_id, disc_id, relacao="OFERECE", confidence=1.0)
         
         for prereq_nome, prereq_codigo in prereqs:
-            prereq_id = f"DISC:{prereq_nome}"
-            if not self.graph.has_node(prereq_id):
-                self.graph.add_node(prereq_id, tipo="disciplina", nome=prereq_nome, codigo=prereq_codigo)
-                self._index_node(prereq_id, {"nome": prereq_nome, "codigo": prereq_codigo})
+            if not self._has_real_value(prereq_codigo):
+                prereq_codigo = ""
+            existing = (
+                self._index_by_name.get(self._normalize_text(prereq_nome))
+                or (self._index_by_codigo.get(self._normalize_text(prereq_codigo))
+                    if prereq_codigo else None)
+            )
+            if existing and self.graph.nodes.get(existing, {}).get('tipo') == 'disciplina':
+                prereq_id = existing
+            else:
+                prereq_id = f"DISC:{prereq_nome}"
+                if not self.graph.has_node(prereq_id):
+                    self.graph.add_node(prereq_id, tipo="disciplina", nome=prereq_nome, codigo=prereq_codigo)
+                    self._index_node(prereq_id, {"nome": prereq_nome, "codigo": prereq_codigo})
             self.graph.add_edge(prereq_id, disc_id, relacao="PREREQUISITO_DE", confidence=1.0)
 
     def _process_regimento_file(self, filepath: Path):
@@ -293,7 +329,6 @@ class KnowledgeGraph:
                 self.graph.add_edge(doc_id, faq_id, relacao="CONTEM_FAQ")
         
 
-    
     def _extract_orgaos(self, texto: str) -> List[str]:
         """Extrai nomes de órgãos/setores mencionados no texto."""
         orgaos_conhecidos = [
@@ -323,34 +358,28 @@ class KnowledgeGraph:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Encontrar blocos de docentes (do ### até o próximo ### ou ---)
         docente_blocks = re.split(r'(?=###\s+Prof)', content)
         
         for block in docente_blocks:
             if not block.strip() or not block.startswith('###'):
                 continue
             
-            # Extrair nome
             nome_match = re.search(r'###\s+(?:Prof(?:a)?\.?\s+)?(?:Dr(?:a)?\.?\s+)?(.+)', block)
             if not nome_match:
                 continue
             nome = nome_match.group(1).strip()
             
-            # Extrair áreas
             areas_match = re.search(r'\*\*Áreas?:\*\*\s*(.+?)(?=\n-|\n###|\n---|\Z)', block, re.DOTALL)
             areas_str = areas_match.group(1).strip() if areas_match else ""
             
-            # Extrair email
             email_match = re.search(r'\*\*Email:\*\*\s*(.+?)(?=\n|\Z)', block)
             email = email_match.group(1).strip() if email_match else ""
             
-            # Extrair sala
             sala_match = re.search(r'\*\*Sala:\*\*\s*(.+?)(?=\n|\Z)', block)
             sala = sala_match.group(1).strip() if sala_match else ""
             
             doc_id = f"DOC:{nome}"
             
-            # Atualizar ou criar nó do docente
             if self.graph.has_node(doc_id):
                 self.graph.nodes[doc_id]['areas'] = areas_str
                 self.graph.nodes[doc_id]['email'] = email
@@ -358,10 +387,8 @@ class KnowledgeGraph:
             else:
                 self.graph.add_node(doc_id, tipo="docente", nome=nome, areas=areas_str, email=email, sala=sala)
             
-            # Extrair áreas individuais e criar nós
             areas = [a.strip() for a in areas_str.split(',') if a.strip()]
             for area in areas:
-                # Limpar área (remover quebras de linha, etc)
                 area = re.sub(r'\s+', ' ', area).strip()
                 if area and len(area) > 2:
                     area_id = f"AREA:{area}"
@@ -383,14 +410,12 @@ class KnowledgeGraph:
             norm_nome = self._normalize_text(nome)
             self._curso_name_to_sigla[norm_sigla] = sigla
             self._curso_name_to_sigla[norm_nome] = sigla
-            # Nome sem o sufixo "(BCC)" para match "Bacharelado em Ciência da Computação"
             nome_sem_sigla = re.sub(r'\s*\([A-Z]{2,5}\)\s*$', '', nome).strip()
             if nome_sem_sigla:
                 self._curso_name_to_sigla[self._normalize_text(nome_sem_sigla)] = sigla
-        # Mapeamentos explícitos para nomes que aparecem nas disciplinas (Curso(s): ...)
         alias = [
             ("ciência da computação", "BCC"), ("ciencia da computacao", "BCC"),
-            ("ciências da computação", "BCC"), ("ciencias da computacao", "BCC"),  # typo em alguns md
+            ("ciências da computação", "BCC"), ("ciencias da computacao", "BCC"),
             ("ciência e tecnologia", "BCT"), ("ciencia e tecnologia", "BCT"),
             ("bacharelado interdisciplinar em ciência e tecnologia", "BCT"),
             ("engenharia de computação", "EC"), ("engenharia da computação", "EC"),
@@ -403,7 +428,6 @@ class KnowledgeGraph:
             if key and key not in self._curso_name_to_sigla:
                 self._curso_name_to_sigla[key] = sig
 
-    # Nomes que aparecem em Curso(s) mas não são cursos (ex.: ICT = instituto)
     CURSO_BLOCKLIST = frozenset({
         "ict", "instituto de ciência e tecnologia", "instituto de ciencia e tecnologia",
         "unifesp ict", "são josé dos campos/ict", "sao jose dos campos/ict",
@@ -427,7 +451,6 @@ class KnowledgeGraph:
         key = self._normalize_text(curso_nome)
         if key in self._curso_name_to_sigla:
             return self._curso_name_to_sigla[key]
-        # Match por substring: se "ciência da computação" está em key ou key está em algum nome mapeado
         for mapped_key, sigla in self._curso_name_to_sigla.items():
             if len(mapped_key) < 4:
                 continue
@@ -448,7 +471,6 @@ class KnowledgeGraph:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Extrair título (nome do curso)
         titulo_match = re.search(r'^# Matriz Curricular - (.+)$', content, re.MULTILINE)
         if not titulo_match:
             titulo_match = re.search(r'^# (.+)$', content, re.MULTILINE)
@@ -458,19 +480,15 @@ class KnowledgeGraph:
         
         curso_nome = titulo_match.group(1).strip()
         
-        # Extrair sigla (ex: BCC, BCT)
         sigla_match = re.search(r'\(([A-Z]{2,5})\)', curso_nome)
         sigla = sigla_match.group(1) if sigla_match else ""
         
-        # Extrair carga horária total
         carga_match = re.search(r'\*\*Carga Horária Total:\*\*\s*(\d+)', content)
         carga_total = carga_match.group(1) if carga_match else ""
         
-        # Extrair duração em termos
         duracao_match = re.search(r'\*\*Duração:\*\*\s*(\d+)\s*termos?', content, re.IGNORECASE)
         duracao_termos = duracao_match.group(1) if duracao_match else ""
         
-        # Extrair coordenador e vice-coordenador
         coordenador = ""
         vice_coordenador = ""
         coord_match = re.search(r'\*\*Coordenador[a]?:\*\*\s*(.+?)(?:\n|$)', content)
@@ -480,7 +498,6 @@ class KnowledgeGraph:
         if vice_match:
             vice_coordenador = vice_match.group(1).strip()
         
-        # Criar nó da matriz curricular
         matriz_id = f"MATRIZ:{curso_nome}"
         self.graph.add_node(matriz_id, 
                            tipo="matriz_curricular", 
@@ -492,20 +509,15 @@ class KnowledgeGraph:
                            vice_coordenador=vice_coordenador,
                            source=str(filepath))
         
-        # Nó canônico do curso: ID por sigla (CURSO:BCC) para evitar duplicatas com nomes diferentes
         curso_id = f"CURSO:{sigla}" if sigla else f"CURSO:{curso_nome}"
         if not self.graph.has_node(curso_id):
             self.graph.add_node(curso_id, tipo="curso", nome=curso_nome, sigla=sigla or "")
         self.graph.add_edge(matriz_id, curso_id, relacao="MATRIZ_DE")
         
-        # Extrair disciplinas por termo (suporta "### Termo 1", "### 1º Semestre", "### 1º Termo")
-        # Lookahead simplificado: próximo ### com número, ou --- ou ## ou fim
         termo_pattern = r'###\s+(?:Termo\s+)?(\d+)[º°]?\s*(?:Semestre|Termo)?[^\n]*\n(.*?)(?=\n###\s+|\n---|\n## |\Z)'
         termos = re.findall(termo_pattern, content, re.DOTALL)
         
         for termo_num, termo_content in termos:
-            # Encontrar disciplinas na tabela (suporta 2 ou 3+ colunas)
-            # Captura: | Nome | Créditos | [resto opcional]
             disc_pattern = r'\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|'
             disciplinas = re.findall(disc_pattern, termo_content)
             
@@ -514,19 +526,11 @@ class KnowledgeGraph:
                 if disc_nome and disc_nome != "Disciplina" and not disc_nome.startswith('-'):
                     disc_id = f"DISC:{disc_nome}"
                     
-                    # Criar nó da disciplina se não existir
-                    # NOTA: Uma disciplina pode aparecer em múltiplos termos de diferentes cursos
-                    # Então não atualizamos o termo, mantemos o nó genérico
                     if not self.graph.has_node(disc_id):
                         self.graph.add_node(disc_id, tipo="disciplina", nome=disc_nome)
                     
-                    # Conectar disciplina com a matriz
-                    # A informação do termo fica na ARESTA, não no nó
-                    # Assim a mesma disciplina pode estar em múltiplos termos
                     self.graph.add_edge(matriz_id, disc_id, relacao="INCLUI", termo=termo_num, creditos=creditos, confidence=1.0)
         
-        # Extrair eletivas - usando padrões mais flexíveis para os títulos
-        # Procurar todas as seções de eletivas no documento
         eletivas_sections = [
             (r"##\s*Eletivas?\s+(?:do\s+)?Grupo\s+1", "eletiva_grupo1"),
             (r"##\s*Eletivas?\s+(?:do\s+)?Grupo\s+2", "eletiva_grupo2"),
@@ -535,16 +539,13 @@ class KnowledgeGraph:
         ]
         
         for section_pattern, eletiva_tipo in eletivas_sections:
-            # Buscar seção com padrão flexível - termina em próximo ## ou ---
             match = re.search(rf'{section_pattern}[^\n]*\n(.*?)(?=\n##\s|\n---|\Z)', content, re.DOTALL | re.IGNORECASE)
             if match:
                 section_content = match.group(1)
-                # Extrair itens da lista (- item)
                 eletivas = re.findall(r'^-\s+(.+)$', section_content, re.MULTILINE)
                 for eletiva in eletivas:
-                    # Limpar nome da eletiva (remover parênteses com horas, "OU qualquer", etc)
                     if eletiva.upper().startswith('OU '):
-                        continue  # Pular linhas que começam com "OU"
+                        continue
                     eletiva = re.sub(r'\s*\([^)]*\)\s*$', '', eletiva).strip()
                     if eletiva and len(eletiva) > 3 and not eletiva.startswith('*'):
                         eletiva_id = f"DISC:{eletiva}"
@@ -606,7 +607,6 @@ class KnowledgeGraph:
         dependentes = []
         for successor in self.graph.successors(disc_id):
             edge_data = self.graph.get_edge_data(disc_id, successor)
-            # MultiDiGraph: verificar corretamente
             if self._has_edge_relation(edge_data, 'PREREQUISITO_DE'):
                 dependentes.append(self.graph.nodes[successor].get('nome'))
         
@@ -620,14 +620,12 @@ class KnowledgeGraph:
         
         docentes = []
         for p in self.graph.predecessors(disc_id):
-            # MultiDiGraph: get_edge_data retorna dict de dicts
             edges_data = self.graph.get_edge_data(p, disc_id)
             if edges_data:
-                # Iterar sobre todas as arestas entre os mesmos nós
                 for edge_key, edge in edges_data.items():
                     if edge.get('relacao') == 'LECIONA':
                         docentes.append(self.graph.nodes[p].get('nome'))
-                        break  # Evita duplicatas se houver múltiplas arestas LECIONA
+                        break
         return docentes
 
     def get_disciplines_of_docente(self, docente: str) -> List[str]:
@@ -639,7 +637,6 @@ class KnowledgeGraph:
             for node in self.graph.nodes():
                 if node.startswith("DOC:"):
                     node_name = node.replace("DOC:", "").lower()
-                    # Evitar match com nomes muito curtos (< 3 chars)
                     if len(node_name) >= 3 and (docente_lower in node_name or node_name in docente_lower):
                         docente_id = node
                         break
@@ -648,16 +645,14 @@ class KnowledgeGraph:
         
         disciplinas = []
         for successor in self.graph.successors(docente_id):
-            # MultiDiGraph: get_edge_data retorna dict de dicts
             edges_data = self.graph.get_edge_data(docente_id, successor)
             if edges_data:
-                # Iterar sobre todas as arestas entre os mesmos nós
                 for edge_key, edge in edges_data.items():
                     if edge.get('relacao') == 'LECIONA':
                         nome = self.graph.nodes[successor].get('nome')
                         if nome:
                             disciplinas.append(nome)
-                        break  # Evita duplicatas se houver múltiplas arestas LECIONA
+                        break
         
         return disciplinas
 
@@ -688,7 +683,6 @@ class KnowledgeGraph:
         resultados = []
         for predecessor in self.graph.predecessors(orgao_id):
             edge_data = self.graph.get_edge_data(predecessor, orgao_id)
-            # MultiDiGraph: verificar corretamente
             if self._has_edge_relation(edge_data, 'MENCIONA'):
                 data = self.graph.nodes[predecessor]
                 if data.get('tipo') == 'artigo':
@@ -728,7 +722,6 @@ class KnowledgeGraph:
         
         for successor in self.graph.successors(artigo_id):
             edge_data = self.graph.get_edge_data(artigo_id, successor)
-            # MultiDiGraph: verificar corretamente
             if self._has_edge_relation(edge_data, 'REFERENCIA'):
                 data = self.graph.nodes.get(successor, {})
                 if data.get('tipo') == 'artigo':
@@ -740,7 +733,6 @@ class KnowledgeGraph:
         
         for predecessor in self.graph.predecessors(artigo_id):
             edge_data = self.graph.get_edge_data(predecessor, artigo_id)
-            # MultiDiGraph: verificar corretamente
             if self._has_edge_relation(edge_data, 'REFERENCIA'):
                 data = self.graph.nodes.get(predecessor, {})
                 if data.get('tipo') == 'artigo':
@@ -756,7 +748,6 @@ class KnowledgeGraph:
         """Encontra um nó por nome, código ou sigla usando índices O(1)."""
         termo_normalized = self._normalize_text(termo)
         
-        # Busca O(1) nos índices
         node_id = (
             self._index_by_name.get(termo_normalized) or
             self._index_by_sigla.get(termo_normalized) or
@@ -764,11 +755,9 @@ class KnowledgeGraph:
         )
         
         if node_id:
-            # Verificar se o tipo corresponde (se especificado)
             if tipo is None or self.graph.nodes.get(node_id, {}).get('tipo') == tipo:
                 return node_id
         
-        # Fallback para busca por substring (mantém compatibilidade)
         for node, data in self.graph.nodes(data=True):
             if tipo and data.get('tipo') != tipo:
                 continue
@@ -777,7 +766,6 @@ class KnowledgeGraph:
             codigo = self._normalize_text(str(data.get('codigo', '')))
             sigla = self._normalize_text(data.get('sigla') or '')
             
-            # Match exato (já verificado acima) ou substring
             if termo_normalized in nome or (sigla and termo_normalized in sigla):
                 return node
         
@@ -813,7 +801,6 @@ class KnowledgeGraph:
         for node_id, data in self.graph.nodes(data=True):
             nome = data.get('nome', node_id)
             tipo = data.get('tipo', 'unknown')
-            # Cursos: rótulo padronizado "Nome (SIGLA)" sem repetir "Bacharelado em" onde redundante
             if tipo == 'curso' and isinstance(nome, str):
                 sigla = (data.get('sigla') or "").strip()
                 nome_curto = re.sub(r'^Bacharelado\s+em\s+', '', nome, flags=re.IGNORECASE).strip()
@@ -846,33 +833,25 @@ class KnowledgeGraph:
         resultados = []
         cursos_to_search = self._expand_curso_search(curso)
         
-        # Encontrar a matriz do curso
         for node, data in self.graph.nodes(data=True):
             if data.get('tipo') == 'matriz_curricular':
                 nome = data.get('nome', '').lower()
                 sigla = data.get('sigla', '').lower()
                 
-                # Verificar match - MAIS ESPECÍFICO
                 match_found = False
                 for curso_term in cursos_to_search:
-                    # Priorizar match exato de sigla
                     if curso_term == sigla:
                         match_found = True
                         break
-                    # Ou se o nome completo do curso está no termo de busca ou vice-versa
-                    # Mas evitar substring matches acidentais (ex: 'ec' em 'ciência')
-                    if len(curso_term) > 3:  # Para termos longos, usar substring
+                    if len(curso_term) > 3:
                         if curso_term in nome or nome in curso_term:
                             match_found = True
                             break
                 
                 if match_found:
-                    # Encontrar disciplinas conectadas
                     for successor in self.graph.successors(node):
-                        # MultiDiGraph: get_edge_data retorna dict de dicts
                         edges_data = self.graph.get_edge_data(node, successor)
                         if edges_data:
-                            # Iterar sobre todas as arestas entre os mesmos nós
                             for edge_key, edge in edges_data.items():
                                 if edge.get('relacao') == 'INCLUI' and edge.get('termo') == str(termo):
                                     disc_data = self.graph.nodes[successor]
@@ -890,34 +869,26 @@ class KnowledgeGraph:
         resultados = {}
         cursos_to_search = self._expand_curso_search(curso)
         
-        # Encontrar a matriz do curso
         for node, data in self.graph.nodes(data=True):
             if data.get('tipo') == 'matriz_curricular':
                 nome = data.get('nome', '').lower()
                 sigla = data.get('sigla', '').lower()
                 duracao = data.get('duracao_termos', '8')
                 
-                # Verificar match - MAIS ESPECÍFICO
                 match_found = False
                 for curso_term in cursos_to_search:
-                    # Priorizar match exato de sigla
                     if curso_term == sigla:
                         match_found = True
                         break
-                    # Ou se o nome completo do curso está no termo de busca ou vice-versa
-                    # Mas evitar substring matches acidentais (ex: 'ec' em 'ciência')
-                    if len(curso_term) > 3:  # Para termos longos, usar substring
+                    if len(curso_term) > 3:
                         if curso_term in nome or nome in curso_term:
                             match_found = True
                             break
                 
                 if match_found:
-                    # Encontrar disciplinas conectadas e agrupar por termo
                     for successor in self.graph.successors(node):
-                        # MultiDiGraph: get_edge_data retorna dict de dicts
                         edges_data = self.graph.get_edge_data(node, successor)
                         if edges_data:
-                            # Iterar sobre todas as arestas entre os mesmos nós
                             for edge_key, edge in edges_data.items():
                                 if edge.get('relacao') == 'INCLUI':
                                     termo_str = edge.get('termo', '0')
@@ -939,7 +910,6 @@ class KnowledgeGraph:
         
         return resultados
     
-    # Mapeamento de siglas/abreviações para nomes de cursos
     CURSO_ALIASES = {
         'bcc': ['ciência da computação', 'ciencia da computacao', 'computação', 'computacao'],
         'cc': ['ciência da computação', 'ciencia da computacao', 'computação'],
@@ -956,7 +926,6 @@ class KnowledgeGraph:
         curso_lower = curso.lower().strip()
         cursos_to_search = [curso_lower]
         
-        # Adicionar aliases
         if curso_lower in self.CURSO_ALIASES:
             cursos_to_search.extend(self.CURSO_ALIASES[curso_lower])
         
@@ -972,26 +941,20 @@ class KnowledgeGraph:
                 nome = data.get('nome', '').lower()
                 sigla = data.get('sigla', '').lower()
                 
-                # Verificar se algum termo de busca combina - MAIS ESPECÍFICO
                 match_found = False
                 for curso_term in cursos_to_search:
-                    # Priorizar match exato de sigla
                     if curso_term == sigla:
                         match_found = True
                         break
-                    # Ou se o nome completo do curso está no termo de busca ou vice-versa
-                    # Mas evitar substring matches acidentais (ex: 'ec' em 'ciência')
-                    if len(curso_term) > 3:  # Para termos longos, usar substring
+                    if len(curso_term) > 3:
                         if curso_term in nome or nome in curso_term:
                             match_found = True
                             break
                 
                 if match_found:
                     for successor in self.graph.successors(node):
-                        # MultiDiGraph: get_edge_data retorna dict de dicts
                         edges_data = self.graph.get_edge_data(node, successor)
                         if edges_data:
-                            # Iterar sobre todas as arestas entre os mesmos nós
                             for edge_key, edge in edges_data.items():
                                 if edge.get('relacao') == 'ELETIVA_DE':
                                     grupo_eletiva = edge.get('grupo', '')
@@ -1014,16 +977,12 @@ class KnowledgeGraph:
                 nome = data.get('nome', '').lower()
                 sigla = data.get('sigla', '').lower()
                 
-                # Verificar match - MAIS ESPECÍFICO
                 match_found = False
                 for curso_term in cursos_to_search:
-                    # Priorizar match exato de sigla
                     if curso_term == sigla:
                         match_found = True
                         break
-                    # Ou se o nome completo do curso está no termo de busca ou vice-versa
-                    # Mas evitar substring matches acidentais (ex: 'ec' em 'ciência')
-                    if len(curso_term) > 3:  # Para termos longos, usar substring
+                    if len(curso_term) > 3:
                         if curso_term in nome or nome in curso_term:
                             match_found = True
                             break
@@ -1066,7 +1025,6 @@ class KnowledgeGraph:
                 })
         return cursos
     
-    # Sinônimos de áreas para melhor busca
     AREA_SYNONYMS = {
         'machine learning': ['aprendizado de máquina', 'aprendizagem de máquina', 'inteligência artificial', 'redes neurais'],
         'aprendizado de máquina': ['machine learning', 'inteligência artificial', 'redes neurais'],
@@ -1077,6 +1035,8 @@ class KnowledgeGraph:
         'redes neurais': ['neural networks', 'deep learning', 'inteligência artificial'],
         'data science': ['ciência de dados', 'mineração de dados'],
         'ciência de dados': ['data science', 'mineração de dados', 'inteligência artificial'],
+        'data mining': ['mineração de dados'],
+        'mineração de dados': ['data mining'],
     }
     
     def _expand_area_search(self, area: str) -> List[str]:
@@ -1084,46 +1044,47 @@ class KnowledgeGraph:
         area_lower = area.lower().strip()
         areas_to_search = [area_lower]
         
-        # Adicionar sinônimos
         if area_lower in self.AREA_SYNONYMS:
             areas_to_search.extend(self.AREA_SYNONYMS[area_lower])
         
         return areas_to_search
     
+    @staticmethod
+    def _stem_words(words: Set[str]) -> Set[str]:
+        """Singular/plural simples: 'redes complexas' ≈ 'rede complexa'."""
+        return {w[:-1] if len(w) > 3 and w.endswith('s') else w for w in words}
+
     def get_docentes_by_area(self, area: str) -> List[str]:
         """Retorna docentes especialistas em uma área (com suporte a sinônimos)."""
         areas_to_search = self._expand_area_search(area)
         docentes = []
-        
+
         for search_area in areas_to_search:
             area_normalized = self._normalize_text(search_area)
             area_words = set(area_normalized.split())
-            
+
             for node, data in self.graph.nodes(data=True):
                 if data.get('tipo') != 'area':
                     continue
-                
+
                 nome_area = self._normalize_text(data.get('nome', ''))
                 nome_words = set(nome_area.split())
-                
-                # Match por palavras (evita "ia" dar match em "engenharia")
+
                 is_match = False
-                
-                # Match exato
+
                 if area_normalized == nome_area:
                     is_match = True
-                # Todas as palavras da query estão na área
-                elif len(area_normalized) > 3 and area_words.issubset(nome_words):
+                elif len(area_normalized) > 3 and (
+                    area_words.issubset(nome_words)
+                    or self._stem_words(area_words).issubset(self._stem_words(nome_words))
+                ):
                     is_match = True
-                # Substring match (apenas para termos maiores que 5 chars)
                 elif len(area_normalized) > 5 and area_normalized in nome_area:
                     is_match = True
                 
                 if is_match:
-                    # Encontrar docentes que apontam para essa área
                     for pred in self.graph.predecessors(node):
                         edge_data = self.graph.get_edge_data(pred, node)
-                        # MultiDiGraph: verificar corretamente
                         if self._has_edge_relation(edge_data, 'ESPECIALISTA_EM'):
                             nome = self.graph.nodes[pred].get('nome')
                             if nome and nome not in docentes:
@@ -1136,7 +1097,6 @@ class KnowledgeGraph:
         docente_lower = docente.lower().strip()
         docente_words = set(docente_lower.split())
         
-        # Buscar todos os matches possíveis
         matches = []
         
         for node in self.graph.nodes():
@@ -1147,20 +1107,16 @@ class KnowledgeGraph:
             node_words = set(node_name.split())
             data = self.graph.nodes[node]
             
-            # Match exato
             if node_name == docente_lower:
                 matches.append((node, 100, data))
-            # Todas as palavras da query estão no nome do docente
             elif docente_words.issubset(node_words):
                 matches.append((node, 80, data))
-            # Substring match
             elif len(node_name) >= 3 and (docente_lower in node_name or node_name in docente_lower):
                 matches.append((node, 50, data))
         
         if not matches:
             return None
         
-        # Ordenar por: 1) se tem email (info mais completa), 2) score de match
         matches.sort(key=lambda x: (1 if x[2].get('email') else 0, x[1]), reverse=True)
         
         return matches[0][0]
@@ -1173,18 +1129,14 @@ class KnowledgeGraph:
         
         areas = []
         
-        # 1. Verificar atributo 'areas' no nó do docente
         node_areas = self.graph.nodes[docente_id].get('areas', '')
         if node_areas:
             if isinstance(node_areas, list):
                 areas.extend(node_areas)
             elif isinstance(node_areas, str):
-                # Pode ser uma string única ou separada por vírgulas
                 areas.extend([a.strip() for a in node_areas.split(',') if a.strip()])
         
-        # 2. Verificar conexões com nós de área (ESPECIALISTA_EM)
         for successor in self.graph.successors(docente_id):
-            # MultiDiGraph: get_edge_data retorna dict de dicts
             edges_data = self.graph.get_edge_data(docente_id, successor)
             if edges_data:
                 for edge_key, edge in edges_data.items():
@@ -1210,7 +1162,6 @@ class KnowledgeGraph:
             'areas': data.get('areas', ''),
         }
 
-    # ── Métodos Neurossimbólicos ──────────────────────────────────────────────
 
     def get_all_ancestors(self, disciplina: str, min_confidence: float = 0.0) -> List[str]:
         """
@@ -1348,7 +1299,7 @@ class KGCompletion:
 
     1. **Assinatura estrutural** (GNN neighborhood aggregation sem pesos treináveis):
        Para cada disciplina, agrega características de vizinhos em 1-hop e 2-hop
-       — pré-requisitos, docentes, dependentes, co-pré-requisitos.
+       - pré-requisitos, docentes, dependentes, co-pré-requisitos.
 
     2. **Score de interação** (APIM simplificado):
        Jaccard ponderado entre assinaturas, com pesos diferentes por tipo de
@@ -1360,9 +1311,6 @@ class KGCompletion:
     - Enriquecer contexto dos agentes com relações latentes
     """
 
-    # Pesos por tipo de relação — equivalentes à Pr do APIM.
-    # PREREQUISITO é o mais discriminativo; LECIONA conecta entidades de tipos
-    # diferentes; co-pré-requisito (disciplinas que são irmãs) é sinal mais fraco.
     _RELATION_WEIGHTS: Dict[str, float] = {
         "prereqs_1":   0.35,
         "docentes":    0.30,
@@ -1377,13 +1325,13 @@ class KGCompletion:
 
     def invalidate_cache(self) -> None:
         self._cache.clear()
+        self._rec_cache = {}
+        self._rec_doc_vecs = None
+        self._depth_cache = {}
 
-    # ──────────────────────────────────────────────────────────────────────
-    # 1. Assinatura estrutural (GNN 1-hop + 2-hop sem treino)
-    # ──────────────────────────────────────────────────────────────────────
 
     def _signature(self, discipline: str) -> Dict[str, Set[str]]:
-        """Agrega vizinhança em até 2 hops — equivalente a 2 camadas de MPNN."""
+        """Agrega vizinhança em até 2 hops - equivalente a 2 camadas de MPNN."""
         norm = self.kg._normalize_text(discipline)
         if norm in self._cache:
             return self._cache[norm]
@@ -1392,8 +1340,6 @@ class KGCompletion:
         docentes: Set[str]   = set(self.kg.get_docentes_of_discipline(discipline))
         dependents: Set[str] = set(self.kg.get_dependent_disciplines(discipline))
 
-        # 2-hop: irmãs (co-pré-requisitos — outras disciplinas necessárias para os
-        # mesmos dependentes) e pré-requisitos dos pré-requisitos
         co_prereqs: Set[str] = set()
         for dep in dependents:
             co_prereqs.update(self.kg.get_prerequisite_chain(dep, max_depth=1))
@@ -1416,9 +1362,6 @@ class KGCompletion:
         self._cache[norm] = sig
         return sig
 
-    # ──────────────────────────────────────────────────────────────────────
-    # 2. Score de similaridade estrutural (APIM simplificado)
-    # ──────────────────────────────────────────────────────────────────────
 
     def structural_similarity(self, disc_a: str, disc_b: str) -> float:
         """
@@ -1440,9 +1383,6 @@ class KGCompletion:
 
         return total / denom if denom > 0 else 0.0
 
-    # ──────────────────────────────────────────────────────────────────────
-    # 3. Busca de disciplinas similares (KGC aplicado)
-    # ──────────────────────────────────────────────────────────────────────
 
     def _name_similarity(self, query: str, candidate: str) -> float:
         """Token Jaccard similarity between normalized names (fallback for unknown disciplines)."""
@@ -1463,7 +1403,7 @@ class KGCompletion:
         """Retorna as n disciplinas estruturalmente mais similares a `discipline`.
 
         Se a disciplina não existe no KG, usa similaridade por nome (token Jaccard)
-        como fallback — útil para sugerir disciplinas reais para termos mal grafados
+        como fallback - útil para sugerir disciplinas reais para termos mal grafados
         ou que não constam na base.
         """
         norm_discipline = self.kg._normalize_text(discipline)
@@ -1475,10 +1415,8 @@ class KGCompletion:
             and self.kg._normalize_text(data.get("nome", "")) != norm_discipline
         ]
 
-        # Verificar se a disciplina está no KG (tem nó próprio)
         in_kg = self.kg._find_node(discipline, "disciplina") is not None
 
-        # B5: componente semântica via embeddings (quando disponíveis)
         semantic = self._semantic_scores(discipline, candidates)
 
         scores: List[Tuple[str, float]] = []
@@ -1489,7 +1427,6 @@ class KGCompletion:
                 else:
                     sim = self._name_similarity(discipline, other)
                 if other in semantic:
-                    # Estrutura diz "papel no currículo"; embedding diz "assunto".
                     sim = 0.6 * sim + 0.4 * semantic[other]
                 if sim >= threshold:
                     scores.append((other, sim))
@@ -1498,7 +1435,6 @@ class KGCompletion:
 
         return sorted(scores, key=lambda x: -x[1])[:n]
 
-    # ── B5: embeddings semânticos ─────────────────────────────────────────
 
     def set_embeddings(self, model) -> None:
         """Injeta o modelo de embeddings (chamado no sync, quando existe)."""
@@ -1531,9 +1467,173 @@ class KGCompletion:
         except Exception:
             return {}
 
-    # ──────────────────────────────────────────────────────────────────────
-    # 4. Inferência de arestas ausentes
-    # ──────────────────────────────────────────────────────────────────────
+
+    REC_BEFORE_THRESHOLD: float = 0.65
+
+    def _termo_ordem(self, node_data: dict) -> Optional[int]:
+        """Parse do atributo `termo` do nó ("4", "4º", None...) → int ou None."""
+        termo = node_data.get("termo")
+        if termo is None:
+            return None
+        m = re.search(r'\d+', str(termo))
+        return int(m.group()) if m else None
+
+    def _dag_depth(self, nome: str) -> int:
+        """Profundidade no DAG de pré-requisitos (maior cadeia de ancestrais)."""
+        cache = getattr(self, "_depth_cache", None)
+        if cache is None:
+            cache = self._depth_cache = {}
+        norm = self.kg._normalize_text(nome)
+        if norm in cache:
+            return cache[norm]
+        cache[norm] = 0
+        prereqs = self.kg.get_prerequisite_chain(nome, max_depth=1)
+        depth = 1 + max((self._dag_depth(p) for p in prereqs), default=-1)
+        cache[norm] = depth
+        return depth
+
+    def _ordem_pair(self, data_a: dict, data_b: dict) -> Tuple[float, float]:
+        """
+        ordem() dos dois lados na MESMA escala: termo da matriz quando ambos
+        os nós têm o atributo; senão profundidade no DAG de pré-requisitos.
+        """
+        ta, tb = self._termo_ordem(data_a), self._termo_ordem(data_b)
+        if ta is not None and tb is not None:
+            return float(ta), float(tb)
+        return (
+            float(self._dag_depth(data_a.get("nome", ""))),
+            float(self._dag_depth(data_b.get("nome", ""))),
+        )
+
+    def _doc_text(self, data: dict) -> str:
+        """Documento de embedding da disciplina: NOME + EMENTA (quando existe)."""
+        nome = data.get("nome", "")
+        ementa = (data.get("ementa") or "").strip()
+        return f"{nome}. {ementa}" if ementa else nome
+
+    def _doc_vectors(self) -> Dict[str, List[float]]:
+        """
+        Vetores de NOME+EMENTA de todas as disciplinas autoritativas do KG
+        (cache lazy: UMA chamada batch de embeddings na primeira consulta -
+        nunca o produto cartesiano de pares no build).
+        """
+        model = getattr(self, "_emb_model", None)
+        if model is None:
+            return {}
+        vecs = getattr(self, "_rec_doc_vecs", None)
+        if vecs is not None:
+            return vecs
+        try:
+            entries: List[Tuple[str, str]] = []
+            seen: Set[str] = set()
+            for _, data in self.kg.graph.nodes(data=True):
+                if data.get("tipo") != "disciplina":
+                    continue
+                nome = data.get("nome", "")
+                norm = self.kg._normalize_text(nome)
+                if not norm or norm in seen:
+                    continue
+                seen.add(norm)
+                entries.append((norm, self._doc_text(data)))
+            vectors = model.embed_documents([doc for _, doc in entries])
+            self._rec_doc_vecs = {
+                norm: vec for (norm, _), vec in zip(entries, vectors)
+            }
+        except Exception:
+            return {}
+        return self._rec_doc_vecs
+
+    def _descendants_norm(self, nome: str) -> Set[str]:
+        """Fecho transitivo dos dependentes (normalizado) - ancestral(nome, ·)."""
+        result: Set[str] = set()
+        queue = [nome]
+        while queue:
+            atual = queue.pop()
+            for dep in self.kg.get_dependent_disciplines(atual):
+                dn = self.kg._normalize_text(dep)
+                if dn not in result:
+                    result.add(dn)
+                    queue.append(dep)
+        return result
+
+    def get_recommended_before(
+        self,
+        discipline: str,
+        n: int = 3,
+        threshold: Optional[float] = None,
+    ) -> List[Tuple[str, float]]:
+        """
+        Disciplinas RECOMENDADAS ANTES de `discipline` (não pré-requisitos):
+        conteúdo (ementa) fortemente sobreposto, fora da cadeia do DAG, e que
+        vêm antes na ordem do currículo. Confiança da aresta = similaridade
+        (sempre < 1.0 → renderizada tracejada no grafo do chat).
+
+        Sem embeddings injetados (set_embeddings) retorna [] (graceful).
+        """
+        model = getattr(self, "_emb_model", None)
+        if model is None:
+            return []
+        th = self.REC_BEFORE_THRESHOLD if threshold is None else threshold
+
+        target_id = self.kg._find_node(discipline, "disciplina")
+        if not target_id:
+            return []
+        data_b = self.kg.graph.nodes[target_id]
+        nome_b = data_b.get("nome", discipline)
+        norm_b = self.kg._normalize_text(nome_b)
+
+        cache = getattr(self, "_rec_cache", None)
+        if cache is None:
+            cache = self._rec_cache = {}
+        cache_key = (norm_b, th)
+        if cache_key in cache:
+            return cache[cache_key][:n]
+
+        vecs = self._doc_vectors()
+        vec_b = vecs.get(norm_b)
+        if vec_b is None:
+            return []
+
+        import math
+
+        def _cos(a, b):
+            num = sum(x * y for x, y in zip(a, b))
+            na = math.sqrt(sum(x * x for x in a))
+            nb = math.sqrt(sum(y * y for y in b))
+            return num / (na * nb) if na and nb else 0.0
+
+        ancestors_b = {
+            self.kg._normalize_text(a) for a in self.kg.get_all_ancestors(nome_b)
+        }
+        descendants_b = self._descendants_norm(nome_b)
+
+        results: List[Tuple[str, float]] = []
+        vistos: Set[str] = set()
+        for _, data_a in self.kg.graph.nodes(data=True):
+            if data_a.get("tipo") != "disciplina":
+                continue
+            nome_a = data_a.get("nome", "")
+            norm_a = self.kg._normalize_text(nome_a)
+            if not norm_a or norm_a == norm_b or norm_a in vistos:
+                continue
+            vistos.add(norm_a)
+            if norm_a in ancestors_b or norm_a in descendants_b:
+                continue
+            vec_a = vecs.get(norm_a)
+            if vec_a is None:
+                continue
+            sim = _cos(vec_a, vec_b)
+            if sim < th:
+                continue
+            ordem_a, ordem_b = self._ordem_pair(data_a, data_b)
+            if ordem_a >= ordem_b:
+                continue
+            results.append((nome_a, round(min(sim, 0.99), 4)))
+
+        results.sort(key=lambda x: -x[1])
+        cache[cache_key] = results
+        return results[:n]
+
 
     def predict_missing_prerequisites(
         self,
@@ -1569,9 +1669,6 @@ class KGCompletion:
         ]
         return sorted(scored, key=lambda x: -x[1])[:top_k]
 
-    # ──────────────────────────────────────────────────────────────────────
-    # 5. Bloco de contexto enriquecido para os agentes
-    # ──────────────────────────────────────────────────────────────────────
 
     def get_enrichment_block(self, discipline: str, max_similar: int = 3) -> str:
         """
@@ -1582,9 +1679,8 @@ class KGCompletion:
         if not similar:
             return ""
 
-        lines = [f"[KGC — Relações Estruturais Inferidas para {discipline}]"]
+        lines = [f"[KGC - Relações Estruturais Inferidas para {discipline}]"]
 
-        # Disciplinas estruturalmente similares
         sim_parts = []
         for (disc, score) in similar:
             prereqs = self.kg.get_prerequisite_chain(disc, max_depth=1)
@@ -1598,7 +1694,6 @@ class KGCompletion:
             sim_parts.append(f"{disc} (sim={score:.0%}){tag_str}")
         lines.append("  • Similares: " + " | ".join(sim_parts))
 
-        # Pré-requisitos inferidos (ausentes no KG)
         inferred = self.predict_missing_prerequisites(discipline, threshold=0.5, top_k=3)
         if inferred:
             inf_strs = [f"{p} ({s:.0%} confiança)" for p, s in inferred]

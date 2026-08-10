@@ -3,7 +3,7 @@
 Carrega o KG real do FESP-AI e compara os outputs dos dois motores em:
   - fecho transitivo de pré-requisitos
   - co-pré-requisitos
-  - critical_disciplines (deve ser idêntico — herdado)
+  - critical_disciplines (deve ser idêntico - herdado)
 
 Reporta diferenças e tempos.
 """
@@ -72,7 +72,6 @@ ok = pr_engine._init_reasoner()
 t_pr = time.time() - t0
 print(f"PyReasonEngine: {t_pr:.2f}s (init reasoner ok={ok})")
 
-# Disciplinas com pelo menos um pré-requisito direto
 banner("Selecionando amostras")
 sample = []
 for node_id, data in kg.graph.nodes(data=True):

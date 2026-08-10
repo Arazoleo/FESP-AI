@@ -62,13 +62,11 @@ def _extract_json(text: str) -> Optional[Dict[str, Any]]:
     if not text:
         return None
     text = text.strip()
-    # Já é JSON
     if text.startswith("{") and text.endswith("}"):
         try:
             return json.loads(text)
         except Exception:
             pass
-    # Tentar capturar o maior bloco JSON
     start = text.find("{")
     end = text.rfind("}")
     if start != -1 and end != -1 and end > start:
@@ -84,7 +82,6 @@ def _looks_like_english(text: str) -> bool:
     t = (text or "").strip().lower()
     if not t:
         return False
-    # Heurística simples: presença de várias stopwords comuns do inglês
     hits = sum(
         1
         for w in (
@@ -149,4 +146,3 @@ def judge_answer(llm, question: str, answer: str, evidence: str) -> JudgeResult:
         unsupported_claims=unsupported,
         rationale=rationale,
     )
-

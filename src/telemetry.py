@@ -1,7 +1,7 @@
 """
 Telemetria leve do loop neurossimbólico (contadores em memória).
 
-Mede quantas vezes cada mecanismo de defesa/correção atua — números de
+Mede quantas vezes cada mecanismo de defesa/correção atua - números de
 ablação para o paper ("sem grounding: X% de erro; com: Y%") e diagnóstico
 em produção via GET /telemetry.
 """

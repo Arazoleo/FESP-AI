@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Avaliação neurossimbólica para o paper BRACIS — FESP-AI (UNIFESP ICT).
+Avaliação neurossimbólica do benchmark - FESP-AI (UNIFESP ICT).
 
 Estende o dataset de 57 perguntas com ~20 novas perguntas que testam
 especificamente as capacidades neurossimbólicas do sistema:
@@ -25,7 +25,7 @@ Comparação de motores de reasoning (paper):
   # PyReason (Datalog anotado, Aditya et al., AAAI 2023)
   FESPAI_REASONER=pyreason docker-compose up -d backend
   python eval_neurosymbolic.py --judge > results_pyreason.json
-  # Comparar — diferenças aparecem em prereq/trajectory/co_prereq
+  # Comparar - diferenças aparecem em prereq/trajectory/co_prereq
 """
 from __future__ import annotations
 
@@ -45,14 +45,7 @@ except ImportError:
     sys.exit(1)
 
 
-# ---------------------------------------------------------------------------
-# Dataset base (57 perguntas originais)
-# id, pergunta, agente_esperado, categoria, tipo_query, ground_truth_type
-# ground_truth_type: "symbolic_verifiable" | "semantic"
-# ---------------------------------------------------------------------------
-
 DATASET_BASE = [
-    # ementa — semantic (LLM precisa interpretar)
     (1,  "O que é Teoria dos Grafos?",                                        "disciplinas",  "ementa",             "factual_simples",   "semantic"),
     (2,  "O que é Matemática Discreta?",                                      "disciplinas",  "ementa",             "factual_simples",   "semantic"),
     (3,  "Descreva a disciplina Banco de Dados.",                             "disciplinas",  "ementa",             "factual_simples",   "semantic"),
@@ -63,7 +56,6 @@ DATASET_BASE = [
     (8,  "Me fale sobre a disciplina de Programação Orientada a Objetos.",    "disciplinas",  "ementa",             "factual_simples",   "semantic"),
     (9,  "Do que trata Lógica de Programação?",                               "disciplinas",  "ementa",             "factual_simples",   "semantic"),
     (10, "Me fale sobre Matemática Discreta.",                                "disciplinas",  "ementa",             "factual_simples",   "semantic"),
-    # pré-requisitos / dependentes — symbolic_verifiable (KG dá resposta exata)
     (11, "Quais são os pré-requisitos de Inteligência Artificial?",           "symbolic_kg",  "prereq",             "composicional",     "symbolic_verifiable"),
     (12, "Pré-requisitos de Banco de Dados?",                                 "symbolic_kg",  "prereq",             "composicional",     "symbolic_verifiable"),
     (13, "O que preciso fazer antes de Compiladores?",                        "symbolic_kg",  "prereq",             "composicional",     "symbolic_verifiable"),
@@ -72,14 +64,12 @@ DATASET_BASE = [
     (16, "O que posso cursar depois de Algoritmos?",                          "symbolic_kg",  "dependentes",        "composicional",     "symbolic_verifiable"),
     (17, "Cadeia de pré-requisitos de Estrutura de Dados?",                   "symbolic_kg",  "prereq",             "composicional",     "symbolic_verifiable"),
     (18, "Disciplinas necessárias para fazer Cálculo 2?",                     "symbolic_kg",  "prereq",             "composicional",     "symbolic_verifiable"),
-    # docentes: quem leciona — depende do KG + agente
     (19, "Quem leciona Redes de Computadores?",                               "symbolic_kg|docentes",     "quem_leciona",       "relacional",        "symbolic_verifiable"),
     (20, "Quem leciona Cálculo Numérico?",                                    "symbolic_kg|docentes",     "quem_leciona",       "relacional",        "symbolic_verifiable"),
     (21, "Quem dá aula de Sistemas Operacionais?",                            "symbolic_kg|docentes",     "quem_leciona",       "relacional",        "symbolic_verifiable"),
     (22, "Quais professores lecionam Banco de Dados?",                        "symbolic_kg|docentes",     "quem_leciona",       "relacional",        "symbolic_verifiable"),
     (23, "Docentes de Teoria dos Grafos?",                                    "symbolic_kg|docentes",     "quem_leciona",       "relacional",        "symbolic_verifiable"),
     (24, "Quem ensina Projeto e Análise de Algoritmos?",                      "symbolic_kg|docentes",     "quem_leciona",       "relacional",        "symbolic_verifiable"),
-    # docentes: info/contato/áreas — semantic
     (25, "Quem é o professor Sanderson?",                                     "docentes",     "info",               "factual_simples",   "semantic"),
     (26, "Qual o email do professor Álvaro?",                                 "docentes",     "email",              "factual_simples",   "semantic"),
     (27, "Sala do professor Didier Vega?",                                    "docentes",     "sala",               "factual_simples",   "semantic"),
@@ -90,13 +80,11 @@ DATASET_BASE = [
     (32, "Professores que trabalham com inteligência artificial?",            "symbolic_kg|docentes",     "por_area",           "relacional",        "semantic"),
     (33, "Quem pesquisa machine learning?",                                   "symbolic_kg|docentes",     "por_area",           "relacional",        "semantic"),
     (34, "Docentes especialistas em redes?",                                  "symbolic_kg|docentes",     "por_area",           "relacional",        "semantic"),
-    # docentes: disciplinas que X leciona
     (35, "Quais disciplinas o professor Sanderson leciona?",                  "docentes",     "disciplinas_docente","relacional",        "semantic"),
     (36, "Quais matérias o Sanderson dá?",                                    "docentes",     "disciplinas_docente","relacional",        "semantic"),
     (37, "O Sanderson dá aula de quê?",                                       "docentes",     "disciplinas_docente","relacional",        "semantic"),
     (38, "Disciplinas que o Rodrigo Colnago leciona?",                        "docentes",     "disciplinas_docente","relacional",        "semantic"),
     (39, "O professor Fabrício Olivetti leciona Banco de Dados?",             "docentes",     "sim_nao",            "relacional",        "semantic"),
-    # cursos — alguns symbolic_verifiable (estrutura curricular via KG)
     (40, "Quais disciplinas do termo 3 de BCC?",                              "symbolic_kg",  "termo",              "composicional",     "symbolic_verifiable"),
     (41, "Disciplinas do termo 5 de Ciência da Computação?",                  "symbolic_kg",  "termo",              "composicional",     "symbolic_verifiable"),
     (42, "Quais disciplinas tem no termo 1 de BCC?",                          "symbolic_kg",  "termo",              "composicional",     "symbolic_verifiable"),
@@ -110,7 +98,6 @@ DATASET_BASE = [
     (50, "Coordenador do curso de Ciência da Computação?",                    "symbolic_kg|cursos",       "coordenador",        "relacional",        "semantic"),
     (51, "Eletivas de Engenharia de Computação?",                             "symbolic_kg|cursos",       "eletivas",           "composicional",     "semantic"),
     (52, "Quais são as eletivas de BCC?",                                     "symbolic_kg|cursos",       "eletivas",           "composicional",     "semantic"),
-    # regimentos — semantic
     (53, "Quais artigos falam sobre matrícula?",                              "regimentos",   "artigos",            "factual_simples",   "semantic"),
     (54, "O que diz o regimento sobre estágio?",                              "regimentos",   "artigos",            "factual_simples",   "semantic"),
     (55, "Perguntas frequentes sobre TCC?",                                   "regimentos",   "faq",                "factual_simples",   "semantic"),
@@ -118,15 +105,8 @@ DATASET_BASE = [
     (57, "O que o regimento fala sobre diploma?",                             "regimentos",   "artigos",            "factual_simples",   "semantic"),
 ]
 
-# ---------------------------------------------------------------------------
-# Dataset neurossimbólico extendido (~20 novas perguntas)
-# Todas devem acionar symbolic_kg.
-# id, pergunta, agente_esperado, categoria, tipo_query, ground_truth_type,
-# neurosym_feature  (campo adicional para Table 3)
-# ---------------------------------------------------------------------------
 
 DATASET_NEUROSYM = [
-    # --- trajectory_planning (BFS no DAG de pré-requisitos) ---
     (58, "Como chego em Compiladores?",
          "symbolic_kg", "planejamento", "trajectory_planning", "symbolic_verifiable",
          "trajectory_planning"),
@@ -142,7 +122,6 @@ DATASET_NEUROSYM = [
     (62, "Sequência de disciplinas para Projeto e Análise de Algoritmos",
          "symbolic_kg", "planejamento", "trajectory_planning", "symbolic_verifiable",
          "trajectory_planning"),
-    # --- critical_disciplines (regra de inferência ∀x: |dependents(x)| ≥ θ) ---
     (63, "Quais disciplinas são críticas no currículo?",
          "symbolic_kg", "analise_curriculo", "critical_disciplines", "symbolic_verifiable",
          "critical_disciplines"),
@@ -158,7 +137,6 @@ DATASET_NEUROSYM = [
     (67, "Disciplinas críticas do currículo de BCC",
          "symbolic_kg", "analise_curriculo", "critical_disciplines", "symbolic_verifiable",
          "critical_disciplines"),
-    # --- co_prerequisite (disciplinas que compartilham pré-requisitos) ---
     (68, "Quais disciplinas têm os mesmos pré-requisitos de Cálculo 2?",
          "symbolic_kg", "co_prereq", "co_prerequisite", "symbolic_verifiable",
          "co_prerequisite"),
@@ -174,7 +152,6 @@ DATASET_NEUROSYM = [
     (72, "Quais disciplinas têm pré-requisitos em comum com Lógica de Programação?",
          "symbolic_kg", "co_prereq", "co_prerequisite", "symbolic_verifiable",
          "co_prerequisite"),
-    # --- prerequisite_chain (cadeia de dependência direta via KG) ---
     (73, "Quais disciplinas dependem de Cálculo 1?",
          "symbolic_kg", "prereq", "prerequisite_chain", "symbolic_verifiable",
          "prerequisite_chain"),
@@ -187,7 +164,6 @@ DATASET_NEUROSYM = [
     (76, "Disciplinas do 1o termo de BCC?",
          "symbolic_kg", "termo", "prerequisite_chain", "symbolic_verifiable",
          "prerequisite_chain"),
-    # --- discipline_docentes (quem leciona via KG) ---
     (77, "Quais são os pré-requisitos diretos de Estrutura de Dados?",
          "symbolic_kg", "prereq", "prerequisite_chain", "symbolic_verifiable",
          "prerequisite_chain"),
@@ -208,11 +184,6 @@ DATASET_NEUROSYM = [
          "discipline_docentes"),
 ]
 
-# ---------------------------------------------------------------------------
-# Tuplas combinadas (base 57 + neurosym 20)
-# Para iteração uniforme, o campo neurosym_feature é None para o dataset base
-# e acrescido nas novas perguntas.
-# ---------------------------------------------------------------------------
 
 DATASET_FULL = [
     (*row, None) for row in DATASET_BASE
@@ -220,11 +191,6 @@ DATASET_FULL = [
     row for row in DATASET_NEUROSYM
 ]
 
-
-# ---------------------------------------------------------------------------
-# Verificação simbólica (sem LLM judge)
-# Retorna (verified: bool, reason: str)
-# ---------------------------------------------------------------------------
 
 def symbolic_verify(response, tipo_query, neurosym_feature):
     """
@@ -239,18 +205,15 @@ def symbolic_verify(response, tipo_query, neurosym_feature):
     feature = neurosym_feature or tipo_query
 
     if feature == "trajectory_planning":
-        # deve mencionar caminho, pré-requisito ou nomes de disciplinas
         keywords = ["caminho", "pré-requisito", "prerequisito", "sequência",
                     "sequencia", "→", "->", "antes", "ordem"]
         if any(k.lower() in resp.lower() for k in keywords):
             return True, "trajectory_keywords_found"
-        # também válido se lista disciplinas em ordem
         if re.search(r"\d\.", resp) or "1." in resp:
             return True, "ordered_list_found"
         return False, "no_trajectory_indicators"
 
     if feature == "critical_disciplines":
-        # deve conter tabela markdown ou lista de disciplinas com contagem
         if "|" in resp and "---" in resp:
             return True, "markdown_table_found"
         if re.search(r"(crítica|importante|dependente)", resp, re.I):
@@ -259,7 +222,6 @@ def symbolic_verify(response, tipo_query, neurosym_feature):
         return False, "no_critical_table_or_list"
 
     if feature == "co_prerequisite":
-        # deve ser uma lista de disciplinas
         if re.search(r"[-*•]\s+\w", resp):
             return True, "list_found"
         if re.search(r"\d\.\s+\w", resp):
@@ -290,16 +252,11 @@ def symbolic_verify(response, tipo_query, neurosym_feature):
             return True, "table_found"
         return False, "no_list_or_table"
 
-    # fallback: não vazia e não é mensagem de erro pura
     error_indicators = ["não encontr", "error", "falha", "timeout"]
     if any(e in resp.lower() for e in error_indicators):
         return False, "error_in_response"
     return True, "non_empty_response"
 
-
-# ---------------------------------------------------------------------------
-# Verificação de roteamento
-# ---------------------------------------------------------------------------
 
 def check_routing(agent_got: str, agent_expected: str) -> bool:
     """
@@ -312,10 +269,6 @@ def check_routing(agent_got: str, agent_expected: str) -> bool:
     got = agent_got.strip().lower()
     return got in {a.strip().lower() for a in agent_expected.split("|")}
 
-
-# ---------------------------------------------------------------------------
-# Chamadas à API
-# ---------------------------------------------------------------------------
 
 def call_chat(base_url: str, question: str, timeout: int = 120) -> dict:
     try:
@@ -362,10 +315,6 @@ def call_llm_judge(base_url: str, question: str, answer: str, evidence: str, tim
         return {"error": str(e)}
 
 
-# ---------------------------------------------------------------------------
-# Tabelas de resultados
-# ---------------------------------------------------------------------------
-
 def _safe_mean(values):
     vals = [v for v in values if v is not None]
     return stat_mean(vals) if vals else None
@@ -394,7 +343,6 @@ def print_table1(rows: list[dict]) -> None:
         p = r["agente_obtido"] if r["agente_obtido"] not in ("ERROR", "") else "ERROR"
         paths.setdefault(p, []).append(r)
 
-    # expected vs obtained routing accuracy per path
     total = len(rows)
     header = f"{'Path':<22} | {'Queries':>7} | {'% Total':>8} | {'Avg Lat':>9} | {'Routing Acc':>12}"
     sep    = "-" * len(header)
@@ -421,7 +369,7 @@ def print_table2(rows: list[dict]) -> None:
     """TABLE 2: Quality Metrics by Path (LLM Judge, 1-5)"""
     judge_rows = [r for r in rows if r.get("judge_groundedness") not in (None, "", "")]
     if not judge_rows:
-        print("\n[TABLE 2 skipped — no LLM judge scores. Re-run with --judge]")
+        print("\n[TABLE 2 skipped - no LLM judge scores. Re-run with --judge]")
         return
 
     print("\n" + "=" * 82)
@@ -473,15 +421,14 @@ def print_table2(rows: list[dict]) -> None:
 
 
 def print_table3(rows: list[dict]) -> None:
-    """TABLE 3: Neurosymbolic Features — Routing & Verification"""
-    # Only neurosym questions (those with neurosym_feature set)
+    """TABLE 3: Neurosymbolic Features - Routing & Verification"""
     ns_rows = [r for r in rows if r.get("neurosym_feature")]
     if not ns_rows:
-        print("\n[TABLE 3 skipped — no neurosymbolic questions in run]")
+        print("\n[TABLE 3 skipped - no neurosymbolic questions in run]")
         return
 
     print("\n" + "=" * 78)
-    print("  TABLE 3: Neurosymbolic Features — Routing & Verification")
+    print("  TABLE 3: Neurosymbolic Features - Routing & Verification")
     print("=" * 78)
 
     features_order = [
@@ -608,10 +555,6 @@ def print_overall_summary(rows: list[dict]) -> None:
     print("=" * 60)
 
 
-# ---------------------------------------------------------------------------
-# Save results
-# ---------------------------------------------------------------------------
-
 def save_results(rows, prefix, base_url):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path  = f"{prefix}_{ts}.csv"
@@ -639,10 +582,6 @@ def save_results(rows, prefix, base_url):
     return csv_path, json_path
 
 
-# ---------------------------------------------------------------------------
-# Main evaluation loop
-# ---------------------------------------------------------------------------
-
 def run_evaluation(
     base_url: str,
     cases: list,
@@ -653,7 +592,6 @@ def run_evaluation(
     rows = []
 
     for idx, entry in enumerate(cases, 1):
-        # Unpack — base has 6 fields, neurosym has 7
         if len(entry) == 7:
             qid, question, agent_exp, categoria, tipo_query, ground_truth_type, neurosym_feature = entry
         else:
@@ -680,7 +618,6 @@ def run_evaluation(
 
         routing_ok = check_routing(agent_got, agent_exp)
 
-        # Symbolic verification for symbolic_kg responses
         sym_verified = None
         sym_reason   = ""
         if agent_got == "symbolic_kg" or ground_truth_type == "symbolic_verifiable":
@@ -688,7 +625,6 @@ def run_evaluation(
             sym_verified = 1 if verified else 0
             sym_reason   = reason
 
-        # LLM judge (optional, only if --judge and not symbolic)
         judge = {}
         if use_judge and not error and ground_truth_type == "semantic" and response:
             judge = call_llm_judge(base_url, question, response, context)
@@ -724,13 +660,9 @@ def run_evaluation(
     return rows
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
 def main():
     p = argparse.ArgumentParser(
-        description="Avaliação neurossimbólica BRACIS — FESP-AI",
+        description="Avaliação neurossimbólica - FESP-AI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
@@ -757,20 +689,18 @@ def main():
     n = len(cases)
     judge_str = " + LLM judge" if args.judge else ""
     print(f"\n{'='*65}")
-    print(f"  Avaliação BRACIS Neurossimbólica — dataset {label}")
+    print(f"  Avaliação Neurossimbólica - dataset {label}")
     print(f"  {n} perguntas via {base_url}{judge_str}")
     print(f"{'='*65}\n")
 
     rows = run_evaluation(base_url, cases, use_judge=args.judge)
 
-    # Print all tables
     print_table1(rows)
     print_table2(rows)
     print_table3(rows)
     print_table4(rows)
     print_overall_summary(rows)
 
-    # Save
     csv_path, json_path = save_results(rows, args.output, base_url)
     print(f"\n  CSV  salvo em : {csv_path}")
     print(f"  JSON salvo em : {json_path}\n")

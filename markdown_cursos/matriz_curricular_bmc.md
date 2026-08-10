@@ -70,7 +70,7 @@ O Bacharelado em Matemática Computacional (BMC) da UNIFESP é um curso de 8 ter
 | Cálculo Numérico | 4 | 72h |
 | Teoria dos Números e Criptografia | 4 | 72h |
 | Funções Analíticas | 4 | 72h |
-| Projeto de Análise de Algoritmos | 4 | 72h |
+| Projeto e Análise de Algoritmos | 4 | 72h |
 | Probabilidade | 4 | 72h |
 
 **Total Termo 4:** 20 créditos, 360 horas
@@ -117,7 +117,7 @@ O Bacharelado em Matemática Computacional (BMC) da UNIFESP é um curso de 8 ter
 |------------|----------|---------------|
 | Equações Diferenciais Parciais | 4 | 72h (8h extensão) |
 | Espaços Métricos | 4 | 72h (8h extensão) |
-| Otimização Não-Linear | 4 | 72h |
+| Otimização Não Linear | 4 | 72h |
 | Trabalho de Graduação I | 4 | 72h |
 | Eletiva Específica | 4 | 72h (8h extensão) |
 

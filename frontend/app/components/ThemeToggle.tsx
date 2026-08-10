@@ -50,7 +50,6 @@ export default function ThemeToggle() {
       `}
       aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
     >
-      {/* Background Glow */}
       <div className={`
         absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
         ${theme === 'light' 
@@ -59,7 +58,6 @@ export default function ThemeToggle() {
         }
       `} />
       
-      {/* Stars decoration for dark mode */}
       <div className={`
         absolute inset-0 transition-opacity duration-500
         ${theme === 'dark' ? 'opacity-100' : 'opacity-0'}
@@ -69,9 +67,7 @@ export default function ThemeToggle() {
         <div className="absolute bottom-3 left-4 w-0.5 h-0.5 bg-white/60 rounded-full animate-pulse delay-500" />
       </div>
 
-      {/* Icons Container */}
       <div className="relative w-full h-full flex items-center justify-center">
-        {/* Sun Icon */}
         <Sun
           className={`
             absolute w-6 h-6 transition-all duration-500 ease-out
@@ -82,7 +78,6 @@ export default function ThemeToggle() {
           `}
         />
         
-        {/* Moon Icon */}
         <Moon
           className={`
             absolute w-6 h-6 transition-all duration-500 ease-out
@@ -94,7 +89,6 @@ export default function ThemeToggle() {
         />
       </div>
 
-      {/* Ripple Effect on Click */}
       <span className={`
         absolute inset-0 rounded-2xl
         ${theme === 'light' ? 'bg-amber-400' : 'bg-indigo-400'}
