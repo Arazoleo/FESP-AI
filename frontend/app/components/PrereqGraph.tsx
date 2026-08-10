@@ -26,6 +26,7 @@ export interface PrereqGraphData {
 interface Props {
   data: PrereqGraphData
   onAsk?: (question: string) => void
+  onSelect?: (nome: string) => void
 }
 
 const NODE_H = 34
@@ -143,7 +144,7 @@ function computeLayout(data: PrereqGraphData) {
   return { laid, edges, colHeaders, width, height }
 }
 
-export default function PrereqGraph({ data, onAsk }: Props) {
+export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
   const layout = useMemo(() => computeLayout(data), [data])
 
   if (!data?.nodes?.length) return null
@@ -152,6 +153,10 @@ export default function PrereqGraph({ data, onAsk }: Props) {
   const hasInferidas = edges.some((e) => e.inferida)
 
   const ask = (nome: string) => {
+    if (onSelect) {
+      onSelect(nome)
+      return
+    }
     onAsk?.(`Quais os pré-requisitos de ${nome}?`)
   }
 
@@ -162,7 +167,7 @@ export default function PrereqGraph({ data, onAsk }: Props) {
           Grafo de pré-requisitos
         </span>
         <span className="hidden text-[11px] text-paper-mute sm:block">
-          Clique numa disciplina para explorar
+          Clique numa disciplina para ver os detalhes
         </span>
       </div>
 
@@ -284,7 +289,7 @@ export default function PrereqGraph({ data, onAsk }: Props) {
                 style={{ animationDelay: `${n.layer * 110 + i * 20}ms` }}
                 role="button"
                 tabIndex={0}
-                aria-label={`Quais os pré-requisitos de ${n.nome}?`}
+                aria-label={`Ver detalhes de ${n.nome}`}
                 onClick={() => ask(n.nome)}
                 onKeyDown={(ev) => {
                   if (ev.key === 'Enter' || ev.key === ' ') {

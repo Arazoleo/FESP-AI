@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import PrereqGraph, { PrereqGraphData } from '../components/PrereqGraph'
+import DisciplineDrawer from '../components/DisciplineDrawer'
 
 interface AgentInfo {
   label: string
@@ -263,11 +264,13 @@ function AssistantMessage({
   isAnimating,
   onAnimationDone,
   onAsk,
+  onSelectDiscipline,
 }: {
   message: Message
   isAnimating: boolean
   onAnimationDone: () => void
   onAsk?: (question: string) => void
+  onSelectDiscipline?: (nome: string) => void
 }) {
   const { displayed, isDone } = useTypewriter(
     message.content,
@@ -284,7 +287,13 @@ function AssistantMessage({
         <AgentLabel agent={message.active_agent} agentInfo={message.agent_info} />
       )}
 
-      {hasGraph && <PrereqGraph data={message.graph_data!} onAsk={onAsk} />}
+      {hasGraph && (
+        <PrereqGraph
+          data={message.graph_data!}
+          onAsk={onAsk}
+          onSelect={onSelectDiscipline}
+        />
+      )}
 
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
         {textToRender}
@@ -308,6 +317,7 @@ export default function ChatPage() {
   const [activeAgent, setActiveAgent] = useState<{ agent: string; info?: AgentInfo } | null>(null)
   const [animatingIndex, setAnimatingIndex] = useState(-1)
   const [plannerUrl, setPlannerUrl] = useState<string | null>(null)
+  const [selectedDiscipline, setSelectedDiscipline] = useState<string | null>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -418,6 +428,11 @@ export default function ChatPage() {
     if (isLoading) return
     setInput(question)
     sendMessage(question)
+  }
+
+  const handleDrawerAsk = (question: string) => {
+    setSelectedDiscipline(null)
+    handleGraphAsk(question)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -581,6 +596,7 @@ export default function ChatPage() {
                         isAnimating={idx === animatingIndex}
                         onAnimationDone={handleAnimationDone}
                         onAsk={handleGraphAsk}
+                        onSelectDiscipline={setSelectedDiscipline}
                       />
                     </div>
                   )}
@@ -713,6 +729,19 @@ export default function ChatPage() {
               />
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedDiscipline && (
+          <DisciplineDrawer
+            key={selectedDiscipline}
+            nome={selectedDiscipline}
+            apiUrl={API_URL}
+            onClose={() => setSelectedDiscipline(null)}
+            onNavigate={setSelectedDiscipline}
+            onAsk={handleDrawerAsk}
+          />
         )}
       </AnimatePresence>
     </div>

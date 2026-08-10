@@ -649,6 +649,64 @@ async def graph_stats():
     return stats
 
 
+@app.get("/discipline-details")
+async def discipline_details(nome: str):
+    """Detalhes estruturados de uma disciplina direto do Knowledge Graph."""
+    if rag is None or not rag.knowledge_graph:
+        raise HTTPException(status_code=503, detail="Knowledge Graph não disponível")
+    kg = rag.knowledge_graph
+    node_id = kg._find_node(nome, "disciplina")
+    if not node_id:
+        raise HTTPException(status_code=404, detail=f"Disciplina não encontrada: {nome}")
+
+    g = kg.graph
+    data = g.nodes[node_id]
+    nome_oficial = data.get("nome") or nome
+
+    docentes, cursos, eletiva_em = set(), set(), set()
+    prereqs, matrizes = {}, []
+    for u, _, d in g.in_edges(node_id, data=True):
+        rel = d.get("relacao")
+        vizinho = g.nodes[u].get("nome") or u
+        if rel == "LECIONA":
+            docentes.add(vizinho)
+        elif rel == "PREREQUISITO_DE":
+            conf = float(d.get("confidence", 1.0))
+            prereqs[vizinho] = max(conf, prereqs.get(vizinho, 0.0))
+        elif rel == "OFERECE":
+            cursos.add(vizinho)
+        elif rel == "INCLUI":
+            matrizes.append({
+                "matriz": vizinho,
+                "termo": d.get("termo"),
+                "creditos": d.get("creditos"),
+            })
+        elif rel == "ELETIVA_DE":
+            eletiva_em.add(vizinho)
+
+    desbloqueia = sorted({
+        g.nodes[v].get("nome") or v
+        for _, v, d in g.out_edges(node_id, data=True)
+        if d.get("relacao") == "PREREQUISITO_DE"
+    })
+
+    return {
+        "nome": nome_oficial,
+        "codigo": data.get("codigo") or None,
+        "sigla": data.get("sigla") or None,
+        "termo": data.get("termo") or None,
+        "ementa": data.get("ementa") or None,
+        "docentes": sorted(docentes),
+        "prerequisitos": [
+            {"nome": n, "confidence": c} for n, c in sorted(prereqs.items())
+        ],
+        "desbloqueia": desbloqueia,
+        "cursos": sorted(cursos),
+        "matrizes": matrizes,
+        "eletiva_em": sorted(eletiva_em),
+    }
+
+
 @app.get("/graph")
 async def get_graph():
     """Retorna o Knowledge Graph completo para visualização (nodes + edges)."""
