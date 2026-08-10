@@ -76,6 +76,8 @@ cp .env.example .env        # escolha MODEL_NAME / EMBEDDING_MODEL
 docker compose up -d        # backend :8000 + frontend :3000
 ```
 
+Para publicar a demo gratuita (backend no Hugging Face Spaces + frontend no Vercel), veja [`deploy/DEPLOY.md`](deploy/DEPLOY.md).
+
 Requer Ollama acessível (local ou cloud: veja `OLLAMA_CLOUD.md`) com os modelos baixados (`ollama pull gemma4:31b-cloud` e `ollama pull embeddinggemma`). O modelo original do sistema - usado em produção e reportado no artigo - é o `gemma4:12b`; o default `gemma4:31b-cloud` atende os testes atuais via Ollama Cloud (ajuste `MODEL_NAME` no `.env` para rodar o original localmente).
 
 **Endpoints principais** (`http://localhost:8000`, docs interativas em `/docs`):

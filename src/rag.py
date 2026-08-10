@@ -94,36 +94,32 @@ class RAGUnifesp:
         keep_alive_seconds = 3600
         llm_timeout = 60
         
+        llm_base_url = (os.getenv("OLLAMA_LLM_BASE_URL") or "").strip() or ollama_base_url
+        llm_kwargs = dict(
+            model=self.config.MODEL_NAME,
+            keep_alive=keep_alive_seconds,
+            num_predict=2048,
+            temperature=0.1,
+            top_k=10,
+            repeat_penalty=1.1,
+            timeout=llm_timeout,
+        )
+        if llm_base_url and llm_base_url != "http://localhost:11434":
+            llm_kwargs["base_url"] = llm_base_url
+        api_key = (os.getenv("OLLAMA_API_KEY") or "").strip()
+        if api_key:
+            llm_kwargs["client_kwargs"] = {
+                "headers": {"Authorization": f"Bearer {api_key}"}
+            }
+        self.llm = OllamaLLM(**llm_kwargs)
+
+        embed_kwargs = dict(
+            model=self.config.EMBEDDING_MODEL,
+            keep_alive=keep_alive_seconds,
+        )
         if ollama_base_url and ollama_base_url != "http://localhost:11434":
-            self.llm = OllamaLLM(
-                model=self.config.MODEL_NAME, 
-                base_url=ollama_base_url,
-                keep_alive=keep_alive_seconds,
-                num_predict=2048,
-                temperature=0.1,
-                top_k=10,
-                repeat_penalty=1.1,
-                timeout=llm_timeout
-            )
-            self.embeddings = BatchedEmbeddings(OllamaEmbeddings(
-                model=self.config.EMBEDDING_MODEL,
-                base_url=ollama_base_url,
-                keep_alive=keep_alive_seconds
-            ))
-        else:
-            self.llm = OllamaLLM(
-                model=self.config.MODEL_NAME, 
-                keep_alive=keep_alive_seconds,
-                num_predict=2048,
-                temperature=0.1,
-                top_k=10,
-                repeat_penalty=1.1,
-                timeout=llm_timeout
-            )
-            self.embeddings = BatchedEmbeddings(OllamaEmbeddings(
-                model=self.config.EMBEDDING_MODEL,
-                keep_alive=keep_alive_seconds
-            ))
+            embed_kwargs["base_url"] = ollama_base_url
+        self.embeddings = BatchedEmbeddings(OllamaEmbeddings(**embed_kwargs))
 
         self.aux_llm = get_aux_llm() or self.llm
 
