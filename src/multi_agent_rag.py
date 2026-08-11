@@ -134,7 +134,8 @@ class MultiAgentRAG:
         return result["response"]
 
     def query_with_metadata(
-        self, question: str, history: str = "", original_question: str = None
+        self, question: str, history: str = "", original_question: str = None,
+        historico: Optional[Dict] = None,
     ) -> Dict:
         """
         Processa a pergunta e retorna resposta + metadados do agente ativo.
@@ -156,6 +157,7 @@ class MultiAgentRAG:
             "question": question,
             "enhanced_question": question,
             "history": history,
+            "historico": historico,
             "active_agent": "fallback",
             "intent": "unknown",
             "term": "",

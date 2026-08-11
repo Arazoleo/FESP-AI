@@ -53,6 +53,7 @@ def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
     norm = kg._normalize_text
 
     cursadas_norm = set()
+    eletivas_cursadas = []
     desconhecidas = []
     for c in cursadas:
         if not c or not c.strip():
@@ -63,10 +64,13 @@ def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
             continue
         node = kg._find_node(c, "disciplina")
         if node:
-            k2 = norm(kg.graph.nodes[node].get("nome", c))
+            nome_kg = kg.graph.nodes[node].get("nome", c)
+            k2 = norm(nome_kg)
             if k2 in info:
                 cursadas_norm.add(k2)
-                continue
+            else:
+                eletivas_cursadas.append(nome_kg)
+            continue
         desconhecidas.append(c)
 
     pendentes = {k: v for k, v in info.items() if k not in cursadas_norm}
@@ -120,6 +124,7 @@ def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
         "curso": curso,
         "total_matriz": len(info),
         "cursadas": sorted(info[k]["nome"] for k in cursadas_norm),
+        "eletivas_cursadas": sorted(set(eletivas_cursadas)),
         "desconhecidas": desconhecidas,
         "pendentes": len(pendentes),
         "disponiveis": disponiveis,
@@ -157,10 +162,16 @@ def formatar_progresso(r: Dict) -> str:
             )
         if len(r["bloqueadas"]) > 10:
             linhas.append(f"- ... e mais {len(r['bloqueadas']) - 10}")
+    if r.get("eletivas_cursadas"):
+        linhas.append("")
+        linhas.append(
+            f"Fora das obrigatórias, você já cursou **{len(r['eletivas_cursadas'])} "
+            f"eletivas/outras UCs** reconhecidas no sistema."
+        )
     if r["desconhecidas"]:
         linhas.append("")
         linhas.append(
-            "Não reconheci na matriz (confira o nome): "
+            "Não reconheci no sistema (confira o nome): "
             + ", ".join(r["desconhecidas"])
         )
     linhas.append("")

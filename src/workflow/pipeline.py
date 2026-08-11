@@ -215,6 +215,12 @@ def build_pipeline(rag_instance):
             responder_lista,
             responder_check,
         )
+        from ..historico import (
+            is_cr_request,
+            responder_cr,
+            aprovadas as historico_aprovadas,
+            curso_sigla as historico_curso_sigla,
+        )
 
         def _resposta_simbolica(texto_resposta, intent_label, fontes, **extras):
             telemetry_incr(f"agentic_{intent_label}")
@@ -231,14 +237,27 @@ def build_pipeline(rag_instance):
             }
 
         def _agentico(label: str, disciplina_hint: str = None):
+            hist = state.get("historico")
+
+            if label == "cr_consulta":
+                return _resposta_simbolica(
+                    responder_cr(hist, question, rag_instance.knowledge_graph),
+                    "cr_consulta",
+                    ["Histórico Acadêmico (sessão)"] if hist else [],
+                )
+
             if label == "progresso":
                 cursadas = extrair_cursadas(question)
+                if not cursadas and hist:
+                    cursadas = historico_aprovadas(hist)
                 curso = None
                 if rag_instance.graph_rag:
                     try:
                         curso = rag_instance.graph_rag._find_curso_in_text(question)
                     except Exception:
                         curso = None
+                if not curso and hist:
+                    curso = historico_curso_sigla(hist.get("curso", "")) or None
                 itens_ac = parsear_atividades(question)
                 bloco_ac = ""
                 extras_ac = {}
@@ -301,6 +320,8 @@ def build_pipeline(rag_instance):
             if label == "matricula_check":
                 desejadas = extrair_desejadas(question)
                 cursadas = extrair_cursadas(question)
+                if not cursadas and hist:
+                    cursadas = historico_aprovadas(hist)
                 if desejadas and cursadas:
                     resultado = verificar_matricula(
                         rag_instance.knowledge_graph, desejadas, cursadas
@@ -365,7 +386,9 @@ def build_pipeline(rag_instance):
             return None
 
         fast_label = None
-        if is_progresso_request(question):
+        if is_cr_request(question):
+            fast_label = "cr_consulta"
+        elif is_progresso_request(question):
             fast_label = "progresso"
         elif is_audit_request(question):
             fast_label = "ac_auditoria"

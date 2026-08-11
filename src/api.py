@@ -20,7 +20,7 @@ except ImportError:
 from pathlib import Path
 import json
 import asyncio
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
@@ -83,6 +83,8 @@ MAX_CONVERSATIONS = 1000
 CONVERSATION_TTL = timedelta(hours=24)
 
 conversations: OrderedDict[str, List[dict]] = OrderedDict()
+historicos: OrderedDict[str, Dict] = OrderedDict()
+_MAX_HISTORICOS = 200
 conversation_timestamps: Dict[str, datetime] = {}
 
 
@@ -371,6 +373,7 @@ async def chat(request: ChatRequest):
             enhanced_question,
             history=history_text,
             original_question=request.message,
+            historico=historicos.get(conversation_id),
         )
         response_text = result["response"]
         active_agent = result.get("active_agent", "fallback")
@@ -656,6 +659,61 @@ async def graph_stats():
         stats['extracted_relations'] = extraction_stats
     
     return stats
+
+
+@app.post("/historico")
+async def carregar_historico(
+    file: UploadFile = File(...),
+    conversation_id: str = Form(...),
+):
+    """
+    Recebe o Histórico Acadêmico (PDF) e o anexa à SESSÃO da conversa.
+    Os dados ficam em memória por conversation_id e são descartados com ela.
+    """
+    from .historico import extrair_texto_pdf, parsear_historico, resumo_historico
+
+    conteudo = await file.read()
+    if not conteudo:
+        raise HTTPException(status_code=400, detail="Arquivo vazio")
+    try:
+        if file.filename and file.filename.lower().endswith(".pdf"):
+            texto = extrair_texto_pdf(conteudo)
+        else:
+            texto = conteudo.decode("utf-8", errors="ignore")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Não consegui ler o PDF: {e}")
+
+    dados = parsear_historico(texto)
+    if not dados:
+        raise HTTPException(
+            status_code=422,
+            detail="Não reconheci o formato do histórico. Envie o PDF do "
+                   "Histórico Acadêmico oficial da UNIFESP.",
+        )
+
+    historicos[conversation_id] = dados
+    historicos.move_to_end(conversation_id)
+    while len(historicos) > _MAX_HISTORICOS:
+        historicos.popitem(last=False)
+
+    resumo = resumo_historico(dados)
+    if conversation_id in conversations:
+        conversations[conversation_id].append({
+            "role": "assistant",
+            "content": resumo,
+            "timestamp": datetime.now().isoformat(),
+        })
+    return {
+        "conversation_id": conversation_id,
+        "resumo": resumo,
+        "disciplinas": len(dados.get("disciplinas", [])),
+        "cr": dados.get("cr_geral") or dados.get("cr_calculado"),
+        "suggestions": [
+            "Qual meu CR?",
+            "Quanto falta para me formar?",
+            "Quantas interdisciplinares eu já fiz?",
+        ],
+    }
 
 
 @app.get("/discipline-details")

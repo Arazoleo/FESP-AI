@@ -22,3 +22,4 @@ class AgentState(TypedDict, total=False):
     graph_data: Optional[Dict[str, Any]]
     list_data: Optional[Dict[str, Any]]
     ac_data: Optional[Dict[str, Any]]
+    historico: Optional[Dict[str, Any]]

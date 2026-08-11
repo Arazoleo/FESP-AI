@@ -10,6 +10,7 @@ import {
   Check,
   Route,
   X,
+  FileUp,
 } from 'lucide-react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -351,6 +352,9 @@ export default function ChatPage() {
   const [selectedDiscipline, setSelectedDiscipline] = useState<string | null>(null)
   const [selectedDocente, setSelectedDocente] = useState<string | null>(null)
 
+  const [historicoCarregado, setHistoricoCarregado] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -465,6 +469,34 @@ export default function ChatPage() {
     sendMessage(question)
   }
 
+  const handleHistoricoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file || !conversationId) return
+    const form = new FormData()
+    form.append('file', file)
+    form.append('conversation_id', conversationId)
+    setIsLoading(true)
+    setError(null)
+    try {
+      const resp = await axios.post(`${API_URL}/historico`, form)
+      setHistoricoCarregado(true)
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: resp.data.resumo,
+          active_agent: 'symbolic_kg',
+          suggestions: resp.data.suggestions,
+        },
+      ])
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Não consegui ler o histórico.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleDrawerAsk = (question: string) => {
     setSelectedDiscipline(null)
     setSelectedDocente(null)
@@ -571,6 +603,29 @@ export default function ChatPage() {
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Nova conversa</span>
               </button>
+
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                title={historicoCarregado ? 'Histórico carregado nesta conversa' : 'Enviar seu Histórico Acadêmico (PDF) para respostas personalizadas'}
+                className={`flex items-center gap-2 rounded-lg border px-3.5 py-2 text-sm transition-colors ${
+                  historicoCarregado
+                    ? 'border-accent/40 bg-accent/10 text-accent'
+                    : 'border-line text-paper-dim hover:border-line-strong hover:text-paper'
+                }`}
+              >
+                <FileUp className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {historicoCarregado ? 'Histórico ✓' : 'Histórico'}
+                </span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf"
+                onChange={handleHistoricoFile}
+                className="hidden"
+                aria-label="Enviar Histórico Acadêmico em PDF"
+              />
 
               <ThemeToggle />
             </div>

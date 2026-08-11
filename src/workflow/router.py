@@ -474,7 +474,7 @@ LLM_ROUTE_AGENTS: frozenset = frozenset({
 
 AGENTIC_INTENTS: frozenset = frozenset({
     "ac_auditoria", "ac_checklist", "progresso",
-    "matricula_check", "risco_reprovacao", "trilha",
+    "matricula_check", "risco_reprovacao", "trilha", "cr_consulta",
 })
 
 _LLM_ROUTE_INTENTS: frozenset = frozenset(
@@ -512,6 +512,7 @@ aplique as regras ao caso DELE, independente do modo de falar):
 - matricula_check: quer saber se conseguira se matricular/inscrever em UCs especificas ou se a inscricao sera deferida
 - risco_reprovacao: pergunta o que acontece ou o que atrasa se reprovar/nao passar em uma disciplina
 - trilha: quer recomendacao de disciplinas ou caminho de estudos para um objetivo, carreira ou area de interesse
+- cr_consulta: pergunta sobre o proprio CR (coeficiente de rendimento) ou quer simular como uma nota afetaria o CR
 
 HISTORICO RECENTE DA CONVERSA (pode estar vazio):
 {history}
