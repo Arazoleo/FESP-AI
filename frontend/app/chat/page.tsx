@@ -19,6 +19,7 @@ import PrereqGraph, { PrereqGraphData } from '../components/PrereqGraph'
 import DisciplineDrawer from '../components/DisciplineDrawer'
 import DocenteDrawer from '../components/DocenteDrawer'
 import DisciplineChips, { DisciplineListData } from '../components/DisciplineChips'
+import AcBars, { AcReportData } from '../components/AcBars'
 import ThemeToggle from '../components/ThemeToggle'
 
 interface AgentInfo {
@@ -36,6 +37,7 @@ interface Message {
   agent_info?: AgentInfo
   graph_data?: PrereqGraphData | null
   list_data?: DisciplineListData | null
+  ac_data?: AcReportData | null
   suggestions?: string[] | null
 }
 
@@ -311,6 +313,8 @@ function AssistantMessage({
         <span className="caret-blink ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] bg-accent" />
       )}
 
+      {doneTyping && message.ac_data && <AcBars data={message.ac_data} />}
+
       {doneTyping && message.list_data && onSelectDiscipline && (
         <DisciplineChips data={message.list_data} onSelect={onSelectDiscipline} />
       )}
@@ -413,6 +417,7 @@ export default function ChatPage() {
         agent_info: response.data.agent_info,
         graph_data: response.data.graph_data,
         list_data: response.data.list_data,
+        ac_data: response.data.ac_data,
         suggestions: response.data.suggestions,
       }
 

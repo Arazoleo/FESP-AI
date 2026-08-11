@@ -143,6 +143,27 @@ check("extração de desejadas e cursadas da frase",
       ) == ["Compiladores", "Redes"])
 check("detector de matrícula",
       progresso.is_matricula_request("Posso me matricular em Compiladores tendo cursado AED I?"))
+
+vm2 = progresso.verificar_matricula(
+    kg, ["Inteligência Artificial"],
+    ["Lógica de Programação", "Algoritmos e Estruturas de Dados I",
+     "Algoritmos e Estruturas de Dados II", "Matemática Discreta"],
+)
+p_ia = vm2["pareceres"][0]
+check("R6 na matrícula: IA aponta base recomendada pendente (probabilidade)",
+      any("Probabilidade" in b for b in p_ia["base_pendente"]),
+      str(p_ia["base_pendente"]))
+check("aviso de base aparece na resposta formatada",
+      "base recomendada" in progresso.formatar_matricula(vm2))
+
+pay = auditor.payload_auditoria(auditor.auditar_atividades(
+    auditor.parsear_atividades("40h de monitoria; 200h de teatro; 100h de IC")
+))
+check("payload do auditor: 3 eixos com teto no eixo I",
+      pay["type"] == "ac_report" and len(pay["eixos"]) == 3
+      and pay["eixos"][0]["teto"] == 104 and pay["eixos"][0]["validas"] == 104)
+check("payload traz total e faltantes",
+      pay["total"] == 244 and pay["faltam"] == 68, str(pay))
 check("detector de progresso",
       progresso.is_progresso_request("Já cursei Cálculo, quanto falta para me formar?"))
 

@@ -255,6 +255,28 @@ def formatar_auditoria(resultado: Dict) -> str:
     return "\n".join(linhas)
 
 
+def payload_auditoria(resultado: Dict) -> Dict:
+    """Payload estruturado para o frontend renderizar barras por eixo."""
+    return {
+        "type": "ac_report",
+        "alvo": TOTAL_HORAS,
+        "total": round(resultado["total_valido"]),
+        "faltam": round(resultado["faltam"]),
+        "apto": resultado["apto"],
+        "eixos": [
+            {
+                "eixo": eixo,
+                "nome": _EIXO_NOMES[eixo],
+                "validas": round(resultado["horas_validas"][eixo]),
+                "brutas": round(resultado["horas_brutas"][eixo]),
+                "teto": TETO_EIXO_1 if eixo == 1 else None,
+                "ok": resultado["horas_brutas"][eixo] >= MIN_POR_EIXO,
+            }
+            for eixo in (1, 2, 3)
+        ],
+    }
+
+
 _AUDIT_CUES_RES = [re.compile(p) for p in (
     r"\b(?:audita|auditar|simul|confere|conferir|verifica|verificar|calcul|contabiliz|soma|somar)\w*\b.*\b(?:ac|acs|atividades? complementar)",
     r"\b(?:quanta?s?\s+horas?\s+(?:eu\s+)?(?:ja\s+)?tenho)\b",

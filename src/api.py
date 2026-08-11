@@ -187,6 +187,7 @@ class ChatResponse(BaseModel):
     plan_request: Optional[Dict] = None
     graph_data: Optional[Dict] = None
     list_data: Optional[Dict] = None
+    ac_data: Optional[Dict] = None
     suggestions: Optional[List[str]] = None
 
 
@@ -377,6 +378,7 @@ async def chat(request: ChatRequest):
         plan_request = result.get("plan_request")
         graph_data = result.get("graph_data")
         list_data = result.get("list_data")
+        ac_data = result.get("ac_data")
         suggestions = result.get("suggestions")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao processar pergunta: {str(e)}")
@@ -410,6 +412,7 @@ async def chat(request: ChatRequest):
         plan_request=plan_request,
         graph_data=graph_data,
         list_data=list_data,
+        ac_data=ac_data,
         suggestions=suggestions,
     )
 

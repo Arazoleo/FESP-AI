@@ -85,7 +85,14 @@ def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
         if faltando:
             bloqueadas.append({**v, "faltando": sorted(faltando)})
         else:
-            disponiveis.append(v)
+            base_pendente = []
+            try:
+                for b in kg.get_base_recomendada(v["nome"]):
+                    if norm(b["nome"]) not in cursadas_norm:
+                        base_pendente.append(b["nome"])
+            except Exception:
+                pass
+            disponiveis.append({**v, "base_pendente": base_pendente[:2]})
 
     nivel: Dict[str, int] = {}
 
@@ -126,7 +133,10 @@ def formatar_progresso(r: Dict) -> str:
         linhas.append("")
         linhas.append("**Você já pode cursar** (pré-requisitos cumpridos):")
         for d in r["disponiveis"][:12]:
-            linhas.append(f"- {d['nome']} (termo {d['termo']})")
+            extra = ""
+            if d.get("base_pendente"):
+                extra = f" - base recomendada pendente: {', '.join(d['base_pendente'])}"
+            linhas.append(f"- {d['nome']} (termo {d['termo']}){extra}")
         if len(r["disponiveis"]) > 12:
             linhas.append(f"- ... e mais {len(r['disponiveis']) - 12}")
     if r["bloqueadas"]:
@@ -176,6 +186,7 @@ def verificar_matricula(kg, desejadas: List[str], cursadas: List[str]) -> Dict:
                 "disciplina": d,
                 "status": "desconhecida",
                 "motivos": ["não encontrei essa UC no sistema"],
+                "base_pendente": [],
             })
             continue
         nome = kg.graph.nodes[node].get("nome", d)
@@ -191,10 +202,20 @@ def verificar_matricula(kg, desejadas: List[str], cursadas: List[str]) -> Dict:
                 "falta pré-requisito: " + ", ".join(sorted(faltando))
                 + " (motivo de indeferimento)"
             )
+        base_pendente = []
+        try:
+            for b in kg.get_base_recomendada(nome):
+                if norm(b["nome"]) not in cursadas_norm:
+                    base_pendente.append(
+                        f"{b['nome']} ({', '.join(b['conceitos'])})"
+                    )
+        except Exception:
+            pass
         pareceres.append({
             "disciplina": nome,
             "status": "risco" if motivos else "ok",
             "motivos": motivos,
+            "base_pendente": base_pendente[:3],
         })
     return {"pareceres": pareceres}
 
@@ -209,6 +230,12 @@ def formatar_matricula(r: Dict) -> str:
             )
         else:
             linhas.append(f"- **{p['disciplina']}**: ⚠ {'; '.join(p['motivos'])}")
+        if p.get("base_pendente"):
+            linhas.append(
+                f"  - base recomendada que você ainda não cursou: "
+                f"{'; '.join(p['base_pendente'])} - não impede o deferimento, "
+                "mas a disciplina pressupõe esses conceitos (regra `base_recomendada`)"
+            )
     linhas.append("")
     linhas.append(
         "O que não consigo verificar por aqui: falta de vagas, choque de "

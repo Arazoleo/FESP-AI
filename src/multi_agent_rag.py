@@ -225,6 +225,7 @@ class MultiAgentRAG:
                 "plan_request": final_state.get("plan_request"),
                 "graph_data": final_state.get("graph_data"),
                 "list_data": final_state.get("list_data"),
+                "ac_data": final_state.get("ac_data"),
                 "suggestions": suggestions,
                 "agent_metadata": self.AGENT_METADATA.get(
                     active_agent, self.AGENT_METADATA["fallback"]

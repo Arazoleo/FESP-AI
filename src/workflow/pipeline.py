@@ -185,6 +185,10 @@ def build_pipeline(rag_instance):
         from ..ac_auditor import (
             is_audit_request,
             responder_auditoria,
+            parsear_atividades,
+            auditar_atividades,
+            formatar_auditoria,
+            payload_auditoria,
             is_checklist_request,
             responder_checklist,
         )
@@ -205,7 +209,7 @@ def build_pipeline(rag_instance):
         )
         from ..trilhas import is_trilha_request, montar_trilha, formatar_trilha
 
-        def _resposta_simbolica(texto_resposta, intent_label, fontes):
+        def _resposta_simbolica(texto_resposta, intent_label, fontes, **extras):
             telemetry_incr(f"agentic_{intent_label}")
             return {
                 **state,
@@ -216,12 +220,20 @@ def build_pipeline(rag_instance):
                 "active_agent": "symbolic_kg",
                 "context": texto_resposta,
                 "sources": fontes,
+                **extras,
             }
 
         if is_audit_request(question):
+            itens_ac = parsear_atividades(question)
+            fontes_ac = ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"]
+            if itens_ac:
+                resultado_ac = auditar_atividades(itens_ac)
+                return _resposta_simbolica(
+                    formatar_auditoria(resultado_ac), "ac_auditoria", fontes_ac,
+                    ac_data=payload_auditoria(resultado_ac),
+                )
             return _resposta_simbolica(
-                responder_auditoria(question), "ac_auditoria",
-                ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"],
+                responder_auditoria(question), "ac_auditoria", fontes_ac,
             )
 
         if is_checklist_request(question):
@@ -243,9 +255,21 @@ def build_pipeline(rag_instance):
                     rag_instance.knowledge_graph, curso, cursadas
                 )
                 if resultado:
+                    chips = {
+                        "type": "discipline_list",
+                        "title": "Liberadas para você agora",
+                        "items": [
+                            {
+                                "nome": d["nome"],
+                                "hint": f"termo {d['termo']}",
+                            }
+                            for d in resultado["disponiveis"][:16]
+                        ],
+                    }
                     return _resposta_simbolica(
                         formatar_progresso(resultado), "progresso",
                         ["Knowledge Graph"],
+                        list_data=chips if chips["items"] else None,
                     )
             return _resposta_simbolica(
                 "Posso auditar seu progresso! Me diga o **curso** e liste o que "
@@ -283,17 +307,41 @@ def build_pipeline(rag_instance):
                 rag_instance.knowledge_graph, disciplina_risco
             )
             if resultado:
+                cascata = None
+                if rag_instance.graph_rag and resultado["diretos"]:
+                    try:
+                        cascata = rag_instance.graph_rag.graph_payload(
+                            "dependents", resultado["nome"]
+                        )
+                    except Exception:
+                        cascata = None
                 return _resposta_simbolica(
                     formatar_risco(resultado), "risco_reprovacao",
                     ["Knowledge Graph"],
+                    graph_data=cascata,
                 )
 
         if is_trilha_request(question):
             resultado = montar_trilha(rag_instance.knowledge_graph, question)
             if resultado:
+                chips = {
+                    "type": "discipline_list",
+                    "title": f"Trilha: {', '.join(resultado['conceitos'])}",
+                    "items": [
+                        {
+                            "nome": d["nome"],
+                            "hint": (
+                                "eletiva" if d["eletiva"]
+                                else (f"termo {d['termo']}" if d["termo"] is not None else None)
+                            ),
+                        }
+                        for d in resultado["disciplinas"][:16]
+                    ],
+                }
                 return _resposta_simbolica(
                     formatar_trilha(resultado), "trilha",
                     ["Knowledge Graph (camada de conceitos)"],
+                    list_data=chips,
                 )
         if is_breakdown_request(question):
             ac_response = build_breakdown_response()
