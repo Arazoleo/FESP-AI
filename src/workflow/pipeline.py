@@ -209,6 +209,12 @@ def build_pipeline(rag_instance):
             formatar_risco,
         )
         from ..trilhas import is_trilha_request, montar_trilha, formatar_trilha
+        from ..interdisciplinares import (
+            is_lista_interdisciplinares,
+            extrair_disciplina_check,
+            responder_lista,
+            responder_check,
+        )
 
         def _resposta_simbolica(texto_resposta, intent_label, fontes, **extras):
             telemetry_incr(f"agentic_{intent_label}")
@@ -375,6 +381,26 @@ def build_pipeline(rag_instance):
             resposta_agentica = _agentico(fast_label)
             if resposta_agentica:
                 return resposta_agentica
+
+        disciplina_check = extrair_disciplina_check(question)
+        if disciplina_check:
+            resposta_check = responder_check(
+                rag_instance.knowledge_graph, disciplina_check
+            )
+            if resposta_check:
+                return _resposta_simbolica(
+                    resposta_check, "interdisciplinar_check",
+                    ["Lista de UCs Eletivas Interdisciplinares (PPC 2023)"],
+                )
+
+        if is_lista_interdisciplinares(question):
+            resultado_inter = responder_lista(rag_instance.knowledge_graph)
+            if resultado_inter:
+                return _resposta_simbolica(
+                    resultado_inter["texto"], "interdisciplinares_lista",
+                    ["Lista de UCs Eletivas Interdisciplinares (PPC 2023)"],
+                    list_data=resultado_inter["chips"],
+                )
         if is_breakdown_request(question):
             ac_response = build_breakdown_response()
             if ac_response:

@@ -201,6 +201,38 @@ check("objetivo sem conceito conhecido → None",
 check("detector de trilha",
       trilhas.is_trilha_request("quero seguir carreira em ciência de dados"))
 
+print(f"\n{BOLD}8. UCs Eletivas Interdisciplinares (PPC 2023){RESET}")
+inter = _mod("src.interdisciplinares", "src/interdisciplinares.py")
+ucs = kg.get_interdisciplinares()
+check("flag aterrada em 40+ UCs", len(ucs) >= 40, str(len(ucs)))
+check("Bioestatística marcada como interdisciplinar",
+      kg.is_interdisciplinar("Bioestatística") is True)
+check("Desenvolvimento de Games marcada",
+      kg.is_interdisciplinar("Desenvolvimento de Games") is True)
+check("Cálculo em Uma Variável NÃO é interdisciplinar",
+      kg.is_interdisciplinar("Cálculo em Uma Variável") is False)
+check("disciplina inexistente retorna None",
+      kg.is_interdisciplinar("Disciplina Fantasma XYZ") is None)
+lista = inter.responder_lista(kg)
+check("lista com chips e regra das 4 UCs",
+      lista and "4 UCs" in lista["texto"] and len(lista["chips"]["items"]) >= 40)
+check("detector da lista",
+      inter.is_lista_interdisciplinares("Quais são as eletivas interdisciplinares?"))
+check("extração do check pontual",
+      inter.extrair_disciplina_check("Bioestatística é interdisciplinar?") == "bioestatistica")
+check("resposta do check afirmativa",
+      "Sim" in inter.responder_check(kg, "Bioestatística"))
+check("resposta do check negativa",
+      "Não" in inter.responder_check(kg, "Cálculo em Uma Variável"))
+res_bct = progresso.auditar_progresso(
+    kg, "BCT", ["Lógica de Programação", "Probabilidade e Estatística"]
+)
+check("progresso do BCT conta interdisciplinares cursadas (1 de 4)",
+      res_bct["interdisciplinares_cursadas"] == ["Probabilidade e Estatística"],
+      str(res_bct["interdisciplinares_cursadas"]))
+check("resposta do progresso mostra o placar de interdisciplinares",
+      "de 4" in progresso.formatar_progresso(res_bct))
+
 total = _passed + _failed
 cor = GREEN if _failed == 0 else RED
 print(f"\n{BOLD}{cor}{_passed}/{total} testes passaram{RESET}\n")

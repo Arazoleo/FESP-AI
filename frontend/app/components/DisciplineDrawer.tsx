@@ -45,6 +45,7 @@ export interface DisciplineDetails {
   eletiva_em: string[]
   conceitos_abordados?: string[]
   base_recomendada?: BaseRecomendada[]
+  interdisciplinar?: boolean
 }
 
 interface Props {
@@ -168,6 +169,7 @@ export default function DisciplineDrawer({
     details?.codigo && `Código ${details.codigo}`,
     details?.sigla && details.sigla,
     details?.termo && `Termo ${details.termo}`,
+    details?.interdisciplinar && '★ Interdisciplinar',
   ].filter(Boolean) as string[]
 
   return (

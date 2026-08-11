@@ -94,6 +94,14 @@ def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
                 pass
             disponiveis.append({**v, "base_pendente": base_pendente[:2]})
 
+    interdisciplinares_cursadas = []
+    for c in cursadas:
+        node = kg._find_node(c, "disciplina")
+        if node and kg.graph.nodes[node].get("interdisciplinar"):
+            nome_i = kg.graph.nodes[node].get("nome", c)
+            if nome_i not in interdisciplinares_cursadas:
+                interdisciplinares_cursadas.append(nome_i)
+
     nivel: Dict[str, int] = {}
 
     def _nivel(k: str, trilha=frozenset()) -> int:
@@ -117,6 +125,7 @@ def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
         "disponiveis": disponiveis,
         "bloqueadas": bloqueadas,
         "semestres_minimos": semestres_min,
+        "interdisciplinares_cursadas": interdisciplinares_cursadas,
     }
 
 
@@ -155,9 +164,19 @@ def formatar_progresso(r: Dict) -> str:
             + ", ".join(r["desconhecidas"])
         )
     linhas.append("")
+    inter = r.get("interdisciplinares_cursadas") or []
+    curso_norm = _norm(r["curso"])
+    if "bct" in curso_norm or "ciencia e tecnologia" in curso_norm:
+        status_inter = (
+            f"**{len(inter)} de 4** UCs Eletivas Interdisciplinares cursadas"
+            + (f" ({', '.join(inter)})" if inter else "")
+        )
+        linhas.append(f"- Interdisciplinares (requisito do PPC 2023): {status_inter}")
+        linhas.append("")
     linhas.append(
         "Além das obrigatórias, a integralização exige as eletivas e horas de "
-        "extensão da matriz e as 312h de Atividades Complementares."
+        "extensão da matriz, as 312h de Atividades Complementares e, no BCT, "
+        "4 UCs Eletivas Interdisciplinares."
     )
     linhas.append("")
     linhas.append(

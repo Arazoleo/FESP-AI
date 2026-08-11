@@ -113,6 +113,16 @@ class KnowledgeGraph:
                 self._process_docentes_file(md_file)
         
         try:
+            inter_stats = self.load_interdisciplinares()
+            if inter_stats.get("marcadas") or inter_stats.get("criadas"):
+                print(
+                    f"[KG interdisciplinares] {inter_stats['marcadas']} UCs "
+                    f"marcadas, {inter_stats['criadas']} criadas da lista do PPC"
+                )
+        except Exception as e:
+            print(f"[KG interdisciplinares] falhou: {e}")
+
+        try:
             conc_stats = self.load_conceitos()
             if conc_stats.get("conceitos"):
                 print(
@@ -242,6 +252,59 @@ class KnowledgeGraph:
                         d_id, cid, relacao="REQUER_BASE", confidence=_conf(conf)
                     )
                     stats["requer_base"] += 1
+
+    def load_interdisciplinares(self, path: str = None) -> Dict[str, int]:
+        """
+        Marca as UCs Eletivas Interdisciplinares (PPC 2023) com a flag
+        `interdisciplinar=True` no nó da disciplina. Aterramento por código
+        (preferencial) ou nome; o que não resolve é contado e nunca cria nó.
+        """
+        stats = {"marcadas": 0, "criadas": 0}
+        seed_path = Path(path) if path else Path(__file__).parent / "interdisciplinares_seed.json"
+        if not seed_path.exists():
+            return stats
+        with open(seed_path, encoding="utf-8") as f:
+            data = json.load(f)
+        self._interdisciplinares_regra = data.get("regra") or {}
+        for uc in data.get("ucs") or []:
+            nome = (uc.get("nome") or "").strip()
+            if not nome:
+                continue
+            node_id = None
+            codigo = uc.get("codigo")
+            if codigo:
+                node_id = self._index_by_codigo.get(self._normalize_text(str(codigo)))
+            if not node_id:
+                node_id = self._find_node(nome, "disciplina")
+            if node_id and self.graph.nodes[node_id].get("tipo") == "disciplina":
+                self.graph.nodes[node_id]["interdisciplinar"] = True
+                stats["marcadas"] += 1
+            else:
+                novo_id = f"DISC:{nome}"
+                self.graph.add_node(
+                    novo_id, tipo="disciplina", nome=nome,
+                    codigo=str(codigo) if codigo else "",
+                    interdisciplinar=True,
+                )
+                self._index_node(novo_id, self.graph.nodes[novo_id])
+                stats["criadas"] += 1
+        return stats
+
+    def get_interdisciplinares(self) -> List[Dict]:
+        ucs = []
+        for n, d in self.graph.nodes(data=True):
+            if d.get("tipo") == "disciplina" and d.get("interdisciplinar"):
+                ucs.append({
+                    "nome": d.get("nome", n),
+                    "codigo": d.get("codigo") or None,
+                })
+        return sorted(ucs, key=lambda u: u["nome"])
+
+    def is_interdisciplinar(self, disciplina: str) -> Optional[bool]:
+        node_id = self._find_node(disciplina, "disciplina")
+        if not node_id:
+            return None
+        return bool(self.graph.nodes[node_id].get("interdisciplinar"))
 
     def _termo_num(self, node_data: dict) -> Optional[int]:
         m = re.match(r"(\d+)", str(node_data.get("termo") or ""))
