@@ -690,6 +690,8 @@
         <option value="amplo">Espaço: amplo</option>
         <option value="maximo">Espaço: máximo</option>
       </select>
+      <input type="range" id="nodeSize" min="0.4" max="2.5" step="0.1" value="1"
+             title="Tamanho dos nós e rótulos" style="width: 100px; accent-color: var(--accent);" />
     </div>
     <div class="header-sep"></div>
     <div class="header-group">
@@ -919,6 +921,7 @@
 
       const nodeFontColor = lightMode ? '#1e293b' : '#e2e8f0';
       const edgeFontColor = lightMode ? '#475569' : '#94a3b8';
+      const sizeMult = parseFloat(document.getElementById('nodeSize')?.value || '1');
       const visNodes = useNodes.map(n => {
         const styled = nodeStyleFor(n);
         return {
@@ -927,9 +930,11 @@
           title: (n.tipo + ': ' + (n.titulo || n.label)).slice(0, 120),
           tipo: n.tipo,
           color: styled.color,
-          font: { color: nodeFontColor, size: styled.fontSize },
+          font: { color: nodeFontColor, size: Math.round(styled.fontSize * sizeMult) },
           borderWidth: styled.borderWidth,
-          size: styled.size,
+          size: Math.round(styled.size * sizeMult),
+          baseSize: styled.size,
+          baseFontSize: styled.fontSize,
           shadow: styled.shadow,
         };
       });
@@ -1322,6 +1327,18 @@
 
     document.getElementById('spacing').onchange = function () {
       if (fullNodes.length) { buildNetwork(fullNodes, fullEdges); refreshStats(); }
+    };
+
+    document.getElementById('nodeSize').oninput = function () {
+      if (!currentNetwork) return;
+      const mult = parseFloat(this.value || '1');
+      const fontColor = lightMode ? '#1e293b' : '#e2e8f0';
+      const nds = currentNetwork.body.data.nodes;
+      nds.update(nds.get().map(n => ({
+        id: n.id,
+        size: Math.round((n.baseSize || 14) * mult),
+        font: { color: fontColor, size: Math.round((n.baseFontSize || 12) * mult) },
+      })));
     };
 
     if (window.location.protocol.startsWith('http')) {
