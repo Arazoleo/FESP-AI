@@ -264,7 +264,7 @@ _CURSADAS_RE = re.compile(
     re.IGNORECASE,
 )
 _DESEJADAS_RE = re.compile(
-    r"(?:matricular(?:-me)?\s+em|me\s+inscrever\s+em|inscricao\s+em|pegar|pedir|cursar)\s*:?\s+(.+?)(?=\s+(?:tendo|ja|se\s+eu|sendo)\b|\.\s|\?|$)",
+    r"(?:matricular(?:-me)?\s+em|me\s+inscrever\s+em|inscricao\s+em|vagas?\s+em|pegar|pedir|cursar)\s*:?\s+(.+?)(?=\s+(?:tendo|ja\b|se\s+eu|sendo)|[.?]\s|\?$|\.$|$)",
     re.IGNORECASE,
 )
 
@@ -290,10 +290,14 @@ def _strip_question(texto: str) -> str:
 
 _PROGRESSO_CUES_RES = [re.compile(p) for p in (
     r"\bquanto\s+(?:ainda\s+)?falta\b.*\b(?:formar|integralizar|concluir|terminar)",
-    r"\bo\s+que\s+(?:ainda\s+)?falta\s+(?:cursar|fazer)\b",
+    r"\b(?:o\s+que|oq)\s+(?:ainda\s+)?falta\s+(?:cursar|fazer)\b",
+    r"\b(?:o\s+que|oq|quanto)\s+falta\s+(?:pra|para|p)\s+(?:eu\s+)?(?:me\s+)?(?:formar|concluir|terminar)",
+    r"\bfalta\s+(?:pra|para|p)\s+(?:eu\s+)?(?:me\s+)?(?:formar|concluir|terminar)",
     r"\baudit\w*\b.*\b(?:situacao|progresso|curso)\b",
     r"\bmeu\s+progresso\b",
     r"\bconsigo\s+me\s+formar\b",
+    r"\b(?:devendo|pendencias?|pendente)\b.*\b(?:diploma|formar|formatura|me\s+formar)\b",
+    r"\bpegar\s+(?:o\s+|meu\s+)?diploma\b",
 )]
 
 
@@ -306,6 +310,7 @@ _MATRICULA_CUES_RES = [re.compile(p) for p in (
     r"\b(?:posso|consigo)\s+(?:me\s+)?(?:matricular|inscrever|pegar|cursar|pedir)\b",
     r"\b(?:vao|vai|sera|serao)\s+(?:deferir|deferida?s?|aceitar|indeferir)\b",
     r"\bminha\s+inscricao\s+(?:vai|sera)\b",
+    r"\bvai\s+aceitar\b.*\b(?:pedido|inscricao|matricula|vagas?)\b",
 )]
 
 

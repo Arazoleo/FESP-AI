@@ -27,6 +27,7 @@ from .router import (
     is_course_overview,
     is_regimento_domain,
     SYMBOLIC_DIRECT_INTENTS,
+    AGENTIC_INTENTS,
 )
 from ..telemetry import incr as telemetry_incr
 
@@ -223,90 +224,101 @@ def build_pipeline(rag_instance):
                 **extras,
             }
 
-        if is_audit_request(question):
-            itens_ac = parsear_atividades(question)
-            fontes_ac = ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"]
-            if itens_ac:
-                resultado_ac = auditar_atividades(itens_ac)
-                return _resposta_simbolica(
-                    formatar_auditoria(resultado_ac), "ac_auditoria", fontes_ac,
-                    ac_data=payload_auditoria(resultado_ac),
-                )
-            return _resposta_simbolica(
-                responder_auditoria(question), "ac_auditoria", fontes_ac,
-            )
-
-        if is_checklist_request(question):
-            return _resposta_simbolica(
-                responder_checklist(), "ac_checklist",
-                ["Manual de Atividades Complementares da DAE (2025)"],
-            )
-
-        if is_progresso_request(question):
-            cursadas = extrair_cursadas(question)
-            curso = None
-            if rag_instance.graph_rag:
-                try:
-                    curso = rag_instance.graph_rag._find_curso_in_text(question)
-                except Exception:
-                    curso = None
-            if cursadas and curso:
-                resultado = auditar_progresso(
-                    rag_instance.knowledge_graph, curso, cursadas
-                )
-                if resultado:
-                    chips = {
-                        "type": "discipline_list",
-                        "title": "Liberadas para você agora",
-                        "items": [
-                            {
-                                "nome": d["nome"],
-                                "hint": f"termo {d['termo']}",
-                            }
-                            for d in resultado["disponiveis"][:16]
-                        ],
-                    }
-                    return _resposta_simbolica(
-                        formatar_progresso(resultado), "progresso",
-                        ["Knowledge Graph"],
-                        list_data=chips if chips["items"] else None,
+        def _agentico(label: str, disciplina_hint: str = None):
+            if label == "progresso":
+                cursadas = extrair_cursadas(question)
+                curso = None
+                if rag_instance.graph_rag:
+                    try:
+                        curso = rag_instance.graph_rag._find_curso_in_text(question)
+                    except Exception:
+                        curso = None
+                itens_ac = parsear_atividades(question)
+                bloco_ac = ""
+                extras_ac = {}
+                if itens_ac:
+                    resultado_ac = auditar_atividades(itens_ac)
+                    bloco_ac = formatar_auditoria(resultado_ac) + "\n\n---\n\n"
+                    extras_ac = {"ac_data": payload_auditoria(resultado_ac)}
+                if cursadas and curso:
+                    resultado = auditar_progresso(
+                        rag_instance.knowledge_graph, curso, cursadas
                     )
-            return _resposta_simbolica(
-                "Posso auditar seu progresso! Me diga o **curso** e liste o que "
-                "você **já cursou**, por exemplo: *Sou do BCC e já cursei "
-                "Lógica de Programação, Cálculo em Uma Variável e Álgebra "
-                "Linear. Quanto falta para me formar?* Eu cruzo com a matriz, "
-                "aponto o que está liberado, o que está bloqueado por "
-                "pré-requisito e o mínimo de semestres restantes.",
-                "progresso", [],
-            )
-
-        if is_matricula_request(question):
-            desejadas = extrair_desejadas(question)
-            cursadas = extrair_cursadas(question)
-            if desejadas and cursadas:
-                resultado = verificar_matricula(
-                    rag_instance.knowledge_graph, desejadas, cursadas
-                )
+                    if resultado:
+                        chips = {
+                            "type": "discipline_list",
+                            "title": "Liberadas para você agora",
+                            "items": [
+                                {"nome": d["nome"], "hint": f"termo {d['termo']}"}
+                                for d in resultado["disponiveis"][:16]
+                            ],
+                        }
+                        return _resposta_simbolica(
+                            bloco_ac + formatar_progresso(resultado), "progresso",
+                            ["Knowledge Graph"],
+                            list_data=chips if chips["items"] else None,
+                            **extras_ac,
+                        )
                 return _resposta_simbolica(
-                    formatar_matricula(resultado), "matricula_check",
-                    ["Knowledge Graph", "Regimento Interno da Prograd (2014)"],
+                    bloco_ac
+                    + "Sobre as disciplinas: posso auditar seu progresso! Me diga "
+                    "o **curso** e liste o que você **já cursou**, por exemplo: "
+                    "*Sou do BCC e já cursei Lógica de Programação, Cálculo em Uma "
+                    "Variável e Álgebra Linear. Quanto falta para me formar?* Eu "
+                    "cruzo com a matriz, aponto o que está liberado, o que está "
+                    "bloqueado por pré-requisito e o mínimo de semestres restantes.",
+                    "progresso",
+                    ["Knowledge Graph"] if not itens_ac else
+                    ["Regulamento de AC do BCT (2023)", "Knowledge Graph"],
+                    **extras_ac,
                 )
-            return _resposta_simbolica(
-                "Posso pré-verificar sua inscrição! Me diga as UCs que quer "
-                "pedir e o que já cursou, por exemplo: *Posso me matricular em "
-                "Compiladores e Redes de Computadores tendo cursado Linguagens "
-                "Formais e Autômatos e AED I?* Eu confiro pré-requisitos e UC "
-                "repetida, e explico a ordem de prioridade das vagas.",
-                "matricula_check", [],
-            )
 
-        disciplina_risco = extrair_disciplina_risco(question)
-        if disciplina_risco:
-            resultado = analisar_reprovacao(
-                rag_instance.knowledge_graph, disciplina_risco
-            )
-            if resultado:
+            if label == "ac_auditoria":
+                itens_ac = parsear_atividades(question)
+                fontes_ac = ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"]
+                if itens_ac:
+                    resultado_ac = auditar_atividades(itens_ac)
+                    return _resposta_simbolica(
+                        formatar_auditoria(resultado_ac), "ac_auditoria", fontes_ac,
+                        ac_data=payload_auditoria(resultado_ac),
+                    )
+                return _resposta_simbolica(
+                    responder_auditoria(question), "ac_auditoria", fontes_ac,
+                )
+
+            if label == "ac_checklist":
+                return _resposta_simbolica(
+                    responder_checklist(), "ac_checklist",
+                    ["Manual de Atividades Complementares da DAE (2025)"],
+                )
+
+            if label == "matricula_check":
+                desejadas = extrair_desejadas(question)
+                cursadas = extrair_cursadas(question)
+                if desejadas and cursadas:
+                    resultado = verificar_matricula(
+                        rag_instance.knowledge_graph, desejadas, cursadas
+                    )
+                    return _resposta_simbolica(
+                        formatar_matricula(resultado), "matricula_check",
+                        ["Knowledge Graph", "Regimento Interno da Prograd (2014)"],
+                    )
+                return _resposta_simbolica(
+                    "Posso pré-verificar sua inscrição! Me diga as UCs que quer "
+                    "pedir e o que já cursou, por exemplo: *Posso me matricular em "
+                    "Compiladores e Redes de Computadores tendo cursado Linguagens "
+                    "Formais e Autômatos e AED I?* Eu confiro pré-requisitos e UC "
+                    "repetida, e explico a ordem de prioridade das vagas.",
+                    "matricula_check", [],
+                )
+
+            if label == "risco_reprovacao":
+                alvo = extrair_disciplina_risco(question) or disciplina_hint
+                if not alvo:
+                    return None
+                resultado = analisar_reprovacao(rag_instance.knowledge_graph, alvo)
+                if not resultado:
+                    return None
                 cascata = None
                 if rag_instance.graph_rag and resultado["diretos"]:
                     try:
@@ -321,9 +333,10 @@ def build_pipeline(rag_instance):
                     graph_data=cascata,
                 )
 
-        if is_trilha_request(question):
-            resultado = montar_trilha(rag_instance.knowledge_graph, question)
-            if resultado:
+            if label == "trilha":
+                resultado = montar_trilha(rag_instance.knowledge_graph, question)
+                if not resultado:
+                    return None
                 chips = {
                     "type": "discipline_list",
                     "title": f"Trilha: {', '.join(resultado['conceitos'])}",
@@ -343,6 +356,25 @@ def build_pipeline(rag_instance):
                     ["Knowledge Graph (camada de conceitos)"],
                     list_data=chips,
                 )
+            return None
+
+        fast_label = None
+        if is_progresso_request(question):
+            fast_label = "progresso"
+        elif is_audit_request(question):
+            fast_label = "ac_auditoria"
+        elif is_checklist_request(question):
+            fast_label = "ac_checklist"
+        elif is_matricula_request(question):
+            fast_label = "matricula_check"
+        elif extrair_disciplina_risco(question):
+            fast_label = "risco_reprovacao"
+        elif is_trilha_request(question):
+            fast_label = "trilha"
+        if fast_label:
+            resposta_agentica = _agentico(fast_label)
+            if resposta_agentica:
+                return resposta_agentica
         if is_breakdown_request(question):
             ac_response = build_breakdown_response()
             if ac_response:
@@ -495,6 +527,14 @@ def build_pipeline(rag_instance):
                     telemetry_incr=telemetry_incr,
                 )
             if routed_llm:
+                if routed_llm.get("intent") in AGENTIC_INTENTS:
+                    resposta_agentica = _agentico(
+                        routed_llm["intent"],
+                        disciplina_hint=routed_llm.get("entidades", {}).get("disciplina"),
+                    )
+                    if resposta_agentica:
+                        telemetry_incr("agentic_via_llm_route")
+                        return resposta_agentica
                 active_agent = routed_llm["agente"]
                 confidence = 0.85
                 if routed_llm.get("intent"):

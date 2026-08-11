@@ -152,6 +152,10 @@ _TRILHA_RES = [re.compile(p) for p in (
     r"\btrilha\s+(?:de|para|em)\b",
     r"\bquero\s+aprender\s+(?:mais\s+)?(?:sobre\s+)?\b",
     r"\bque\s+disciplinas\s+(?:cursar|fazer)\s+para\b",
+    r"\b(?:meu\s+)?sonho\s+e\s+(?:mexer|trabalhar|atuar)\b",
+    r"\bmexer\s+com\b",
+    r"\bpor\s+onde\s+comeco\b",
+    r"\batuar\s+(?:com|na\s+area\s+de)\b",
 )]
 
 

@@ -218,6 +218,7 @@
     "instalações elétricas",
     "instrumentação biomédica",
     "integrais",
+    "inteligência artificial",
     "interação humano-computador",
     "interfaces de comunicação",
     "isa",
@@ -468,6 +469,10 @@
     ],
     "cálculo": [
       "Cálculo em Uma Variável"
+    ],
+    "inteligência artificial": [
+      "Inteligência Artificial",
+      "Aprendizado de Máquina e Reconhecimento de Padrões"
     ]
   },
   "requer_base": {

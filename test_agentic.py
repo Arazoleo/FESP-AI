@@ -166,6 +166,12 @@ check("payload traz total e faltantes",
       pay["total"] == 244 and pay["faltam"] == 68, str(pay))
 check("detector de progresso",
       progresso.is_progresso_request("Já cursei Cálculo, quanto falta para me formar?"))
+check("detector de progresso pega 'o que falta p me formar'",
+      progresso.is_progresso_request("tenho 200h de doação de sangue, o que falta p me formar?"))
+check("auditor cede prioridade quando a pergunta é sobre formar",
+      not auditor.is_audit_request("tenho 200h de doação de sangue, o que falta p me formar?"))
+check("auditor pega horas de atividade reconhecível mesmo sem a palavra AC",
+      auditor.is_audit_request("tenho 200h de doação de sangue e 40h de monitoria, quanto já tenho?"))
 
 print(f"\n{BOLD}6. Risco de reprovação{RESET}")
 rr = risco.analisar_reprovacao(kg, "Lógica de Programação")

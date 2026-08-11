@@ -92,9 +92,10 @@ def formatar_risco(r: Dict) -> str:
 
 
 _RISCO_RES = [
-    re.compile(r"\bse\s+(?:eu\s+)?(?:reprovar|bombar|perder)\s+(?:em\s+|a\s+|o\s+)?(.+)"),
-    re.compile(r"\b(?:reprovar|bombar)\s+em\s+(.+?)\s+(?:o\s+que|oq|atrasa|acontece)"),
-    re.compile(r"\bo\s+que\s+acontece\s+se\s+(?:eu\s+)?(?:reprovar|bombar)\s+(?:em\s+)?(.+)"),
+    re.compile(r"\bse\s+(?:eu\s+)?(?:reprovar|bombar|perder|nao\s+passar)\s+(?:em\s+|a\s+|o\s+)?(.+)"),
+    re.compile(r"\b(?:reprovar|bombar|nao\s+passar)\s+em\s+(.+?)\s+(?:o\s+que|oq|atrasa|acontece)"),
+    re.compile(r"\bo\s+que\s+acontece\s+se\s+(?:eu\s+)?(?:reprovar|bombar|nao\s+passar)\s+(?:em\s+)?(.+)"),
+    re.compile(r"\bme\s+dar\s+mal\s+se\s+(?:eu\s+)?(?:reprovar|bombar|nao\s+passar)\s+(?:em\s+)?(.+)"),
 ]
 
 

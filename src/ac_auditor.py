@@ -287,8 +287,14 @@ _AUDIT_CUES_RES = [re.compile(p) for p in (
 
 def is_audit_request(question: str) -> bool:
     q = _norm(question)
+    if re.search(r"\b(?:formar|integralizar)\b", q):
+        return False
     tem_horas = len(_HORAS_RE.findall(q)) >= 1
     tem_ac = bool(re.search(r"\bacs?\b|\batividades?\s+complementar", q))
+    if tem_horas and not tem_ac:
+        tem_ac = any(
+            classificar_eixo(item["descricao"]) for item in parsear_atividades(q)
+        )
     if tem_horas and tem_ac:
         return True
     return any(p.search(q) for p in _AUDIT_CUES_RES) and tem_ac

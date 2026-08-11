@@ -472,6 +472,11 @@ LLM_ROUTE_AGENTS: frozenset = frozenset({
     "conversa", "montar_grade", "noticias", "web_sjc",
 })
 
+AGENTIC_INTENTS: frozenset = frozenset({
+    "ac_auditoria", "ac_checklist", "progresso",
+    "matricula_check", "risco_reprovacao", "trilha",
+})
+
 _LLM_ROUTE_INTENTS: frozenset = frozenset(
     {
         "docente_info", "docente_areas", "docente_disciplines",
@@ -484,6 +489,7 @@ _LLM_ROUTE_INTENTS: frozenset = frozenset(
         "artigos_sobre", "faqs",
         "conversa", "noticias", "web_sjc", "plan_curriculum", "unknown",
     }
+    | AGENTIC_INTENTS
 )
 
 _LLM_ROUTE_TEMPLATE = """Voce e o roteador de um assistente academico da UNIFESP ICT (campus Sao Jose dos Campos). Escolha o agente mais adequado para responder a pergunta do aluno.
@@ -498,13 +504,22 @@ AGENTES DISPONIVEIS:
 - noticias: noticias, novidades e eventos da UNIFESP
 - web_sjc: paginas do site do campus - ingresso, secretaria, biblioteca, pos-graduacao, servicos, orgaos, apresentacao dos cursos
 
+INTENTS DE ACAO (use um destes como intent quando o aluno quer que o sistema
+aplique as regras ao caso DELE, independente do modo de falar):
+- ac_auditoria: menciona horas de atividades e quer saber quanto conta como Atividade Complementar, ou se uma atividade especifica vale horas
+- ac_checklist: quer saber se esta pronto ou o que precisa para enviar/peticionar as Atividades Complementares
+- progresso: quer saber o que falta para se formar, concluir ou integralizar o curso, ou pede auditoria da situacao dele
+- matricula_check: quer saber se conseguira se matricular/inscrever em UCs especificas ou se a inscricao sera deferida
+- risco_reprovacao: pergunta o que acontece ou o que atrasa se reprovar/nao passar em uma disciplina
+- trilha: quer recomendacao de disciplinas ou caminho de estudos para um objetivo, carreira ou area de interesse
+
 HISTORICO RECENTE DA CONVERSA (pode estar vazio):
 {history}
 
 PERGUNTA DO ALUNO: {question}
 
 Responda APENAS com um JSON valido (sem markdown, sem comentarios) no formato:
-{{"agente": "<disciplinas|docentes|cursos|regimentos|conversa|montar_grade|noticias|web_sjc>", "intent": "<rotulo curto, ex.: ementa_disciplina, prerequisite_chain, discipline_docentes, coordenador_curso, matriz_info, faqs, web_sjc, conversa, unknown>", "entidades": {{"disciplina": "<nome da disciplina citada ou null>", "curso": "<nome ou sigla do curso citado ou null>", "docente": "<nome do docente citado ou null>"}}}}
+{{"agente": "<disciplinas|docentes|cursos|regimentos|conversa|montar_grade|noticias|web_sjc>", "intent": "<rotulo curto, ex.: ementa_disciplina, prerequisite_chain, discipline_docentes, coordenador_curso, matriz_info, faqs, ac_auditoria, progresso, risco_reprovacao, trilha, conversa, unknown>", "entidades": {{"disciplina": "<nome da disciplina citada ou null>", "curso": "<nome ou sigla do curso citado ou null>", "docente": "<nome do docente citado ou null>"}}}}
 
 JSON:"""
 
