@@ -38,13 +38,13 @@ const MAX_LABEL = 26
 const CHAR_W = 6.8
 
 const C = {
-  pillFill: '#101513',
-  pillStroke: 'rgba(236, 242, 239, 0.14)',
-  pillStrokeRoot: 'rgba(52, 211, 153, 0.55)',
-  text: '#ecf2ef',
-  textMute: '#9aa8a2',
-  edge: 'rgba(236, 242, 239, 0.28)',
-  accent: '#34d399',
+  pillFill: 'var(--g-pill)',
+  pillStroke: 'var(--g-pill-stroke)',
+  pillStrokeRoot: 'rgb(var(--accent-rgb) / 0.55)',
+  text: 'var(--g-text)',
+  textMute: 'var(--g-text-mute)',
+  edge: 'var(--g-edge)',
+  accent: 'var(--accent)',
   amber: '#fbbf24',
   amberDim: 'rgba(251, 191, 36, 0.55)',
 } as const
@@ -202,7 +202,7 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
               markerHeight="7"
               orient="auto-start-reverse"
             >
-              <path d="M 0 1 L 9 5 L 0 9 z" fill={C.edge} />
+              <path d="M 0 1 L 9 5 L 0 9 z" style={{ fill: C.edge }} />
             </marker>
             <marker
               id="prereq-arrow-inferida"
@@ -213,7 +213,7 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
               markerHeight="7"
               orient="auto-start-reverse"
             >
-              <path d="M 0 1 L 9 5 L 0 9 z" fill={C.amberDim} />
+              <path d="M 0 1 L 9 5 L 0 9 z" style={{ fill: C.amberDim }} />
             </marker>
           </defs>
 
@@ -223,10 +223,9 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
               x={h.x + h.w / 2}
               y={PAD + 8}
               textAnchor="middle"
-              fill={C.textMute}
+              style={{ fill: C.textMute, letterSpacing: '0.14em' }}
               fontSize={10}
               className="prereq-in font-mono uppercase"
-              style={{ letterSpacing: '0.14em' }}
             >
               {h.label}
             </text>
@@ -252,7 +251,7 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
                 <path
                   d={`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`}
                   fill="none"
-                  stroke={inferida ? C.amberDim : C.edge}
+                  style={{ stroke: inferida ? C.amberDim : C.edge }}
                   strokeWidth={1.4}
                   strokeDasharray={partial || inferida ? '5 4' : undefined}
                   markerEnd={
@@ -266,7 +265,7 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
                     x={mx}
                     y={(y1 + y2) / 2 - 6}
                     textAnchor="middle"
-                    fill={C.textMute}
+                    style={{ fill: C.textMute }}
                     fontSize={10}
                     className="font-mono"
                   >
@@ -302,14 +301,14 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
                     width={n.w}
                     height={NODE_H}
                     rx={NODE_H / 2}
-                    fill={C.pillFill}
-                    stroke={
-                      isRoot
+                    style={{
+                      fill: C.pillFill,
+                      stroke: isRoot
                         ? C.pillStrokeRoot
                         : n.inferida
                           ? C.amberDim
-                          : C.pillStroke
-                    }
+                          : C.pillStroke,
+                    }}
                     strokeWidth={isRoot ? 1.4 : 1}
                     strokeDasharray={n.inferida ? '4 3' : undefined}
                   />
@@ -317,7 +316,7 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
                     <path
                       d="M 14 17 l 3.5 3.5 l 6 -7"
                       fill="none"
-                      stroke={C.accent}
+                      style={{ stroke: C.accent }}
                       strokeWidth={2}
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -327,7 +326,7 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
                     x={n.cursada ? (n.w + 14) / 2 : n.w / 2}
                     y={NODE_H / 2 + 4}
                     textAnchor="middle"
-                    fill={C.text}
+                    style={{ fill: C.text }}
                     fontSize={12}
                   >
                     {label}

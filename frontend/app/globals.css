@@ -3,18 +3,60 @@
 @tailwind utilities;
 
 :root {
-  --ink: #0b0f0e;
-  --ink-raise: #101513;
-  --line: rgba(236, 242, 239, 0.08);
-  --line-strong: rgba(236, 242, 239, 0.14);
+  --ink-rgb: 11 15 14;
+  --ink-raise-rgb: 16 21 19;
+  --ink-deep-rgb: 7 10 9;
+  --paper-rgb: 236 242 239;
+  --paper-dim-rgb: 154 168 162;
+  --paper-mute-rgb: 125 140 134;
+  --accent-rgb: 52 211 153;
+  --accent-deep-rgb: 16 185 129;
+  --accent-dark-rgb: 13 146 104;
+  --line-rgb: 236 242 239;
+  --line-alpha: 0.08;
+  --line-strong-alpha: 0.14;
 
-  --paper: #ecf2ef;
-  --paper-dim: #9aa8a2;
-  --paper-mute: #7d8c86;
+  --ink: rgb(var(--ink-rgb));
+  --ink-raise: rgb(var(--ink-raise-rgb));
+  --paper: rgb(var(--paper-rgb));
+  --paper-dim: rgb(var(--paper-dim-rgb));
+  --paper-mute: rgb(var(--paper-mute-rgb));
+  --accent: rgb(var(--accent-rgb));
+  --accent-deep: rgb(var(--accent-deep-rgb));
+  --accent-soft: rgb(var(--accent-rgb) / 0.12);
+  --line: rgb(var(--line-rgb) / var(--line-alpha));
+  --line-strong: rgb(var(--line-rgb) / var(--line-strong-alpha));
 
-  --accent: #34d399;
-  --accent-deep: #10b981;
-  --accent-soft: rgba(52, 211, 153, 0.12);
+  --g-pill: #101513;
+  --g-pill-stroke: rgb(236 242 239 / 0.14);
+  --g-text: #ecf2ef;
+  --g-text-mute: #9aa8a2;
+  --g-edge: rgb(236 242 239 / 0.28);
+
+  color-scheme: dark;
+}
+
+html.light {
+  --ink-rgb: 246 248 247;
+  --ink-raise-rgb: 255 255 255;
+  --ink-deep-rgb: 237 241 239;
+  --paper-rgb: 18 28 24;
+  --paper-dim-rgb: 74 88 82;
+  --paper-mute-rgb: 96 110 104;
+  --accent-rgb: 11 126 89;
+  --accent-deep-rgb: 9 106 75;
+  --accent-dark-rgb: 7 88 62;
+  --line-rgb: 18 28 24;
+  --line-alpha: 0.10;
+  --line-strong-alpha: 0.18;
+
+  --g-pill: #ffffff;
+  --g-pill-stroke: rgb(18 28 24 / 0.18);
+  --g-text: #121c18;
+  --g-text-mute: #606e68;
+  --g-edge: rgb(18 28 24 / 0.30);
+
+  color-scheme: light;
 }
 
 * {
@@ -47,22 +89,22 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(154, 168, 162, 0.18);
+  background: rgb(var(--paper-dim-rgb) / 0.18);
   border-radius: 100px;
   border: 2px solid var(--ink);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(52, 211, 153, 0.45);
+  background: rgb(var(--accent-rgb) / 0.45);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(154, 168, 162, 0.25) transparent;
+  scrollbar-color: rgb(var(--paper-dim-rgb) / 0.25) transparent;
 }
 
 ::selection {
-  background: rgba(52, 211, 153, 0.25);
+  background: rgb(var(--accent-rgb) / 0.25);
   color: var(--paper);
 }
 
@@ -110,10 +152,10 @@ body {
 
 @keyframes step-active {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.35);
+    box-shadow: 0 0 0 0 rgb(var(--accent-rgb) / 0.35);
   }
   50% {
-    box-shadow: 0 0 0 5px rgba(52, 211, 153, 0);
+    box-shadow: 0 0 0 5px rgb(var(--accent-rgb) / 0);
   }
 }
 
@@ -163,7 +205,7 @@ body {
 
 .prereq-node:hover rect,
 .prereq-node:focus-visible rect {
-  stroke: rgba(52, 211, 153, 0.65);
+  stroke: rgb(var(--accent-rgb) / 0.65) !important;
 }
 
 .bg-grid-faint {
@@ -220,7 +262,7 @@ html:not(.fx-ready) .scroll-progress {
 }
 
 .site-nav.nav-scrolled {
-  background: rgba(11, 15, 14, 0.72);
+  background: rgb(var(--ink-rgb) / 0.72);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-bottom-color: var(--line);

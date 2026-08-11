@@ -19,6 +19,7 @@ import PrereqGraph, { PrereqGraphData } from '../components/PrereqGraph'
 import DisciplineDrawer from '../components/DisciplineDrawer'
 import DocenteDrawer from '../components/DocenteDrawer'
 import DisciplineChips, { DisciplineListData } from '../components/DisciplineChips'
+import ThemeToggle from '../components/ThemeToggle'
 
 interface AgentInfo {
   label: string
@@ -565,6 +566,8 @@ export default function ChatPage() {
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Nova conversa</span>
               </button>
+
+              <ThemeToggle />
             </div>
           </div>
         </div>

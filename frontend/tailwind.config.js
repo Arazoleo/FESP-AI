@@ -10,26 +10,26 @@ module.exports = {
       colors: {
 
         ink: {
-          DEFAULT: '#0b0f0e',
-          raise: '#101513',
-          deep: '#070a09',
+          DEFAULT: 'rgb(var(--ink-rgb) / <alpha-value>)',
+          raise: 'rgb(var(--ink-raise-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--ink-deep-rgb) / <alpha-value>)',
         },
 
         paper: {
-          DEFAULT: '#ecf2ef',
-          dim: '#9aa8a2',
-          mute: '#7d8c86',
+          DEFAULT: 'rgb(var(--paper-rgb) / <alpha-value>)',
+          dim: 'rgb(var(--paper-dim-rgb) / <alpha-value>)',
+          mute: 'rgb(var(--paper-mute-rgb) / <alpha-value>)',
         },
 
         accent: {
-          DEFAULT: '#34d399',
-          deep: '#10b981',
-          dark: '#0d9268',
+          DEFAULT: 'rgb(var(--accent-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--accent-deep-rgb) / <alpha-value>)',
+          dark: 'rgb(var(--accent-dark-rgb) / <alpha-value>)',
         },
 
         line: {
-          DEFAULT: 'rgba(236, 242, 239, 0.08)',
-          strong: 'rgba(236, 242, 239, 0.14)',
+          DEFAULT: 'rgb(var(--line-rgb) / var(--line-alpha))',
+          strong: 'rgb(var(--line-rgb) / var(--line-strong-alpha))',
         },
       },
       fontFamily: {

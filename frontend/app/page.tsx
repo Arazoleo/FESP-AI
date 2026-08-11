@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { ArrowRight, ArrowDown } from 'lucide-react'
+import ThemeToggle from './components/ThemeToggle'
 import ScrollFX from './components/ScrollFX'
 
 const NODES: {
@@ -157,13 +158,16 @@ export default function LandingPage() {
             </svg>
             <span className="font-mono text-sm tracking-widest text-paper">FESP-AI</span>
           </div>
-          <Link
-            href="/chat"
-            className="group flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-paper-dim transition-colors hover:text-accent"
-          >
-            Abrir o assistente
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/chat"
+              className="group flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-paper-dim transition-colors hover:text-accent"
+            >
+              Abrir o assistente
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
         </div>
       </header>
 

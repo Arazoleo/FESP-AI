@@ -42,7 +42,15 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="font-sans antialiased bg-ink text-paper">{children}</body>
+      <body className="font-sans antialiased bg-ink text-paper">
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(localStorage.getItem('fesp-theme')==='light')document.documentElement.classList.add('light')}catch(e){}",
+          }}
+        />
+        {children}
+      </body>
     </html>
   )
 }
