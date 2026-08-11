@@ -99,6 +99,43 @@ resp = h.responder_cr(d, "qual meu cr? e se eu tirar 10 em uma disciplina de 4 c
 check("resposta com histórico traz CR e simulação",
       "6.6" in resp and "Simulação" in resp, resp[:150])
 
+print(f"\n{BOLD}5. Previsão de CR: semestre atual e metas{RESET}")
+cursando = h.extrair_cursando(
+    "estou fazendo Compiladores, Redes de Computadores e IHC esse semestre"
+)
+check("extrai as disciplinas do semestre atual",
+      cursando == ["compiladores", "redes de computadores", "ihc"], str(cursando))
+check("declaração detectada",
+      h.is_cursando_decl("tô cursando Banco de Dados e IHC neste semestre"))
+check("pergunta comum não vira declaração",
+      not h.is_cursando_decl("quais os pré-requisitos de Compiladores?"))
+check("nota uniforme extraída",
+      h.extrair_nota_uniforme("se eu passar com 8 em todas, quanto fica?") == 8.0)
+check("alvo de CR extraído",
+      h.extrair_alvo_cr("quanto preciso tirar para meu cr chegar a 8.5?") == 8.5)
+check("sem contexto de meta não extrai alvo",
+      h.extrair_alvo_cr("meu cr é 8.5") is None)
+
+necessaria = h.nota_necessaria(d["disciplinas"], [4, 4], 7.5)
+check("nota necessária resolve a equação da média ponderada (8.85)",
+      necessaria == 8.85, str(necessaria))
+check("meta impossível retorna acima de 10",
+      h.nota_necessaria(d["disciplinas"], [4], 9.9) > 10)
+
+sessao = dict(d)
+h.registrar_cursando(sessao, ["Disciplina A", "Disciplina B"], kg=None)
+check("cursando registrado na sessão com 4 créditos default",
+      len(sessao["cursando"]) == 2 and sessao["cursando"][0]["creditos"] == 4)
+resp_meta = h.responder_cr(sessao, "quanto preciso tirar para meu cr chegar a 7.5?")
+check("resposta de meta traz a média necessária",
+      "8.85" in resp_meta, resp_meta[:200])
+resp_cen = h.responder_cr(sessao, "se eu passar com 8 em todas, quanto fica meu cr?")
+check("cenário uniforme simulado (6.6 → 7.16)",
+      "7.16" in resp_cen, resp_cen[:220])
+resp_decl = h.responder_cursando(dict(d), "estou fazendo Disciplina A esse semestre")
+check("declaração confirma e ensina as perguntas de previsão",
+      "Anotei" in resp_decl and "chegar a" in resp_decl)
+
 total = _passed + _failed
 cor = GREEN if _failed == 0 else RED
 print(f"\n{BOLD}{cor}{_passed}/{total} testes passaram{RESET}\n")

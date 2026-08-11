@@ -7,6 +7,7 @@ from typing import TypedDict, List, Optional, Dict, Any
 
 class AgentState(TypedDict, total=False):
     question: str
+    question_original: str
     enhanced_question: str
     history: str
     active_agent: str

@@ -229,6 +229,10 @@ _CR_CUES_RES = [re.compile(p) for p in (
     r"\bcoeficiente\s+de\s+rendimento\b.*\bmeu\b",
     r"\bcalcul\w+\s+(?:o\s+)?(?:meu\s+)?cr\b",
     r"\bsimul\w+\s+(?:o\s+)?(?:meu\s+)?cr\b",
+    r"\bquanto\s+(?:vai\s+)?fica\w*\b.*\bcr\b",
+    r"\bcr\b.*\bquanto\s+(?:vai\s+)?fica\w*\b",
+    r"\bquanto\s+preciso\s+tirar\b",
+    r"\bprevisao\s+d[eo]\s+cr\b",
 )]
 
 
@@ -240,6 +244,62 @@ def is_cr_request(texto: str) -> bool:
 _SIM_RE = re.compile(
     r"tirar\s+(\d+[.,]?\d*)\s+em\s+(?:uma\s+)?(.+?)(?:\s+de\s+(\d+)\s+cr[eé]ditos?)?(?:[.?,]|$)"
 )
+_CURSANDO_RE = re.compile(
+    r"(?:estou|esto|to|tou)\s+(?:fazendo|cursando)\s+(?:essas?\s+disciplinas?\s*:?\s+)?(.+?)"
+    r"(?:\s+(?:esse|este|neste|nesse|no)\s+semestre)?\s*(?:[.?!;]|$)"
+)
+_NOTA_UNIFORME_RE = re.compile(
+    r"(?:passar|tirar|fechar)\s+(?:com\s+|de\s+)?(?:nota\s+)?(\d+[.,]?\d*)\s+em\s+(?:todas|tudo|cada)"
+)
+_ALVO_CR_RE = re.compile(
+    r"(?:cr|coeficiente)\s*(?:geral\s*)?(?:chegar|ficar|ir|subir|bater)\s+"
+    r"(?:a|em|para|pra|ate)\s+(\d+[.,]?\d*)"
+    r"|(?:chegar|ficar|ir|subir|bater)\s+(?:a|em|para|pra|ate)\s+(?:cr\s+)?(\d+[.,]\d+)"
+)
+
+
+def extrair_cursando(texto: str) -> List[str]:
+    m = _CURSANDO_RE.search(_norm(texto))
+    if not m:
+        return []
+    trecho = m.group(1)
+    trecho = re.sub(r"\b(?:e\s+)?(?:se\s+eu|quanto|qual)\b.*$", "", trecho).strip(" ,;")
+    partes = re.split(r",| e |;", trecho)
+    return [p.strip(" .?!") for p in partes if p and len(p.strip(" .?!")) >= 3]
+
+
+def is_cursando_decl(texto: str) -> bool:
+    return bool(extrair_cursando(texto))
+
+
+def extrair_nota_uniforme(texto: str) -> Optional[float]:
+    m = _NOTA_UNIFORME_RE.search(_norm(texto))
+    return _num(m.group(1)) if m else None
+
+
+def extrair_alvo_cr(texto: str) -> Optional[float]:
+    q = _norm(texto)
+    if not re.search(r"\b(?:preciso|necessari|quanto\s+tenho\s+que\s+tirar)\b", q) \
+            and not re.search(r"\bcr\b.*\b(?:chegar|ficar|subir|bater)\b", q):
+        return None
+    m = _ALVO_CR_RE.search(q)
+    if not m:
+        return None
+    return _num(m.group(1) or m.group(2))
+
+
+def nota_necessaria(disciplinas: List[Dict], creditos_novos: List[int],
+                    alvo: float) -> Optional[float]:
+    soma, creditos = 0.0, 0
+    for d in disciplinas:
+        if d.get("nota") is None or not d.get("creditos"):
+            continue
+        soma += d["nota"] * d["creditos"]
+        creditos += d["creditos"]
+    c_novos = sum(creditos_novos)
+    if not c_novos:
+        return None
+    return round((alvo * (creditos + c_novos) - soma) / c_novos, 2)
 
 
 def extrair_simulacao(texto: str) -> List[Tuple[float, Optional[str], Optional[int]]]:
@@ -253,56 +313,154 @@ def extrair_simulacao(texto: str) -> List[Tuple[float, Optional[str], Optional[i
     return sims
 
 
+def _resolver_disciplina_kg(kg, nome: str) -> Tuple[Optional[str], Optional[int]]:
+    if kg is None or not nome:
+        return None, None
+    node = kg._find_node(nome, "disciplina")
+    if not node:
+        return None, None
+    nome_kg = kg.graph.nodes[node].get("nome", nome)
+    cred = None
+    try:
+        for mz in kg._matrizes_de(node):
+            edge_data = kg.graph.get_edge_data(mz, node) or {}
+            for e in edge_data.values():
+                c = e.get("creditos")
+                if c:
+                    try:
+                        cred = int(c)
+                        break
+                    except (TypeError, ValueError):
+                        pass
+            if cred:
+                break
+    except Exception:
+        cred = None
+    return nome_kg, cred
+
+
+def registrar_cursando(dados: Dict, nomes: List[str], kg=None) -> List[Dict]:
+    itens = []
+    for nome in nomes:
+        nome_kg, cred = _resolver_disciplina_kg(kg, nome)
+        itens.append({
+            "nome": nome_kg or nome.title(),
+            "creditos": cred or 4,
+            "no_kg": nome_kg is not None,
+        })
+    dados["cursando"] = itens
+    return itens
+
+
+def responder_cursando(dados: Dict, texto: str, kg=None) -> str:
+    itens = registrar_cursando(dados, extrair_cursando(texto), kg)
+    linhas = ["**Anotei o seu semestre atual nesta conversa:**", ""]
+    for i in itens:
+        marca = "" if i["no_kg"] else " (não achei no sistema; assumi 4 créditos)"
+        linhas.append(f"- {i['nome']} ({i['creditos']} créditos){marca}")
+    linhas.append("")
+    if dados.get("disciplinas"):
+        linhas.append(
+            "Agora posso prever seu CR: pergunte *\"se eu passar com 8 em "
+            "todas, quanto fica meu CR?\"*, *\"e se eu tirar 9 em "
+            f"{itens[0]['nome']}?\"* ou *\"quanto preciso tirar para meu CR "
+            "chegar a 8.5?\"*"
+        )
+    else:
+        linhas.append(
+            "Para eu prever o CR com precisão, envie também o seu Histórico "
+            "Acadêmico (PDF) pelo botão **Histórico** no topo do chat."
+        )
+    return "\n".join(linhas)
+
+
 def responder_cr(dados: Optional[Dict], texto: str, kg=None) -> str:
-    if not dados:
+    if not dados or not dados.get("disciplinas"):
         return (
             "Para eu calcular ou simular o seu CR, envie o seu Histórico "
             "Acadêmico (PDF) pelo botão **Histórico** no topo do chat. Ele fica "
             "só nesta conversa e é descartado depois. O CR da UNIFESP é a média "
             "ponderada dos conceitos pelas unidades de crédito de cada UC."
         )
+    if extrair_cursando(texto):
+        registrar_cursando(dados, extrair_cursando(texto), kg)
+
     cr = dados.get("cr_geral") or dados.get("cr_calculado")
+    disciplinas = dados.get("disciplinas", [])
+    cursando = dados.get("cursando") or []
     linhas = [f"Seu CR geral é **{cr}**."]
     if dados.get("cr_confere"):
         linhas.append(
             "Recalculei pela média ponderada (Σ nota × créditos / Σ créditos) "
             "sobre as UCs do seu histórico e o valor confere ✓."
         )
+
+    alvo = extrair_alvo_cr(texto)
+    nota_todas = extrair_nota_uniforme(texto)
     sims = extrair_simulacao(texto)
+
+    if alvo is not None and cursando:
+        creditos_novos = [c["creditos"] for c in cursando]
+        necessaria = nota_necessaria(disciplinas, creditos_novos, alvo)
+        if necessaria is not None:
+            nomes = ", ".join(c["nome"] for c in cursando)
+            if necessaria > 10:
+                linhas.append(
+                    f"**Meta {alvo}**: mesmo com 10 em {nomes} "
+                    f"({sum(creditos_novos)} créditos), o CR não chega a {alvo} "
+                    f"neste semestre - seria preciso média {necessaria}. A meta "
+                    "fica para mais semestres."
+                )
+            elif necessaria <= 0:
+                linhas.append(
+                    f"**Meta {alvo}**: qualquer nota de aprovação em {nomes} já "
+                    f"leva seu CR além de {alvo}."
+                )
+            else:
+                linhas.append(
+                    f"**Meta {alvo}**: você precisa de média **{necessaria}** "
+                    f"nas UCs deste semestre ({nomes}, {sum(creditos_novos)} "
+                    "créditos) para o CR chegar lá."
+                )
+    elif alvo is not None and not cursando:
+        linhas.append(
+            f"Para calcular o que você precisa tirar para chegar a {alvo}, me "
+            "diga primeiro o que está cursando: *\"estou fazendo X, Y e Z esse "
+            "semestre\"*."
+        )
+
+    if nota_todas is not None and cursando:
+        novas = [(nota_todas, c["creditos"]) for c in cursando]
+        novo_cr = simular_cr(disciplinas, novas)
+        if novo_cr is not None:
+            nomes = ", ".join(c["nome"] for c in cursando)
+            linhas.append(
+                f"**Cenário**: passando com {nota_todas} em todas ({nomes}), "
+                f"seu CR iria de {cr} para **{novo_cr}**."
+            )
+    elif nota_todas is not None and not cursando:
+        linhas.append(
+            "Me diga o que está cursando (*\"estou fazendo X, Y e Z esse "
+            "semestre\"*) que eu simulo o CR com essa nota em todas."
+        )
+
     if sims:
         novas = []
         detalhes = []
-        for nota, alvo, creditos in sims:
-            cred = creditos
-            nome_alvo = alvo
-            if cred is None and alvo and kg is not None:
-                node = kg._find_node(alvo, "disciplina")
-                if node:
-                    nome_alvo = kg.graph.nodes[node].get("nome", alvo)
-                    ch = kg.graph.nodes[node].get("carga_horaria")
-                    for mz in kg._matrizes_de(node):
-                        t = kg.graph.get_edge_data(mz, node) or {}
-                        for e in t.values():
-                            c = e.get("creditos")
-                            if c:
-                                try:
-                                    cred = int(c)
-                                except (TypeError, ValueError):
-                                    pass
-                            if cred:
-                                break
-                        if cred:
-                            break
-            if cred is None:
-                cred = 4
+        for nota, alvo_nome, creditos in sims:
+            nome_kg, cred_kg = _resolver_disciplina_kg(kg, alvo_nome or "")
+            cred = creditos or cred_kg or 4
             novas.append((nota, cred))
-            detalhes.append(f"{nota} em {nome_alvo or 'uma UC'} ({cred} créditos)")
-        novo_cr = simular_cr(dados.get("disciplinas", []), novas)
+            detalhes.append(
+                f"{nota} em {nome_kg or alvo_nome or 'uma UC'} ({cred} créditos)"
+            )
+        novo_cr = simular_cr(disciplinas, novas)
         if novo_cr is not None:
             linhas.append(
                 f"**Simulação**: tirando {', '.join(detalhes)}, seu CR iria de "
                 f"{cr} para **{novo_cr}**."
             )
+
     ultimos = dados.get("semestres", [])[-3:]
     if ultimos:
         trilha = " → ".join(f"{s['ano_sem']}: {s['cr']}" for s in ultimos if s.get("cr"))

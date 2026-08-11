@@ -373,7 +373,7 @@ async def chat(request: ChatRequest):
             enhanced_question,
             history=history_text,
             original_question=request.message,
-            historico=historicos.get(conversation_id),
+            historico=historicos.setdefault(conversation_id, {}),
         )
         response_text = result["response"]
         active_agent = result.get("active_agent", "fallback")
@@ -691,6 +691,9 @@ async def carregar_historico(
                    "Histórico Acadêmico oficial da UNIFESP.",
         )
 
+    sessao_previa = historicos.get(conversation_id) or {}
+    if sessao_previa.get("cursando"):
+        dados["cursando"] = sessao_previa["cursando"]
     historicos[conversation_id] = dados
     historicos.move_to_end(conversation_id)
     while len(historicos) > _MAX_HISTORICOS:

@@ -155,6 +155,7 @@ class MultiAgentRAG:
 
         initial_state = {
             "question": question,
+            "question_original": original_question or question,
             "enhanced_question": question,
             "history": history,
             "historico": historico,
