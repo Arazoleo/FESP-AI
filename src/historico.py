@@ -26,6 +26,14 @@ _CR_GERAL_RE = re.compile(
     r"Coeficiente de Rendimento \(CR\) Geral:\s*([\d.,]+)"
 )
 _CURSO_RE = re.compile(r"Curso:\s*(.+?)\s*$", re.MULTILINE)
+_HORAS_FIXAS_RE = re.compile(r"^FIXAS\s+(\d+)\s*$", re.MULTILINE)
+_HORAS_ELETIVAS_RE = re.compile(r"^ELETIVAS\s+(\d+)\s*$", re.MULTILINE)
+_HORAS_TOTAL_RE = re.compile(
+    r"Total de horas cumpridas pelo estudante[^\d]*(\d+)"
+)
+_HORAS_EXT_RE = re.compile(
+    r"Carga hor[áa]ria extensionista:\s*(\d+)\s*horas"
+)
 
 GRUPO_FIXA = "121"
 GRUPO_ELETIVA = "102"
@@ -100,11 +108,23 @@ def parsear_historico(texto: str) -> Optional[Dict]:
     if not disciplinas:
         return None
 
+    horas = {}
+    for chave, pat in (
+        ("fixas", _HORAS_FIXAS_RE),
+        ("eletivas", _HORAS_ELETIVAS_RE),
+        ("total", _HORAS_TOTAL_RE),
+        ("extensao", _HORAS_EXT_RE),
+    ):
+        m = pat.search(texto or "")
+        if m:
+            horas[chave] = int(m.group(1))
+
     dados = {
         "curso": curso,
         "cr_geral": cr_geral,
         "semestres": semestres,
         "disciplinas": disciplinas,
+        "horas": horas,
     }
     dados["cr_calculado"] = calcular_cr(disciplinas)
     dados["cr_confere"] = (
@@ -187,30 +207,58 @@ def resumo_historico(dados: Dict) -> str:
     aprov = aprovadas(dados)
     reprov = reprovacoes(dados)
     inter = interdisciplinares_cursadas(dados)
+    horas = dados.get("horas") or {}
     cr = dados.get("cr_geral") or dados.get("cr_calculado")
-    linhas = [
-        "**Histórico carregado nesta conversa!** Agora posso responder com os seus dados.",
-        "",
-        f"- Curso: **{dados.get('curso') or 'não identificado'}**",
-        f"- CR geral: **{cr}**" + (
-            " (recalculei pela média ponderada nota × créditos e confere ✓)"
-            if dados.get("cr_confere") else ""
-        ),
-        f"- Disciplinas no histórico: **{len(discs)}** ({len(aprov)} aprovações, {len(reprov)} reprovações)",
-        f"- UCs Eletivas Interdisciplinares: **{len(inter)} de 4** ({', '.join(inter) if inter else 'nenhuma ainda'})",
-    ]
+    curso = dados.get("curso") or "curso não identificado"
+    sigla = curso_sigla(curso)
+
+    linhas = ["**Prontinho, li o seu histórico!**", ""]
+    frase_cr = f"Você está no **{sigla or curso}** com CR geral **{cr}**"
+    if dados.get("cr_confere"):
+        frase_cr += " - recalculei nota por nota e o valor bate com o documento ✓"
+    linhas.append(frase_cr + ".")
+    linhas.append("")
+    linhas.append("O que encontrei:")
+    frase_discs = (
+        f"- **{len(discs)} UCs** cursadas: {len(aprov)} aprovações"
+    )
     if reprov:
-        nomes = ", ".join(f"{d['nome']} ({d['ano_sem']})" for d in reprov)
-        linhas.append(f"- Reprovações: {nomes}")
+        nomes = ", ".join(f"{d['nome']} em {d['ano_sem']}" for d in reprov)
+        frase_discs += f" e {len(reprov)} reprovação(ões) ({nomes})"
+    linhas.append(frase_discs)
+    if horas.get("total"):
+        detalhe = []
+        if horas.get("fixas"):
+            detalhe.append(f"{horas['fixas']}h em fixas")
+        if horas.get("eletivas"):
+            detalhe.append(f"{horas['eletivas']}h em eletivas")
+        frase_h = f"- **{horas['total']}h cumpridas**"
+        if detalhe:
+            frase_h += f" ({' + '.join(detalhe)})"
+        if horas.get("extensao"):
+            frase_h += f", sendo **{horas['extensao']}h de extensão**"
+        linhas.append(frase_h)
+    if inter:
+        frase_i = f"- **{len(inter)} UCs Eletivas Interdisciplinares**"
+        if sigla == "BCT":
+            frase_i += " - o PPC pede 4" + (
+                ", requisito batido ✓" if len(inter) >= 4 else ""
+            )
+        linhas.append(frase_i)
+    elif sigla == "BCT":
+        linhas.append(
+            "- Nenhuma UC Eletiva Interdisciplinar ainda (o PPC pede 4)"
+        )
     linhas.append("")
     linhas.append(
-        "Pergunte por exemplo: *qual meu CR?* · *quanto falta para me formar?* · "
-        "*posso me matricular em X?* · *se eu tirar 9 em uma disciplina de 4 "
-        "créditos, meu CR vai a quanto?*"
+        "Agora é só perguntar: *quanto falta para me formar?* · *qual meu CR?* · "
+        "*posso me matricular em X?* · *se eu passar com 8 em todas, quanto "
+        "fica meu CR?*"
     )
     linhas.append("")
     linhas.append(
-        "*Os dados ficam apenas nesta conversa (sessão) e são descartados depois.*"
+        "*Seus dados ficam só nesta conversa e são descartados depois - nada é "
+        "salvo em conta ou servidor.*"
     )
     return "\n".join(linhas)
 

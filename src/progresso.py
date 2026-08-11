@@ -26,6 +26,25 @@ def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", t).strip()
 
 
+_PLACEHOLDERS_MATRIZ = {
+    "eletiva", "eletivas", "eletiva interdisciplinar",
+    "eletivas interdisciplinares", "optativa", "optativas",
+    "uc eletiva", "uc optativa",
+}
+
+REQUISITOS_CURSO = {
+    "BCT": {
+        "fixas_h": 468,
+        "eletivas_h": 1620,
+        "ac_h": 312,
+        "extensao_h": 240,
+        "interdisciplinares": 4,
+        "total_h": 2400,
+        "fonte": "PPC 2023",
+    },
+}
+
+
 def _matriz_do_curso(kg, curso: str) -> Optional[Dict[str, Dict]]:
     termos = kg.get_todos_termos_do_curso(curso)
     if not termos:
@@ -35,6 +54,8 @@ def _matriz_do_curso(kg, curso: str) -> Optional[Dict[str, Dict]]:
         for d in discs:
             nome = d.get("nome")
             if not nome:
+                continue
+            if _norm(nome) in _PLACEHOLDERS_MATRIZ:
                 continue
             key = kg._normalize_text(nome)
             try:
@@ -46,7 +67,8 @@ def _matriz_do_curso(kg, curso: str) -> Optional[Dict[str, Dict]]:
     return info
 
 
-def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
+def auditar_progresso(kg, curso: str, cursadas: List[str],
+                      historico: Optional[Dict] = None) -> Optional[Dict]:
     info = _matriz_do_curso(kg, curso)
     if not info:
         return None
@@ -139,18 +161,161 @@ def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
         "bloqueadas": bloqueadas,
         "semestres_minimos": semestres_min,
         "interdisciplinares_cursadas": interdisciplinares_cursadas,
+        "integralizacao": _quadro_integralizacao(
+            curso, historico, len(pendentes), interdisciplinares_cursadas
+        ),
     }
 
 
+def _quadro_integralizacao(curso: str, historico: Optional[Dict],
+                           obrigatorias_pendentes: int,
+                           interdisciplinares: List[str]) -> Optional[Dict]:
+    req = REQUISITOS_CURSO.get((curso or "").upper())
+    horas = (historico or {}).get("horas") or {}
+    if not req or not horas:
+        return None
+
+    componentes = []
+
+    def comp(nome, cumprido, exigido, unidade="h", obs=""):
+        ok = None if cumprido is None else cumprido >= exigido
+        componentes.append({
+            "nome": nome,
+            "cumprido": cumprido,
+            "exigido": exigido,
+            "unidade": unidade,
+            "ok": ok,
+            "obs": obs,
+        })
+
+    comp(
+        "UCs fixas (obrigatórias)", horas.get("fixas"), req["fixas_h"],
+        obs="" if obrigatorias_pendentes == 0
+        else f"{obrigatorias_pendentes} obrigatória(s) ainda pendente(s) na matriz",
+    )
+    comp("UCs eletivas", horas.get("eletivas"), req["eletivas_h"])
+    comp("Extensão curricularizada", horas.get("extensao"), req["extensao_h"])
+    comp(
+        "UCs Eletivas Interdisciplinares", len(interdisciplinares),
+        req["interdisciplinares"], unidade="UCs",
+    )
+    comp(
+        "Atividades Complementares", None, req["ac_h"],
+        obs="não constam no histórico; são validadas em processo próprio (SEI)",
+    )
+
+    faltando = [c for c in componentes if c["ok"] is False]
+    a_confirmar = [c for c in componentes if c["ok"] is None]
+    return {
+        "fonte": req["fonte"],
+        "componentes": componentes,
+        "completo_verificavel": not faltando,
+        "faltando": faltando,
+        "a_confirmar": a_confirmar,
+    }
+
+
+def _fmt_h(v) -> str:
+    return f"{v}h" if isinstance(v, (int, float)) else str(v)
+
+
 def formatar_progresso(r: Dict) -> str:
-    linhas = [
-        f"**Auditoria de progresso no {r['curso'].upper()}**",
-        "",
-        f"- Obrigatórias da matriz: **{r['total_matriz']}**",
-        f"- Reconhecidas como cursadas: **{len(r['cursadas'])}**",
-        f"- Ainda pendentes: **{r['pendentes']}**",
-        f"- Mínimo de semestres restantes (pelo caminho crítico de pré-requisitos): **{r['semestres_minimos']}**",
-    ]
+    quadro = r.get("integralizacao")
+    if quadro:
+        return _formatar_progresso_com_historico(r, quadro)
+    return _formatar_progresso_matriz(r)
+
+
+def _formatar_progresso_com_historico(r: Dict, quadro: Dict) -> str:
+    curso = r["curso"].upper()
+    linhas = [f"**Quanto falta para você se formar no {curso}?**", ""]
+
+    if quadro["completo_verificavel"]:
+        pend_nomes = [c["nome"] for c in quadro["a_confirmar"]]
+        if pend_nomes:
+            linhas.append(
+                "Boa notícia: **tudo o que dá para conferir pelo histórico está "
+                "completo**. O que resta confirmar por fora: "
+                + ", ".join(f"**{n}**" for n in pend_nomes) + "."
+            )
+        else:
+            linhas.append(
+                "**Tudo completo pelo que consigo verificar no seu histórico!**"
+            )
+    else:
+        nomes = ", ".join(f"**{c['nome']}**" for c in quadro["faltando"])
+        linhas.append(f"Pelo seu histórico, ainda falta: {nomes}.")
+
+    linhas.append("")
+    linhas.append("O quadro, requisito por requisito:")
+    for c in quadro["componentes"]:
+        if c["ok"] is True:
+            folga = c["cumprido"] - c["exigido"]
+            det = f" (+{folga}{'' if c['unidade'] == 'UCs' else 'h'} além do mínimo)" if folga > 0 else ""
+            simbolo, situacao = "✓", f"completo{det}"
+        elif c["ok"] is False:
+            falta = c["exigido"] - c["cumprido"]
+            simbolo = "✗"
+            situacao = f"faltam {falta}{'' if c['unidade'] == 'UCs' else 'h'}"
+        else:
+            simbolo, situacao = "…", "a confirmar"
+        exigido = (
+            f"{c['exigido']} exigidas" if c["unidade"] == "UCs"
+            else f"{_fmt_h(c['exigido'])} exigidas"
+        )
+        if c["cumprido"] is None:
+            quadro_valores = exigido
+        else:
+            cumprido = (
+                f"{c['cumprido']} de" if c["unidade"] == "UCs"
+                else f"{_fmt_h(c['cumprido'])} de"
+            )
+            quadro_valores = f"{cumprido} {exigido}"
+        linha = f"- {simbolo} **{c['nome']}**: {quadro_valores} - {situacao}"
+        if c["obs"]:
+            linha += f" ({c['obs']})"
+        linhas.append(linha)
+
+    if r["pendentes"]:
+        nomes_pend = ", ".join(
+            d["nome"] for d in (r["disponiveis"] + r["bloqueadas"])
+        )
+        linhas.append("")
+        linhas.append(
+            f"Obrigatórias da matriz ainda não cursadas: {nomes_pend}."
+        )
+    inter = r.get("interdisciplinares_cursadas") or []
+    if inter:
+        linhas.append("")
+        linhas.append(
+            "Suas UCs Eletivas Interdisciplinares: " + ", ".join(inter) + "."
+        )
+    linhas.append("")
+    linhas.append(
+        f"*Comparei as horas do RESUMO do seu histórico com os requisitos do "
+        f"{quadro['fonte']} ({curso}). Confirme a situação oficial no sistema "
+        "da Unifesp - especialmente as Atividades Complementares, que têm "
+        "deferimento próprio.*"
+    )
+    return "\n".join(linhas)
+
+
+def _formatar_progresso_matriz(r: Dict) -> str:
+    curso = r["curso"].upper()
+    feitas, total = len(r["cursadas"]), r["total_matriz"]
+    linhas = [f"**Quanto falta para você se formar no {curso}?**", ""]
+    if r["pendentes"] == 0:
+        linhas.append(
+            f"Você já cursou **todas as {total} obrigatórias** da matriz do "
+            f"{curso} que constam no sistema."
+        )
+    else:
+        linhas.append(
+            f"Das **{total} obrigatórias** da matriz, você já fez **{feitas}** "
+            f"- faltam **{r['pendentes']}**, e dá para fechá-las em pelo menos "
+            f"**{r['semestres_minimos']} semestre(s)** (pela cadeia de "
+            "pré-requisitos)."
+        )
     if r["disponiveis"]:
         from .oferta import ofertada_em, proximo_semestre, rotulo, proxima_oferta
 
@@ -207,15 +372,16 @@ def formatar_progresso(r: Dict) -> str:
         linhas.append(f"- Interdisciplinares (requisito do PPC 2023): {status_inter}")
         linhas.append("")
     linhas.append(
-        "Além das obrigatórias, a integralização exige as eletivas e horas de "
-        "extensão da matriz, as 312h de Atividades Complementares e, no BCT, "
-        "4 UCs Eletivas Interdisciplinares."
+        "Formar não é só a matriz de obrigatórias: também contam as eletivas, "
+        "as horas de extensão, as 312h de Atividades Complementares e, no BCT, "
+        "4 UCs Eletivas Interdisciplinares. **Envie seu Histórico Acadêmico "
+        "(PDF) pelo botão Histórico** que eu confiro as horas de cada requisito "
+        "para você."
     )
     linhas.append("")
     linhas.append(
-        "*Regras aplicadas: `prereq_transitivity` e `unlock_condition` sobre o "
-        "Knowledge Graph; o mínimo de semestres é o caminho crítico do DAG de "
-        "pré-requisitos. Confirme sempre com o Histórico Escolar oficial.*"
+        "*Auditoria pelas regras de pré-requisito do Knowledge Graph. Confirme "
+        "sempre com o Histórico Escolar oficial.*"
     )
     return "\n".join(linhas)
 

@@ -272,7 +272,8 @@ def build_pipeline(rag_instance):
                     extras_ac = {"ac_data": payload_auditoria(resultado_ac)}
                 if cursadas and curso:
                     resultado = auditar_progresso(
-                        rag_instance.knowledge_graph, curso, cursadas
+                        rag_instance.knowledge_graph, curso, cursadas,
+                        historico=hist,
                     )
                     if resultado:
                         chips = {

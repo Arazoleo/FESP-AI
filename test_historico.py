@@ -50,6 +50,12 @@ Docente: BELTRANO SILVA Titulação: Doutorado 182 DE 72 18 4 86 7,0 APROVADO
 ANO/SEM | 2023/2 Coeficiente de Rendimento (CR): 4.8
 2832 - ALGORITMOS E ESTRUTURAS DE DADOS I
 Docente: CICLANA SOUZA Titulação: Doutorado 102 DE 72 - 4 97 4,8 REPROVADO
+RESUMO
+Totais de carga horária por tipo de UC
+FIXAS 72
+ELETIVAS 72
+Total de horas cumpridas pelo estudante (teórica + prática) 144
+Carga horária extensionista: 18 horas do total cumprido pelo(a) estudante.
 """
 
 print(f"\n{BOLD}1. Parser do histórico{RESET}")
@@ -78,7 +84,13 @@ check("interdisciplinar detectada pelo grupo 182",
       h.interdisciplinares_cursadas(d) == ["Probabilidade E Estatística"])
 check("reprovações listadas", len(h.reprovacoes(d)) == 1)
 check("resumo cita CR e interdisciplinares",
-      "6.6" in h.resumo_historico(d) and "1 de 4" in h.resumo_historico(d))
+      "6.6" in h.resumo_historico(d)
+      and "1 UCs Eletivas Interdisciplinares" in h.resumo_historico(d),
+      h.resumo_historico(d)[:300])
+check("resumo traz as horas do RESUMO do PDF",
+      "144h cumpridas" in h.resumo_historico(d)
+      and "18h de extensão" in h.resumo_historico(d),
+      h.resumo_historico(d)[:300])
 
 check("curso do histórico mapeado para BCT (sem cair na sigla EM)",
       h.curso_sigla("INTERDISCIPLINAR EM CIÊNCIA E TECNOLOGIA - NOTURNO") == "BCT")
@@ -135,6 +147,66 @@ check("cenário uniforme simulado (6.6 → 7.16)",
 resp_decl = h.responder_cursando(dict(d), "estou fazendo Disciplina A esse semestre")
 check("declaração confirma e ensina as perguntas de previsão",
       "Anotei" in resp_decl and "chegar a" in resp_decl)
+
+print(f"\n{BOLD}6. Horas do RESUMO e quadro de integralização{RESET}")
+check("horas do RESUMO parseadas",
+      d["horas"] == {"fixas": 72, "eletivas": 72, "total": 144, "extensao": 18},
+      str(d["horas"]))
+
+_spec_p = importlib.util.spec_from_file_location("src.progresso", ROOT / "src/progresso.py")
+p = importlib.util.module_from_spec(_spec_p)
+p.__package__ = "src"
+sys.modules["src.progresso"] = p
+_spec_p.loader.exec_module(p)
+
+quadro = p._quadro_integralizacao("BCT", d, 0, ["Probabilidade E Estatística"])
+check("quadro de integralização montado para o BCT", quadro is not None)
+comps = {c["nome"]: c for c in quadro["componentes"]}
+check("fixas comparadas com 468h exigidas (72 < 468 → falta)",
+      comps["UCs fixas (obrigatórias)"]["ok"] is False
+      and comps["UCs fixas (obrigatórias)"]["exigido"] == 468)
+check("eletivas comparadas com 1620h", comps["UCs eletivas"]["exigido"] == 1620)
+check("extensão comparada com 240h",
+      comps["Extensão curricularizada"]["ok"] is False
+      and comps["Extensão curricularizada"]["exigido"] == 240)
+check("interdisciplinares 1 de 4 → falta",
+      comps["UCs Eletivas Interdisciplinares"]["ok"] is False)
+check("AC marcadas como a confirmar (fora do histórico)",
+      comps["Atividades Complementares"]["ok"] is None)
+check("quadro aponta o que falta",
+      not quadro["completo_verificavel"] and len(quadro["faltando"]) == 4,
+      str([c["nome"] for c in quadro["faltando"]]))
+
+d_ok = dict(d)
+d_ok["horas"] = {"fixas": 468, "eletivas": 2016, "total": 2484, "extensao": 248}
+quadro_ok = p._quadro_integralizacao(
+    "BCT", d_ok, 0,
+    ["A", "B", "C", "D", "E", "F"],
+)
+check("com horas completas, tudo verificável fica completo",
+      quadro_ok["completo_verificavel"]
+      and [c["nome"] for c in quadro_ok["a_confirmar"]] == ["Atividades Complementares"])
+r_fmt = {
+    "curso": "BCT", "total_matriz": 7, "cursadas": ["x"] * 7,
+    "eletivas_cursadas": [], "desconhecidas": [], "pendentes": 0,
+    "disponiveis": [], "bloqueadas": [], "semestres_minimos": 0,
+    "interdisciplinares_cursadas": ["A", "B", "C", "D", "E", "F"],
+    "integralizacao": quadro_ok,
+}
+texto_fmt = p.formatar_progresso(r_fmt)
+check("resposta humanizada abre com a conclusão",
+      texto_fmt.startswith("**Quanto falta para você se formar no BCT?**")
+      and "tudo o que dá para conferir pelo histórico está completo" in texto_fmt,
+      texto_fmt[:250])
+check("resposta lista requisito por requisito com folga",
+      "✓ **UCs eletivas**: 2016h de 1620h exigidas" in texto_fmt
+      and "+396h além do mínimo" in texto_fmt, texto_fmt[:600])
+check("AC sinalizadas como a confirmar via SEI",
+      "… **Atividades Complementares**" in texto_fmt and "SEI" in texto_fmt)
+check("quadro None para curso sem requisitos cadastrados",
+      p._quadro_integralizacao("BCC", d, 0, []) is None)
+check("quadro None sem horas no histórico",
+      p._quadro_integralizacao("BCT", {"horas": {}}, 0, []) is None)
 
 total = _passed + _failed
 cor = GREEN if _failed == 0 else RED
