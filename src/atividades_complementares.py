@@ -52,7 +52,7 @@ def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", _strip_accents((text or "").lower())).strip()
 
 
-_AC_RE = re.compile(r"\batividades?\s+complementar(?:es)?\b")
+_AC_RE = re.compile(r"\batividades?\s+complementar(?:es)?\b|\bacs?\b|\baces?\b")
 
 
 def is_ac_question(question: str) -> bool:
@@ -76,13 +76,21 @@ _DETAIL_CUES_RES = [re.compile(p) for p in _DETAIL_CUES]
 _AC_CONTEXT_RE = re.compile(r"\batividades?\s+complementar(?:es)?\b|\beixos?\b")
 
 
+_NOT_BREAKDOWN_RE = re.compile(
+    r"\b(?:para\s+quem|com\s+quem|quem\s+devo|duvidas?|contato|falar|escrevo|e-?mail)\b"
+)
+
+
 def is_breakdown_request(question: str) -> bool:
     """
     True se a pergunta pede o detalhamento por eixo das atividades
     complementares (direto ou via pergunta canônica do follow-up).
+    Perguntas sobre contato/dúvidas seguem o fluxo normal.
     """
     q = _norm(question)
     if not _AC_CONTEXT_RE.search(q):
+        return False
+    if _NOT_BREAKDOWN_RE.search(q):
         return False
     return any(p.search(q) for p in _DETAIL_CUES_RES)
 

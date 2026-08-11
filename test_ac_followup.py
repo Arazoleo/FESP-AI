@@ -91,6 +91,7 @@ for q in positivos:
 negativos = [
     "Quantas horas de atividades complementares preciso?",
     "Quantos certificados de uma mesma instituição posso usar nas AC?",
+    "Para quem mando dúvida sobre o que vale como atividade complementar?",
     "Como funcionam as atividades complementares?",
     "As ACE são obrigatórias?",
     "Quais atividades posso fazer no próximo semestre?",
