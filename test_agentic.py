@@ -233,6 +233,77 @@ check("progresso do BCT conta interdisciplinares cursadas (1 de 4)",
 check("resposta do progresso mostra o placar de interdisciplinares",
       "de 4" in progresso.formatar_progresso(res_bct))
 
+print(f"\n{BOLD}9. Oferta por paridade do termo{RESET}")
+oferta = _mod("src.oferta", "src/oferta.py")
+from datetime import date as _date
+
+_ago = _date(2026, 8, 15)
+_mar = _date(2026, 3, 10)
+check("semestre de agosto/2026 é 2026/2", oferta.semestre_de(_ago) == (2026, 2))
+check("semestre de março/2026 é 2026/1", oferta.semestre_de(_mar) == (2026, 1))
+check("próximo semestre após 2026/2 é 2027/1", oferta.proximo_semestre(_ago) == (2027, 1))
+check("próximo semestre após 2026/1 é 2026/2", oferta.proximo_semestre(_mar) == (2026, 2))
+check("termo ímpar é ofertado em X/1", oferta.ofertada_em("impar", (2027, 1)) is True)
+check("termo par NÃO é ofertado em X/1", oferta.ofertada_em("par", (2027, 1)) is False)
+check("paridade desconhecida → None", oferta.ofertada_em(None, (2027, 1)) is None)
+check("próxima oferta de termo par visto de 2026/2 é 2027/2",
+      oferta.proxima_oferta("par", _ago) == (2027, 2))
+check("próxima oferta de termo ímpar visto de 2026/2 é 2027/1",
+      oferta.proxima_oferta("impar", _ago) == (2027, 1))
+nota = oferta.nota_oferta("par", _ago)
+check("nota de oferta avisa que par não abre no próximo semestre",
+      nota and "2027/2" in nota and "não no próximo" in nota, str(nota))
+nota_ok = oferta.nota_oferta("impar", _ago)
+check("nota de oferta confirma ímpar no próximo semestre",
+      nota_ok and "2027/1" in nota_ok, str(nota_ok))
+
+check("extração: 'vai ter X no próximo semestre'",
+      oferta.extrair_disciplina_oferta("vai ter Compiladores no próximo semestre?")
+      == "compiladores")
+check("extração: 'X será ofertada semestre que vem?'",
+      oferta.extrair_disciplina_oferta("Cálculo em Uma Variável será ofertada semestre que vem?")
+      == "calculo em uma variavel")
+check("extração: 'em qual semestre tem X?'",
+      oferta.extrair_disciplina_oferta("em qual semestre tem Compiladores?")
+      == "compiladores")
+check("sem gatilho de oferta → None",
+      oferta.extrair_disciplina_oferta("quais os pré-requisitos de Compiladores?") is None)
+
+par_calc = kg.paridade_oferta("Cálculo em Uma Variável")
+check("Cálculo em Uma Variável tem paridade ímpar (termo 1)",
+      par_calc == "impar", str(par_calc))
+check("disciplina inexistente → paridade None",
+      kg.paridade_oferta("Disciplina Fantasma XYZ") is None)
+resp_of = oferta.responder_oferta(kg, "Cálculo em Uma Variável", _ago)
+check("resposta de oferta cita semestres ímpares e vale confirmar",
+      resp_of and "ímpares" in resp_of and "vale confirmar" in resp_of, str(resp_of)[:200])
+check("resposta de oferta prevê o próximo semestre (2027/1) com oferta",
+      resp_of and "2027/1" in resp_of and "deve ter oferta" in resp_of, str(resp_of)[:200])
+
+rr_par = risco.analisar_reprovacao(kg, "Cálculo em Uma Variável")
+check("análise de risco carrega paridade", rr_par.get("paridade") == "impar",
+      str(rr_par.get("paridade")))
+texto_rp = risco.formatar_risco(rr_par)
+check("risco com paridade conhecida avisa custo de 1 ano",
+      "1 ano" in texto_rp and "confirmar" in texto_rp, texto_rp[:200])
+
+vm_of = progresso.verificar_matricula(
+    kg, [rr_par["diretos"][0]], ["Cálculo em Uma Variável"]
+)
+check("parecer de matrícula carrega paridade",
+      "paridade" in vm_of["pareceres"][0], str(vm_of["pareceres"][0]))
+texto_vm = progresso.formatar_matricula(vm_of)
+check("resposta de matrícula menciona oferta esperada quando paridade conhecida",
+      "oferta" in texto_vm.lower(), texto_vm[:300])
+
+res_par = progresso.auditar_progresso(kg, "BCC", ["Lógica de Programação"])
+check("disponíveis do progresso carregam paridade",
+      all("paridade" in d for d in res_par["disponiveis"]),
+      str(res_par["disponiveis"][:2]))
+texto_pg = progresso.formatar_progresso(res_par)
+check("resposta do progresso menciona oferta prevista pela paridade",
+      "paridade do termo" in texto_pg, texto_pg[:300])
+
 total = _passed + _failed
 cor = GREEN if _failed == 0 else RED
 print(f"\n{BOLD}{cor}{_passed}/{total} testes passaram{RESET}\n")

@@ -96,7 +96,15 @@ def auditar_progresso(kg, curso: str, cursadas: List[str]) -> Optional[Dict]:
                         base_pendente.append(b["nome"])
             except Exception:
                 pass
-            disponiveis.append({**v, "base_pendente": base_pendente[:2]})
+            try:
+                paridade = kg.paridade_oferta(v["nome"])
+            except Exception:
+                paridade = None
+            disponiveis.append({
+                **v,
+                "base_pendente": base_pendente[:2],
+                "paridade": paridade,
+            })
 
     interdisciplinares_cursadas = []
     for c in cursadas:
@@ -144,12 +152,26 @@ def formatar_progresso(r: Dict) -> str:
         f"- Mínimo de semestres restantes (pelo caminho crítico de pré-requisitos): **{r['semestres_minimos']}**",
     ]
     if r["disponiveis"]:
+        from .oferta import ofertada_em, proximo_semestre, rotulo, proxima_oferta
+
+        prox = proximo_semestre()
         linhas.append("")
-        linhas.append("**Você já pode cursar** (pré-requisitos cumpridos):")
+        linhas.append(
+            f"**Você já pode cursar** (pré-requisitos cumpridos; oferta prevista "
+            f"pela paridade do termo, vale confirmar com a coordenação):"
+        )
         for d in r["disponiveis"][:12]:
             extra = ""
             if d.get("base_pendente"):
                 extra = f" - base recomendada pendente: {', '.join(d['base_pendente'])}"
+            oferta = ofertada_em(d.get("paridade"), prox)
+            if oferta is True:
+                extra += f" - oferta esperada em {rotulo(prox)} ✓"
+            elif oferta is False:
+                extra += (
+                    f" - termo {'par' if d.get('paridade') == 'par' else 'ímpar'}: "
+                    f"oferta esperada só em {rotulo(proxima_oferta(d.get('paridade')))}"
+                )
             linhas.append(f"- {d['nome']} (termo {d['termo']}){extra}")
         if len(r["disponiveis"]) > 12:
             linhas.append(f"- ... e mais {len(r['disponiveis']) - 12}")
@@ -241,11 +263,16 @@ def verificar_matricula(kg, desejadas: List[str], cursadas: List[str]) -> Dict:
                     )
         except Exception:
             pass
+        try:
+            paridade = kg.paridade_oferta(nome)
+        except Exception:
+            paridade = None
         pareceres.append({
             "disciplina": nome,
             "status": "risco" if motivos else "ok",
             "motivos": motivos,
             "base_pendente": base_pendente[:3],
+            "paridade": paridade,
         })
     return {"pareceres": pareceres}
 
@@ -266,6 +293,11 @@ def formatar_matricula(r: Dict) -> str:
                 f"{'; '.join(p['base_pendente'])} - não impede o deferimento, "
                 "mas a disciplina pressupõe esses conceitos (regra `base_recomendada`)"
             )
+        from .oferta import nota_oferta
+
+        nota = nota_oferta(p.get("paridade"))
+        if nota:
+            linhas.append(f"  - {nota} (vale confirmar com a coordenação)")
     linhas.append("")
     linhas.append(
         "O que não consigo verificar por aqui: falta de vagas, choque de "

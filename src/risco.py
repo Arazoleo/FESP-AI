@@ -43,12 +43,18 @@ def analisar_reprovacao(kg, disciplina: str) -> Optional[Dict]:
     cadeia_max = max(profundidade.values(), default=0)
     critica = len(diretos) >= 2
 
+    try:
+        paridade = kg.paridade_oferta(nome)
+    except Exception:
+        paridade = None
+
     return {
         "nome": nome,
         "diretos": diretos,
         "transitivos": sorted(transitivos),
         "cadeia_max": cadeia_max,
         "critica": critica,
+        "paridade": paridade,
     }
 
 
@@ -61,6 +67,14 @@ def formatar_risco(r: Dict) -> str:
             "a própria disciplina (e o impacto no CR, que vale prioridade de "
             "vaga pelo art. 112)."
         )
+        if r.get("paridade") in ("impar", "par"):
+            nome_par = "ímpares" if r["paridade"] == "impar" else "pares"
+            linhas.append(
+                f"Atenção ao calendário: como é de termo "
+                f"{'ímpar' if r['paridade'] == 'impar' else 'par'}, a oferta "
+                f"esperada é só em semestres {nome_par} - refazer pode levar "
+                "até 1 ano (vale confirmar com a coordenação)."
+            )
     else:
         linhas.append(
             f"- **Bloqueio imediato**: {', '.join(r['diretos'])} "
@@ -72,11 +86,22 @@ def formatar_risco(r: Dict) -> str:
                 f"- **Efeito em cascata**: {', '.join(extras[:8])}"
                 + (f" e mais {len(extras) - 8}" if len(extras) > 8 else "")
             )
-        linhas.append(
-            f"- **Atraso potencial**: a cadeia à frente tem profundidade "
-            f"{r['cadeia_max']}; reprovar tende a empurrar esse caminho em "
-            "pelo menos 1 semestre (ou 1 ano, se a UC for anual na oferta)."
-        )
+        if r.get("paridade") in ("impar", "par"):
+            nome_par = "ímpares" if r["paridade"] == "impar" else "pares"
+            linhas.append(
+                f"- **Atraso potencial**: {r['nome']} é de termo "
+                f"{'ímpar' if r['paridade'] == 'impar' else 'par'}, normalmente "
+                f"ofertada só em semestres {nome_par} - reprovar tende a custar "
+                f"**1 ano** até a próxima oferta, empurrando a cadeia à frente "
+                f"(profundidade {r['cadeia_max']}) junto. Vale confirmar a "
+                "oferta real com a coordenação."
+            )
+        else:
+            linhas.append(
+                f"- **Atraso potencial**: a cadeia à frente tem profundidade "
+                f"{r['cadeia_max']}; reprovar tende a empurrar esse caminho em "
+                "pelo menos 1 semestre (ou 1 ano, se a UC for anual na oferta)."
+            )
         if r["critica"]:
             linhas.append(
                 f"- ⚠ {r['nome']} é **disciplina crítica** pela regra R3 "

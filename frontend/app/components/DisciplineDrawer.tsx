@@ -46,6 +46,7 @@ export interface DisciplineDetails {
   conceitos_abordados?: string[]
   base_recomendada?: BaseRecomendada[]
   interdisciplinar?: boolean
+  paridade_oferta?: 'impar' | 'par' | 'ambos' | null
 }
 
 interface Props {
@@ -170,6 +171,8 @@ export default function DisciplineDrawer({
     details?.sigla && details.sigla,
     details?.termo && `Termo ${details.termo}`,
     details?.interdisciplinar && '★ Interdisciplinar',
+    details?.paridade_oferta === 'impar' && 'Oferta: semestres ímpares',
+    details?.paridade_oferta === 'par' && 'Oferta: semestres pares',
   ].filter(Boolean) as string[]
 
   return (

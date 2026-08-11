@@ -777,6 +777,7 @@ async def discipline_details(nome: str):
         "conceitos_abordados": kg.get_conceitos_abordados(nome_oficial),
         "base_recomendada": kg.get_base_recomendada(nome_oficial),
         "interdisciplinar": bool(data.get("interdisciplinar")),
+        "paridade_oferta": kg.paridade_oferta(nome_oficial),
     }
 
 

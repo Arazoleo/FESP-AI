@@ -356,6 +356,28 @@ class KnowledgeGraph:
                     fila.append(u)
         return vistos
 
+    def paridade_oferta(self, disciplina: str) -> Optional[str]:
+        """
+        'impar'/'par' conforme o termo da disciplina nas matrizes (termo ímpar
+        é normalmente ofertado em X/1, par em X/2); 'ambos' se matrizes
+        divergem; None para eletivas sem termo fixo.
+        """
+        node = self._find_node(disciplina, "disciplina")
+        if not node:
+            return None
+        paridades = set()
+        for mz in self._matrizes_de(node):
+            t = self._termo_na_matriz(mz, node)
+            if t:
+                paridades.add("par" if t % 2 == 0 else "impar")
+        if not paridades:
+            t = self._termo_num(self.graph.nodes[node])
+            if t:
+                paridades.add("par" if t % 2 == 0 else "impar")
+        if not paridades:
+            return None
+        return "ambos" if len(paridades) > 1 else paridades.pop()
+
     def get_conceitos_abordados(self, disciplina: str) -> List[str]:
         d_id = self._find_node(disciplina, "disciplina")
         if not d_id:
