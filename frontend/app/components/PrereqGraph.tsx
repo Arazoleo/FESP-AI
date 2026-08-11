@@ -53,8 +53,13 @@ function truncate(nome: string): string {
   return nome.length > MAX_LABEL ? `${nome.slice(0, MAX_LABEL - 1)}…` : nome
 }
 
-function pillWidth(node: PrereqGraphNode): number {
-  const label = truncate(node.nome)
+function pillLabel(node: PrereqGraphNode, pct?: number): string {
+  const base = truncate(node.nome)
+  return pct !== undefined ? `${base} · ${pct}%` : base
+}
+
+function pillWidth(node: PrereqGraphNode, pct?: number): number {
+  const label = pillLabel(node, pct)
   return Math.round(label.length * CHAR_W + 30 + (node.cursada ? 18 : 0))
 }
 
@@ -63,6 +68,7 @@ interface LaidNode extends PrereqGraphNode {
   y: number
   w: number
   layer: number
+  pct?: number
 }
 
 function computeLayout(data: PrereqGraphData) {
@@ -113,11 +119,18 @@ function computeLayout(data: PrereqGraphData) {
   const maxRows = Math.max(...columns.map((c) => c.length), 1)
   const height = topY + maxRows * (NODE_H + V_GAP) - V_GAP + PAD
 
+  const pctOf = new Map<string, number>()
+  edges.forEach((e) => {
+    if (e.inferida) {
+      pctOf.set(e.source, Math.round(e.confidence * 100))
+    }
+  })
+
   const laid = new Map<string, LaidNode>()
   const colHeaders: { label: string; x: number; w: number }[] = []
   let x = PAD
   columns.forEach((col, ci) => {
-    const w = Math.max(...col.map(pillWidth), 60)
+    const w = Math.max(...col.map((n) => pillWidth(n, pctOf.get(n.id))), 60)
     const colH = col.length * (NODE_H + V_GAP) - V_GAP
     const startY = topY + Math.max(0, (height - topY - PAD - colH) / 2)
     col.forEach((n, ri) => {
@@ -127,6 +140,7 @@ function computeLayout(data: PrereqGraphData) {
         y: startY + ri * (NODE_H + V_GAP),
         w,
         layer: ci,
+        pct: pctOf.get(n.id),
       })
     })
     if (showHeaders) {
@@ -171,14 +185,12 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
         </span>
       </div>
 
-      <div className="overflow-x-auto p-3">
+      <div className="p-3">
         <svg
-          width={width}
-          height={height}
           viewBox={`0 0 ${width} ${height}`}
           role="img"
           aria-label="Grafo interativo de pré-requisitos entre disciplinas"
-          style={{ minWidth: width, display: 'block' }}
+          style={{ width: '100%', maxWidth: width, height: 'auto', display: 'block', margin: '0 auto' }}
         >
           <defs>
             <marker
@@ -249,37 +261,24 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
                       : 'url(#prereq-arrow)'
                   }
                 />
-                {inferida ? (
+                {!inferida && partial && (
                   <text
                     x={mx}
                     y={(y1 + y2) / 2 - 6}
                     textAnchor="middle"
-                    fill={C.amber}
+                    fill={C.textMute}
                     fontSize={10}
                     className="font-mono"
                   >
-                    recomendada {Math.round(e.confidence * 100)}%
+                    {Math.round(e.confidence * 100)}%
                   </text>
-                ) : (
-                  partial && (
-                    <text
-                      x={mx}
-                      y={(y1 + y2) / 2 - 6}
-                      textAnchor="middle"
-                      fill={C.textMute}
-                      fontSize={10}
-                      className="font-mono"
-                    >
-                      {Math.round(e.confidence * 100)}%
-                    </text>
-                  )
                 )}
               </g>
             )
           })}
 
           {Array.from(laid.values()).map((n, i) => {
-            const label = truncate(n.nome)
+            const label = pillLabel(n, n.pct)
             const isRoot = n.id === rootId
             return (
               <g
@@ -351,8 +350,8 @@ export default function PrereqGraph({ data, onAsk, onSelect }: Props) {
             }}
             aria-hidden
           />
-          <span style={{ color: C.amber }}>recomendada NN%</span> - inferida
-          pela sobreposição de ementas (não é pré-requisito formal)
+          <span style={{ color: C.amber }}>disciplina · NN%</span> - recomendada
+          por inferência (não é pré-requisito formal; o percentual é a confiança)
         </div>
       )}
     </div>
