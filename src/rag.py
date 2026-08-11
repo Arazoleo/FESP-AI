@@ -24,6 +24,7 @@ from .config import Config
 from .aux_llm import get_aux_llm
 from .parsers_md import parse_file
 from .hybrid_retriever import HybridRetriever, build_bm25_from_chroma
+from .task_embeddings import TaskPrefixEmbeddings, embedding_signature
 
 
 class SemanticChunker:
@@ -119,7 +120,11 @@ class RAGUnifesp:
         )
         if ollama_base_url and ollama_base_url != "http://localhost:11434":
             embed_kwargs["base_url"] = ollama_base_url
-        self.embeddings = BatchedEmbeddings(OllamaEmbeddings(**embed_kwargs))
+        self.embeddings = BatchedEmbeddings(
+            TaskPrefixEmbeddings(
+                OllamaEmbeddings(**embed_kwargs), self.config.EMBEDDING_MODEL
+            )
+        )
 
         self.aux_llm = get_aux_llm() or self.llm
 
@@ -222,6 +227,19 @@ class RAGUnifesp:
                     pass
                 self.db = None
                 force = True
+            elif self._load_index().get("embedding_signature") != embedding_signature(
+                self.config.EMBEDDING_MODEL
+            ):
+                print(
+                    "[SYNC] Assinatura de embedding mudou (prefixos de tarefa) - "
+                    "recriando o banco vetorial do zero."
+                )
+                try:
+                    self.db.delete_collection()
+                except Exception:
+                    pass
+                self.db = None
+                force = True
 
         if not has_changes and db_exists and not force:
             print("Banco atualizado, nenhuma mudanca detectada.")
@@ -248,7 +266,10 @@ class RAGUnifesp:
                 self.embeddings,
                 persist_directory=self.config.PERSIST_DIR
             )
-            self._save_index({"files": current_files})
+            self._save_index({
+                "files": current_files,
+                "embedding_signature": embedding_signature(self.config.EMBEDDING_MODEL),
+            })
             print(f"Banco criado: {len(splits)} chunks de {len(current_files)} arquivos.")
         else:
             self._load_db()
@@ -321,8 +342,11 @@ class RAGUnifesp:
                 splits = chunker.split_documents(new_docs)
                 self.db.add_documents(splits)
                 print(f"Adicionados {len(splits)} novos chunks.")
-        
-        self._save_index({"files": current_files})
+
+        self._save_index({
+            "files": current_files,
+            "embedding_signature": embedding_signature(self.config.EMBEDDING_MODEL),
+        })
     
     def _load_db(self):
         self.db = Chroma(
@@ -867,10 +891,36 @@ Resposta:"""
                     regimento_docs.append(Document(page_content=doc_text, metadata=meta))
                     scores.append(score)
             
-            if regimento_docs:
-                sorted_docs = [doc for _, doc in sorted(zip(scores, regimento_docs), key=lambda x: x[0], reverse=True)]
-                return sorted_docs[:8]
-            
+            sorted_docs = [
+                doc for _, doc in
+                sorted(zip(scores, regimento_docs), key=lambda x: x[0], reverse=True)
+            ][:10]
+
+            semanticos = []
+            try:
+                filtro = (
+                    {"tipo": "matriz_curricular"} if is_matriz_question
+                    else {"tipo_documento": "institucional"}
+                )
+                semanticos = self.db.similarity_search(
+                    question_lower, k=8, filter=filtro
+                )
+            except Exception:
+                semanticos = []
+
+            vistos = set()
+            candidatos = []
+            for doc in sorted_docs + semanticos:
+                chave = doc.page_content[:120]
+                if chave in vistos:
+                    continue
+                vistos.add(chave)
+                candidatos.append(doc)
+
+            if candidatos:
+                from .reranker import rerank
+                return rerank(question_lower, candidatos, 8)
+
             return []
             
         except Exception as e:

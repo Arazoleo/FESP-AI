@@ -113,8 +113,10 @@ class HybridRetriever(BaseRetriever):
                 d.metadata["id"] = d.metadata.get("ids", [None])[0] if isinstance(d.metadata.get("ids"), list) else d.metadata.get("ids") or id(d.page_content)
 
         lists = [docs_v, docs_b]
-        merged = _rrf_merge(lists, k=self.rrf_k, top_n=self.top_k, doc_key="id")
-        return merged if merged else docs_v[: self.top_k]
+        merged = _rrf_merge(lists, k=self.rrf_k, top_n=self.top_k * 2, doc_key="id")
+        candidatos = merged if merged else docs_v[: self.top_k * 2]
+        from .reranker import rerank
+        return rerank(query, candidatos, self.top_k)
 
 
 def build_bm25_from_chroma(db) -> tuple:

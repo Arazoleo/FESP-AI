@@ -102,6 +102,7 @@ python3 test_planner.py               # planner de grade (BFS topológico)
 python3 test_ac_followup.py           # follow-up de atividades complementares
 python3 test_conceitos.py             # camada de conceitos (regra R6, base recomendada)
 python3 test_agentic.py               # capacidades agênticas (auditor de AC, progresso, trilhas...)
+python3 test_retrieval.py             # retrieval (prefixos de tarefa, reranker, índice do site)
 python3 test_pyreason_bounds.py       # propagação de bounds via PyReason
 python3 test_pyreason_parity.py       # paridade PyReason × referência Python
 ```

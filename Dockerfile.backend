@@ -9,8 +9,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar requirements e instalar dependências Python
+ENV HF_HOME=/app/.hf
+
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
+
+RUN python -c "from sentence_transformers import CrossEncoder; CrossEncoder('cross-encoder/mmarco-mMiniLMv2-L12-H384-v1', max_length=512)"
 
 # Pré-compilar kernels JIT do numba (usado pelo PyReason). Sem isso,
 # o primeiro `pr.reason()` paga ~20s no startup do container.

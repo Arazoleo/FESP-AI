@@ -329,7 +329,7 @@ REGIMENTO_FORCE_KEYWORDS = [
     "regimento", "regulamento", "norma", "artigo", "resolucao",
     "evacuacao", "incendio", "seguranca", "faq", "perguntas frequentes",
     "atividade complementar", "atividades complementares",
-    "trancamento", "aprovacao", "reprovacao",
+    "trancamento", "trancar", "aprovacao", "reprovacao",
     "indeferimento", "indeferida", "indeferido", "deferimento",
     "preenchimento de vagas", "prioridade na matricula",
     "criterios de matricula", "criterios de prioridade",

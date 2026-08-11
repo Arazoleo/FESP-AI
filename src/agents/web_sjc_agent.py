@@ -12,7 +12,6 @@ por isso a resposta sempre cita a página oficial usada.
 """
 
 import re
-import math
 import time
 import unicodedata
 import logging
@@ -77,13 +76,6 @@ def _slug_tokens(url: str) -> set:
     return _tokens(_slug_text(url))
 
 
-def _cosine(a: List[float], b: List[float]) -> float:
-    num = sum(x * y for x, y in zip(a, b))
-    na = math.sqrt(sum(x * x for x in a))
-    nb = math.sqrt(sum(y * y for y in b))
-    return num / (na * nb) if na and nb else 0.0
-
-
 def search_site_sections(question: str, top_k: int = 2) -> List[Dict]:
     """
     Busca por keywords nas seções do corpus do site (sem embeddings).
@@ -120,7 +112,8 @@ class WebSjcAgent(BaseAgent):
     def __init__(self, rag_instance):
         super().__init__(rag_instance)
         self._corpus: Optional[List[Dict]] = None
-        self._page_vecs: Optional[List[List[float]]] = None
+        self._site_db = None
+        self._site_db_ts: float = 0.0
         self._corpus_ts: float = 0.0
         self._last_mode: str = "keyword"
 
@@ -207,7 +200,6 @@ class WebSjcAgent(BaseAgent):
             if self._corpus is None or ts > self._corpus_ts:
                 self._corpus = cache["pages"]
                 self._corpus_ts = ts
-                self._page_vecs = None
             return self._corpus
         if self._corpus is not None:
             return self._corpus
@@ -219,46 +211,61 @@ class WebSjcAgent(BaseAgent):
             self._corpus = []
         return self._corpus
 
-    def _ensure_vectors(self, corpus: List[Dict]) -> Optional[List[List[float]]]:
-        if self._page_vecs is not None:
-            return self._page_vecs
-        emb = getattr(self.rag, "embeddings", None)
-        if not emb or not corpus:
+    def _ensure_site_db(self, corpus: List[Dict]):
+        cache = load_cache()
+        if not cache or not cache.get("pages"):
             return None
-        try:
-            textos = [
-                f"{p['titulo']}. {_slug_text(p['url'])}. {p['texto'][:600]}"
-                for p in corpus
-            ]
-            self._page_vecs = emb.embed_documents(textos)
-        except Exception as e:
-            logger.warning("[web_sjc] embeddings indisponíveis, usando keyword: %s", e)
-            self._page_vecs = None
-        return self._page_vecs
+        ts = float(cache.get("ts", 0))
+        if self._site_db is not None and ts == self._site_db_ts:
+            return self._site_db
+        emb = getattr(self.rag, "embeddings", None)
+        persist = getattr(getattr(self.rag, "config", None), "PERSIST_DIR", None)
+        if not emb or not persist:
+            return None
+        from ..site_index import ensure_site_collection
+        from ..task_embeddings import embedding_signature
 
-    def _rank(self, question: str, corpus: List[Dict]) -> List[Tuple[float, Dict]]:
-        vecs = self._ensure_vectors(corpus)
-        if vecs:
-            try:
-                qv = self.rag.embeddings.embed_query(question)
-                scored = [(_cosine(qv, vecs[i]), corpus[i]) for i in range(len(corpus))]
-                scored.sort(key=lambda x: -x[0])
-                self._last_mode = "embed"
-                return scored
-            except Exception:
-                pass
-        self._last_mode = "keyword"
+        sig = embedding_signature(
+            getattr(self.rag.config, "EMBEDDING_MODEL", "") or ""
+        )
+        self._site_db = ensure_site_collection(emb, str(persist), cache, sig)
+        self._site_db_ts = ts
+        return self._site_db
+
+    def _keyword_scores(self, question: str, corpus: List[Dict]) -> List[float]:
         qt = _tokens(question)
         for a in list(qt):
             qt |= _ACRONYM_EXPANSION.get(a, set())
-        scored = [
-            (
-                2.0 * len(qt & _tokens(p["titulo"]))
-                + 1.5 * len(qt & _slug_tokens(p["url"]))
-                + len(qt & _tokens(p["texto"][:1000])),
-                p,
-            )
+        return [
+            2.0 * len(qt & _tokens(p["titulo"]))
+            + 1.5 * len(qt & _slug_tokens(p["url"]))
+            + len(qt & _tokens(p["texto"][:1000]))
             for p in corpus
+        ]
+
+    def _rank(self, question: str, corpus: List[Dict]) -> List[Tuple[float, Dict]]:
+        kw_scores = self._keyword_scores(question, corpus)
+        db = self._ensure_site_db(corpus)
+        if db is not None:
+            from ..site_index import buscar_site, rrf_indices
+
+            idxs_vec = buscar_site(db, question, k=20)
+            idxs_kw = [
+                i for i in sorted(range(len(corpus)), key=lambda i: -kw_scores[i])
+                if kw_scores[i] >= _MIN_KEYWORD
+            ][:12]
+            merged = rrf_indices([idxs_vec, idxs_kw], top_n=20)
+            merged = [i for i in merged if 0 <= i < len(corpus)]
+            if merged:
+                self._last_mode = "hybrid"
+                n = len(merged)
+                return [
+                    ((n - pos) / n, corpus[i]) for pos, i in enumerate(merged)
+                ]
+        self._last_mode = "keyword"
+        scored = [
+            (kw_scores[i], corpus[i])
+            for i in range(len(corpus))
         ]
         scored.sort(key=lambda x: -x[0])
         return scored
@@ -288,7 +295,9 @@ class WebSjcAgent(BaseAgent):
             )
 
         ranked = self._rank(question, corpus)
-        if self._last_mode == "embed":
+        if self._last_mode == "hybrid":
+            min_score = 0.0
+        elif self._last_mode == "embed":
             scores_all = [s for s, _ in ranked]
             mediana = scores_all[len(scores_all) // 2] if scores_all else 0.0
             min_score = min(_MIN_EMBED, mediana + _MIN_EMBED_MARGIN)
