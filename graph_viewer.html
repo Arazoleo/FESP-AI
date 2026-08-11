@@ -36,6 +36,24 @@
       --shadow-neuro: 0 0 0 1px rgba(249,115,22,.25), 0 8px 30px rgba(249,115,22,.15);
     }
 
+    body.light {
+      --bg-0: #ffffff;
+      --bg-1: #f8fafc;
+      --bg-2: #f1f5f9;
+      --bg-3: #e2e8f0;
+      --border-soft: rgba(15, 23, 42, 0.08);
+      --border:      rgba(15, 23, 42, 0.14);
+      --border-strong: rgba(15, 23, 42, 0.25);
+      --text:    #0f172a;
+      --text-mute: #475569;
+      --text-dim:  #64748b;
+      --shadow-sm: 0 2px 6px rgba(15,23,42,.08);
+      --shadow-md: 0 8px 24px rgba(15,23,42,.10);
+      --shadow-lg: 0 20px 50px rgba(15,23,42,.12);
+    }
+    body.light #graph { background: #ffffff; }
+    body.light input[type="text"], body.light select { color: var(--text); }
+
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
@@ -664,6 +682,16 @@
     </div>
     <div class="header-sep"></div>
     <div class="header-group">
+      <button id="btnLight" title="Alternar entre modo claro e escuro">Modo claro</button>
+      <button id="btnFreeze" title="Congelar o layout (a física para; nós ainda podem ser arrastados)">Congelar</button>
+      <select id="spacing" title="Espaçamento entre os nós (evita rótulos sobrepostos)">
+        <option value="normal">Espaço: normal</option>
+        <option value="amplo">Espaço: amplo</option>
+        <option value="maximo">Espaço: máximo</option>
+      </select>
+    </div>
+    <div class="header-sep"></div>
+    <div class="header-group">
     <select id="filterTipo" title="Filtrar por tipo de nó">
       <option value="">Todos</option>
       <option value="curso">Só cursos</option>
@@ -776,6 +804,9 @@
     };
     function colorFor(tipo) { return tipoColors[tipo] || '#64748b'; }
 
+    let lightMode = false;
+    let frozen = false;
+
     // Estilo de nó considerando highlights da consulta
     function nodeStyleFor(n) {
       const id = n.id;
@@ -885,6 +916,8 @@
       const tipos     = filterVal ? filterVal.split(',').map(s => s.trim()) : [];
       const { nodes: useNodes, edges: useEdges } = applyFilter(nodes, edges, tipos, relVal || null);
 
+      const nodeFontColor = lightMode ? '#1e293b' : '#e2e8f0';
+      const edgeFontColor = lightMode ? '#475569' : '#94a3b8';
       const visNodes = useNodes.map(n => {
         const styled = nodeStyleFor(n);
         return {
@@ -893,7 +926,7 @@
           title: (n.tipo + ': ' + (n.titulo || n.label)).slice(0, 120),
           tipo: n.tipo,
           color: styled.color,
-          font: { color: '#e2e8f0', size: styled.fontSize },
+          font: { color: nodeFontColor, size: styled.fontSize },
           borderWidth: styled.borderWidth,
           size: styled.size,
           shadow: styled.shadow,
@@ -904,8 +937,13 @@
         arrows: 'to',
         color: edgeColorFor(e),
         width: edgeWidthFor(e),
-        font: { color: '#94a3b8', size: 10 },
+        font: { color: edgeFontColor, size: 10 },
       }));
+
+      const spacingVal = document.getElementById('spacing')?.value || 'normal';
+      const baseSpring = tipos.length ? 80 : 120;
+      const springLength = spacingVal === 'maximo' ? 340 : spacingVal === 'amplo' ? 210 : baseSpring;
+      const gravConst = spacingVal === 'maximo' ? -160 : spacingVal === 'amplo' ? -90 : -40;
 
       const container = document.getElementById('graph');
       const data = { nodes: visNodes, edges: visEdges };
@@ -914,7 +952,7 @@
         edges: { width: 1.2 },
         physics: {
           enabled: true,
-          forceAtlas2Based: { gravitationalConstant: -40, centralGravity: 0.01, springLength: tipos.length ? 80 : 120 },
+          forceAtlas2Based: { gravitationalConstant: gravConst, centralGravity: 0.01, springLength: springLength },
           solver: 'forceAtlas2Based',
           stabilization: { iterations: 200 },
         },
@@ -922,6 +960,9 @@
       };
       if (currentNetwork) currentNetwork.destroy();
       currentNetwork = new vis.Network(container, data, options);
+      frozen = false;
+      const btnFreeze = document.getElementById('btnFreeze');
+      if (btnFreeze) btnFreeze.textContent = 'Congelar';
 
       currentNetwork.on('click', function (params) {
         if (params.nodes.length > 0) {
@@ -1254,6 +1295,31 @@
       if (fullNodes.length) { buildNetwork(fullNodes, fullEdges); refreshStats(); }
     };
     document.getElementById('filterRelação').onchange = function () {
+      if (fullNodes.length) { buildNetwork(fullNodes, fullEdges); refreshStats(); }
+    };
+
+    document.getElementById('btnLight').onclick = function () {
+      lightMode = !lightMode;
+      document.body.classList.toggle('light', lightMode);
+      this.textContent = lightMode ? 'Modo escuro' : 'Modo claro';
+      if (currentNetwork) {
+        const nodeFontColor = lightMode ? '#1e293b' : '#e2e8f0';
+        const edgeFontColor = lightMode ? '#475569' : '#94a3b8';
+        const nds = currentNetwork.body.data.nodes;
+        nds.update(nds.getIds().map(id => ({ id, font: { color: nodeFontColor } })));
+        const eds = currentNetwork.body.data.edges;
+        eds.update(eds.getIds().map(id => ({ id, font: { color: edgeFontColor } })));
+      }
+    };
+
+    document.getElementById('btnFreeze').onclick = function () {
+      if (!currentNetwork) return;
+      frozen = !frozen;
+      this.textContent = frozen ? 'Soltar' : 'Congelar';
+      currentNetwork.setOptions({ physics: { enabled: !frozen } });
+    };
+
+    document.getElementById('spacing').onchange = function () {
       if (fullNodes.length) { buildNetwork(fullNodes, fullEdges); refreshStats(); }
     };
 
