@@ -564,27 +564,57 @@ class GraphRAGEngine:
             "delas ajuda.*"
         )
 
-    def _base_recomendada_section(self, termo: str) -> str:
+    def _recomendacoes_e_rodape(self, termo: str, chain_len: int) -> Tuple[str, str]:
         """
-        Seção "Base recomendada" (regra R6, mediada por conceito) para anexar
-        à resposta de prerequisite_chain. Vazia quando nada é inferido.
+        Separa o que o aluno precisa ler do rastro técnico do motor.
+
+        Retorna (secao_usuario, rodape_tecnico): a seção lista recomendações em
+        linguagem natural; o rodapé concentra, numa linha discreta, todas as
+        regras aplicadas (fecho transitivo, recommended_before, base_recomendada).
         """
+        regras = []
+        if chain_len:
+            regras.append(
+                f"`prereq_transitivity` fecho transitivo verificado em "
+                f"{chain_len} aresta(s) do Knowledge Graph"
+            )
+
+        recomendacoes: Dict[str, List[str]] = {}
+        recs = self._safe_recommended_before(termo)
+        for nome, sim in recs:
+            recomendacoes.setdefault(nome, []).append(
+                f"o conteúdo é próximo ao de {termo} (similaridade {sim:.0%})"
+            )
+        if recs:
+            regras.append(f"`recommended_before` por similaridade de ementas ({len(recs)})")
+
         try:
-            recs = self.kg.get_base_recomendada(termo)
+            base = self.kg.get_base_recomendada(termo)
         except Exception:
-            recs = []
-        if not recs:
-            return ""
-        itens = ", ".join(
-            f"**{r['nome']}** ({', '.join(r['conceitos'])}; conf. {r['confidence']:.0%})"
-            for r in recs
-        )
-        return (
-            f"\n\n**Base recomendada (conceitos pressupostos):** {itens}\n"
-            "*Regra `base_recomendada`: REQUER_BASE(d, c) ∧ ABORDA(d2, c) ∧ "
-            "¬ancestral ∧ ordem(d2) < ordem(d) - não são pré-requisitos "
-            "formais, mas a disciplina pressupõe esses conceitos.*"
-        )
+            base = []
+        for r in base:
+            conceitos = ", ".join(r["conceitos"])
+            recomendacoes.setdefault(r["nome"], []).append(
+                f"{termo} pressupõe {conceitos} (confiança {r['confidence']:.0%})"
+            )
+        if base:
+            regras.append(f"`base_recomendada` por conceitos pressupostos ({len(base)})")
+
+        secao = ""
+        if recomendacoes:
+            linhas = "\n".join(
+                f"- **{nome}**: {'; '.join(motivos)}"
+                for nome, motivos in recomendacoes.items()
+            )
+            secao = (
+                "\n\n**Vale reforçar antes** (recomendações do sistema, "
+                f"não são pré-requisitos obrigatórios):\n{linhas}"
+            )
+
+        rodape = ""
+        if regras:
+            rodape = "\n\n---\n*Verificação neurossimbólica: " + " · ".join(regras) + "*"
+        return secao, rodape
 
     _GRUPO_HINTS = {
         'eletiva_grupo1': 'Grupo 1',
@@ -792,20 +822,19 @@ class GraphRAGEngine:
             chain = self.kg.get_prerequisite_chain(termo)
             if chain:
                 path = f"{termo} ← " + " ← ".join(chain)
+                secao, rodape = self._recomendacoes_e_rodape(termo, len(chain))
                 return f"""**Cadeia de pré-requisitos de {termo}:**
 {path}
 
 Para cursar **{termo}**, você precisa ter cursado anteriormente:
 {chr(10).join(f'- {d}' for d in chain)}
 
-Total: {len(chain)} pré-requisito(s) na cadeia.
-
-*Regras aplicadas: `prereq_transitivity` (fecho transitivo verificado em {len(chain)} aresta(s) do Knowledge Graph)*{self._recommended_before_section(termo)}{self._base_recomendada_section(termo)}"""
+Total: {len(chain)} pré-requisito(s) na cadeia.{secao}{rodape}"""
             else:
+                secao, rodape = self._recomendacoes_e_rodape(termo, 0)
                 return (
                     f"**{termo}** não possui pré-requisitos ou não foi encontrada no sistema."
-                    f"{self._recommended_before_section(termo)}"
-                    f"{self._base_recomendada_section(termo)}"
+                    f"{secao}{rodape}"
                 )
 
         elif query_type == 'recommended_before':

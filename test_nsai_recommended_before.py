@@ -278,9 +278,10 @@ check(
 )
 resp_chain_so = engine.query_graph("prerequisite_chain", "sistemas operacionais") or ""
 check(
-    "prerequisite_chain de SO ganha a seção 'Recomendadas antes (inferidas por conteúdo)'",
-    "Recomendadas antes (inferidas por conteúdo)" in resp_chain_so
-    and AOC in resp_chain_so,
+    "prerequisite_chain de SO ganha a seção 'Vale reforçar antes' com a recomendação",
+    "Vale reforçar antes" in resp_chain_so
+    and AOC in resp_chain_so
+    and "Verificação neurossimbólica" in resp_chain_so,
     resp_chain_so[-200:],
 )
 
