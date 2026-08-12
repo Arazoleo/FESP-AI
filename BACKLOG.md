@@ -31,6 +31,12 @@
 
 ## Backlog
 
+### Alta prioridade
+
+| # | Item | Descrição |
+|---|------|-----------|
+| 10 | **Planejador de próximo semestre personalizado** | "O que devo pegar em 2027/1?" → grade sugerida determinística combinando histórico da sessão (cursadas + horas), quadro de integralização (o que falta), paridade de oferta do termo, pré-requisitos liberados, interdisciplinares pendentes e trilha de interesse por conceitos. Síntese de tudo que já existe; feature-vitrine do neurossimbólico |
+
 ### Média prioridade
 
 | # | Item | Descrição |

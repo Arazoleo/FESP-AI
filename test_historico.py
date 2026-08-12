@@ -204,7 +204,24 @@ check("resposta lista requisito por requisito com folga",
 check("AC sinalizadas como a confirmar via SEI",
       "… **Atividades Complementares**" in texto_fmt and "SEI" in texto_fmt)
 check("quadro None para curso sem requisitos cadastrados",
-      p._quadro_integralizacao("BCC", d, 0, []) is None)
+      p._quadro_integralizacao("XYZ", d, 0, []) is None)
+quadro_bcc = p._quadro_integralizacao("BCC", d, 0, [])
+comps_bcc = {c["nome"]: c for c in quadro_bcc["componentes"]}
+check("BCC agora tem requisitos oficiais do SIIU (fixas 2484h, TCC a confirmar)",
+      comps_bcc["UCs fixas (obrigatórias)"]["exigido"] == 2484
+      and comps_bcc["TCC"]["ok"] is None
+      and "UCs Eletivas Interdisciplinares" not in comps_bcc,
+      str(list(comps_bcc)))
+quadro_ec = p._quadro_integralizacao("EC", d, 0, [])
+comps_ec = {c["nome"]: c for c in quadro_ec["componentes"]}
+check("EC com estágio e TCC a confirmar (3276h fixas, 252h eletivas)",
+      comps_ec["UCs fixas (obrigatórias)"]["exigido"] == 3276
+      and comps_ec["UCs eletivas"]["exigido"] == 252
+      and comps_ec["Estágio obrigatório"]["ok"] is None,
+      str(list(comps_ec)))
+check("turno do histórico escolhe a matriz certa (BCT noturno)",
+      p.requisitos_do_curso("BCT", "INTERDISCIPLINAR EM CIÊNCIA E TECNOLOGIA - NOTURNO")["turno"] == "noturno"
+      and p.requisitos_do_curso("BCT", "")["turno"] == "integral")
 check("quadro None sem horas no histórico",
       p._quadro_integralizacao("BCT", {"horas": {}}, 0, []) is None)
 

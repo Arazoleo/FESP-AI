@@ -32,17 +32,35 @@ _PLACEHOLDERS_MATRIZ = {
     "uc eletiva", "uc optativa",
 }
 
-REQUISITOS_CURSO = {
-    "BCT": {
-        "fixas_h": 468,
-        "eletivas_h": 1620,
-        "ac_h": 312,
-        "extensao_h": 240,
-        "interdisciplinares": 4,
-        "total_h": 2400,
-        "fonte": "PPC 2023",
-    },
-}
+BCT_EXTRAS_PPC2023 = {"extensao_h": 240, "interdisciplinares": 4}
+
+_requisitos_cache = None
+
+
+def _carregar_requisitos() -> List[Dict]:
+    global _requisitos_cache
+    if _requisitos_cache is None:
+        import json
+        from pathlib import Path
+
+        caminho = Path(__file__).parent / "requisitos_seed.json"
+        try:
+            _requisitos_cache = json.loads(caminho.read_text())
+        except (OSError, ValueError):
+            _requisitos_cache = []
+    return _requisitos_cache
+
+
+def requisitos_do_curso(sigla: str, curso_texto: str = "") -> Optional[Dict]:
+    sigla = (sigla or "").upper()
+    entradas = [e for e in _carregar_requisitos() if e["sigla"] == sigla]
+    if not entradas:
+        return None
+    turno = "noturno" if "noturno" in _norm(curso_texto) else "integral"
+    for e in entradas:
+        if e["turno"] == turno:
+            return e
+    return entradas[0]
 
 
 def _matriz_do_curso(kg, curso: str) -> Optional[Dict[str, Dict]]:
@@ -170,7 +188,7 @@ def auditar_progresso(kg, curso: str, cursadas: List[str],
 def _quadro_integralizacao(curso: str, historico: Optional[Dict],
                            obrigatorias_pendentes: int,
                            interdisciplinares: List[str]) -> Optional[Dict]:
-    req = REQUISITOS_CURSO.get((curso or "").upper())
+    req = requisitos_do_curso(curso, (historico or {}).get("curso", ""))
     horas = (historico or {}).get("horas") or {}
     if not req or not horas:
         return None
@@ -188,26 +206,50 @@ def _quadro_integralizacao(curso: str, historico: Optional[Dict],
             "obs": obs,
         })
 
-    comp(
-        "UCs fixas (obrigatórias)", horas.get("fixas"), req["fixas_h"],
-        obs="" if obrigatorias_pendentes == 0
-        else f"{obrigatorias_pendentes} obrigatória(s) ainda pendente(s) na matriz",
-    )
-    comp("UCs eletivas", horas.get("eletivas"), req["eletivas_h"])
-    comp("Extensão curricularizada", horas.get("extensao"), req["extensao_h"])
-    comp(
-        "UCs Eletivas Interdisciplinares", len(interdisciplinares),
-        req["interdisciplinares"], unidade="UCs",
-    )
-    comp(
-        "Atividades Complementares", None, req["ac_h"],
-        obs="não constam no histórico; são validadas em processo próprio (SEI)",
-    )
+    for c in req["criterios"]:
+        tipo, expressao, exigido = c["tipo"], c["expressao"].upper(), c["para_total_h"]
+        if tipo == "DISCIPLINA" and "FIXAS" in expressao:
+            comp(
+                "UCs fixas (obrigatórias)", horas.get("fixas"), exigido,
+                obs="" if obrigatorias_pendentes == 0
+                else f"{obrigatorias_pendentes} obrigatória(s) ainda pendente(s) na matriz",
+            )
+        elif tipo == "DISCIPLINA" and "ELETIVAS" in expressao:
+            comp("UCs eletivas", horas.get("eletivas"), exigido)
+        elif tipo == "ATIVIDADE COMPLEMENTAR":
+            comp(
+                "Atividades Complementares", None, exigido,
+                obs="não constam no histórico; são validadas em processo próprio (SEI)",
+            )
+        elif tipo == "ESTÁGIO":
+            comp(
+                "Estágio obrigatório", None, exigido,
+                obs="confira no histórico se a UC de estágio consta como aprovada",
+            )
+        elif tipo == "TRABALHO DE CONCLUSÃO DE CURSO":
+            comp(
+                "TCC", None, exigido,
+                obs="confira no histórico se a UC de TCC consta como aprovada",
+            )
+
+    if req["sigla"] == "BCT":
+        comp(
+            "Extensão curricularizada", horas.get("extensao"),
+            BCT_EXTRAS_PPC2023["extensao_h"],
+        )
+        comp(
+            "UCs Eletivas Interdisciplinares", len(interdisciplinares),
+            BCT_EXTRAS_PPC2023["interdisciplinares"], unidade="UCs",
+        )
+        fonte = "matriz ATIVA oficial (SIIU/Prograd) e PPC 2023"
+    else:
+        fonte = "matriz ATIVA oficial (SIIU/Prograd)"
 
     faltando = [c for c in componentes if c["ok"] is False]
     a_confirmar = [c for c in componentes if c["ok"] is None]
     return {
-        "fonte": req["fonte"],
+        "fonte": fonte,
+        "total_h": req.get("total_h"),
         "componentes": componentes,
         "completo_verificavel": not faltando,
         "faltando": faltando,

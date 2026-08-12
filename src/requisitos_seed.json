@@ -1,0 +1,354 @@
+[
+  {
+    "sigla": "BCT",
+    "turno": "integral",
+    "curso_id": "1337",
+    "nome": "INTERDISCIPLINAR EM CIÊNCIA E TECNOLOGIA - INTEGRAL",
+    "matriz": "000003 - ATIVA",
+    "total_h": 2400,
+    "criterios": [
+      {
+        "criterio": "C1",
+        "tipo": "DISCIPLINA",
+        "expressao": "FIXAS",
+        "minimo_h": 468,
+        "maximo_h": 468,
+        "para_total_h": 468
+      },
+      {
+        "criterio": "C2",
+        "tipo": "ATIVIDADE COMPLEMENTAR",
+        "expressao": "FIXAS",
+        "minimo_h": 312,
+        "maximo_h": 312,
+        "para_total_h": 312
+      },
+      {
+        "criterio": "C3",
+        "tipo": "DISCIPLINA",
+        "expressao": "ELETIVAS INTERDISCIPLINARES ELETIVAS",
+        "minimo_h": 1620,
+        "maximo_h": 1620,
+        "para_total_h": 1620
+      }
+    ],
+    "fonte": "https://cursos.siiu.unifesp.br/graduacao/curso/matriz-curricular/eyJjdXJzb19pZF9jdXJzbyI6IjEzMzciLCJjb2QiOiIzIn0=/detalhes"
+  },
+  {
+    "sigla": "BCT",
+    "turno": "noturno",
+    "curso_id": "1621",
+    "nome": "INTERDISCIPLINAR EM CIÊNCIA E TECNOLOGIA - NOTURNO",
+    "matriz": "000003 - ATIVA",
+    "total_h": 2400,
+    "criterios": [
+      {
+        "criterio": "C1",
+        "tipo": "DISCIPLINA",
+        "expressao": "ELETIVAS INTERDISCIPLINARES ELETIVAS",
+        "minimo_h": 1620,
+        "maximo_h": 1620,
+        "para_total_h": 1620
+      },
+      {
+        "criterio": "C2",
+        "tipo": "DISCIPLINA",
+        "expressao": "FIXAS",
+        "minimo_h": 468,
+        "maximo_h": 468,
+        "para_total_h": 468
+      },
+      {
+        "criterio": "C3",
+        "tipo": "ATIVIDADE COMPLEMENTAR",
+        "expressao": "ATIVIDADES COMPLEMENTARES",
+        "minimo_h": 312,
+        "maximo_h": 312,
+        "para_total_h": 312
+      }
+    ],
+    "fonte": "https://cursos.siiu.unifesp.br/graduacao/curso/matriz-curricular/eyJjdXJzb19pZF9jdXJzbyI6IjE2MjEiLCJjb2QiOiIzIn0=/detalhes"
+  },
+  {
+    "sigla": "EM",
+    "turno": "integral",
+    "curso_id": "1670",
+    "nome": "ENGENHARIA DE MATERIAIS - INTEGRAL",
+    "matriz": "000002 - ATIVA",
+    "total_h": 4284,
+    "criterios": [
+      {
+        "criterio": "C1",
+        "tipo": "DISCIPLINA",
+        "expressao": "FIXAS",
+        "minimo_h": 3168,
+        "maximo_h": 3168,
+        "para_total_h": 3168
+      },
+      {
+        "criterio": "C2",
+        "tipo": "DISCIPLINA",
+        "expressao": "ELETIVAS",
+        "minimo_h": 468,
+        "maximo_h": 468,
+        "para_total_h": 468
+      },
+      {
+        "criterio": "C3",
+        "tipo": "ATIVIDADE COMPLEMENTAR",
+        "expressao": "ATIVIDADES COMPLEMENTARES",
+        "minimo_h": 180,
+        "maximo_h": 180,
+        "para_total_h": 180
+      },
+      {
+        "criterio": "C4",
+        "tipo": "ESTÁGIO",
+        "expressao": "FIXAS",
+        "minimo_h": 324,
+        "maximo_h": 324,
+        "para_total_h": 324
+      },
+      {
+        "criterio": "C5",
+        "tipo": "TRABALHO DE CONCLUSÃO DE CURSO",
+        "expressao": "FIXAS",
+        "minimo_h": 144,
+        "maximo_h": 144,
+        "para_total_h": 144
+      }
+    ],
+    "fonte": "https://cursos.siiu.unifesp.br/graduacao/curso/matriz-curricular/eyJjdXJzb19pZF9jdXJzbyI6IjE2NzAiLCJjb2QiOiIyIn0=/detalhes"
+  },
+  {
+    "sigla": "BCC",
+    "turno": "integral",
+    "curso_id": "1671",
+    "nome": "CIÊNCIA DA COMPUTAÇÃO - INTEGRAL",
+    "matriz": "000002 - ATIVA",
+    "total_h": 3204,
+    "criterios": [
+      {
+        "criterio": "C1",
+        "tipo": "DISCIPLINA",
+        "expressao": "FIXAS",
+        "minimo_h": 2484,
+        "maximo_h": 2484,
+        "para_total_h": 2484
+      },
+      {
+        "criterio": "C2",
+        "tipo": "DISCIPLINA",
+        "expressao": "ELETIVAS",
+        "minimo_h": 432,
+        "maximo_h": 432,
+        "para_total_h": 432
+      },
+      {
+        "criterio": "C3",
+        "tipo": "ATIVIDADE COMPLEMENTAR",
+        "expressao": "ATIVIDADES COMPLEMENTARES",
+        "minimo_h": 144,
+        "maximo_h": 144,
+        "para_total_h": 144
+      },
+      {
+        "criterio": "C4",
+        "tipo": "TRABALHO DE CONCLUSÃO DE CURSO",
+        "expressao": "FIXAS",
+        "minimo_h": 144,
+        "maximo_h": 144,
+        "para_total_h": 144
+      }
+    ],
+    "fonte": "https://cursos.siiu.unifesp.br/graduacao/curso/matriz-curricular/eyJjdXJzb19pZF9jdXJzbyI6IjE2NzEiLCJjb2QiOiIyIn0=/detalhes"
+  },
+  {
+    "sigla": "BBT",
+    "turno": "integral",
+    "curso_id": "1672",
+    "nome": "BIOTECNOLOGIA - INTEGRAL",
+    "matriz": "000002 - ATIVA",
+    "total_h": 3420,
+    "criterios": [
+      {
+        "criterio": "C1",
+        "tipo": "DISCIPLINA",
+        "expressao": "FIXAS",
+        "minimo_h": 2412,
+        "maximo_h": 2412,
+        "para_total_h": 2412
+      },
+      {
+        "criterio": "C2",
+        "tipo": "DISCIPLINA",
+        "expressao": "ELETIVAS",
+        "minimo_h": 504,
+        "maximo_h": 504,
+        "para_total_h": 504
+      },
+      {
+        "criterio": "C3",
+        "tipo": "ATIVIDADE COMPLEMENTAR",
+        "expressao": "ATIVIDADES COMPLEMENTARES",
+        "minimo_h": 108,
+        "maximo_h": 108,
+        "para_total_h": 108
+      },
+      {
+        "criterio": "C4",
+        "tipo": "TRABALHO DE CONCLUSÃO DE CURSO",
+        "expressao": "FIXAS",
+        "minimo_h": 396,
+        "maximo_h": 396,
+        "para_total_h": 396
+      }
+    ],
+    "fonte": "https://cursos.siiu.unifesp.br/graduacao/curso/matriz-curricular/eyJjdXJzb19pZF9jdXJzbyI6IjE2NzIiLCJjb2QiOiIyIn0=/detalhes"
+  },
+  {
+    "sigla": "BMC",
+    "turno": "integral",
+    "curso_id": "1673",
+    "nome": "MATEMÁTICA COMPUTACIONAL - INTEGRAL",
+    "matriz": "000002 - ATIVA",
+    "total_h": 2952,
+    "criterios": [
+      {
+        "criterio": "C1",
+        "tipo": "DISCIPLINA",
+        "expressao": "FIXAS",
+        "minimo_h": 2484,
+        "maximo_h": 2484,
+        "para_total_h": 2484
+      },
+      {
+        "criterio": "C2",
+        "tipo": "DISCIPLINA",
+        "expressao": "ELETIVAS",
+        "minimo_h": 288,
+        "maximo_h": 288,
+        "para_total_h": 288
+      },
+      {
+        "criterio": "C3",
+        "tipo": "ATIVIDADE COMPLEMENTAR",
+        "expressao": "ATIVIDADES COMPLEMENTARES",
+        "minimo_h": 36,
+        "maximo_h": 36,
+        "para_total_h": 36
+      },
+      {
+        "criterio": "C4",
+        "tipo": "TRABALHO DE CONCLUSÃO DE CURSO",
+        "expressao": "FIXAS",
+        "minimo_h": 144,
+        "maximo_h": 144,
+        "para_total_h": 144
+      }
+    ],
+    "fonte": "https://cursos.siiu.unifesp.br/graduacao/curso/matriz-curricular/eyJjdXJzb19pZF9jdXJzbyI6IjE2NzMiLCJjb2QiOiIyIn0=/detalhes"
+  },
+  {
+    "sigla": "EB",
+    "turno": "integral",
+    "curso_id": "1674",
+    "nome": "ENGENHARIA BIOMÉDICA - INTEGRAL",
+    "matriz": "000003 - ATIVA",
+    "total_h": 3924,
+    "criterios": [
+      {
+        "criterio": "C1",
+        "tipo": "DISCIPLINA",
+        "expressao": "FIXAS",
+        "minimo_h": 3240,
+        "maximo_h": 3240,
+        "para_total_h": 3240
+      },
+      {
+        "criterio": "C2",
+        "tipo": "DISCIPLINA",
+        "expressao": "ELETIVAS",
+        "minimo_h": 216,
+        "maximo_h": 216,
+        "para_total_h": 216
+      },
+      {
+        "criterio": "C3",
+        "tipo": "ATIVIDADE COMPLEMENTAR",
+        "expressao": "ATIVIDADES COMPLEMENTARES",
+        "minimo_h": 36,
+        "maximo_h": 36,
+        "para_total_h": 36
+      },
+      {
+        "criterio": "C4",
+        "tipo": "ESTÁGIO",
+        "expressao": "FIXAS",
+        "minimo_h": 360,
+        "maximo_h": 360,
+        "para_total_h": 360
+      },
+      {
+        "criterio": "C5",
+        "tipo": "TRABALHO DE CONCLUSÃO DE CURSO",
+        "expressao": "FIXAS",
+        "minimo_h": 72,
+        "maximo_h": 72,
+        "para_total_h": 72
+      }
+    ],
+    "fonte": "https://cursos.siiu.unifesp.br/graduacao/curso/matriz-curricular/eyJjdXJzb19pZF9jdXJzbyI6IjE2NzQiLCJjb2QiOiIzIn0=/detalhes"
+  },
+  {
+    "sigla": "EC",
+    "turno": "integral",
+    "curso_id": "1675",
+    "nome": "ENGENHARIA DE COMPUTAÇÃO - INTEGRAL",
+    "matriz": "000003 - ATIVA",
+    "total_h": 3960,
+    "criterios": [
+      {
+        "criterio": "C1",
+        "tipo": "DISCIPLINA",
+        "expressao": "FIXAS",
+        "minimo_h": 3276,
+        "maximo_h": 3276,
+        "para_total_h": 3276
+      },
+      {
+        "criterio": "C2",
+        "tipo": "DISCIPLINA",
+        "expressao": "ELETIVAS",
+        "minimo_h": 252,
+        "maximo_h": 252,
+        "para_total_h": 252
+      },
+      {
+        "criterio": "C3",
+        "tipo": "ATIVIDADE COMPLEMENTAR",
+        "expressao": "ATIVIDADES COMPLEMENTARES",
+        "minimo_h": 108,
+        "maximo_h": 108,
+        "para_total_h": 108
+      },
+      {
+        "criterio": "C4",
+        "tipo": "ESTÁGIO",
+        "expressao": "FIXAS",
+        "minimo_h": 180,
+        "maximo_h": 180,
+        "para_total_h": 180
+      },
+      {
+        "criterio": "C5",
+        "tipo": "TRABALHO DE CONCLUSÃO DE CURSO",
+        "expressao": "FIXAS",
+        "minimo_h": 144,
+        "maximo_h": 144,
+        "para_total_h": 144
+      }
+    ],
+    "fonte": "https://cursos.siiu.unifesp.br/graduacao/curso/matriz-curricular/eyJjdXJzb19pZF9jdXJzbyI6IjE2NzUiLCJjb2QiOiIzIn0=/detalhes"
+  }
+]
