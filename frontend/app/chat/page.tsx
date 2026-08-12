@@ -22,6 +22,7 @@ import DocenteDrawer from '../components/DocenteDrawer'
 import DisciplineChips, { DisciplineListData } from '../components/DisciplineChips'
 import AcBars, { AcReportData } from '../components/AcBars'
 import ThemeToggle from '../components/ThemeToggle'
+import DecryptText from '../components/DecryptText'
 
 interface AgentInfo {
   label: string
@@ -342,6 +343,7 @@ export default function ChatPage() {
   const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
+  const [placeholder, setPlaceholder] = useState('Escreva sua pergunta')
   const [isLoading, setIsLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -375,6 +377,45 @@ export default function ChatPage() {
     }
     inputRef.current?.focus()
 
+  }, [])
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const frases = [
+      'Quanto falta para me formar?',
+      'Se eu tirar 9 em POO, meu CR vai a quanto?',
+      'Vai ter Compiladores no próximo semestre?',
+      'Quais os pré-requisitos de Compiladores?',
+      'Como faço para colar grau?',
+      'Quem leciona Interação Humano-Computador?',
+    ]
+    let idx = 0
+    let pos = 0
+    let apagando = false
+    let timer: ReturnType<typeof setTimeout>
+    const passo = () => {
+      const alvo = frases[idx]
+      let atraso = apagando ? 16 : 42
+      if (!apagando) {
+        pos += 1
+        setPlaceholder(alvo.slice(0, pos))
+        if (pos >= alvo.length) {
+          apagando = true
+          atraso = 2400
+        }
+      } else {
+        pos -= 1
+        setPlaceholder(alvo.slice(0, pos) || ' ')
+        if (pos <= 0) {
+          apagando = false
+          idx = (idx + 1) % frases.length
+          atraso = 450
+        }
+      }
+      timer = setTimeout(passo, atraso)
+    }
+    timer = setTimeout(passo, 1500)
+    return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {
@@ -653,7 +694,7 @@ export default function ChatPage() {
                 UNIFESP - ICT
               </p>
               <h2 className="font-display text-3xl font-medium tracking-tightest text-paper sm:text-4xl">
-                O que você quer saber?
+                <DecryptText text="O que você quer saber?" delay={250} />
               </h2>
               <p className="mt-4 max-w-lg text-paper-dim">
                 Disciplinas, docentes, cursos e regimentos do campus São José dos
@@ -772,7 +813,7 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onInput={handleTextareaInput}
-                placeholder="Escreva sua pergunta"
+                placeholder={placeholder}
                 rows={1}
                 disabled={isLoading}
                 className="w-full resize-none overflow-hidden rounded-xl border border-line bg-ink-raise px-5 py-[15px] text-[15px] leading-relaxed text-paper placeholder-paper-mute transition-colors focus:border-accent/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"

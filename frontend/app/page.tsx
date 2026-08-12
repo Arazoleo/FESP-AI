@@ -8,6 +8,7 @@ import DecryptText from './components/DecryptText'
 import SpotlightCard from './components/SpotlightCard'
 import CountUp from './components/CountUp'
 import QuestionsMarquee from './components/QuestionsMarquee'
+import Magnetic from './components/Magnetic'
 
 const STATS = [
   { valor: 7, sufixo: '', rotulo: 'cursos do ICT cobertos' },
@@ -68,6 +69,7 @@ export default function LandingPage() {
       <ScrollFX />
 
       <div className="pointer-events-none fixed inset-0 bg-grid-faint" aria-hidden />
+      <div className="bg-grain" aria-hidden />
 
       <header data-nav className="site-nav sticky top-0 z-40">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
@@ -96,7 +98,11 @@ export default function LandingPage() {
       </header>
 
       <section className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-20 sm:pt-28">
-        <div className="grid items-center gap-16 lg:grid-cols-[1.15fr_1fr]">
+        <div className="aurora-wrap" aria-hidden>
+          <div className="aurora-blob aurora-a" />
+          <div className="aurora-blob aurora-b" />
+        </div>
+        <div className="relative grid items-center gap-16 lg:grid-cols-[1.15fr_1fr]">
           <div>
             <p className="animate-rise rise-1 mb-6 font-mono text-xs uppercase tracking-[0.25em] text-accent">
               UNIFESP - Instituto de Ciência e Tecnologia
@@ -113,13 +119,15 @@ export default function LandingPage() {
               documentos oficiais - e confere os fatos antes de responder.
             </p>
             <div className="animate-rise rise-4 mt-10 flex flex-wrap items-center gap-6">
-              <Link
-                href="/chat"
-                className="group inline-flex items-center gap-3 rounded-lg bg-accent px-7 py-3.5 font-medium text-ink transition-colors hover:bg-accent-deep"
-              >
-                Abrir o assistente
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
+              <Magnetic>
+                <Link
+                  href="/chat"
+                  className="group inline-flex items-center gap-3 rounded-lg bg-accent px-7 py-3.5 font-medium text-ink transition-colors hover:bg-accent-deep"
+                >
+                  Abrir o assistente
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Magnetic>
               <a
                 href="#como-funciona"
                 className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-paper-mute transition-colors hover:text-paper-dim"
@@ -184,7 +192,7 @@ export default function LandingPage() {
             </h2>
           </div>
 
-          <ol className="grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-2 lg:grid-cols-4">
+          <ol className="pipeline-beam grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-2 lg:grid-cols-4">
             {PIPELINE_STEPS.map((step, i) => (
               <li
                 key={step.n}
@@ -192,7 +200,12 @@ export default function LandingPage() {
                 style={{ '--fxd': `${i * 110}ms` } as CSSProperties}
                 className="bg-ink-raise p-7"
               >
-                <span className="step-num font-mono text-xs text-accent">{step.n}</span>
+                <span
+                  className="step-num step-cycle font-mono text-xs text-accent"
+                  style={{ animationDelay: `${i * 1.1}s` }}
+                >
+                  {step.n}
+                </span>
                 <h3 className="mt-4 font-display text-lg font-medium text-paper">
                   {step.title}
                 </h3>
