@@ -3,94 +3,18 @@ import Link from 'next/link'
 import { ArrowRight, ArrowDown } from 'lucide-react'
 import ThemeToggle from './components/ThemeToggle'
 import ScrollFX from './components/ScrollFX'
+import LiveGraph from './components/LiveGraph'
+import DecryptText from './components/DecryptText'
+import SpotlightCard from './components/SpotlightCard'
+import CountUp from './components/CountUp'
+import QuestionsMarquee from './components/QuestionsMarquee'
 
-const NODES: {
-  id: string
-  x: number
-  y: number
-  r: number
-  label?: string
-  pulse?: boolean
-  delay?: string
-}[] = [
-  { id: 'curso', x: 96, y: 96, r: 5, label: 'curso', pulse: true },
-  { id: 'disciplina', x: 258, y: 58, r: 6, label: 'disciplina', pulse: true, delay: '1.2s' },
-  { id: 'docente', x: 408, y: 118, r: 5, label: 'docente', pulse: true, delay: '2.1s' },
-  { id: 'prereq', x: 176, y: 208, r: 4, label: 'pré-requisito' },
-  { id: 'carga', x: 340, y: 236, r: 4, label: 'carga horária' },
-  { id: 'regimento', x: 84, y: 312, r: 4, label: 'regimento' },
-  { id: 'matriz', x: 256, y: 336, r: 5, label: 'matriz curricular', pulse: true, delay: '3s' },
-  { id: 'p1', x: 430, y: 320, r: 2.5 },
-  { id: 'p2', x: 40, y: 200, r: 2.5 },
-  { id: 'p3', x: 350, y: 30, r: 2.5 },
+const STATS = [
+  { valor: 7, sufixo: '', rotulo: 'cursos do ICT cobertos' },
+  { valor: 383, sufixo: '', rotulo: 'UCs no quadro oficial' },
+  { valor: 527, sufixo: '', rotulo: 'páginas do site indexadas' },
+  { valor: 6, sufixo: '', rotulo: 'regras de inferência simbólica' },
 ]
-
-const EDGES: [string, string][] = [
-  ['curso', 'disciplina'],
-  ['disciplina', 'docente'],
-  ['disciplina', 'prereq'],
-  ['disciplina', 'carga'],
-  ['curso', 'matriz'],
-  ['matriz', 'prereq'],
-  ['matriz', 'carga'],
-  ['curso', 'regimento'],
-  ['regimento', 'matriz'],
-  ['docente', 'p1'],
-  ['curso', 'p2'],
-  ['disciplina', 'p3'],
-]
-
-function KnowledgeGraphFigure({ className }: { className?: string }) {
-  const byId = Object.fromEntries(NODES.map((n) => [n.id, n]))
-  return (
-    <svg
-      viewBox="0 0 480 400"
-      className={className}
-      data-graph
-      role="img"
-      aria-label="Representação de um grafo de conhecimento: cursos, disciplinas, docentes e regimentos conectados"
-    >
-      {EDGES.map(([a, b], i) => (
-        <line
-          key={i}
-          x1={byId[a].x}
-          y1={byId[a].y}
-          x2={byId[b].x}
-          y2={byId[b].y}
-          stroke="#34d399"
-          strokeOpacity={0.16}
-          strokeWidth={1}
-          className="edge-draw"
-          style={{ animationDelay: `${0.15 + i * 0.12}s` }}
-        />
-      ))}
-      {NODES.map((n, i) => (
-        <g key={n.id} className="kg-node" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
-          <circle
-            cx={n.x}
-            cy={n.y}
-            r={n.r}
-            fill="#34d399"
-            fillOpacity={n.label ? 0.9 : 0.35}
-            className={n.pulse ? 'node-pulse' : undefined}
-            style={n.delay ? { animationDelay: n.delay } : undefined}
-          />
-          {n.label && (
-            <text
-              x={n.x + n.r + 8}
-              y={n.y + 4}
-              className="font-mono"
-              fontSize="11"
-              fill="#9aa8a2"
-            >
-              {n.label}
-            </text>
-          )}
-        </g>
-      ))}
-    </svg>
-  )
-}
 
 const PIPELINE_STEPS = [
   {
@@ -180,7 +104,8 @@ export default function LandingPage() {
             <h1 className="animate-rise rise-2 font-display text-5xl font-medium leading-[1.05] tracking-tightest sm:text-6xl lg:text-7xl">
               Perguntas acadêmicas.
               <br />
-              Respostas <span className="text-accent">verificadas</span>.
+              Respostas{' '}
+              <DecryptText text="verificadas" delay={500} className="text-accent" />.
             </h1>
             <p className="animate-rise rise-3 mt-8 max-w-xl text-lg leading-relaxed text-paper-dim">
               O FESP-AI responde sobre a vida acadêmica do campus São José dos
@@ -207,12 +132,44 @@ export default function LandingPage() {
 
           <div className="animate-rise rise-5 hidden lg:block">
             <div data-parallax="0.05">
-              <KnowledgeGraphFigure className="w-full" />
+              <div className="h-[400px] w-full">
+                <LiveGraph className="h-full w-full" />
+              </div>
               <p className="mt-4 text-center font-mono text-[11px] text-paper-mute">
-                fragmento do grafo de conhecimento do campus
+                fragmento vivo do grafo de conhecimento do campus
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="relative z-10 border-t border-line">
+        <div className="mx-auto max-w-6xl px-6 py-14">
+          <div data-reveal className="grid grid-cols-2 gap-8 lg:grid-cols-4">
+            {STATS.map((s) => (
+              <div key={s.rotulo} className="text-center">
+                <CountUp
+                  value={s.valor}
+                  suffix={s.sufixo}
+                  className="font-display text-4xl font-medium text-accent sm:text-5xl"
+                />
+                <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper-mute">
+                  {s.rotulo}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative z-10 border-t border-line py-14">
+        <div data-reveal className="mx-auto mb-8 max-w-6xl px-6">
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-accent">
+            Pergunte de verdade
+          </p>
+        </div>
+        <div data-reveal>
+          <QuestionsMarquee />
         </div>
       </section>
 
@@ -259,20 +216,21 @@ export default function LandingPage() {
 
           <div className="grid gap-5 sm:grid-cols-2">
             {DOMAINS.map((d, i) => (
-              <div
+              <SpotlightCard
                 key={d.n}
-                data-reveal
                 style={{ '--fxd': `${i * 110}ms` } as CSSProperties}
                 className="group rounded-xl border border-line bg-ink-raise p-7 transition-colors hover:border-accent/30"
               >
-                <div className="flex items-baseline justify-between">
-                  <h3 className="font-display text-xl font-medium text-paper">{d.title}</h3>
-                  <span className="font-mono text-xs text-paper-mute transition-colors group-hover:text-accent">
-                    {d.n}
-                  </span>
+                <div data-reveal>
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="font-display text-xl font-medium text-paper">{d.title}</h3>
+                    <span className="font-mono text-xs text-paper-mute transition-colors group-hover:text-accent">
+                      {d.n}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-paper-dim">{d.text}</p>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-paper-dim">{d.text}</p>
-              </div>
+              </SpotlightCard>
             ))}
           </div>
 

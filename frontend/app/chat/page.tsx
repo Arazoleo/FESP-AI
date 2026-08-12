@@ -367,6 +367,12 @@ export default function ChatPage() {
 
   useEffect(() => {
     createNewConversation()
+    const params = new URLSearchParams(window.location.search)
+    const q = params.get('q')
+    if (q) {
+      setInput(q)
+      window.history.replaceState(null, '', '/chat')
+    }
     inputRef.current?.focus()
 
   }, [])
@@ -759,18 +765,20 @@ export default function ChatPage() {
       <footer className="relative z-20 border-t border-line bg-ink/80 backdrop-blur-xl">
         <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6">
           <div className="flex items-end gap-3">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onInput={handleTextareaInput}
-              placeholder="Escreva sua pergunta"
-              rows={1}
-              disabled={isLoading}
-              className="w-full flex-1 resize-none overflow-hidden rounded-xl border border-line bg-ink-raise px-5 py-[15px] text-[15px] leading-relaxed text-paper placeholder-paper-mute transition-colors focus:border-accent/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ minHeight: '54px', maxHeight: '160px' }}
-            />
+            <div className="chat-input-glow w-full flex-1">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onInput={handleTextareaInput}
+                placeholder="Escreva sua pergunta"
+                rows={1}
+                disabled={isLoading}
+                className="w-full resize-none overflow-hidden rounded-xl border border-line bg-ink-raise px-5 py-[15px] text-[15px] leading-relaxed text-paper placeholder-paper-mute transition-colors focus:border-accent/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                style={{ minHeight: '54px', maxHeight: '160px' }}
+              />
+            </div>
 
             <button
               onClick={handleSend}
