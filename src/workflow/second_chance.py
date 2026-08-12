@@ -54,6 +54,29 @@ RETRY_FALLBACK = {
     "web_sjc": "fallback",
 }
 
+AGENTES_VALIDOS_HANDOFF = frozenset({
+    "disciplinas", "docentes", "cursos", "regimentos", "web_sjc", "noticias",
+})
+
+_HANDOFF_RE = re.compile(r"\[\s*SUGERIR\s*:\s*([a-z_]+)\s*\]", re.IGNORECASE)
+
+
+def extract_handoff(text: str) -> Optional[str]:
+    """
+    Handoff explícito: o agente sinaliza [SUGERIR: dominio] quando a pergunta
+    pertence a outro especialista. Retorna o agente sugerido válido ou None.
+    """
+    m = _HANDOFF_RE.search(text or "")
+    if not m:
+        return None
+    sugerido = m.group(1).lower()
+    return sugerido if sugerido in AGENTES_VALIDOS_HANDOFF else None
+
+
+def strip_handoff(text: str) -> str:
+    """Remove a tag [SUGERIR: ...] antes de exibir a resposta ao aluno."""
+    return _HANDOFF_RE.sub("", text or "").strip()
+
 
 def fallback_agent_for(agent: str) -> Optional[str]:
     """Agente alternativo para a segunda chance (None = sem retry)."""
@@ -75,9 +98,15 @@ def run_with_second_chance(
     started = time.monotonic()
     first = invoke(initial_state)
     first_elapsed = time.monotonic() - started
+    resposta_1 = first.get("response", "")
+    handoff = extract_handoff(resposta_1)
+    if handoff:
+        first = {**first, "response": strip_handoff(resposta_1)}
+        if telemetry_incr:
+            telemetry_incr("handoff_sugerido")
     if initial_state.get("retry_count", 0) > 0:
         return first
-    if not is_miss_response(first.get("response", "")):
+    if not handoff and not is_miss_response(first.get("response", "")):
         return first
     if first_elapsed > RETRY_LATENCY_BUDGET_S:
         if telemetry_incr:
@@ -85,7 +114,11 @@ def run_with_second_chance(
         return first
 
     failed_agent = first.get("active_agent", "")
-    retry_agent = fallback_agent_for(failed_agent)
+    retry_agent = None
+    if handoff and handoff != failed_agent:
+        retry_agent = handoff
+    if not retry_agent:
+        retry_agent = fallback_agent_for(failed_agent)
     if not retry_agent or retry_agent == failed_agent:
         return first
 
@@ -99,10 +132,16 @@ def run_with_second_chance(
     except Exception:
         return first
 
-    if second.get("response", "").strip() and not is_miss_response(second["response"]):
+    resposta_2 = strip_handoff(second.get("response", ""))
+    if resposta_2 and not is_miss_response(resposta_2):
         if telemetry_incr:
-            telemetry_incr("retry_recuperado")
-        return {**second, "retry_from_agent": failed_agent, "retry_count": 1}
+            telemetry_incr("handoff_recuperado" if handoff else "retry_recuperado")
+        return {
+            **second,
+            "response": resposta_2,
+            "retry_from_agent": failed_agent,
+            "retry_count": 1,
+        }
     if telemetry_incr:
         telemetry_incr("retry_sem_sucesso")
     return {**first, "retry_count": 1, "retry_agent_tried": retry_agent}

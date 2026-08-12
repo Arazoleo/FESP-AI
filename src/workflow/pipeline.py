@@ -768,8 +768,57 @@ def build_pipeline(rag_instance):
         }
 
     def fallback_node(state: AgentState) -> AgentState:
-        """Fallback usa a lógica RAG original para perguntas não classificadas."""
+        """
+        Fallback para perguntas não classificadas. Com FESPAI_DEBATE=1
+        (padrão), vira um debate: o agente do site e o RAG geral respondem e o
+        juiz simbólico (claims verificados no KG) escolhe a melhor resposta.
+        """
         question = state.get("enhanced_question") or state.get("question", "")
+
+        if os.getenv("FESPAI_DEBATE", "1") != "0" and "web_sjc" in agents:
+            from .debate import debater
+
+            validador = getattr(agents.get("web_sjc"), "validator", None)
+
+            def validar(resposta: str):
+                if not validador:
+                    return {}
+                laudo = validador.validate_response(resposta, "unknown", "")
+                return {
+                    "fatos_verificados": laudo.verified_facts,
+                    "violacoes": laudo.violations,
+                }
+
+            def responder_site():
+                return agents["web_sjc"].answer(
+                    question, state.get("intent", ""), "",
+                    history=state.get("history", ""),
+                )
+
+            def responder_rag():
+                return {"response": rag_instance.query(question)}
+
+            vencedor = debater(
+                question,
+                [
+                    {"agente": "web_sjc", "responder": responder_site},
+                    {"agente": "rag_geral", "responder": responder_rag},
+                ],
+                validar=validar,
+                telemetry_incr=telemetry_incr,
+            )
+            if vencedor.get("response"):
+                agente_final = (
+                    "web_sjc" if vencedor.get("agente") == "web_sjc" else "fallback"
+                )
+                return {
+                    **state,
+                    "response": vencedor["response"],
+                    "active_agent": agente_final,
+                    "sources": vencedor.get("sources", []),
+                    "context": vencedor.get("context", ""),
+                }
+
         try:
             response = rag_instance.query(question)
         except Exception as e:

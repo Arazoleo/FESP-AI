@@ -68,7 +68,10 @@ class BaseAgent(ABC):
         "⚠️ REGRA DE OURO: Voce so pode usar informacoes que aparecem LITERALMENTE no CONTEXTO abaixo.\n"
         "Nao use conhecimento proprio, nao invente nomes, codigos, emails, salas, cargas horarias, "
         "docentes, ementas ou regras.\n"
-        "Se a informacao NAO estiver no CONTEXTO, diga com gentileza que nao tem esse dado na base da UNIFESP ICT."
+        "Se a informacao NAO estiver no CONTEXTO, diga com gentileza que nao tem esse dado na base da UNIFESP ICT.\n"
+        "Se a pergunta claramente pertence a OUTRO dominio do assistente (disciplinas, docentes, "
+        "cursos, regimentos, web_sjc para o site do campus, noticias), termine a resposta com a tag "
+        "[SUGERIR: <dominio>] em uma linha propria - o sistema encaminha para o especialista certo."
     )
 
     _PRONOUN_WORDS: frozenset = frozenset({
@@ -179,6 +182,7 @@ class BaseAgent(ABC):
             }
 
         context = self.retrieve(question, intent, term)
+        context = self._com_consulta_lateral(context, question, term)
 
         if not context or not context.strip():
             suggestion = self._kgc_suggestion(term)
@@ -232,6 +236,67 @@ class BaseAgent(ABC):
             "context": enriched_context,
             "sources": sources,
         }
+
+    _DOMINIO_POR_TIPO_NO: Dict[str, str] = {
+        "disciplina": "disciplina",
+        "curso": "projeto_pedagogico",
+    }
+
+    def dominio_da_entidade(self, term: str) -> Optional[str]:
+        """
+        tipo_documento do domínio dono da entidade citada, quando ela existe no
+        KG e pertence a um domínio diferente do deste agente.
+        """
+        if not term or not self.knowledge_graph:
+            return None
+        for tipo_no, tipo_doc in self._DOMINIO_POR_TIPO_NO.items():
+            try:
+                if self.knowledge_graph._find_node(term, tipo_no):
+                    return tipo_doc
+            except Exception:
+                continue
+        return None
+
+    def consultar_dominio(self, tipo_documento: str, query: str, k: int = 3) -> str:
+        """
+        Consulta lateral: busca no vector store os trechos de OUTRO domínio.
+        O bloco volta rotulado para o LLM saber a procedência.
+        """
+        if not self.db or not tipo_documento or not query:
+            return ""
+        try:
+            docs = self.db.similarity_search(
+                query, k=k, filter={"tipo_documento": tipo_documento}
+            )
+        except Exception:
+            return ""
+        trechos = [d.page_content.strip() for d in docs if d.page_content.strip()]
+        if not trechos:
+            return ""
+        rotulo = tipo_documento.upper().replace("_", " ")
+        return (
+            f"[CONSULTA LATERAL AO DOMINIO {rotulo}]\n" + "\n---\n".join(trechos[:k])
+        )
+
+    def _com_consulta_lateral(self, context: str, question: str, term: str) -> str:
+        import os
+
+        if os.getenv("FESPAI_CONSULTA_LATERAL", "1") == "0":
+            return context
+        if context and len(context.strip()) >= 200:
+            return context
+        tipo_doc = self.dominio_da_entidade(term or question)
+        if not tipo_doc:
+            return context
+        bloco = self.consultar_dominio(tipo_doc, term or question)
+        if not bloco:
+            return context
+        try:
+            from ..telemetry import incr
+            incr("consulta_lateral")
+        except Exception:
+            pass
+        return (context + "\n\n" + bloco).strip() if context else bloco
 
     def _kgc_suggestion(self, term: str) -> str:
         """

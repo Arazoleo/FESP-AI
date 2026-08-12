@@ -166,5 +166,66 @@ with tempfile.TemporaryDirectory() as tmp:
         f.write("{quebrado\n")
     check("linha corrompida é ignorada", len(mq.read_misses(limit=50, path=path)) == 50)
 
+print(f"\n{BOLD}── handoff explícito [SUGERIR: agente] ──{RESET}")
+check("extrai sugestão válida",
+      sc.extract_handoff("Isso é assunto do site do campus. [SUGERIR: web_sjc]") == "web_sjc")
+check("case/espaços tolerados",
+      sc.extract_handoff("[ Sugerir : docentes ]") == "docentes")
+check("agente inválido é descartado",
+      sc.extract_handoff("[SUGERIR: chefia]") is None)
+check("sem tag retorna None", sc.extract_handoff("resposta normal") is None)
+check("strip remove a tag da resposta exibida",
+      sc.strip_handoff("Não sei responder.\n[SUGERIR: regimentos]") == "Não sei responder.")
+
+seq = []
+
+
+def invoke_handoff(state):
+    seq.append(state.get("forced_agent"))
+    if state.get("retry_count", 0) == 0:
+        return {
+            "response": "Isso é sobre normas. [SUGERIR: regimentos]",
+            "active_agent": "disciplinas",
+        }
+    return {"response": "Pelo art. 143, a prioridade é...", "active_agent": "regimentos"}
+
+
+final = sc.run_with_second_chance(invoke_handoff, {"question": "q"})
+check("handoff redireciona para o agente sugerido (não o fallback fixo)",
+      seq == [None, "regimentos"], str(seq))
+check("resposta final é a do agente sugerido",
+      "art. 143" in final.get("response", ""))
+check("tag nunca vaza para o aluno", "[SUGERIR" not in final.get("response", ""))
+check("retry_from_agent registra a origem",
+      final.get("retry_from_agent") == "disciplinas")
+
+
+def invoke_handoff_sem_recuperar(state):
+    if state.get("retry_count", 0) == 0:
+        return {
+            "response": "Não tenho esse dado. [SUGERIR: web_sjc]",
+            "active_agent": "docentes",
+        }
+    return {"response": "não encontrei nada", "active_agent": "web_sjc"}
+
+
+final2 = sc.run_with_second_chance(invoke_handoff_sem_recuperar, {"question": "q"})
+check("handoff sem recuperação mantém a 1ª resposta, sem a tag",
+      final2.get("response") == "Não tenho esse dado."
+      and final2.get("retry_agent_tried") == "web_sjc", str(final2))
+
+
+def invoke_handoff_proprio(state):
+    return {
+        "response": "Não encontrei. [SUGERIR: docentes]",
+        "active_agent": "docentes",
+    }
+
+
+final3 = sc.run_with_second_chance(invoke_handoff_proprio, {"question": "q"})
+check("sugestão do próprio agente cai no fallback fixo e a tag não vaza",
+      final3.get("retry_agent_tried") == "web_sjc"
+      and "[SUGERIR" not in final3.get("response", ""), str(final3))
+
 print(f"\n{BOLD}{_passed} passed, {_failed} failed{RESET}")
 sys.exit(1 if _failed else 0)
