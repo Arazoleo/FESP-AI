@@ -187,6 +187,8 @@ _WEB_SJC_PHRASES = [
     "nucleo docente", "nde", "ex-officio", "ex officio",
     "atestado", "diploma", "aproveitamento de estudos", "cracha", "crachá",
     "historico escolar", "cancelamento de matricula", "colacao de grau",
+    "colacao", "colar grau", "colar o grau", "colo grau", "formatura",
+    "concluinte", "concluintes",
     "atualizacao de dados", "certificado de conclusao",
     "rematricula", "matriz horaria", "cancelamento", "dados cadastrais",
     "trancamento de matricula", "prorrogacao", "revisao de prova",
@@ -208,6 +210,10 @@ _WEB_SJC_PHRASES = [
     "plano de rematricula", "minicurso", "minicursos",
     "orientacao academica", "relatorio de progresso", "progresso academico",
     "aditamento", "aditamentos", "rescisao",
+    "tce", "termo de compromisso", "ecos", "eno",
+    "estagio obrigatorio", "estagio nao obrigatorio", "estagiario",
+    "relatorio de estagio", "relatorios de estagio", "remat",
+    "coordenador de estagio", "coordenadora de estagio",
 ]
 
 

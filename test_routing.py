@@ -82,6 +82,20 @@ check("'disciplina' explícita ainda exclui do web_sjc",
 check("'normalmente' não força regimentos ('norma' interno)",
       router.phrase_override("normalmente quem coordena os estágios?") != "regimentos")
 
+print(f"\n{BOLD}── conteúdo da DAE: colação, estágio, REMAT ──{RESET}")
+check("'como faço para colar grau?' → web_sjc",
+      router.is_web_sjc("como faço para colar grau?"))
+check("'sou concluinte com estágio ativo, o que fazer?' → web_sjc",
+      router.is_web_sjc("sou concluinte com estágio ativo, o que fazer?"))
+check("'o que é o tce?' → web_sjc",
+      router.is_web_sjc("o que é o tce?"))
+check("'quando entrego o relatório de estágio?' → web_sjc",
+      router.is_web_sjc("quando entrego o relatório de estágio?"))
+check("'como funciona a remat?' → web_sjc",
+      router.is_web_sjc("como funciona a remat?"))
+check("'o que é ecos?' → web_sjc",
+      router.is_web_sjc("o que é ecos?"))
+
 print(f"\n{BOLD}── 'responsável por/pela': disciplina → docentes, institucional → web_sjc ──{RESET}")
 check("'quem é o responsável pela biblioteca?' → web_sjc "
       "(pipeline checa is_web_sjc ANTES do phrase_override)",
