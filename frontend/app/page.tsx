@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowRight, ArrowDown } from 'lucide-react'
 import ThemeToggle from './components/ThemeToggle'
 import ScrollFX from './components/ScrollFX'
-import LiveGraph from './components/LiveGraph'
+import HeroDemo from './components/HeroDemo'
 import DecryptText from './components/DecryptText'
 import SpotlightCard from './components/SpotlightCard'
 import CountUp from './components/CountUp'
@@ -140,11 +140,9 @@ export default function LandingPage() {
 
           <div className="animate-rise rise-5 hidden lg:block">
             <div data-parallax="0.05">
-              <div className="h-[400px] w-full">
-                <LiveGraph className="h-full w-full" />
-              </div>
+              <HeroDemo />
               <p className="mt-4 text-center font-mono text-[11px] text-paper-mute">
-                fragmento vivo do grafo de conhecimento do campus
+                a pipeline neurossimbólica rodando: pergunta, grafo, regra, resposta
               </p>
             </div>
           </div>

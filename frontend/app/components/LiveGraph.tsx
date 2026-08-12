@@ -36,8 +36,21 @@ const ARESTAS: [number, number][] = [
   [5, 6], [2, 10], [0, 8], [1, 9], [7, 4], [7, 2], [11, 1], [12, 0], [13, 6],
 ]
 
-export default function LiveGraph({ className }: { className?: string }) {
+export default function LiveGraph({
+  className,
+  highlight,
+  cursorLink = true,
+}: {
+  className?: string
+  highlight?: number[]
+  cursorLink?: boolean
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const highlightRef = useRef<number[]>([])
+
+  useEffect(() => {
+    highlightRef.current = highlight || []
+  }, [highlight])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -118,6 +131,8 @@ export default function LiveGraph({ className }: { className?: string }) {
         n.y += (py - n.y) * 0.06
       }
 
+      const acesos = highlightRef.current
+
       ctx.lineWidth = 1
       for (const [a, b] of ARESTAS) {
         const na = nos[a]
@@ -136,18 +151,60 @@ export default function LiveGraph({ className }: { className?: string }) {
         ctx.stroke()
       }
 
-      for (const n of nos) {
-        let brilho = 0
-        if (mouse.dentro) {
+      if (acesos.length > 1) {
+        ctx.lineWidth = 1.6
+        const fluxo = (t * 40) % 16
+        ctx.setLineDash([7, 9])
+        ctx.lineDashOffset = -fluxo
+        for (let i = 0; i < acesos.length - 1; i++) {
+          const na = nos[acesos[i]]
+          const nb = nos[acesos[i + 1]]
+          ctx.strokeStyle = `rgb(${accent} / 0.85)`
+          ctx.beginPath()
+          ctx.moveTo(na.x, na.y)
+          ctx.lineTo(nb.x, nb.y)
+          ctx.stroke()
+        }
+        ctx.setLineDash([])
+        ctx.lineWidth = 1
+      }
+
+      if (cursorLink && mouse.dentro) {
+        const proximos = nos
+          .map((n, i) => ({ i, d: Math.hypot(mouse.x - n.x, mouse.y - n.y) }))
+          .filter((p) => p.d < 150)
+          .sort((a, b) => a.d - b.d)
+          .slice(0, 3)
+        for (const p of proximos) {
+          const n = nos[p.i]
+          ctx.strokeStyle = `rgb(${accent} / ${((150 - p.d) / 150) * 0.4})`
+          ctx.beginPath()
+          ctx.moveTo(mouse.x, mouse.y)
+          ctx.lineTo(n.x, n.y)
+          ctx.stroke()
+        }
+        if (proximos.length) {
+          ctx.fillStyle = `rgb(${accent} / 0.9)`
+          ctx.beginPath()
+          ctx.arc(mouse.x, mouse.y, 2.5, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+
+      for (let i = 0; i < nos.length; i++) {
+        const n = nos[i]
+        const aceso = acesos.includes(i)
+        let brilho = aceso ? 1 : 0
+        if (!aceso && mouse.dentro) {
           const d = Math.hypot(mouse.x - n.x, mouse.y - n.y)
           if (d < 110) brilho = (110 - d) / 110
         }
         const pulso = 0.55 + Math.sin(t * 2 + n.fase) * 0.2
         const alfa = n.label ? Math.min(1, pulso + brilho * 0.6) : 0.35 + brilho * 0.5
         if (brilho > 0.15) {
-          ctx.fillStyle = `rgb(${accent} / ${brilho * 0.18})`
+          ctx.fillStyle = `rgb(${accent} / ${brilho * (aceso ? 0.28 : 0.18)})`
           ctx.beginPath()
-          ctx.arc(n.x, n.y, n.r + 9 * brilho, 0, Math.PI * 2)
+          ctx.arc(n.x, n.y, n.r + (aceso ? 12 : 9) * brilho, 0, Math.PI * 2)
           ctx.fill()
         }
         ctx.fillStyle = `rgb(${accent} / ${alfa})`
@@ -156,7 +213,9 @@ export default function LiveGraph({ className }: { className?: string }) {
         ctx.fill()
         if (n.label) {
           ctx.font = '11px ui-monospace, SFMono-Regular, Menlo, monospace'
-          ctx.fillStyle = `rgb(${texto} / ${0.85 + brilho * 0.15})`
+          ctx.fillStyle = aceso
+            ? `rgb(${accent} / 1)`
+            : `rgb(${texto} / ${0.85 + brilho * 0.15})`
           ctx.fillText(n.label, n.x + n.r + 8, n.y + 4)
         }
       }
