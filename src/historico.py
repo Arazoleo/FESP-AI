@@ -19,6 +19,14 @@ _DADOS_RE = re.compile(
     r"Docente:.*?\s(\d{3})\s+(DF|DE|E|O|AE)\s+(\d+)\s+(\S+)\s+(\d+)\s+(\d+)\s+"
     r"([\d,.]+)\s+([A-ZÃÕÇ ]+?)\s*$"
 )
+_DADOS_SEM_EXT_RE = re.compile(
+    r"Docente:.*?\s(\d{3})\s+(DF|DE|E|O|AE)\s+(\d+)\s+(\d+)\s+(\d+)\s+"
+    r"([\d,.]+)\s+([A-ZÃÕÇ ]+?)\s*$"
+)
+_DADOS_ADE_RE = re.compile(
+    r"Docente:.*?\s(\d{3})\s+(DF|DE|E|O|AE)\s+(\d+)\s+(\d+)\s+(?:-\s+)?"
+    r"(CUMPRIDO|N[ÃA]O\s+CUMPRIDO|EM\s+CURSO)\s*$"
+)
 _SEM_RE = re.compile(
     r"ANO/SEM\s*\|\s*(\d{4})/(\d)\s*Coeficiente de Rendimento \(CR\):\s*([\d.,]+)"
 )
@@ -26,6 +34,8 @@ _CR_GERAL_RE = re.compile(
     r"Coeficiente de Rendimento \(CR\) Geral:\s*([\d.,]+)"
 )
 _CURSO_RE = re.compile(r"Curso:\s*(.+?)\s*$", re.MULTILINE)
+_INGRESSO_RE = re.compile(r"Ano de ingresso:\s*(\d{4})")
+_HORAS_AC_RE = re.compile(r"^ATIVIDADES COMPLEMENTARES\s+(\d+)\s*$", re.MULTILINE)
 _HORAS_FIXAS_RE = re.compile(r"^FIXAS\s+(\d+)\s*$", re.MULTILINE)
 _HORAS_ELETIVAS_RE = re.compile(r"^ELETIVAS\s+(\d+)\s*$", re.MULTILINE)
 _HORAS_TOTAL_RE = re.compile(
@@ -86,13 +96,11 @@ def parsear_historico(texto: str) -> Optional[Dict]:
             uc_pendente = (muc.group(1), muc.group(2).strip())
             continue
         if uc_pendente and linha.startswith("Docente:"):
+            codigo, nome = uc_pendente
+            registro = None
             mdados = _DADOS_RE.search(linha)
             if mdados:
-                codigo, nome = uc_pendente
-                situacao = mdados.group(8).strip()
-                disciplinas.append({
-                    "codigo": codigo,
-                    "nome": nome.title(),
+                registro = {
                     "grupo": mdados.group(1),
                     "tipo": mdados.group(2),
                     "ch": int(mdados.group(3)),
@@ -100,8 +108,40 @@ def parsear_historico(texto: str) -> Optional[Dict]:
                     "creditos": int(mdados.group(5)),
                     "freq": int(mdados.group(6)),
                     "nota": _num(mdados.group(7)),
-                    "situacao": situacao,
+                    "situacao": mdados.group(8).strip(),
+                }
+            else:
+                msem_ext = _DADOS_SEM_EXT_RE.search(linha)
+                if msem_ext:
+                    registro = {
+                        "grupo": msem_ext.group(1),
+                        "tipo": msem_ext.group(2),
+                        "ch": int(msem_ext.group(3)),
+                        "chext": 0,
+                        "creditos": int(msem_ext.group(4)),
+                        "freq": int(msem_ext.group(5)),
+                        "nota": _num(msem_ext.group(6)),
+                        "situacao": msem_ext.group(7).strip(),
+                    }
+                else:
+                    made = _DADOS_ADE_RE.search(linha)
+                    if made:
+                        registro = {
+                            "grupo": made.group(1),
+                            "tipo": made.group(2),
+                            "ch": int(made.group(3)),
+                            "chext": 0,
+                            "creditos": int(made.group(4)),
+                            "freq": None,
+                            "nota": None,
+                            "situacao": re.sub(r"\s+", " ", made.group(5)).strip(),
+                        }
+            if registro:
+                disciplinas.append({
+                    "codigo": codigo,
+                    "nome": nome.title(),
                     "ano_sem": ano_sem_atual,
+                    **registro,
                 })
             uc_pendente = None
 
@@ -114,18 +154,32 @@ def parsear_historico(texto: str) -> Optional[Dict]:
         ("eletivas", _HORAS_ELETIVAS_RE),
         ("total", _HORAS_TOTAL_RE),
         ("extensao", _HORAS_EXT_RE),
+        ("ac", _HORAS_AC_RE),
     ):
         m = pat.search(texto or "")
         if m:
             horas[chave] = int(m.group(1))
 
+    ano_ingresso = None
+    m = _INGRESSO_RE.search(texto or "")
+    if m:
+        ano_ingresso = int(m.group(1))
+
     dados = {
         "curso": curso,
         "cr_geral": cr_geral,
+        "ano_ingresso": ano_ingresso,
         "semestres": semestres,
         "disciplinas": disciplinas,
         "horas": horas,
     }
+    em_curso = [
+        {"nome": d["nome"], "creditos": d["creditos"] or 4, "no_kg": False}
+        for d in disciplinas
+        if d.get("situacao") == "EM CURSO"
+    ]
+    if em_curso:
+        dados["cursando"] = em_curso
     dados["cr_calculado"] = calcular_cr(disciplinas)
     dados["cr_confere"] = (
         cr_geral is not None
@@ -181,24 +235,29 @@ def curso_sigla(curso_texto: str) -> str:
     return ""
 
 
+_SITUACOES_APROVADO = ("APROVADO", "CUMPRIDO")
+_SITUACOES_REPROVADO = ("REPROVADO", "NÃO CUMPRIDO", "NAO CUMPRIDO")
+
+
 def aprovadas(dados: Dict) -> List[str]:
     return [
         d["nome"] for d in dados.get("disciplinas", [])
-        if d.get("situacao") == "APROVADO"
+        if d.get("situacao") in _SITUACOES_APROVADO
     ]
 
 
 def interdisciplinares_cursadas(dados: Dict) -> List[str]:
     return sorted({
         d["nome"] for d in dados.get("disciplinas", [])
-        if d.get("grupo") == GRUPO_INTERDISCIPLINAR and d.get("situacao") == "APROVADO"
+        if d.get("grupo") == GRUPO_INTERDISCIPLINAR
+        and d.get("situacao") in _SITUACOES_APROVADO
     })
 
 
 def reprovacoes(dados: Dict) -> List[Dict]:
     return [
         d for d in dados.get("disciplinas", [])
-        if d.get("situacao") == "REPROVADO"
+        if d.get("situacao") in _SITUACOES_REPROVADO
     ]
 
 
@@ -248,6 +307,17 @@ def resumo_historico(dados: Dict) -> str:
     elif sigla == "BCT":
         linhas.append(
             "- Nenhuma UC Eletiva Interdisciplinar ainda (o PPC pede 4)"
+        )
+    if horas.get("ac"):
+        linhas.append(
+            f"- **{horas['ac']}h de Atividades Complementares** já validadas no histórico ✓"
+        )
+    cursando = dados.get("cursando") or []
+    if cursando:
+        nomes_cursando = ", ".join(c["nome"] for c in cursando[:6])
+        linhas.append(
+            f"- **{len(cursando)} UCs em curso** neste semestre ({nomes_cursando}) - "
+            "já registrei como seu semestre atual para simulações de CR"
         )
     linhas.append("")
     linhas.append(

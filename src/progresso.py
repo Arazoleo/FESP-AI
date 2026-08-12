@@ -300,10 +300,13 @@ def _quadro_integralizacao(curso: str, historico: Optional[Dict],
         elif tipo == "DISCIPLINA" and "ELETIVAS" in expressao:
             comp("UCs eletivas", horas.get("eletivas"), exigido)
         elif tipo == "ATIVIDADE COMPLEMENTAR":
-            comp(
-                "Atividades Complementares", None, exigido,
-                obs="não constam no histórico; são validadas em processo próprio (SEI)",
-            )
+            if horas.get("ac"):
+                comp("Atividades Complementares", horas["ac"], exigido)
+            else:
+                comp(
+                    "Atividades Complementares", None, exigido,
+                    obs="não constam no histórico; são validadas em processo próprio (SEI)",
+                )
         elif tipo == "ESTÁGIO":
             comp(
                 "Estágio obrigatório", None, exigido,
@@ -316,10 +319,21 @@ def _quadro_integralizacao(curso: str, historico: Optional[Dict],
             )
 
     if req["sigla"] == "BCT":
-        comp(
-            "Extensão curricularizada", horas.get("extensao"),
-            BCT_EXTRAS_PPC2023["extensao_h"],
-        )
+        ano_ingresso = (historico or {}).get("ano_ingresso")
+        if ano_ingresso and ano_ingresso <= 2022:
+            componentes.append({
+                "nome": "Extensão curricularizada",
+                "cumprido": horas.get("extensao"),
+                "exigido": BCT_EXTRAS_PPC2023["extensao_h"],
+                "unidade": "h",
+                "ok": True,
+                "obs": f"dispensada - ingressantes até 2/2022 (você entrou em {ano_ingresso})",
+            })
+        else:
+            comp(
+                "Extensão curricularizada", horas.get("extensao"),
+                BCT_EXTRAS_PPC2023["extensao_h"],
+            )
         comp(
             "UCs Eletivas Interdisciplinares", len(interdisciplinares),
             BCT_EXTRAS_PPC2023["interdisciplinares"], unidade="UCs",
@@ -375,7 +389,10 @@ def _formatar_progresso_com_historico(r: Dict, quadro: Dict) -> str:
     linhas.append("O quadro, requisito por requisito:")
     for c in quadro["componentes"]:
         if c["ok"] is True:
-            folga = c["cumprido"] - c["exigido"]
+            folga = (
+                c["cumprido"] - c["exigido"]
+                if isinstance(c["cumprido"], (int, float)) else 0
+            )
             det = f" (+{folga}{'' if c['unidade'] == 'UCs' else 'h'} além do mínimo)" if folga > 0 else ""
             simbolo, situacao = "✓", f"completo{det}"
         elif c["ok"] is False:

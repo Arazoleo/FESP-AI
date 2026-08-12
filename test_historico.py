@@ -223,6 +223,76 @@ check("turno do histórico escolhe a matriz certa (BCT noturno)",
       p.requisitos_do_curso("BCT", "INTERDISCIPLINAR EM CIÊNCIA E TECNOLOGIA - NOTURNO")["turno"] == "noturno"
       and p.requisitos_do_curso("BCT", "")["turno"] == "integral")
 
+print(f"\n{BOLD}6b. Formato antigo (2025): sem CHEXT, ADE da pandemia, EM CURSO, AC no RESUMO{RESET}")
+FIXTURE_2025 = """Curso: INTERDISCIPLINAR EM CIÊNCIA E TECNOLOGIA - INTEGRAL
+Ano de ingresso: 2021 Forma de Ingresso: SISTEMA DE SELEÇÃO UNIFICADA
+Situação Acadêmica: EM CURSO Coeficiente de Rendimento (CR) Geral: 7.0
+ANO/SEM | 2021/1 Coeficiente de Rendimento (CR): 0
+Unidade Curricular Cod.
+Grupo Tipo UC CH Crédito Freq.
+(%) Conceito Situação
+9394 - LÓGICA DE PROGRAMAÇÃO
+Docente: FULANA DE TAL Titulação: Doutorado 121 DF 72 4 - CUMPRIDO
+5704 - QUÍMICA GERAL
+Docente: BELTRANA SILVA Titulação: Doutorado 121 DF 72 4 NÃO CUMPRIDO
+ANO/SEM | 2022/1 Coeficiente de Rendimento (CR): 7.0
+2609 - PROBABILIDADE E ESTATÍSTICA
+Docente: CICLANO SOUZA Titulação: Doutorado 182 DE 72 4 90 7,0 APROVADO
+ANO/SEM | 2025/2 Coeficiente de Rendimento (CR): 0
+2831 - BANCO DE DADOS
+Docente: FULANO LIMA Titulação: Doutorado 102 DE 72 4 EM CURSO
+RESUMO
+Totais de carga horária por tipo de UC
+ATIVIDADES COMPLEMENTARES 312
+FIXAS 72
+ELETIVAS 72
+Total de horas cumpridas pelo estudante (teórica + prática) 456
+Carga horária extensionista: 96 horas do total cumprido pelo(a) estudante.
+"""
+d25 = h.parsear_historico(FIXTURE_2025)
+check("formato 2025 é parseado", d25 is not None and len(d25["disciplinas"]) == 4,
+      str(len(d25["disciplinas"]) if d25 else None))
+sit = {x["nome"]: x["situacao"] for x in d25["disciplinas"]}
+check("CUMPRIDO, NÃO CUMPRIDO e EM CURSO reconhecidos",
+      sit.get("Lógica De Programação") == "CUMPRIDO"
+      and sit.get("Química Geral") == "NÃO CUMPRIDO"
+      and sit.get("Banco De Dados") == "EM CURSO", str(sit))
+check("linha graduada sem CHEXT parseada com nota",
+      next(x for x in d25["disciplinas"] if x["nome"] == "Probabilidade E Estatística")["nota"] == 7.0)
+check("CUMPRIDO conta como aprovada", "Lógica De Programação" in h.aprovadas(d25))
+check("NÃO CUMPRIDO conta como reprovação",
+      any(x["nome"] == "Química Geral" for x in h.reprovacoes(d25)))
+check("EM CURSO não conta como aprovada", "Banco De Dados" not in h.aprovadas(d25))
+check("CR ignora UCs sem nota (só a graduada entra)",
+      d25["cr_calculado"] == 7.0, str(d25["cr_calculado"]))
+check("UCs EM CURSO viram cursando automático",
+      d25.get("cursando") and d25["cursando"][0]["nome"] == "Banco De Dados"
+      and d25["cursando"][0]["creditos"] == 4, str(d25.get("cursando")))
+check("AC do RESUMO parseadas", d25["horas"].get("ac") == 312, str(d25["horas"]))
+check("ano de ingresso extraído", d25.get("ano_ingresso") == 2021)
+check("resumo cita AC validadas e UCs em curso",
+      "312h de Atividades Complementares" in h.resumo_historico(d25)
+      and "em curso" in h.resumo_historico(d25).lower(), h.resumo_historico(d25)[:400])
+
+quadro25 = p._quadro_integralizacao("BCT", d25, 0, ["Probabilidade E Estatística"])
+comps25 = {c["nome"]: c for c in quadro25["componentes"]}
+check("AC verificadas pelo histórico (312/312 ✓, não mais 'a confirmar')",
+      comps25["Atividades Complementares"]["ok"] is True
+      and comps25["Atividades Complementares"]["cumprido"] == 312,
+      str(comps25["Atividades Complementares"]))
+check("extensão dispensada para ingressante 2021",
+      comps25["Extensão curricularizada"]["ok"] is True
+      and "dispensada" in comps25["Extensão curricularizada"]["obs"],
+      str(comps25["Extensão curricularizada"]))
+texto25 = p.formatar_progresso({
+    "curso": "BCT", "total_matriz": 7, "cursadas": [], "eletivas_cursadas": [],
+    "desconhecidas": [], "pendentes": 0, "disponiveis": [], "bloqueadas": [],
+    "semestres_minimos": 0, "interdisciplinares_cursadas": [],
+    "integralizacao": quadro25,
+})
+check("formatter não quebra com componente dispensado",
+      "dispensada" in texto25, texto25[:300])
+
 print(f"\n{BOLD}7. Requisitos de integralização por pergunta direta{RESET}")
 check("detecta 'quantas horas preciso para me formar'",
       p.is_requisitos_request("Quantas horas eu preciso para me formar em Engenharia de Computação?"))
