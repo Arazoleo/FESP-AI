@@ -81,6 +81,12 @@ class MultiAgentRAG:
             "color": "#0ea5e9",
             "icon": "Network",
         },
+        "multi": {
+            "label": "Resposta Combinada",
+            "description": "Pergunta com mais de um pedido - cada parte respondida pelo agente certo",
+            "color": "#14b8a6",
+            "icon": "Layers",
+        },
     }
 
     def __init__(self, config: Config = None):
@@ -135,7 +141,7 @@ class MultiAgentRAG:
 
     def query_with_metadata(
         self, question: str, history: str = "", original_question: str = None,
-        historico: Optional[Dict] = None,
+        historico: Optional[Dict] = None, _sub: bool = False,
     ) -> Dict:
         """
         Processa a pergunta e retorna resposta + metadados do agente ativo.
@@ -144,6 +150,8 @@ class MultiAgentRAG:
         continuidade de diálogo nos prompts dos agentes.
         `original_question`: pergunta como o aluno digitou (antes do
         ContextResolver) - registrada na fila de misses.
+        `_sub`: True quando esta chamada é uma subpergunta de uma pergunta
+        composta - desliga a decomposição (anti-recursão) e o offer de AC.
         """
         if not self._pipeline:
             response = self._rag.query(question)
@@ -152,6 +160,13 @@ class MultiAgentRAG:
                 "active_agent": "fallback",
                 "agent_metadata": self.AGENT_METADATA["fallback"],
             }
+
+        if not _sub and os.getenv("FESPAI_DECOMPOSE", "1") != "0":
+            resultado_composto = self._maybe_responder_composta(
+                original_question or question, history, historico
+            )
+            if resultado_composto is not None:
+                return resultado_composto
 
         initial_state = {
             "question": question,
@@ -201,7 +216,7 @@ class MultiAgentRAG:
                 )
                 telemetry.incr("miss_registrado")
 
-            if final_response and not is_miss_response(final_response):
+            if final_response and not is_miss_response(final_response) and not _sub:
                 from .atividades_complementares import maybe_append_offer
                 offered = maybe_append_offer(
                     original_question or question, final_response
@@ -243,6 +258,42 @@ class MultiAgentRAG:
                 "agent_metadata": self.AGENT_METADATA["fallback"],
             }
 
+
+    def _maybe_responder_composta(
+        self, pergunta_bruta: str, history: str, historico: Optional[Dict],
+    ) -> Optional[Dict]:
+        from .decomposer import (
+            pode_ser_composta,
+            decompor_pergunta,
+            combinar_respostas,
+        )
+        from . import telemetry
+
+        if not pode_ser_composta(pergunta_bruta):
+            return None
+        telemetry.incr("decompose_candidata")
+        subs = decompor_pergunta(pergunta_bruta, self.llm, telemetry.incr)
+        if not subs:
+            return None
+        print(f"[Decomposer] pergunta composta -> {len(subs)} subperguntas: {subs}")
+
+        resultados = []
+        for sub in subs:
+            resultados.append(
+                self.query_with_metadata(
+                    sub,
+                    history=history,
+                    original_question=sub,
+                    historico=historico,
+                    _sub=True,
+                )
+            )
+        combinado = combinar_respostas(subs, resultados)
+        combinado["agent_metadata"] = self.AGENT_METADATA.get(
+            combinado["active_agent"], self.AGENT_METADATA["fallback"]
+        )
+        telemetry.incr("decompose_respondida")
+        return combinado
 
     def list_sources(self) -> Dict[str, int]:
         return self._rag.list_sources()

@@ -186,6 +186,7 @@ class ChatResponse(BaseModel):
     timestamp: str
     active_agent: str = "fallback"
     agent_info: Optional[AgentInfo] = None
+    intent: Optional[str] = None
     plan_request: Optional[Dict] = None
     graph_data: Optional[Dict] = None
     list_data: Optional[Dict] = None
@@ -378,6 +379,7 @@ async def chat(request: ChatRequest):
         response_text = result["response"]
         active_agent = result.get("active_agent", "fallback")
         agent_metadata = result.get("agent_info") or result.get("agent_metadata", {})
+        intent = result.get("intent")
         plan_request = result.get("plan_request")
         graph_data = result.get("graph_data")
         list_data = result.get("list_data")
@@ -412,6 +414,7 @@ async def chat(request: ChatRequest):
         timestamp=assistant_message["timestamp"],
         active_agent=active_agent,
         agent_info=agent_info,
+        intent=intent if intent and intent != "unknown" else None,
         plan_request=plan_request,
         graph_data=graph_data,
         list_data=list_data,
