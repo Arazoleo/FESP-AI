@@ -7,7 +7,7 @@ Auditoria de integralização e pré-verificação de matrícula.
   crítico do DAG de pré-requisitos.
 - verificar_matricula: aplica os motivos de indeferimento verificáveis
   (pré-requisito não cumprido, UC já cursada) e explica a prioridade do
-  art. 112 da Prograd.
+  art. 143 do Regulamento dos Cursos de Graduação (Res. CONSU 246/2023).
 
 Entradas em linguagem natural são aterradas no KG; o que não resolve é
 reportado ao aluno, nunca inventado.
@@ -597,7 +597,8 @@ def formatar_matricula(r: Dict) -> str:
     )
     linhas.append("")
     linhas.append(
-        "Se houver disputa por vagas, o art. 112 do Regimento da Prograd "
+        "Se houver disputa por vagas, o art. 143 do Regulamento dos Cursos "
+        "de Graduação (Resolução CONSU 246/2023; antigo art. 112) "
         "prioriza nesta ordem: seguir o currículo padrão; estar mais próximo "
         "de integralizar; não ter reprovação por frequência na UC; maior CR; "
         "cursos do mesmo campus; cursos de outros campi. Rematrícula concedida "

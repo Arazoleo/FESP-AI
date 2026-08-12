@@ -516,6 +516,7 @@ def responder_cr(dados: Optional[Dict], texto: str, kg=None) -> str:
             linhas.append(f"Evolução recente por semestre: {trilha}.")
     linhas.append(
         "\n*Cálculo determinístico sobre o seu histórico (média ponderada "
-        "nota × créditos). O CR vale prioridade de vaga pelo art. 112 da Prograd.*"
+        "nota × créditos). O CR vale prioridade de vaga pelo art. 143 do "
+        "Regulamento dos Cursos de Graduação (Resolução CONSU 246/2023).*"
     )
     return "\n".join(linhas)

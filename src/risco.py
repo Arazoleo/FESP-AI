@@ -65,7 +65,7 @@ def formatar_risco(r: Dict) -> str:
             f"Boa notícia: **nenhuma disciplina depende de {r['nome']}** no "
             "grafo. Uma reprovação não bloqueia outras UCs; o custo é refazer "
             "a própria disciplina (e o impacto no CR, que vale prioridade de "
-            "vaga pelo art. 112)."
+            "vaga pelo art. 143 do Regulamento dos Cursos de Graduação)."
         )
         if r.get("paridade") in ("impar", "par"):
             nome_par = "ímpares" if r["paridade"] == "impar" else "pares"
