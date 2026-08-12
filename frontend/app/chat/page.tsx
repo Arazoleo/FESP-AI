@@ -23,6 +23,8 @@ import DisciplineChips, { DisciplineListData } from '../components/DisciplineChi
 import AcBars, { AcReportData } from '../components/AcBars'
 import ThemeToggle from '../components/ThemeToggle'
 import DecryptText from '../components/DecryptText'
+import LiveGraph from '../components/LiveGraph'
+import GraphConfetti from '../components/GraphConfetti'
 
 interface AgentInfo {
   label: string
@@ -105,6 +107,14 @@ function AgentLabel({
   )
 }
 
+const STEP_NODES: number[][] = [
+  [1],
+  [1, 0, 6],
+  [5, 6],
+  [1, 2, 4],
+  [0, 1, 3, 6],
+]
+
 function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
   const [current, setCurrent] = useState(0)
 
@@ -116,7 +126,15 @@ function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
   }, [])
 
   return (
-    <div className="max-w-md rounded-xl border border-line bg-ink-raise px-6 py-5">
+    <div className="beam-border max-w-md overflow-hidden rounded-xl border border-line bg-ink-raise">
+      <div className="pointer-events-none h-[110px] border-b border-line opacity-80">
+        <LiveGraph
+          highlight={STEP_NODES[Math.min(current, STEP_NODES.length - 1)]}
+          cursorLink={false}
+          className="h-full w-full"
+        />
+      </div>
+      <div className="px-6 py-5">
       <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.18em] text-paper-mute">
         Raciocinando
         {firstQuery && (
@@ -155,12 +173,17 @@ function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
                   done ? 'text-paper-dim' : active ? 'text-paper' : 'text-paper-mute'
                 }`}
               >
-                {step.label}
+                {active ? (
+                  <DecryptText key={step.label} text={step.label} />
+                ) : (
+                  step.label
+                )}
               </span>
             </li>
           )
         })}
       </ol>
+      </div>
     </div>
   )
 }
@@ -371,6 +394,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [placeholder, setPlaceholder] = useState('Escreva sua pergunta')
+  const [confete, setConfete] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -556,6 +580,7 @@ export default function ChatPage() {
     try {
       const resp = await axios.post(`${API_URL}/historico`, form)
       setHistoricoCarregado(true)
+      setConfete((c) => c + 1)
       setMessages((prev) => [
         ...prev,
         {
@@ -865,6 +890,8 @@ export default function ChatPage() {
           </p>
         </div>
       </footer>
+
+      <GraphConfetti trigger={confete} />
 
       <AnimatePresence>
         {plannerUrl && (
