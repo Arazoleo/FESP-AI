@@ -202,6 +202,9 @@ def build_pipeline(rag_instance):
             formatar_progresso,
             verificar_matricula,
             formatar_matricula,
+            is_requisitos_request,
+            extrair_curso_requisitos,
+            responder_requisitos,
         )
         from ..risco import (
             extrair_disciplina_risco,
@@ -366,6 +369,23 @@ def build_pipeline(rag_instance):
                     graph_data=cascata,
                 )
 
+            if label == "requisitos_curso":
+                sigla = extrair_curso_requisitos(pergunta_bruta)
+                curso_texto = ""
+                if not sigla and hist:
+                    curso_texto = hist.get("curso", "")
+                    from ..historico import curso_sigla as _cs
+                    sigla = _cs(curso_texto)
+                if not sigla:
+                    return None
+                resposta = responder_requisitos(sigla, curso_texto or pergunta_bruta)
+                if not resposta:
+                    return None
+                return _resposta_simbolica(
+                    resposta, "requisitos_curso",
+                    ["Matrizes Curriculares oficiais (SIIU/Prograd)"],
+                )
+
             if label == "oferta_check":
                 alvo = extrair_disciplina_oferta(pergunta_bruta) or disciplina_hint
                 if not alvo:
@@ -432,6 +452,8 @@ def build_pipeline(rag_instance):
             fast_label = "risco_reprovacao"
         elif extrair_disciplina_oferta(pergunta_bruta):
             fast_label = "oferta_check"
+        elif is_requisitos_request(pergunta_bruta):
+            fast_label = "requisitos_curso"
         elif is_trilha_request(question):
             fast_label = "trilha"
         if fast_label:

@@ -185,6 +185,89 @@ def auditar_progresso(kg, curso: str, cursadas: List[str],
     }
 
 
+def _rotulo_criterio(c: Dict) -> str:
+    tipo, expressao = c["tipo"], c["expressao"].upper()
+    if tipo == "DISCIPLINA" and "FIXAS" in expressao:
+        return "UCs fixas (obrigatórias)"
+    if tipo == "DISCIPLINA" and "ELETIVAS" in expressao:
+        return "UCs eletivas"
+    if tipo == "ATIVIDADE COMPLEMENTAR":
+        return "Atividades Complementares"
+    if tipo == "ESTÁGIO":
+        return "Estágio obrigatório"
+    if tipo == "TRABALHO DE CONCLUSÃO DE CURSO":
+        return "Trabalho de Conclusão de Curso (TCC)"
+    return c["expressao"].title()
+
+
+_SIGLA_CURSO_RE = re.compile(r"\b(bct|bcc|bmc|bbt|ec|eb)\b")
+
+
+def extrair_curso_requisitos(texto: str) -> str:
+    from .historico import curso_sigla
+
+    sigla = curso_sigla(texto)
+    if sigla:
+        return sigla
+    m = _SIGLA_CURSO_RE.search(_norm(texto))
+    return m.group(1).upper() if m else ""
+
+
+_REQUISITOS_CUES_RES = [re.compile(p) for p in (
+    r"quantas?\s+horas.*\b(?:formar|integralizar|concluir|colar\s+grau)",
+    r"\b(?:carga\s+horaria|horas)\b.*\b(?:para|pra|de)\s+integraliza",
+    r"\brequisitos?\s+(?:de|para)\s+(?:integralizacao|formatura|conclusao|se\s+formar)",
+    r"\bo\s+que\s+(?:o\s+curso\s+)?exige\s+para\s+(?:se\s+)?formar",
+    r"\bpreciso\s+de\s+quantas\s+horas\b",
+)]
+
+
+def is_requisitos_request(texto: str) -> bool:
+    q = _norm(texto)
+    return any(p.search(q) for p in _REQUISITOS_CUES_RES)
+
+
+def responder_requisitos(sigla: str, curso_texto: str = "") -> Optional[str]:
+    req = requisitos_do_curso(sigla, curso_texto)
+    if not req:
+        return None
+    rotulo_curso = req["sigla"]
+    if req["sigla"] == "BCT":
+        rotulo_curso += f" ({req['turno']})"
+    linhas = [
+        f"**O que o {rotulo_curso} exige para você se formar**",
+        "",
+        f"Pela matriz ATIVA oficial ({req['nome'].title()}), a integralização "
+        f"pede **{req['total_h']} horas** no total:",
+        "",
+    ]
+    for c in req["criterios"]:
+        linhas.append(f"- **{_rotulo_criterio(c)}**: {c['para_total_h']}h")
+    if req["sigla"] == "BCT":
+        linhas.append(
+            f"- **Extensão curricularizada**: "
+            f"{BCT_EXTRAS_PPC2023['extensao_h']}h (PPC 2023; cumpridas em "
+            "Eletivas ou Atividades Complementares Extensionistas)"
+        )
+        linhas.append(
+            f"- **UCs Eletivas Interdisciplinares**: "
+            f"{BCT_EXTRAS_PPC2023['interdisciplinares']} UCs, independentemente "
+            "da carga horária (PPC 2023)"
+        )
+    linhas.append("")
+    linhas.append(
+        "Quer ver quanto **você** já cumpriu de cada item? Envie seu Histórico "
+        "Acadêmico (PDF) pelo botão **Histórico** e pergunte *\"quanto falta "
+        "para me formar?\"*."
+    )
+    linhas.append("")
+    linhas.append(
+        f"*Fonte: sistema oficial de Cursos e Matrizes Curriculares da Unifesp "
+        f"(SIIU/Prograd), matriz {req['matriz']}.*"
+    )
+    return "\n".join(linhas)
+
+
 def _quadro_integralizacao(curso: str, historico: Optional[Dict],
                            obrigatorias_pendentes: int,
                            interdisciplinares: List[str]) -> Optional[Dict]:

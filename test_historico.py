@@ -222,6 +222,28 @@ check("EC com estágio e TCC a confirmar (3276h fixas, 252h eletivas)",
 check("turno do histórico escolhe a matriz certa (BCT noturno)",
       p.requisitos_do_curso("BCT", "INTERDISCIPLINAR EM CIÊNCIA E TECNOLOGIA - NOTURNO")["turno"] == "noturno"
       and p.requisitos_do_curso("BCT", "")["turno"] == "integral")
+
+print(f"\n{BOLD}7. Requisitos de integralização por pergunta direta{RESET}")
+check("detecta 'quantas horas preciso para me formar'",
+      p.is_requisitos_request("Quantas horas eu preciso para me formar em Engenharia de Computação?"))
+check("detecta 'carga horária para integralizar'",
+      p.is_requisitos_request("qual a carga horária para integralizar o BCT?"))
+check("não dispara em pergunta de progresso pessoal",
+      not p.is_requisitos_request("quanto falta para me formar?"))
+check("não dispara em pergunta de AC genérica",
+      not p.is_requisitos_request("o que são atividades complementares?"))
+check("extrai sigla de nome por extenso",
+      p.extrair_curso_requisitos("quantas horas para me formar em Engenharia de Computação?") == "EC")
+check("extrai sigla direta",
+      p.extrair_curso_requisitos("requisitos de integralização do bcc") == "BCC")
+resp_req = p.responder_requisitos("EC")
+check("resposta da EC traz total, estágio e TCC",
+      "3960" in resp_req and "Estágio obrigatório" in resp_req
+      and "180h" in resp_req and "SIIU" in resp_req, resp_req[:300])
+resp_bct = p.responder_requisitos("BCT", "NOTURNO")
+check("resposta do BCT inclui extras do PPC (extensão e interdisciplinares)",
+      "240h" in resp_bct and "4 UCs" in resp_bct, resp_bct[:300])
+check("sigla desconhecida retorna None", p.responder_requisitos("XYZ") is None)
 check("quadro None sem horas no histórico",
       p._quadro_integralizacao("BCT", {"horas": {}}, 0, []) is None)
 
