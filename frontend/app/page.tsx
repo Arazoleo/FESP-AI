@@ -9,6 +9,8 @@ import SpotlightCard from './components/SpotlightCard'
 import CountUp from './components/CountUp'
 import QuestionsMarquee from './components/QuestionsMarquee'
 import Magnetic from './components/Magnetic'
+import VerifyDemo from './components/VerifyDemo'
+import HistoricoScan from './components/HistoricoScan'
 
 const STATS = [
   { valor: 7, sufixo: '', rotulo: 'cursos do ICT cobertos' },
@@ -211,6 +213,52 @@ export default function LandingPage() {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      <section className="relative z-10 border-t border-line">
+        <div className="mx-auto max-w-6xl px-6 py-24">
+          <div className="grid items-center gap-14 lg:grid-cols-[1fr_1.15fr]">
+            <div data-reveal>
+              <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-accent">
+                Neurossimbólico
+              </p>
+              <h2 className="font-display text-3xl font-medium tracking-tightest sm:text-4xl">
+                O LLM propõe.
+                <br />O grafo decide.
+              </h2>
+              <p className="mt-6 max-w-md leading-relaxed text-paper-dim">
+                Toda afirmação verificável passa pelo Knowledge Graph antes de
+                chegar até você. O que não confere com os documentos oficiais é
+                refutado e reescrito - por isso as decisões não alucinam.
+              </p>
+            </div>
+            <div data-reveal style={{ '--fxd': '150ms' } as CSSProperties}>
+              <VerifyDemo />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative z-10 border-t border-line">
+        <div className="mx-auto max-w-6xl px-6 py-24">
+          <div data-reveal className="mb-12 max-w-2xl">
+            <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-accent">
+              Contexto pessoal
+            </p>
+            <h2 className="font-display text-3xl font-medium tracking-tightest sm:text-4xl">
+              Seu histórico vira contexto
+            </h2>
+            <p className="mt-6 max-w-xl leading-relaxed text-paper-dim">
+              Envie o PDF do seu Histórico Acadêmico e o FESP-AI passa a
+              responder com os seus dados: calcula e simula o CR, confere
+              requisito a requisito o que falta para se formar e pré-verifica a
+              sua matrícula.
+            </p>
+          </div>
+          <div data-reveal style={{ '--fxd': '150ms' } as CSSProperties}>
+            <HistoricoScan />
+          </div>
         </div>
       </section>
 

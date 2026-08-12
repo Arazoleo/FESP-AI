@@ -37,6 +37,7 @@ interface Message {
   timestamp?: string
   active_agent?: string
   agent_info?: AgentInfo
+  intent?: string
   graph_data?: PrereqGraphData | null
   list_data?: DisciplineListData | null
   ac_data?: AcReportData | null
@@ -66,11 +67,20 @@ const REASONING_STEPS: { label: string; at: number }[] = [
   { label: 'Verificando fatos no grafo', at: 6000 },
 ]
 
-function AgentLabel({ agent, agentInfo }: { agent: string; agentInfo?: AgentInfo }) {
+function AgentLabel({
+  agent,
+  agentInfo,
+  intent,
+}: {
+  agent: string
+  agentInfo?: AgentInfo
+  intent?: string
+}) {
   const color = agentInfo?.color || '#9aa8a2'
   const label = agentInfo?.label || agent
+  const simbolico = agent === 'symbolic_kg'
   return (
-    <div className="mb-3 flex items-center gap-2">
+    <div className="mb-3 flex flex-wrap items-center gap-2">
       <span
         className="h-1.5 w-1.5 rounded-full"
         style={{ backgroundColor: color }}
@@ -78,6 +88,19 @@ function AgentLabel({ agent, agentInfo }: { agent: string; agentInfo?: AgentInfo
       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper-mute">
         {label}
       </span>
+      {simbolico && intent && (
+        <span className="demo-chip rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 font-mono text-[10px] text-accent">
+          ⚙ {intent}
+        </span>
+      )}
+      {simbolico && (
+        <span
+          className="demo-chip rounded-md border border-accent/25 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-accent"
+          style={{ animationDelay: '0.15s' }}
+        >
+          verificado no grafo
+        </span>
+      )}
     </div>
   )
 }
@@ -296,7 +319,11 @@ function AssistantMessage({
   return (
     <div className="text-[15px]">
       {message.active_agent && message.active_agent !== 'fallback' && (
-        <AgentLabel agent={message.active_agent} agentInfo={message.agent_info} />
+        <AgentLabel
+          agent={message.active_agent}
+          agentInfo={message.agent_info}
+          intent={message.intent}
+        />
       )}
 
       {hasGraph && (
@@ -466,6 +493,7 @@ export default function ChatPage() {
         timestamp: response.data.timestamp,
         active_agent: response.data.active_agent,
         agent_info: response.data.agent_info,
+        intent: response.data.intent,
         graph_data: response.data.graph_data,
         list_data: response.data.list_data,
         ac_data: response.data.ac_data,
