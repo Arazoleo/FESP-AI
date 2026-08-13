@@ -303,10 +303,19 @@ def _quadro_integralizacao(curso: str, historico: Optional[Dict],
             if horas.get("ac"):
                 comp("Atividades Complementares", horas["ac"], exigido)
             else:
-                comp(
-                    "Atividades Complementares", None, exigido,
-                    obs="não constam no histórico; são validadas em processo próprio (SEI)",
-                )
+                obs_ac = "não constam no histórico; são validadas em processo próprio (SEI)"
+                itens_ac = (historico or {}).get("ac_itens") or []
+                if itens_ac:
+                    try:
+                        from .ac_auditor import auditar_atividades
+                        validas = auditar_atividades(itens_ac)["total_valido"]
+                        obs_ac += (
+                            f"; você declarou ~{int(validas)}h válidas nesta "
+                            "conversa (simulação)"
+                        )
+                    except Exception:
+                        pass
+                comp("Atividades Complementares", None, exigido, obs=obs_ac)
         elif tipo == "ESTÁGIO":
             comp(
                 "Estágio obrigatório", None, exigido,

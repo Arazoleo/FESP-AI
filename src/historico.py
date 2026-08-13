@@ -403,6 +403,76 @@ def responder_cursei(dados: Dict, alvo: str, kg=None) -> Optional[str]:
     return "\n".join(linhas)
 
 
+_CURSADAS_DECL_RE = re.compile(
+    r"^(?:eu\s+)?ja\s+(?:cursei|fiz|conclui)\s+(.+)$"
+)
+
+
+def is_cursadas_decl(texto: str) -> bool:
+    if "?" in (texto or ""):
+        return False
+    return bool(_CURSADAS_DECL_RE.match(_norm(texto)))
+
+
+def registrar_cursadas_declaradas(sessao: Optional[Dict], nomes: List[str],
+                                  kg=None) -> List[str]:
+    """
+    Persiste na SESSÃO as disciplinas que o aluno declarou já ter cursado
+    (mesmo padrão do cursando/AC): grava canônico do KG quando resolve,
+    dedup por nome normalizado.
+    """
+    if sessao is None:
+        return list(nomes or [])
+    atuais = list(sessao.get("cursadas_declaradas") or [])
+    vistos = {_norm(a) for a in atuais}
+    for n in nomes or []:
+        nome_final = n
+        if kg is not None:
+            try:
+                node = kg._find_node(n, "disciplina")
+                if node:
+                    nome_final = kg.graph.nodes[node].get("nome", n)
+            except Exception:
+                pass
+        chave = _norm(nome_final)
+        if chave and chave not in vistos:
+            atuais.append(nome_final)
+            vistos.add(chave)
+    sessao["cursadas_declaradas"] = atuais
+    return list(atuais)
+
+
+def cursadas_da_sessao(dados: Optional[Dict]) -> List[str]:
+    """Aprovadas do histórico + declaradas na conversa, sem duplicata."""
+    if not dados:
+        return []
+    saida = list(aprovadas(dados))
+    vistos = {_norm(s) for s in saida}
+    for n in dados.get("cursadas_declaradas") or []:
+        if _norm(n) not in vistos:
+            saida.append(n)
+            vistos.add(_norm(n))
+    return saida
+
+
+def responder_cursadas_decl(sessao: Dict, texto: str, kg=None) -> str:
+    m = _CURSADAS_DECL_RE.match(_norm(texto))
+    trecho = m.group(1) if m else ""
+    nomes = [p.strip(" .?!") for p in re.split(r",| e |;", trecho)
+             if p and len(p.strip(" .?!")) >= 3]
+    todas = registrar_cursadas_declaradas(sessao, nomes, kg)
+    linhas = ["**Anotei! Disciplinas que você já cursou (nesta conversa):**", ""]
+    for n in todas:
+        linhas.append(f"- {n}")
+    linhas.append("")
+    linhas.append(
+        "Vou considerar isso nas próximas respostas - progresso, matrícula, "
+        "planejador e trilhas. Pergunte, por exemplo, *\"quanto falta para me "
+        "formar?\"* ou *\"posso me matricular em ...?\"*"
+    )
+    return "\n".join(linhas)
+
+
 def contexto_para_prompt(dados: Optional[Dict], kg=None,
                          incluir_ementas: bool = False) -> str:
     """
@@ -414,7 +484,12 @@ def contexto_para_prompt(dados: Optional[Dict], kg=None,
     ementas (do KG) das disciplinas em curso, para o agente poder comparar
     conteúdos sem depender do retrieval temático.
     """
-    if not dados or not dados.get("disciplinas"):
+    if not dados:
+        return ""
+    tem_doc = bool(dados.get("disciplinas"))
+    declaradas = dados.get("cursadas_declaradas") or []
+    ac_itens = dados.get("ac_itens") or []
+    if not (tem_doc or declaradas or ac_itens or dados.get("cursando")):
         return ""
     aprov = aprovadas(dados)
     reprov = reprovacoes(dados)
@@ -424,12 +499,26 @@ def contexto_para_prompt(dados: Optional[Dict], kg=None,
     cr = dados.get("cr_geral") or dados.get("cr_calculado")
 
     linhas = [
-        "[DADOS DO ALUNO - Histórico Acadêmico enviado NESTA conversa; "
-        "fatos verificados, use-os para responder perguntas sobre o próprio aluno]",
-        f"Curso: {dados.get('curso') or '?'} | CR geral: {cr}"
-        + (f" | Ano de ingresso: {dados['ano_ingresso']}" if dados.get("ano_ingresso") else ""),
-        f"Disciplinas APROVADAS ({len(aprov)}): " + "; ".join(aprov),
+        "[DADOS DO ALUNO - informados NESTA conversa; fatos verificados, "
+        "use-os para responder perguntas sobre o próprio aluno]",
     ]
+    if tem_doc:
+        linhas.append(
+            f"Curso: {dados.get('curso') or '?'} | CR geral: {cr}"
+            + (f" | Ano de ingresso: {dados['ano_ingresso']}" if dados.get("ano_ingresso") else "")
+        )
+        linhas.append(f"Disciplinas APROVADAS ({len(aprov)}): " + "; ".join(aprov))
+    if declaradas:
+        linhas.append(
+            f"Declarou já ter cursado ({len(declaradas)}): " + "; ".join(declaradas)
+        )
+    if ac_itens:
+        total_decl = sum(i.get("horas") or 0 for i in ac_itens)
+        linhas.append(
+            f"Atividades Complementares declaradas (aguardando validação; "
+            f"~{int(total_decl)}h): "
+            + "; ".join(f"{i['descricao']} ({int(i.get('horas') or 0)}h)" for i in ac_itens[:8])
+        )
     if reprov:
         linhas.append(
             f"REPROVAÇÕES ({len(reprov)}): "

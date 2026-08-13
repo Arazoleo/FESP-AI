@@ -334,6 +334,43 @@ check("declaração real segue funcionando",
       h.extrair_cursando("estou cursando Compiladores e Redes esse semestre")
       == ["compiladores", "redes"])
 
+print(f"\n{BOLD}6e. Tudo vira contexto de sessão (varredura){RESET}")
+sessao_v = {}
+check("declaração 'já cursei X e Y' detectada",
+      h.is_cursadas_decl("já cursei Lógica de Programação e Cálculo em Uma Variável"))
+check("pergunta com ? não é declaração",
+      not h.is_cursadas_decl("já cursei Lógica de Programação?"))
+check("frase no meio não dispara (âncora no início)",
+      not h.is_cursadas_decl("quero saber se já cursei tudo"))
+resp_decl = h.responder_cursadas_decl(
+    sessao_v, "já cursei Lógica de Programação e Cálculo em Uma Variável"
+)
+check("declaração registra 2 disciplinas na sessão",
+      len(sessao_v.get("cursadas_declaradas", [])) == 2, str(sessao_v))
+check("resposta confirma e ensina os follow-ups",
+      "Anotei" in resp_decl and "me formar" in resp_decl)
+h.registrar_cursadas_declaradas(sessao_v, ["Lógica de Programação", "Matemática Discreta"])
+check("re-declaração deduplica e soma",
+      len(sessao_v["cursadas_declaradas"]) == 3, str(sessao_v["cursadas_declaradas"]))
+todas_v = h.cursadas_da_sessao({**d25, **sessao_v})
+check("cursadas_da_sessao une histórico + declaradas",
+      "Lógica De Programação" in todas_v and "Matemática Discreta" in todas_v,
+      str(todas_v))
+sessao_v["ac_itens"] = [{"descricao": "72h de doação de sangue", "horas": 72.0}]
+ctx_v = h.contexto_para_prompt(sessao_v)
+check("sessão sem PDF ainda gera contexto (declaradas + AC)",
+      ctx_v.startswith("[DADOS DO ALUNO") and "Matemática Discreta" in ctx_v
+      and "doação de sangue (72h)" in ctx_v, ctx_v)
+check("sessão vazia não gera contexto", h.contexto_para_prompt({}) == "")
+
+d_sem_ac = {**d25, "horas": {k: v for k, v in d25["horas"].items() if k != "ac"},
+            "ac_itens": sessao_v["ac_itens"]}
+quadro_ac = p._quadro_integralizacao("BCT", d_sem_ac, 0, [])
+comp_ac = next(c for c in quadro_ac["componentes"]
+               if c["nome"] == "Atividades Complementares")
+check("quadro de integralização menciona AC declaradas na conversa",
+      "declarou ~72h" in comp_ac["obs"], str(comp_ac))
+
 print(f"\n{BOLD}6d. 'Já cursei X?' respondido direto do histórico{RESET}")
 check("extrai o alvo de 'eu já cursei X?'",
       h.extrair_disciplina_cursei("eu já cursei Teoria dos Grafos?") == "teoria dos grafos")

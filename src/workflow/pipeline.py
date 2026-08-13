@@ -247,6 +247,10 @@ def build_pipeline(rag_instance):
             curso_sigla as historico_curso_sigla,
             extrair_disciplina_cursei,
             responder_cursei,
+            is_cursadas_decl,
+            responder_cursadas_decl,
+            registrar_cursadas_declaradas,
+            cursadas_da_sessao,
         )
 
         def _resposta_simbolica(texto_resposta, intent_label, fontes, **extras):
@@ -277,8 +281,13 @@ def build_pipeline(rag_instance):
 
             if label == "progresso":
                 cursadas = extrair_cursadas(pergunta_bruta)
-                if not cursadas and hist:
-                    cursadas = historico_aprovadas(hist)
+                if hist is not None:
+                    registrar_cursadas_declaradas(
+                        hist, cursadas, rag_instance.knowledge_graph
+                    )
+                    da_sessao = cursadas_da_sessao(hist)
+                    if da_sessao:
+                        cursadas = da_sessao
                 curso = None
                 if rag_instance.graph_rag:
                     try:
@@ -362,8 +371,13 @@ def build_pipeline(rag_instance):
             if label == "matricula_check":
                 desejadas = extrair_desejadas(pergunta_bruta)
                 cursadas = extrair_cursadas(pergunta_bruta)
-                if not cursadas and hist:
-                    cursadas = historico_aprovadas(hist)
+                if hist is not None:
+                    registrar_cursadas_declaradas(
+                        hist, cursadas, rag_instance.knowledge_graph
+                    )
+                    da_sessao = cursadas_da_sessao(hist)
+                    if da_sessao:
+                        cursadas = da_sessao
                 if desejadas and cursadas:
                     resultado = verificar_matricula(
                         rag_instance.knowledge_graph, desejadas, cursadas
@@ -437,17 +451,25 @@ def build_pipeline(rag_instance):
                 resultado = montar_trilha(rag_instance.knowledge_graph, pergunta_bruta)
                 if not resultado:
                     return None
+                cursadas_set = set()
+                if hist is not None:
+                    kg_norm = rag_instance.knowledge_graph._normalize_text
+                    cursadas_set = {kg_norm(n) for n in cursadas_da_sessao(hist)}
+
+                def _hint_trilha(d):
+                    if cursadas_set and rag_instance.knowledge_graph._normalize_text(
+                        d["nome"]
+                    ) in cursadas_set:
+                        return "você já cursou ✓"
+                    if d["eletiva"]:
+                        return "eletiva"
+                    return f"termo {d['termo']}" if d["termo"] is not None else None
+
                 chips = {
                     "type": "discipline_list",
                     "title": f"Trilha: {', '.join(resultado['conceitos'])}",
                     "items": [
-                        {
-                            "nome": d["nome"],
-                            "hint": (
-                                "eletiva" if d["eletiva"]
-                                else (f"termo {d['termo']}" if d["termo"] is not None else None)
-                            ),
-                        }
+                        {"nome": d["nome"], "hint": _hint_trilha(d)}
                         for d in resultado["disciplinas"][:16]
                     ],
                 }
@@ -459,6 +481,14 @@ def build_pipeline(rag_instance):
             return None
 
         hist_sessao = state.get("historico")
+        if hist_sessao is not None and is_cursadas_decl(pergunta_bruta):
+            return _resposta_simbolica(
+                responder_cursadas_decl(
+                    hist_sessao, pergunta_bruta, rag_instance.knowledge_graph
+                ),
+                "cursadas_decl",
+                ["Sessão da conversa"],
+            )
         if hist_sessao is not None and hist_sessao.get("disciplinas"):
             alvo_cursei = extrair_disciplina_cursei(pergunta_bruta)
             if alvo_cursei:
