@@ -12,7 +12,11 @@ Algoritmo: layering topológico do DAG de pré-requisitos + bin-packing guloso
 das disciplinas prontas em cada semestre, respeitando o teto de créditos.
 """
 
+from datetime import date
 from typing import Any, Dict, List, Optional
+
+from .oferta import proximo_semestre, rotulo, paridade_do_semestre
+from .progresso import _PLACEHOLDERS_MATRIZ, _norm as _norm_texto
 
 
 DEFAULT_MAX_CREDITOS = 24
@@ -33,6 +37,8 @@ def plan_curriculum(
     curso: str,
     completed: Optional[List[str]] = None,
     max_creditos: int = DEFAULT_MAX_CREDITOS,
+    respeitar_oferta: bool = True,
+    data: Optional[date] = None,
 ) -> Optional[Dict[str, Any]]:
     """
     Monta a grade restante do `curso`, respeitando pré-requisitos e o teto de
@@ -63,22 +69,34 @@ def plan_curriculum(
             nome = d.get("nome")
             if not nome:
                 continue
+            if _norm_texto(nome) in _PLACEHOLDERS_MATRIZ:
+                continue
             key = norm(nome)
             creditos = _to_int(d.get("creditos"), _DEFAULT_CREDITOS)
             t = _to_int(termo_num, 99)
             if key not in info_by_key or t < info_by_key[key]["termo_sugerido"]:
+                paridade = None
+                if t not in (99, None):
+                    paridade = "par" if t % 2 == 0 else "impar"
                 info_by_key[key] = {
                     "nome": nome,
                     "creditos": creditos,
                     "termo_sugerido": t,
+                    "paridade": paridade,
                 }
 
     completed_norm = {norm(c) for c in completed if c and c.strip()}
 
-    completed_desconhecidas = [
-        c for c in completed
-        if c and c.strip() and norm(c) not in info_by_key
-    ]
+    find_node = getattr(kg, "_find_node", None)
+    eletivas_cursadas = []
+    completed_desconhecidas = []
+    for c in completed:
+        if not c or not c.strip() or norm(c) in info_by_key:
+            continue
+        if find_node and find_node(c, "disciplina"):
+            eletivas_cursadas.append(c)
+        else:
+            completed_desconhecidas.append(c)
 
     pending = {k: v for k, v in info_by_key.items() if k not in completed_norm}
 
@@ -99,6 +117,9 @@ def plan_curriculum(
                 return False
         return True
 
+    sem_atual = proximo_semestre(data)
+    numero = 0
+    rodadas_vazias = 0
     for _ in range(_MAX_SEMESTRES):
         if not remaining:
             break
@@ -107,7 +128,25 @@ def plan_curriculum(
         if not ready:
             break
 
-        ready.sort(key=lambda k: (
+        paridade_sem = paridade_do_semestre(sem_atual)
+        if respeitar_oferta:
+            ofertadas = [
+                k for k in ready
+                if remaining[k]["paridade"] in (None, paridade_sem)
+            ]
+        else:
+            ofertadas = ready
+
+        if not ofertadas:
+            rodadas_vazias += 1
+            if rodadas_vazias > 2:
+                break
+            ano, s = sem_atual
+            sem_atual = (ano, 2) if s == 1 else (ano + 1, 1)
+            continue
+        rodadas_vazias = 0
+
+        ofertadas.sort(key=lambda k: (
             remaining[k]["termo_sugerido"],
             -remaining[k]["creditos"],
             remaining[k]["nome"],
@@ -115,13 +154,13 @@ def plan_curriculum(
 
         chosen: List[str] = []
         creditos_sem = 0
-        for key in ready:
+        for key in ofertadas:
             c = remaining[key]["creditos"]
             if creditos_sem + c <= max_creditos or not chosen:
                 chosen.append(key)
                 creditos_sem += c
 
-        numero = len(semestres) + 1
+        numero += 1
         disciplinas_sem = []
         for key in chosen:
             info = remaining[key]
@@ -129,6 +168,7 @@ def plan_curriculum(
                 "nome": info["nome"],
                 "creditos": info["creditos"],
                 "termo_sugerido": info["termo_sugerido"],
+                "paridade": info["paridade"],
                 "prereqs": [
                     info_by_key[p]["nome"]
                     for p in prereqs[key]
@@ -138,6 +178,8 @@ def plan_curriculum(
 
         semestres.append({
             "numero": numero,
+            "rotulo": rotulo(sem_atual),
+            "paridade": paridade_sem,
             "disciplinas": disciplinas_sem,
             "creditos": creditos_sem,
         })
@@ -145,6 +187,9 @@ def plan_curriculum(
         for key in chosen:
             resolved.add(key)
             del remaining[key]
+
+        ano, s = sem_atual
+        sem_atual = (ano, 2) if s == 1 else (ano + 1, 1)
 
     avisos: List[str] = []
     if completed_desconhecidas:
@@ -166,6 +211,8 @@ def plan_curriculum(
         "curso": curso,
         "max_creditos": max_creditos,
         "completed": [info_by_key[c]["nome"] for c in completed_norm if c in info_by_key],
+        "eletivas_cursadas": len(eletivas_cursadas),
+        "obrigatorias_completas": not pending,
         "semestres": semestres,
         "total_semestres": len(semestres),
         "total_disciplinas": sum(len(s["disciplinas"]) for s in semestres),

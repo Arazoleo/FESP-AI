@@ -25,6 +25,7 @@ import ThemeToggle from '../components/ThemeToggle'
 import DecryptText from '../components/DecryptText'
 import LiveGraph from '../components/LiveGraph'
 import GraphConfetti from '../components/GraphConfetti'
+import PlannerDrawer from '../components/PlannerDrawer'
 
 interface AgentInfo {
   label: string
@@ -401,7 +402,8 @@ export default function ChatPage() {
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [activeAgent, setActiveAgent] = useState<{ agent: string; info?: AgentInfo } | null>(null)
   const [animatingIndex, setAnimatingIndex] = useState(-1)
-  const [plannerUrl, setPlannerUrl] = useState<string | null>(null)
+  const [plannerOpen, setPlannerOpen] = useState(false)
+  const [plannerCurso, setPlannerCurso] = useState<string | null>(null)
   const [selectedDiscipline, setSelectedDiscipline] = useState<string | null>(null)
   const [selectedDocente, setSelectedDocente] = useState<string | null>(null)
 
@@ -537,19 +539,8 @@ export default function ChatPage() {
 
       const planReq: PlanRequest | undefined = response.data.plan_request
       if (planReq) {
-        const params = new URLSearchParams()
-        if (planReq.curso) {
-          params.set('curso', planReq.curso)
-          params.set('auto', '1')
-        }
-        if (planReq.completed && planReq.completed.length) {
-          params.set('completed', planReq.completed.join(';'))
-        }
-        if (planReq.max_creditos) {
-          params.set('creditos', String(planReq.max_creditos))
-        }
-        const qs = params.toString()
-        setPlannerUrl(`${API_URL}/planner${qs ? `?${qs}` : ''}`)
+        setPlannerCurso(planReq.curso || null)
+        setPlannerOpen(true)
       }
 
       if (!conversationId) setConversationId(response.data.conversation_id)
@@ -689,7 +680,7 @@ export default function ChatPage() {
               )}
 
               <button
-                onClick={() => setPlannerUrl(`${API_URL}/planner`)}
+                onClick={() => { setPlannerCurso(null); setPlannerOpen(true) }}
                 className="flex items-center gap-2 rounded-lg border border-line px-3.5 py-2 text-sm text-paper-dim transition-colors hover:border-line-strong hover:text-paper"
               >
                 <Route className="h-4 w-4" />
@@ -894,49 +885,15 @@ export default function ChatPage() {
       <GraphConfetti trigger={confete} />
 
       <AnimatePresence>
-        {plannerUrl && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setPlannerUrl(null)}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              className="fixed right-0 top-0 z-50 flex h-full w-full flex-col border-l border-line bg-ink shadow-2xl md:w-[64%] lg:w-[58%]"
-            >
-              <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
-                <div className="flex items-center gap-3">
-                  <Route className="h-4 w-4 text-accent" />
-                  <div>
-                    <p className="font-mono text-xs uppercase tracking-[0.15em] text-paper">
-                      Planejador de trajetória
-                    </p>
-                    <p className="text-[11px] text-paper-mute">
-                      Montando sua grade ao vivo
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setPlannerUrl(null)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-line text-paper-dim transition-colors hover:border-line-strong hover:text-paper"
-                  aria-label="Fechar planejador"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <iframe
-                src={plannerUrl}
-                className="w-full flex-1 border-0"
-                title="Planejador de Trajetória"
-              />
-            </motion.div>
-          </>
+        {plannerOpen && (
+          <PlannerDrawer
+            apiUrl={API_URL}
+            conversationId={conversationId}
+            historicoCarregado={historicoCarregado}
+            cursoInicial={plannerCurso}
+            onClose={() => setPlannerOpen(false)}
+            onOpenDiscipline={openDisciplina}
+          />
         )}
       </AnimatePresence>
 

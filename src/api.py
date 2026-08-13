@@ -1097,6 +1097,50 @@ async def listar_cursos():
     return {"cursos": sorted(saida, key=lambda x: x["nome"])}
 
 
+@app.get("/plan")
+async def plan_json(
+    curso: str = Query("", description="Nome ou sigla do curso"),
+    completed: str = Query("", description="Disciplinas cursadas, separadas por ';'"),
+    max_creditos: int = Query(DEFAULT_MAX_CREDITOS, ge=1, le=60),
+    conversation_id: str = Query("", description="Usa o histórico da sessão quando enviado"),
+):
+    """
+    Grade planejada em JSON para o painel nativo do chat. Com conversation_id
+    e histórico carregado na sessão, curso e cursadas vêm do histórico
+    (aprovadas + UCs em curso contam como resolvidas).
+    """
+    if rag is None or rag.knowledge_graph is None:
+        raise HTTPException(status_code=503, detail="Knowledge Graph não inicializado")
+
+    cursadas = [c.strip() for c in completed.replace(",", ";").split(";") if c.strip()]
+    usou_historico = False
+    hist = historicos.get(conversation_id) if conversation_id else None
+    if hist and hist.get("disciplinas"):
+        from .historico import aprovadas as hist_aprovadas, curso_sigla
+        if not cursadas:
+            cursadas = hist_aprovadas(hist)
+            cursadas += [c["nome"] for c in hist.get("cursando") or []]
+            usou_historico = True
+        if not curso:
+            curso = curso_sigla(hist.get("curso", "")) or ""
+    if not curso:
+        raise HTTPException(
+            status_code=422,
+            detail="Informe o curso ou envie o Histórico Acadêmico na conversa.",
+        )
+
+    plan = plan_curriculum(
+        rag.knowledge_graph, curso, cursadas, max_creditos=max_creditos
+    )
+    if plan is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Não encontrei a matriz curricular de '{curso}'.",
+        )
+    plan["usou_historico"] = usou_historico
+    return plan
+
+
 def _sse(event: str, data: dict) -> str:
     """Formata um evento SSE."""
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
