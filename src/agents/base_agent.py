@@ -160,7 +160,8 @@ class BaseAgent(ABC):
             return template
         return template.replace("Pergunta: {question}", self._HISTORY_BLOCK, 1)
 
-    def answer(self, question: str, intent: str, term: str, history: str = "") -> Dict[str, Any]:
+    def answer(self, question: str, intent: str, term: str, history: str = "",
+               student_context: str = "") -> Dict[str, Any]:
         """
         Pipeline neurossimbólico completo:
           1. Retrieval (vector + KG)
@@ -183,6 +184,11 @@ class BaseAgent(ABC):
 
         context = self.retrieve(question, intent, term)
         context = self._com_consulta_lateral(context, question, term)
+        if student_context:
+            context = (
+                student_context + "\n\n" + context if context and context.strip()
+                else student_context
+            )
 
         if not context or not context.strip():
             suggestion = self._kgc_suggestion(term)

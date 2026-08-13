@@ -333,6 +333,127 @@ def resumo_historico(dados: Dict) -> str:
     return "\n".join(linhas)
 
 
+_CURSEI_RES = [
+    re.compile(r"\b(?:eu\s+)?ja\s+(?:cursei|fiz|paguei|passei\s+em|conclui)\s+(.+?)\s*\??$"),
+    re.compile(r"\b(?:eu\s+)?(?:cursei|fiz|passei\s+em)\s+(.+?)\s+(?:ja|alguma\s+vez)\s*\??$"),
+    re.compile(r"\btenho\s+(.+?)\s+no\s+(?:meu\s+)?historico\s*\??$"),
+]
+
+
+def extrair_disciplina_cursei(texto: str) -> Optional[str]:
+    q = _norm(texto)
+    if not q.rstrip().endswith("?") and "?" not in q:
+        return None
+    for pat in _CURSEI_RES:
+        m = pat.search(q.rstrip(" ?"))
+        if m:
+            alvo = m.group(1).strip(" ?.!,")
+            alvo = re.sub(r"^(?:a|o|as|os|em)\s+", "", alvo)
+            if alvo and len(alvo) >= 3:
+                return alvo
+    return None
+
+
+def responder_cursei(dados: Dict, alvo: str, kg=None) -> Optional[str]:
+    alvo_norm = _norm(alvo)
+    nome_kg = None
+    if kg is not None:
+        node = kg._find_node(alvo, "disciplina")
+        if node:
+            nome_kg = kg.graph.nodes[node].get("nome")
+    candidatos = [alvo_norm]
+    if nome_kg:
+        candidatos.append(_norm(nome_kg))
+
+    def bate(d):
+        dn = _norm(d.get("nome", ""))
+        return any(c == dn or c in dn or dn in c for c in candidatos)
+
+    registros = [d for d in dados.get("disciplinas", []) if bate(d)]
+    if not registros:
+        rotulo_disc = nome_kg or alvo.title()
+        return (
+            f"**{rotulo_disc}** não aparece no seu histórico - nem como "
+            "aprovada, nem reprovada, nem em curso."
+        )
+    linhas = []
+    for r in sorted(registros, key=lambda x: x.get("ano_sem", "")):
+        sit = r.get("situacao", "?")
+        if sit in _SITUACOES_APROVADO:
+            det = f" com nota {r['nota']}" if r.get("nota") is not None else ""
+            linhas.append(
+                f"Sim! **{r['nome']}** consta como **{sit}** em "
+                f"{r.get('ano_sem', '?')}{det}."
+            )
+        elif sit in _SITUACOES_REPROVADO:
+            linhas.append(
+                f"**{r['nome']}** consta como **{sit}** em "
+                f"{r.get('ano_sem', '?')} - precisaria cursar de novo."
+            )
+        elif sit == "EM CURSO":
+            linhas.append(
+                f"**{r['nome']}** está **em curso** neste semestre "
+                f"({r.get('ano_sem', '?')})."
+            )
+        else:
+            linhas.append(
+                f"**{r['nome']}**: {sit} em {r.get('ano_sem', '?')}."
+            )
+    linhas.append("\n*Direto do Histórico Acadêmico enviado nesta conversa.*")
+    return "\n".join(linhas)
+
+
+def contexto_para_prompt(dados: Optional[Dict]) -> str:
+    """
+    Bloco compacto e factual do histórico da sessão para o CONTEXTO dos
+    agentes LLM: permite follow-ups sobre o próprio histórico em qualquer
+    fluxo, não só nos determinísticos.
+    """
+    if not dados or not dados.get("disciplinas"):
+        return ""
+    aprov = aprovadas(dados)
+    reprov = reprovacoes(dados)
+    inter = interdisciplinares_cursadas(dados)
+    cursando = dados.get("cursando") or []
+    horas = dados.get("horas") or {}
+    cr = dados.get("cr_geral") or dados.get("cr_calculado")
+
+    linhas = [
+        "[DADOS DO ALUNO - Histórico Acadêmico enviado NESTA conversa; "
+        "fatos verificados, use-os para responder perguntas sobre o próprio aluno]",
+        f"Curso: {dados.get('curso') or '?'} | CR geral: {cr}"
+        + (f" | Ano de ingresso: {dados['ano_ingresso']}" if dados.get("ano_ingresso") else ""),
+        f"Disciplinas APROVADAS ({len(aprov)}): " + "; ".join(aprov),
+    ]
+    if reprov:
+        linhas.append(
+            f"REPROVAÇÕES ({len(reprov)}): "
+            + "; ".join(f"{d['nome']} ({d['ano_sem']})" for d in reprov)
+        )
+    if cursando:
+        linhas.append(
+            f"EM CURSO neste semestre ({len(cursando)}): "
+            + "; ".join(c["nome"] for c in cursando)
+        )
+    if inter:
+        linhas.append(
+            f"UCs Eletivas Interdisciplinares cursadas ({len(inter)}): "
+            + "; ".join(inter)
+        )
+    if horas:
+        partes = [
+            f"{rotulo} {horas[k]}h"
+            for k, rotulo in (
+                ("fixas", "fixas"), ("eletivas", "eletivas"), ("total", "total"),
+                ("extensao", "extensão"), ("ac", "AC validadas"),
+            )
+            if horas.get(k)
+        ]
+        if partes:
+            linhas.append("Horas cumpridas: " + ", ".join(partes))
+    return "\n".join(linhas)
+
+
 def _norm(text: str) -> str:
     t = "".join(
         c for c in unicodedata.normalize("NFD", str(text or "").lower())
@@ -376,14 +497,24 @@ _ALVO_CR_RE = re.compile(
 )
 
 
+_CURSANDO_STOPWORDS = frozenset({
+    "agora", "atualmente", "no momento", "esse semestre", "este semestre",
+    "nesse semestre", "neste semestre", "disciplinas", "as disciplinas",
+})
+
+
 def extrair_cursando(texto: str) -> List[str]:
     m = _CURSANDO_RE.search(_norm(texto))
     if not m:
         return []
     trecho = m.group(1)
-    trecho = re.sub(r"\b(?:e\s+)?(?:se\s+eu|quanto|qual)\b.*$", "", trecho).strip(" ,;")
+    trecho = re.sub(
+        r"\b(?:e\s+)?(?:se\s+eu|quanto|qual|quais|o\s+que|oq|como)\b.*$",
+        "", trecho,
+    ).strip(" ,;")
     partes = re.split(r",| e |;", trecho)
-    return [p.strip(" .?!") for p in partes if p and len(p.strip(" .?!")) >= 3]
+    nomes = [p.strip(" .?!") for p in partes if p and len(p.strip(" .?!")) >= 3]
+    return [n for n in nomes if n not in _CURSANDO_STOPWORDS]
 
 
 def is_cursando_decl(texto: str) -> bool:

@@ -7,6 +7,23 @@ Fluxo:
 
 import os
 import re
+import unicodedata
+
+
+def _refere_proprias_ucs(texto: str) -> bool:
+    return bool(re.search(
+        r"\b(?:que\s+)?estou\s+(?:cursando|fazendo)\b"
+        r"|\bminhas\s+disciplinas\b|\bdas\s+disciplinas\s+que\b",
+        _fold_router(texto),
+    ))
+
+
+def _fold_router(texto: str) -> str:
+    baixo = (texto or "").lower()
+    return "".join(
+        c for c in unicodedata.normalize("NFD", baixo)
+        if unicodedata.category(c) != "Mn"
+    )
 from collections import Counter
 from typing import Any
 from langgraph.graph import StateGraph, END
@@ -228,6 +245,8 @@ def build_pipeline(rag_instance):
             responder_cursando,
             aprovadas as historico_aprovadas,
             curso_sigla as historico_curso_sigla,
+            extrair_disciplina_cursei,
+            responder_cursei,
         )
 
         def _resposta_simbolica(texto_resposta, intent_label, fontes, **extras):
@@ -413,6 +432,8 @@ def build_pipeline(rag_instance):
                 )
 
             if label == "trilha":
+                if hist is not None and _refere_proprias_ucs(pergunta_bruta):
+                    return None
                 resultado = montar_trilha(rag_instance.knowledge_graph, pergunta_bruta)
                 if not resultado:
                     return None
@@ -438,6 +459,17 @@ def build_pipeline(rag_instance):
             return None
 
         hist_sessao = state.get("historico")
+        if hist_sessao is not None and hist_sessao.get("disciplinas"):
+            alvo_cursei = extrair_disciplina_cursei(pergunta_bruta)
+            if alvo_cursei:
+                resposta_cursei = responder_cursei(
+                    hist_sessao, alvo_cursei, rag_instance.knowledge_graph
+                )
+                if resposta_cursei:
+                    return _resposta_simbolica(
+                        resposta_cursei, "historico_cursei",
+                        ["Histórico Acadêmico (sessão)"],
+                    )
         if (
             hist_sessao is not None
             and not is_cr_request(pergunta_bruta)
@@ -468,7 +500,9 @@ def build_pipeline(rag_instance):
             fast_label = "oferta_check"
         elif is_requisitos_request(pergunta_bruta):
             fast_label = "requisitos_curso"
-        elif is_trilha_request(question):
+        elif is_trilha_request(question) and not (
+            hist_sessao is not None and _refere_proprias_ucs(pergunta_bruta)
+        ):
             fast_label = "trilha"
         if fast_label:
             resposta_agentica = _agentico(fast_label)
@@ -680,11 +714,16 @@ def build_pipeline(rag_instance):
             "active_agent": active_agent,
         }
 
+    def _ctx_aluno(state: AgentState) -> str:
+        from ..historico import contexto_para_prompt
+        return contexto_para_prompt(state.get("historico"))
+
     def disciplinas_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
         result = agents["disciplinas"].answer(
             question, state.get("intent", ""), state.get("term", ""),
             history=state.get("history", ""),
+            student_context=_ctx_aluno(state),
         )
         return {
             **state,
@@ -699,6 +738,7 @@ def build_pipeline(rag_instance):
         result = agents["docentes"].answer(
             question, state.get("intent", ""), state.get("term", ""),
             history=state.get("history", ""),
+            student_context=_ctx_aluno(state),
         )
         return {
             **state,
@@ -713,6 +753,7 @@ def build_pipeline(rag_instance):
         result = agents["cursos"].answer(
             question, state.get("intent", ""), state.get("term", ""),
             history=state.get("history", ""),
+            student_context=_ctx_aluno(state),
         )
         return {
             **state,
@@ -727,6 +768,7 @@ def build_pipeline(rag_instance):
         result = agents["regimentos"].answer(
             question, state.get("intent", ""), state.get("term", ""),
             history=state.get("history", ""),
+            student_context=_ctx_aluno(state),
         )
         return {
             **state,
@@ -738,7 +780,10 @@ def build_pipeline(rag_instance):
 
     def conversa_node(state: AgentState) -> AgentState:
         question = state.get("question", "")
-        result = agents["conversa"].answer(question, "", "", history=state.get("history", ""))
+        result = agents["conversa"].answer(
+            question, "", "", history=state.get("history", ""),
+            student_context=_ctx_aluno(state),
+        )
         return {
             **state,
             "response": result["response"],
@@ -772,7 +817,10 @@ def build_pipeline(rag_instance):
 
     def web_sjc_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
-        result = agents["web_sjc"].answer(question, state.get("intent", ""), "", history=state.get("history", ""))
+        result = agents["web_sjc"].answer(
+            question, state.get("intent", ""), "", history=state.get("history", ""),
+            student_context=_ctx_aluno(state),
+        )
         return {
             **state,
             "response": result["response"],

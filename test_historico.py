@@ -293,6 +293,49 @@ texto25 = p.formatar_progresso({
 check("formatter não quebra com componente dispensado",
       "dispensada" in texto25, texto25[:300])
 
+print(f"\n{BOLD}6c. Contexto do histórico para os agentes LLM{RESET}")
+ctx = h.contexto_para_prompt(d25)
+check("bloco marcado como dados do aluno",
+      ctx.startswith("[DADOS DO ALUNO"), ctx[:60])
+check("aprovadas listadas", "Lógica De Programação" in ctx)
+check("reprovações com semestre", "Química Geral (2021/1)" in ctx, ctx)
+check("UCs em curso presentes", "EM CURSO" in ctx and "Banco De Dados" in ctx)
+check("horas e AC no bloco", "AC validadas 312h" in ctx)
+check("CR e ingresso no bloco", "7.0" in ctx and "2021" in ctx)
+check("sem histórico retorna vazio",
+      h.contexto_para_prompt(None) == "" and h.contexto_para_prompt({}) == "")
+
+check("pergunta sobre as cursando NÃO vira declaração ('estou cursando agora, qual...')",
+      h.extrair_cursando(
+          "das disciplinas que estou cursando agora, qual tem mais a ver com redes?"
+      ) == [], str(h.extrair_cursando(
+          "das disciplinas que estou cursando agora, qual tem mais a ver com redes?")))
+check("declaração real segue funcionando",
+      h.extrair_cursando("estou cursando Compiladores e Redes esse semestre")
+      == ["compiladores", "redes"])
+
+print(f"\n{BOLD}6d. 'Já cursei X?' respondido direto do histórico{RESET}")
+check("extrai o alvo de 'eu já cursei X?'",
+      h.extrair_disciplina_cursei("eu já cursei Teoria dos Grafos?") == "teoria dos grafos")
+check("extrai de 'já fiz X?'",
+      h.extrair_disciplina_cursei("já fiz banco de dados?") == "banco de dados")
+check("sem interrogação não intercepta (declaração ≠ pergunta)",
+      h.extrair_disciplina_cursei("eu já cursei Cálculo em Uma Variável") is None)
+check("pergunta comum não casa",
+      h.extrair_disciplina_cursei("quais os pré-requisitos de Compiladores?") is None)
+r_ap = h.responder_cursei(d25, "lógica de programação")
+check("aprovada responde Sim com semestre",
+      "Sim!" in r_ap and "2021/1" in r_ap, r_ap)
+r_rep = h.responder_cursei(d25, "química geral")
+check("reprovada avisa que precisa cursar de novo",
+      "cursar de novo" in r_rep, r_rep)
+r_ec = h.responder_cursei(d25, "banco de dados")
+check("em curso é reportada como em curso",
+      "em curso" in r_ec.lower(), r_ec)
+r_nao = h.responder_cursei(d25, "libras")
+check("ausente responde que não consta",
+      "não aparece" in r_nao, r_nao)
+
 print(f"\n{BOLD}7. Requisitos de integralização por pergunta direta{RESET}")
 check("detecta 'quantas horas preciso para me formar'",
       p.is_requisitos_request("Quantas horas eu preciso para me formar em Engenharia de Computação?"))

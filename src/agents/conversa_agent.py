@@ -42,9 +42,16 @@ Como responder:
 
 Resposta:"""
 
-    def answer(self, question: str, intent: str, term: str, history: str = "") -> Dict[str, Any]:
+    def answer(self, question: str, intent: str, term: str, history: str = "",
+               student_context: str = "") -> Dict[str, Any]:
         """Gera resposta conversacional direta - sem retrieval nem validação simbólica."""
         template = self.get_prompt_template()
+        if student_context:
+            template = template.replace(
+                "O usuario disse: {question}",
+                "{student_context}\n\nO usuario disse: {question}",
+                1,
+            )
         if history:
             template = template.replace(
                 "O usuario disse: {question}",
@@ -60,6 +67,8 @@ Resposta:"""
             inputs = {"question": question}
             if history:
                 inputs["history"] = history
+            if student_context:
+                inputs["student_context"] = student_context
             response = chain.invoke(inputs)
         except Exception:
             response = (

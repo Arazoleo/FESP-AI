@@ -286,7 +286,8 @@ class WebSjcAgent(BaseAgent):
             "sources": [p["url"] for p in paginas] if paginas else [],
         }
 
-    def answer(self, question: str, intent: str, term: str, history: str = "") -> Dict[str, Any]:
+    def answer(self, question: str, intent: str, term: str, history: str = "",
+               student_context: str = "") -> Dict[str, Any]:
         corpus = self._ensure_corpus()
         if not corpus:
             return self._result(
@@ -323,6 +324,8 @@ class WebSjcAgent(BaseAgent):
             kg_facts = self._kg_verified_facts(question)
             if kg_facts:
                 contexto = kg_facts + "\n\n### [PAGINAS DO SITE]\n\n" + contexto
+            if student_context:
+                contexto = student_context + "\n\n" + contexto
             inputs = {"context": contexto, "question": question}
             if history:
                 inputs["history"] = history
