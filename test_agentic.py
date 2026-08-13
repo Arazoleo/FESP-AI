@@ -102,6 +102,19 @@ itens_tb = auditor.parsear_atividades(
 check("'e também tenho' separa itens", len(itens_tb) == 2, str(itens_tb))
 check("'Ciência e Tecnologia' no nome não é dividido",
       len(auditor.parsear_atividades("20h de evento de Ciência e Tecnologia na UNIFESP")) == 1)
+itens_5 = auditor.parsear_atividades(
+    "fiz 72 horas de doação de sangue, 100 horas de monitoria, 80 horas de IC, "
+    "20 horas de palestras e 15 horas de teatro na cidade"
+)
+check("cinco atividades numa frase viram 5 itens", len(itens_5) == 5, str(len(itens_5)))
+r_5 = auditor.auditar_atividades(itens_5)
+check("os 3 eixos preenchidos a partir da frase única",
+      r_5["horas_validas"][1] == 87 and r_5["horas_validas"][2] == 100
+      and r_5["horas_validas"][3] == 100, str(r_5["horas_validas"]))
+itens_enc = auditor.parsear_atividades(
+    "tenho 40h de palestras e 30h de curso de inglês e 20h de teatro e 10h de doação de sangue"
+)
+check("'e' encadeado quatro vezes separa 4 itens", len(itens_enc) == 4, str(len(itens_enc)))
 
 print(f"\n{BOLD}2b. Acúmulo de atividades na sessão (bug do beta tester){RESET}")
 sessao_ac = {}
