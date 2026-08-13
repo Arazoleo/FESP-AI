@@ -305,6 +305,26 @@ check("CR e ingresso no bloco", "7.0" in ctx and "2021" in ctx)
 check("sem histórico retorna vazio",
       h.contexto_para_prompt(None) == "" and h.contexto_para_prompt({}) == "")
 
+
+class _KGEmentas:
+    class _G:
+        nodes = {"n1": {"ementa": "Modelagem   de dados, SQL e transações. " * 20}}
+
+    graph = _G()
+
+    def _find_node(self, nome, tipo):
+        return "n1" if "banco" in nome.lower() else None
+
+
+ctx_em = h.contexto_para_prompt(d25, kg=_KGEmentas(), incluir_ementas=True)
+check("com incluir_ementas anexa a ementa da UC em curso",
+      "Ementa de Banco De Dados:" in ctx_em and "SQL" in ctx_em, ctx_em[-200:])
+check("ementa truncada a 280 chars",
+      all(len(l) <= 280 + len("Ementa de Banco De Dados: ")
+          for l in ctx_em.splitlines() if l.startswith("Ementa de")))
+check("sem a flag não anexa ementas",
+      "Ementa de" not in h.contexto_para_prompt(d25, kg=_KGEmentas()))
+
 check("pergunta sobre as cursando NÃO vira declaração ('estou cursando agora, qual...')",
       h.extrair_cursando(
           "das disciplinas que estou cursando agora, qual tem mais a ver com redes?"

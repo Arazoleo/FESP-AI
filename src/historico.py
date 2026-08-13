@@ -403,11 +403,16 @@ def responder_cursei(dados: Dict, alvo: str, kg=None) -> Optional[str]:
     return "\n".join(linhas)
 
 
-def contexto_para_prompt(dados: Optional[Dict]) -> str:
+def contexto_para_prompt(dados: Optional[Dict], kg=None,
+                         incluir_ementas: bool = False) -> str:
     """
     Bloco compacto e factual do histórico da sessão para o CONTEXTO dos
     agentes LLM: permite follow-ups sobre o próprio histórico em qualquer
     fluxo, não só nos determinísticos.
+
+    `incluir_ementas`: quando a pergunta é sobre as próprias UCs, anexa as
+    ementas (do KG) das disciplinas em curso, para o agente poder comparar
+    conteúdos sem depender do retrieval temático.
     """
     if not dados or not dados.get("disciplinas"):
         return ""
@@ -435,6 +440,16 @@ def contexto_para_prompt(dados: Optional[Dict]) -> str:
             f"EM CURSO neste semestre ({len(cursando)}): "
             + "; ".join(c["nome"] for c in cursando)
         )
+        if incluir_ementas and kg is not None:
+            for c in cursando[:8]:
+                try:
+                    node = kg._find_node(c["nome"], "disciplina")
+                    ementa = kg.graph.nodes[node].get("ementa") if node else None
+                except Exception:
+                    ementa = None
+                if ementa:
+                    resumo_em = re.sub(r"\s+", " ", str(ementa)).strip()[:280]
+                    linhas.append(f"Ementa de {c['nome']}: {resumo_em}")
     if inter:
         linhas.append(
             f"UCs Eletivas Interdisciplinares cursadas ({len(inter)}): "

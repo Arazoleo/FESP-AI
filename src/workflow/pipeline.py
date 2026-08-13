@@ -716,7 +716,14 @@ def build_pipeline(rag_instance):
 
     def _ctx_aluno(state: AgentState) -> str:
         from ..historico import contexto_para_prompt
-        return contexto_para_prompt(state.get("historico"))
+        pergunta = (
+            state.get("question_original") or state.get("question") or ""
+        )
+        return contexto_para_prompt(
+            state.get("historico"),
+            kg=rag_instance.knowledge_graph,
+            incluir_ementas=_refere_proprias_ucs(pergunta),
+        )
 
     def disciplinas_node(state: AgentState) -> AgentState:
         question = state.get("enhanced_question") or state.get("question", "")
