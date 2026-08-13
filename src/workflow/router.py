@@ -85,9 +85,14 @@ _IDENTITY_PHRASES = [
 _INFO_KEYWORDS = [
     "disciplina", "materia", "matéria", "professor", "docente", "curso",
     "pre-requisito", "pré-requisito", "pre requisito", "prerequisito",
+    "pre-req", "pré-req", "pre req", "prereq",
     "ementa", "carga", "matriz", "termo", "credito", "crédito",
     "regimento", "norma", "artigo", "coordenador",
 ]
+
+_INTERROGATIVAS_RE = re.compile(
+    r"\b(?:qual|quais|quem|quando|onde|como|quanto|quantas?|o\s+que|oq)\b"
+)
 
 
 def is_conversational(question_lower: str) -> bool:
@@ -109,6 +114,11 @@ def is_conversational(question_lower: str) -> bool:
         return True
 
     if any(kw in q for kw in _INFO_KEYWORDS):
+        return False
+
+    if _INTERROGATIVAS_RE.search(q) and not any(
+        p in q for p in _IDENTITY_PHRASES
+    ):
         return False
 
     social = _GREETING_PHRASES + _THANKS_PHRASES + _FAREWELL_PHRASES + list(_GREETING_WORDS)
@@ -408,6 +418,7 @@ DISCIPLINE_DOCENTES_PHRASES = [
 PREREQUISITE_PHRASES = [
     "pre-requisito", "pre requisito", "prerequisito",
     "pré-requisito", "pré requisito",
+    "pre-reqs", "pré-reqs", "pre-req", "pré-req", "prereqs",
     "antes de cursar", "antes de fazer",
     "preciso cursar", "preciso de",
     "depende de", "dependem de",

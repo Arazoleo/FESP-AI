@@ -82,6 +82,20 @@ check("'disciplina' explícita ainda exclui do web_sjc",
 check("'normalmente' não força regimentos ('norma' interno)",
       router.phrase_override("normalmente quem coordena os estágios?") != "regimentos")
 
+print(f"\n{BOLD}── saudação + pergunta real não vira conversa ──{RESET}")
+check("'oi, quais os pré-reqs de ia?' NÃO é conversacional",
+      not router.is_conversational("oi, quais os pré-reqs de ia?"))
+check("'olá, quem leciona bd?' NÃO é conversacional",
+      not router.is_conversational("olá, quem leciona bd?"))
+check("'oi, tudo bem?' segue conversacional",
+      router.is_conversational("oi, tudo bem?"))
+check("'oi' puro segue conversacional", router.is_conversational("oi"))
+check("'valeu!' segue conversacional", router.is_conversational("valeu!"))
+check("'como você funciona?' (identidade) segue conversacional",
+      router.is_conversational("como você funciona?"))
+check("'pré-reqs' abreviado força disciplinas no phrase_override",
+      router.phrase_override("oi, quais os pré-reqs de ia?") == "disciplinas")
+
 print(f"\n{BOLD}── conteúdo da DAE: colação, estágio, REMAT ──{RESET}")
 check("'como faço para colar grau?' → web_sjc",
       router.is_web_sjc("como faço para colar grau?"))
