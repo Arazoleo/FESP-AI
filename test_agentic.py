@@ -87,6 +87,22 @@ check("mínimo por eixo: pendências para eixos I e II zerados",
 check("sem itens → resposta pede a lista formatada",
       "liste" in auditor.responder_auditoria("audita minhas atividades complementares").lower())
 
+print(f"\n{BOLD}2a. Duas atividades na mesma frase ligadas por 'e' (beta tester){RESET}")
+itens_e = auditor.parsear_atividades(
+    "Sei que tenho 72 horas de doação de sangue e 100 horas de monitoria de AL"
+)
+check("frase com 'e' vira 2 itens", len(itens_e) == 2, str(itens_e))
+r_e = auditor.auditar_atividades(itens_e)
+check("eixo I com 72h E eixo II com 100h",
+      r_e["horas_validas"][1] == 72 and r_e["horas_validas"][2] == 100,
+      str(r_e["horas_validas"]))
+itens_tb = auditor.parsear_atividades(
+    "40h de palestras e também tenho 30h de curso de inglês"
+)
+check("'e também tenho' separa itens", len(itens_tb) == 2, str(itens_tb))
+check("'Ciência e Tecnologia' no nome não é dividido",
+      len(auditor.parsear_atividades("20h de evento de Ciência e Tecnologia na UNIFESP")) == 1)
+
 print(f"\n{BOLD}2b. Acúmulo de atividades na sessão (bug do beta tester){RESET}")
 sessao_ac = {}
 i1 = auditor.parsear_atividades("eu tenho apenas 72h de doação de sangue")

@@ -100,7 +100,11 @@ def classificar_eixo(descricao: str) -> Optional[Dict]:
     return melhor
 
 
-_ITEM_SPLIT_RE = re.compile(r"[;\n]+|,\s+(?=\d)|\.\s+(?=\d)")
+_ITEM_SPLIT_RE = re.compile(
+    r"[;\n]+|,\s+(?=\d)|\.\s+(?=\d)"
+    r"|\s+e\s+(?:tamb[eé]m\s+)?(?:tenho\s+)?(?=\d)"
+    r"|,\s+(?:tamb[eé]m\s+)?(?:tenho\s+)?(?=\d)"
+)
 _HORAS_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*h(?:oras?|rs?)?\b")
 _INSTITUICAO_RE = re.compile(
     r"\b(?:na|no|pela|pelo|da|do)\s+([A-ZÀ-Ú][\w.&-]*(?:\s+[A-ZÀ-Ú][\w.&-]*)*)"
