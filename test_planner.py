@@ -129,6 +129,28 @@ plan6 = planner.plan_curriculum(kg, "Teste", [], max_creditos=8,
 checks.append(("respeitar_oferta=False volta ao empacotamento livre",
                plan6["total_semestres"] <= plan5["total_semestres"]))
 
+
+class StubKGComLivre(StubKG):
+    TERMOS = {
+        1: [("Cálculo 1", 4), ("Algoritmos 1", 4)],
+        2: [("Cálculo 2", 4), ("Estruturas de Dados", 4), ("Física Geral", 4)],
+        3: [("Cálculo 3", 4), ("Compiladores", 6)],
+    }
+
+
+kg2 = StubKGComLivre()
+plan7 = planner.plan_curriculum(kg2, "Teste", [], max_creditos=24, data=_ago)
+sem1_nomes = {d["nome"] for d in plan7["semestres"][0]["disciplinas"]}
+checks.append(("calouro: 1º semestre é só a grade canônica do termo 1 (trava de termo)",
+               sem1_nomes == {"Cálculo 1", "Algoritmos 1"}))
+checks.append(("Física Geral (termo 2 sem pré-req) não fura para o 1º semestre",
+               "Física Geral" not in sem1_nomes))
+plan8 = planner.plan_curriculum(kg2, "Teste", ["Cálculo 1", "Algoritmos 1"],
+                                max_creditos=24, data=_ago)
+sem1_vet = {d["nome"] for d in plan8["semestres"][0]["disciplinas"]}
+checks.append(("veterano com termo 1 vencido pega o termo 2 completo de cara",
+               {"Cálculo 2", "Estruturas de Dados", "Física Geral"} <= sem1_vet))
+
 ok = True
 for name, passed in checks:
     print(f"  [{'OK ' if passed else 'FAIL'}] {name}")

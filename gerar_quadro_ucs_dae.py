@@ -1,5 +1,5 @@
 """
-Gera markdown_cursos/quadro_ucs_bct_dae.md e atualiza
+Gera markdown_regimentos/quadro_ucs_bct_dae.md e atualiza
 src/interdisciplinares_seed.json a partir da planilha oficial "LISTA DE UCs -
 BCT" publicada pela DAE-SJC (linkada em /materiais/quadros-de-ucs).
 
@@ -143,9 +143,9 @@ def main():
     linhas.extend(tabela(ext, com_extensao=True))
     linhas.append("")
 
-    with open("markdown_cursos/quadro_ucs_bct_dae.md", "w") as f:
+    with open("markdown_regimentos/quadro_ucs_bct_dae.md", "w") as f:
         f.write("\n".join(linhas))
-    print("markdown_cursos/quadro_ucs_bct_dae.md gerado")
+    print("markdown_regimentos/quadro_ucs_bct_dae.md gerado")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 """
-Gera src/requisitos_seed.json e markdown_cursos/criterios_integralizacao_siiu.md
+Gera src/requisitos_seed.json e markdown_regimentos/criterios_integralizacao_siiu.md
 a partir do sistema oficial de Cursos e Matrizes Curriculares da Unifesp (SIIU).
 
 Uso: python3 gerar_requisitos_siiu.py
@@ -160,9 +160,9 @@ def main():
         linhas.append("")
         linhas.append(f"Matriz: {s['matriz']}. Fonte: {s['fonte']}")
         linhas.append("")
-    with open("markdown_cursos/criterios_integralizacao_siiu.md", "w") as f:
+    with open("markdown_regimentos/criterios_integralizacao_siiu.md", "w") as f:
         f.write("\n".join(linhas))
-    print("markdown_cursos/criterios_integralizacao_siiu.md gerado")
+    print("markdown_regimentos/criterios_integralizacao_siiu.md gerado")
 
 
 if __name__ == "__main__":

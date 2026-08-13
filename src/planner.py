@@ -117,8 +117,23 @@ def plan_curriculum(
                 return False
         return True
 
+    termos_vencidos = 0
+    termos_existentes = sorted({
+        v["termo_sugerido"] for v in info_by_key.values()
+        if v["termo_sugerido"] != 99
+    })
+    for t in termos_existentes:
+        chaves_do_termo = [
+            k for k, v in info_by_key.items() if v["termo_sugerido"] == t
+        ]
+        if chaves_do_termo and all(k in completed_norm for k in chaves_do_termo):
+            termos_vencidos = t
+        else:
+            break
+
     sem_atual = proximo_semestre(data)
     numero = 0
+    passo_calendario = 0
     rodadas_vazias = 0
     for _ in range(_MAX_SEMESTRES):
         if not remaining:
@@ -128,14 +143,19 @@ def plan_curriculum(
         if not ready:
             break
 
+        passo_calendario += 1
+        teto_termo = termos_vencidos + passo_calendario
         paridade_sem = paridade_do_semestre(sem_atual)
+        ofertadas = [
+            k for k in ready
+            if remaining[k]["termo_sugerido"] == 99
+            or remaining[k]["termo_sugerido"] <= teto_termo
+        ]
         if respeitar_oferta:
             ofertadas = [
-                k for k in ready
+                k for k in ofertadas
                 if remaining[k]["paridade"] in (None, paridade_sem)
             ]
-        else:
-            ofertadas = ready
 
         if not ofertadas:
             rodadas_vazias += 1

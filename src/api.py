@@ -1086,12 +1086,13 @@ async def listar_cursos():
     saida = []
     for c in cursos:
         nome = (c.get("nome") or "").strip()
-        if not nome or nome in vistos:
+        sigla = (c.get("sigla") or "").strip()
+        if not nome or not sigla or sigla in vistos:
             continue
-        vistos.add(nome)
+        vistos.add(sigla)
         saida.append({
             "nome": nome,
-            "sigla": c.get("sigla", ""),
+            "sigla": sigla,
             "duracao_termos": c.get("duracao_termos", ""),
         })
     return {"cursos": sorted(saida, key=lambda x: x["nome"])}
