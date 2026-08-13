@@ -136,6 +136,38 @@ def parsear_atividades(texto: str) -> List[Dict]:
     return itens
 
 
+_RESET_AC_RES = [re.compile(p) for p in (
+    r"\b(?:zera|zere|esquece|esqueca|apaga|apague|limpa|limpe)\b.*\b(?:atividades|horas|ac)\b",
+    r"\brecomeca\w*\b.*\b(?:atividades|ac)\b",
+    r"\bso\s+(?:tenho\s+)?(?:isso|essas?)\b.*\b(?:atividades|horas)\b",
+)]
+
+
+def is_reset_ac(texto: str) -> bool:
+    q = _norm(texto)
+    return any(p.search(q) for p in _RESET_AC_RES)
+
+
+def registrar_atividades(sessao: Optional[Dict], novos: List[Dict],
+                         reset: bool = False) -> List[Dict]:
+    """
+    Acumula as atividades declaradas ao longo da CONVERSA (mesmo padrão do
+    "cursando"): cada nova mensagem soma com as anteriores da sessão, com
+    dedup por descrição normalizada. `reset` descarta as anteriores.
+    """
+    if sessao is None:
+        return list(novos)
+    previos = [] if reset else list(sessao.get("ac_itens") or [])
+    vistos = {_norm(i.get("descricao", "")) for i in previos}
+    for n in novos:
+        chave = _norm(n.get("descricao", ""))
+        if chave and chave not in vistos:
+            previos.append(n)
+            vistos.add(chave)
+    sessao["ac_itens"] = previos
+    return list(previos)
+
+
 def auditar_atividades(itens: List[Dict]) -> Dict:
     """
     Simula a acreditação: classifica cada item, aplica os tetos e mínimos do

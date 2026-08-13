@@ -192,6 +192,8 @@ def build_pipeline(rag_instance):
             payload_auditoria,
             is_checklist_request,
             responder_checklist,
+            registrar_atividades,
+            is_reset_ac,
         )
         from ..progresso import (
             is_progresso_request,
@@ -267,6 +269,8 @@ def build_pipeline(rag_instance):
                 if not curso and hist:
                     curso = historico_curso_sigla(hist.get("curso", "")) or None
                 itens_ac = parsear_atividades(pergunta_bruta)
+                if itens_ac:
+                    itens_ac = registrar_atividades(hist, itens_ac)
                 bloco_ac = ""
                 extras_ac = {}
                 if itens_ac:
@@ -308,12 +312,22 @@ def build_pipeline(rag_instance):
                 )
 
             if label == "ac_auditoria":
-                itens_ac = parsear_atividades(pergunta_bruta)
+                itens_novos = parsear_atividades(pergunta_bruta)
+                itens_ac = registrar_atividades(
+                    hist, itens_novos, reset=is_reset_ac(pergunta_bruta)
+                )
                 fontes_ac = ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"]
                 if itens_ac:
                     resultado_ac = auditar_atividades(itens_ac)
+                    texto_ac = formatar_auditoria(resultado_ac)
+                    if len(itens_ac) > len(itens_novos):
+                        texto_ac += (
+                            "\n\n*Somei com o que você já tinha declarado nesta "
+                            "conversa. Para recomeçar do zero, diga \"zera minhas "
+                            "atividades\".*"
+                        )
                     return _resposta_simbolica(
-                        formatar_auditoria(resultado_ac), "ac_auditoria", fontes_ac,
+                        texto_ac, "ac_auditoria", fontes_ac,
                         ac_data=payload_auditoria(resultado_ac),
                     )
                 return _resposta_simbolica(

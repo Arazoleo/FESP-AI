@@ -87,6 +87,32 @@ check("mínimo por eixo: pendências para eixos I e II zerados",
 check("sem itens → resposta pede a lista formatada",
       "liste" in auditor.responder_auditoria("audita minhas atividades complementares").lower())
 
+print(f"\n{BOLD}2b. Acúmulo de atividades na sessão (bug do beta tester){RESET}")
+sessao_ac = {}
+i1 = auditor.parsear_atividades("eu tenho apenas 72h de doação de sangue")
+acum = auditor.registrar_atividades(sessao_ac, i1)
+check("primeira declaração registrada na sessão", len(acum) == 1)
+i2 = auditor.parsear_atividades("lembrei, tbm tenho 104 horas de monitoria de CVV")
+acum = auditor.registrar_atividades(sessao_ac, i2)
+check("segunda declaração SOMA com a primeira (não substitui)",
+      len(acum) == 2, str(acum))
+r_acum = auditor.auditar_atividades(acum)
+check("auditoria acumulada: eixo I com 72h E eixo II com 104h",
+      r_acum["horas_validas"][1] == 72 and r_acum["horas_validas"][2] == 104,
+      str(r_acum["horas_validas"]))
+acum = auditor.registrar_atividades(
+    sessao_ac, auditor.parsear_atividades("lembrei, tbm tenho 104 horas de monitoria de CVV")
+)
+check("mesma frase repetida não duplica", len(acum) == 2)
+check("detector de reset", auditor.is_reset_ac("zera minhas atividades complementares"))
+check("frase comum não reseta", not auditor.is_reset_ac("tenho 40h de monitoria"))
+acum = auditor.registrar_atividades(
+    sessao_ac, auditor.parsear_atividades("tenho 10h de palestras"), reset=True
+)
+check("reset descarta as anteriores", len(acum) == 1 and acum[0]["horas"] == 10, str(acum))
+check("sessão None degrada para a lista da mensagem",
+      len(auditor.registrar_atividades(None, i1)) == 1)
+
 print(f"\n{BOLD}3. Detectores do auditor e checklist{RESET}")
 check("detecta auditoria com horas + AC",
       auditor.is_audit_request("Tenho 40h de monitoria e 100h de IC, quanto tenho de AC?"))
