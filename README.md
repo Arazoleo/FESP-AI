@@ -1,3 +1,6 @@
+
+
+
 # FESP-AI: Assistente Acadêmico Neurossimbólico da UNIFESP (ICT/SJC)
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
@@ -15,9 +18,7 @@ O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto 
 
 ## Demo em vídeo
 
-<!-- Edite este README pelo site do GitHub e arraste demoshortFespAI.mp4 para
-     logo abaixo desta linha: o GitHub hospeda o vídeo e insere a URL, que
-     vira um player nativo com play direto no README. -->
+https://github.com/user-attachments/assets/5cd816ef-897a-4f88-8f67-a957c54ded1c
 
 ![FESP-AI em execução](docs/screenshot-app.png)
 
