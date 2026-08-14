@@ -1,11 +1,14 @@
-# Trajetória Acadêmica do BCC - requisitos por grupos de UCs (página oficial do curso)
+# Bacharelado em Ciência da Computação (BCC) - seções oficiais com tabelas (página do curso no site do campus)
 
-Fonte: expandível "Trajetória acadêmica" da página do Bacharelado em Ciência da Computação no site do campus, mantida pela coordenação do curso (mais atualizada que o PPC).
-URL: https://campus.unifesp.br/sjc/graduacao/cursos/bacharelado-em-ciencia-da-computacao#rlta-trajetoria-academica
-
-Cada crédito em unidades curriculares equivale a 18 horas.
+Fonte: expandíveis da página oficial do curso, mantidos pela
+coordenação (mais atualizados que o PPC). Extração automática de
+gerar_tabelas_cursos_site.py.
+URL: https://campus.unifesp.br/sjc/graduacao/cursos/bacharelado-em-ciencia-da-computacao
 
 ---
+
+## Trajetória acadêmica
+(âncora: https://campus.unifesp.br/sjc/graduacao/cursos/bacharelado-em-ciencia-da-computacao#rlta-trajetoria-academica)
 
 Trajetória acadêmica para alunos do BCC, ingressantes a partir do BCT (orientações para matriculas em UCs eletivas) A Figura 1, apresentada a seguir, ilustra a Matriz Curricular ideal do Bacharelado em Ciência da Computação para o período integral. As UCs estão organizadas de acordo com sua oferta nos respectivos termos e semestres. Figura 1. Matriz Curricular Ideal do BCC. Na matriz curricular da Figura 1, a quantidade de horas das unidades curriculares está sendo representada por créditos, onde cada crédito em unidades curriculares equivale a 18 horas. Portanto, uma unidade curricular de 4 créditos corresponde a 72 horas, enquanto uma unidade curricular de 2 créditos corresponde a 36 horas. Exceto pelos Núcleos obrigatórios do BCT e pelas UCs que compõem o grupo de disciplinas obrigatórias do BCC, os alunos deste curso podem escolher as UCs eletivas dentre um conjunto pré-definido de UCs para cada um dos subgrupos a seguir: eletivas limitadas da Ciência da Computação (Grupo 1), eletivas de Matemática e Computação (Grupo 2), eletivas das Ciências Humanas, Econômicas e Sociais (Grupo 3) e eletivas Livres (Grupo 4), respeitando a carga horária mínima estabelecida, conforme descrito na Tabela 1. Tabela 1. Discriminação da carga horária mínima para formação específica do BCC.
 
