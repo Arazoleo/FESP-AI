@@ -173,6 +173,18 @@ def registrar_atividades(sessao: Optional[Dict], novos: List[Dict],
     return list(previos)
 
 
+TETOS_EB = {
+    "monitoria, tutoria ou orientação": (1.0, 36, "36h/semestre, máx 36h"),
+    "atividades de extensão": (1.0, 36, "36h/semestre, máx 36h"),
+    "iniciação científica": (1.0, 36, "36h/semestre, máx 36h"),
+    "eventos científicos como ouvinte": (1.0, 18, "6h por evento, máx 18h"),
+    "apresentação de trabalhos": (1.0, 36, "18h por publicação, máx 36h"),
+    "estágio não obrigatório": (0.5, 36, "1h a cada 2h, máx 36h"),
+    "cursos e capacitações": (0.5, 18, "1h a cada 2h, máx 18h"),
+    "cursos de línguas estrangeiras": (0.5, 18, "1h a cada 2h, máx 18h"),
+    "centro acadêmico ou atlética": (1.0, 36, "representação: 12h/ano, máx 36h"),
+}
+
 REGRAS_CURSO = {
     "BCT": {
         "total": TOTAL_HORAS,
@@ -185,6 +197,19 @@ REGRAS_CURSO = {
             "máximo de 2 certificados por instituição (exceto UNIFESP)"
         ),
         "comissao": "Coordenação do BCT",
+    },
+    "EB": {
+        "total": 36,
+        "teto_eixo1": None,
+        "regra_2_certificados": False,
+        "siex_min": None,
+        "usa_eixos": False,
+        "fonte": "Regulamento de AACC da EB (PPC 2023)",
+        "regras_texto": (
+            "36h totais (PPC 2023; ingressantes do PPC 2019: 108h) com teto "
+            "por atividade; horas do BCT precisam ser revalidadas pela EB"
+        ),
+        "comissao": "Comissão de Curso da EB",
     },
     "BBT": {
         "total": 108,
@@ -217,6 +242,12 @@ def auditar_atividades(itens: List[Dict], curso: str = "BCT") -> Dict:
             classificados.append(registro)
         else:
             nao_classificados.append(registro)
+
+    usa_eixos = regras.get("usa_eixos", True)
+    if not usa_eixos:
+        return _auditar_por_atividade(
+            classificados, nao_classificados, regras, (curso or "BCT").upper()
+        )
 
     brutas = {1: 0.0, 2: 0.0, 3: 0.0}
     for r in classificados:
@@ -286,8 +317,87 @@ def auditar_atividades(itens: List[Dict], curso: str = "BCT") -> Dict:
     }
 
 
+def _auditar_por_atividade(classificados, nao_classificados, regras, curso):
+    """
+    Modo da EB: crédito proporcional e teto POR ATIVIDADE (Tabela 2 do
+    regulamento), sem eixos.
+    """
+    por_atividade: Dict[str, Dict] = {}
+    avisos = []
+    for r in classificados:
+        fator, teto, regra_txt = TETOS_EB.get(r["atividade"], (1.0, None, None))
+        acc = por_atividade.setdefault(r["atividade"], {
+            "brutas": 0.0, "creditadas": 0.0, "teto": teto, "regra": regra_txt,
+        })
+        acc["brutas"] += float(r["horas"])
+        acc["creditadas"] += float(r["horas"]) * fator
+        if regra_txt is None:
+            avisos.append(
+                f"'{r['atividade']}' não está na tabela da EB - a Comissão "
+                "avalia por similaridade"
+            )
+    validas_total = 0.0
+    for acc in por_atividade.values():
+        validas = acc["creditadas"]
+        if acc["teto"] is not None and validas > acc["teto"]:
+            validas = acc["teto"]
+        acc["validas"] = validas
+        validas_total += validas
+    faltam = max(0.0, regras["total"] - validas_total)
+    avisos.append(
+        "coorte do PPC 2019 (ingresso na EB até 2/2022): total de 108h e "
+        "tetos maiores em monitoria/extensão"
+    )
+    return {
+        "curso": curso,
+        "total_exigido": regras["total"],
+        "usa_eixos": False,
+        "itens": classificados,
+        "nao_classificados": nao_classificados,
+        "por_atividade": por_atividade,
+        "horas_brutas": {},
+        "horas_validas": {},
+        "total_valido": validas_total,
+        "faltam": faltam,
+        "pendencias": [],
+        "avisos": avisos,
+        "apto": faltam == 0,
+    }
+
+
 def formatar_auditoria(resultado: Dict) -> str:
     linhas = ["**Simulação de acreditação das suas Atividades Complementares**", ""]
+    if not resultado.get("usa_eixos", True):
+        for atividade, acc in resultado["por_atividade"].items():
+            regra = f" ({acc['regra']})" if acc.get("regra") else ""
+            extra = (
+                f" (de {acc['brutas']:.0f}h informadas)"
+                if acc["brutas"] != acc["validas"] else ""
+            )
+            linhas.append(f"- {atividade}: **{acc['validas']:.0f}h**{extra}{regra}")
+        linhas.append("")
+        linhas.append(
+            f"**Total válido: {resultado['total_valido']:.0f}h de "
+            f"{resultado['total_exigido']}h**"
+            + (
+                " - você já pode solicitar a validação!"
+                if resultado["apto"]
+                else f" - faltam **{resultado['faltam']:.0f}h**"
+            )
+        )
+        if resultado["nao_classificados"]:
+            linhas.append("")
+            linhas.append("Não consegui classificar:")
+            for r in resultado["nao_classificados"]:
+                linhas.append(f"- {r['descricao']}")
+        if resultado["avisos"]:
+            linhas.append("")
+            linhas.append("**Avisos:**")
+            for a in resultado["avisos"]:
+                linhas.append(f"- {a}")
+        linhas.append("")
+        linhas.append(_rodape_regras(resultado.get("curso", "BCT")))
+        return "\n".join(linhas)
     for eixo in (1, 2, 3):
         validas = resultado["horas_validas"][eixo]
         brutas = resultado["horas_brutas"][eixo]

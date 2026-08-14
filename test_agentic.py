@@ -168,6 +168,31 @@ check("payload usa o alvo do curso",
 check("rodapé cita o regulamento do BBT",
       "Anexo F" in auditor.formatar_auditoria(r_bbt), auditor.formatar_auditoria(r_bbt)[-200:])
 
+print(f"\n{BOLD}2d. EB: tetos por atividade (sem eixos){RESET}")
+itens_eb = auditor.parsear_atividades(
+    "tenho 60h de monitoria, 40h de curso de inglês e 80h de estágio não obrigatório"
+)
+r_eb = auditor.auditar_atividades(itens_eb, curso="EB")
+check("EB usa modo por atividade", r_eb.get("usa_eixos") is False)
+check("EB: total exigido 36h", r_eb["total_exigido"] == 36)
+pa = r_eb["por_atividade"]
+mon = next(v for k, v in pa.items() if "monitoria" in k)
+check("monitoria com teto de 36h (60 → 36)", mon["validas"] == 36, str(mon))
+ing = next(v for k, v in pa.items() if "língua" in k or "curso" in k)
+check("curso de língua: 1h a cada 2h com teto 18h (40 → 18)",
+      ing["validas"] == 18, str(ing))
+est = next(v for k, v in pa.items() if "estágio" in k)
+check("estágio: metade das horas com teto 36h (80 → 36)",
+      est["validas"] == 36, str(est))
+check("apto com folga (90h válidas ≥ 36h)", r_eb["apto"] and r_eb["faltam"] == 0)
+check("aviso da coorte 2019 presente",
+      any("2019" in a for a in r_eb["avisos"]))
+texto_eb = auditor.formatar_auditoria(r_eb)
+check("formatter EB lista por atividade e cita a regra",
+      "1h a cada 2h" in texto_eb and "Eixo I" not in texto_eb, texto_eb[:250])
+check("rodapé cita o regulamento da EB",
+      "AACC da EB" in texto_eb)
+
 print(f"\n{BOLD}3. Detectores do auditor e checklist{RESET}")
 check("detecta auditoria com horas + AC",
       auditor.is_audit_request("Tenho 40h de monitoria e 100h de IC, quanto tenho de AC?"))

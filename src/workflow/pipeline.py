@@ -346,20 +346,23 @@ def build_pipeline(rag_instance):
                     hist, itens_novos, reset=is_reset_ac(pergunta_bruta)
                 )
                 curso_ac = "BCT"
-                if re.search(r"\bbbt\b|biotec", _fold_router(pergunta_bruta)):
+                q_fold = _fold_router(pergunta_bruta)
+                if re.search(r"\bbbt\b|biotec", q_fold):
                     curso_ac = "BBT"
+                elif re.search(r"\beb\b|biomedica", q_fold):
+                    curso_ac = "EB"
                 elif hist and hist.get("curso"):
                     curso_ac = historico_curso_sigla(hist["curso"]) or "BCT"
-                if curso_ac not in ("BCT", "BBT"):
+                if curso_ac not in ("BCT", "BBT", "EB"):
                     curso_ac = "BCT"
-                fontes_ac = (
-                    ["Regulamento de AC do BBT (Anexo F do PPC 2023)"]
-                    if curso_ac == "BBT"
-                    else ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"]
-                )
+                fontes_ac = {
+                    "BBT": ["Regulamento de AC do BBT (Anexo F do PPC 2023)"],
+                    "EB": ["Regulamento de AACC da EB (PPC 2023)"],
+                }.get(curso_ac, ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"])
                 if itens_ac:
                     resultado_ac = auditar_atividades(itens_ac, curso=curso_ac)
                     texto_ac = formatar_auditoria(resultado_ac)
+                    payload_ok = resultado_ac.get("usa_eixos", True)
                     if len(itens_ac) > len(itens_novos):
                         texto_ac += (
                             "\n\n*Somei com o que você já tinha declarado nesta "
@@ -368,7 +371,7 @@ def build_pipeline(rag_instance):
                         )
                     return _resposta_simbolica(
                         texto_ac, "ac_auditoria", fontes_ac,
-                        ac_data=payload_auditoria(resultado_ac),
+                        ac_data=payload_auditoria(resultado_ac) if payload_ok else None,
                     )
                 return _resposta_simbolica(
                     responder_auditoria(pergunta_bruta), "ac_auditoria", fontes_ac,

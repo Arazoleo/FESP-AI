@@ -7,7 +7,7 @@
 
 ## Coordenação do Curso
 
-- **Coordenadora:** Prof. Dr. Roberson Saraiva Polli (rpolli@unifesp.br)
+- **Coordenador:** Prof. Dr. Roberson Saraiva Polli (rpolli@unifesp.br)
 - **Vice-coordenador:** Prof. Dr. Fábio Gava Aoki (fgaoki@unifesp.br)
 
 ---
