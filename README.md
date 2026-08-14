@@ -13,6 +13,12 @@ O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto 
 
 > **Nota:** este repositório acompanha o artigo *Neuro-Symbolic Graph-RAG for Academic Advising: A Three-Cycle Evaluation of a University Web Chatbot* (CTIC - WebMedia 2026). A demo pública está em [fesp-ai.vercel.app](https://fesp-ai.vercel.app/), os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo, e o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
 
+## Demo em vídeo
+
+<!-- Edite este README pelo site do GitHub e arraste demoshortFespAI.mp4 para
+     logo abaixo desta linha: o GitHub hospeda o vídeo e insere a URL, que
+     vira um player nativo com play direto no README. -->
+
 ![FESP-AI em execução](docs/screenshot-app.png)
 
 ## Arquitetura e Metodologia
