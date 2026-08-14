@@ -104,9 +104,8 @@ O Bacharelado em Biotecnologia (BBT) da UNIFESP é um curso de 8 semestres com c
 | Engenharia Bioquímica I | 4 | 72h |
 | Bioética e Biossegurança | 2 | 36h |
 | Empreendedorismo em Biotecnologia | 2 | 36h |
-| Laboratório de Bioquímica Analítica | 2 | 36h |
 
-**Total 5º Semestre:** 22 créditos
+**Total 5º Semestre:** 20 créditos
 
 ---
 
@@ -114,6 +113,7 @@ O Bacharelado em Biotecnologia (BBT) da UNIFESP é um curso de 8 semestres com c
 
 | Disciplina | Créditos | CH Total |
 |------------|----------|----------|
+| Laboratório de Bioquímica Analítica | 2 | 36h |
 | Engenharia Bioquímica II | 4 | 72h |
 | Laboratório de Engenharia Bioquímica | 2 | 36h |
 | Introdução à Biologia de Sistemas | 4 | 72h |
@@ -121,7 +121,7 @@ O Bacharelado em Biotecnologia (BBT) da UNIFESP é um curso de 8 semestres com c
 | Eletiva Profissionalizante BBT | 4 | 72h |
 | Eletiva (Profissionalizante BBT ou EL ou LE) | 4 | 72h |
 
-**Total 6º Semestre:** 22 créditos
+**Total 6º Semestre:** 24 créditos
 
 ---
 
@@ -154,6 +154,9 @@ O Bacharelado em Biotecnologia (BBT) da UNIFESP é um curso de 8 semestres com c
 | Atividades Complementares Extensionistas | 2 | 36h |
 
 **Total 8º Semestre:** 30 créditos
+
+Observação: o estágio (não obrigatório) pode ser realizado como eletiva de
+360h no 8º termo, conforme o PPC 2023.
 
 ---
 
