@@ -33,12 +33,16 @@ BASE = "https://campus.unifesp.br"
 SCOPES = [
     ("campus.unifesp.br", "/sjc/"),
     ("dae-sjc.unifesp.br", "/"),
+    ("ecomp.unifesp.br", "/"),
 ]
 SEEDS = [
     f"{BASE}/sjc/",
     f"{BASE}/sjc/mapa-do-site",
     "https://dae-sjc.unifesp.br/inicio",
     "https://dae-sjc.unifesp.br/materiais",
+    "https://ecomp.unifesp.br/in%C3%ADcio",
+    "https://ecomp.unifesp.br/o-curso/regulamentos",
+    "https://ecomp.unifesp.br/ajuda-aos-alunos/faq-ecomp",
 ]
 
 USER_AGENT = "FESP-AI/1.0 (assistente academico UNIFESP ICT; +https://campus.unifesp.br/sjc)"

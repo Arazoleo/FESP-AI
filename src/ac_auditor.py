@@ -224,6 +224,21 @@ REGRAS_CURSO = {
         ),
         "comissao": "Coordenação do BCT",
     },
+    "EC": {
+        "total": 108,
+        "teto_eixo1": None,
+        "regra_2_certificados": False,
+        "siex_min": None,
+        "usa_eixos": False,
+        "tetos": None,
+        "fonte": "Regulamento de AC da EC (site oficial ecomp.unifesp.br)",
+        "regras_texto": (
+            "108h totais com teto por atividade; extensão deve ser "
+            "credenciada na PROEC; Atlética não é validada; ACE lançadas em "
+            "grupos de 36h"
+        ),
+        "comissao": "coordenação de AC e extensão da EC",
+    },
     "BCC": {
         "total": 144,
         "teto_eixo1": None,
@@ -404,8 +419,19 @@ TETOS_BCC = {
     "UC optativa": (1.0, None, "eletivas excedentes: créditos atribuídos pelo professor"),
 }
 
+TETOS_EC = {
+    "iniciação científica": (1.0, 60, "máx 60h (30h por semestre)"),
+    "monitoria, tutoria ou orientação": (1.0, 40, "máx 40h (20h por semestre)"),
+    "eventos científicos como ouvinte": (1.0, 20, "máx 20h (10h por atividade)"),
+    "apresentação de trabalhos": (1.0, 30, "organização/apresentação: máx 30h (10h por atividade)"),
+    "atividades de extensão": (1.0, 50, "projetos PROEC: máx 50h"),
+    "centro acadêmico ou atlética": (1.0, 40, "órgão colegiado 20h; representação CCEC 40h; Atlética NÃO é validada"),
+    "competições científicas e tecnológicas": (1.0, 20, "maratonas: máx 20h (10h por atividade)"),
+}
+
 _TETOS_POR_CURSO = {
     "EB": TETOS_EB, "EM": TETOS_EM, "BMC": TETOS_BMC, "BCC": TETOS_BCC,
+    "EC": TETOS_EC,
 }
 
 
