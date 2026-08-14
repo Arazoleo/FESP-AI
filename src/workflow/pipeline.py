@@ -345,9 +345,20 @@ def build_pipeline(rag_instance):
                 itens_ac = registrar_atividades(
                     hist, itens_novos, reset=is_reset_ac(pergunta_bruta)
                 )
-                fontes_ac = ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"]
+                curso_ac = "BCT"
+                if re.search(r"\bbbt\b|biotec", _fold_router(pergunta_bruta)):
+                    curso_ac = "BBT"
+                elif hist and hist.get("curso"):
+                    curso_ac = historico_curso_sigla(hist["curso"]) or "BCT"
+                if curso_ac not in ("BCT", "BBT"):
+                    curso_ac = "BCT"
+                fontes_ac = (
+                    ["Regulamento de AC do BBT (Anexo F do PPC 2023)"]
+                    if curso_ac == "BBT"
+                    else ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"]
+                )
                 if itens_ac:
-                    resultado_ac = auditar_atividades(itens_ac)
+                    resultado_ac = auditar_atividades(itens_ac, curso=curso_ac)
                     texto_ac = formatar_auditoria(resultado_ac)
                     if len(itens_ac) > len(itens_novos):
                         texto_ac += (

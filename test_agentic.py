@@ -142,6 +142,32 @@ check("reset descarta as anteriores", len(acum) == 1 and acum[0]["horas"] == 10,
 check("sessão None degrada para a lista da mensagem",
       len(auditor.registrar_atividades(None, i1)) == 1)
 
+print(f"\n{BOLD}2c. Regras por curso: BBT ≠ BCT{RESET}")
+itens_bbt = auditor.parsear_atividades(
+    "tenho 40h de projeto de extensão no SIEX da UNIFESP, 30h de monitoria e 50h de iniciação científica"
+)
+r_bbt = auditor.auditar_atividades(itens_bbt, curso="BBT")
+check("BBT: total exigido é 108h", r_bbt["total_exigido"] == 108, str(r_bbt["total_exigido"]))
+check("BBT: 120h declaradas cobrem as 108h",
+      r_bbt["faltam"] == 0, str(r_bbt["faltam"]))
+check("BBT: sem teto de 104h no eixo de extensão",
+      not any("teto" in a for a in r_bbt["avisos"]), str(r_bbt["avisos"]))
+r_bbt2 = auditor.auditar_atividades(
+    auditor.parsear_atividades("tenho 20h de voluntariado na ONG Esperança e 100h de IC"),
+    curso="BBT",
+)
+check("BBT: avisa quando faltam as 36h de SIEX",
+      any("SIEX" in a for a in r_bbt2["avisos"]), str(r_bbt2["avisos"]))
+check("BBT: sem regra de 2 certificados",
+      not any("certificado" in a for a in r_bbt2["avisos"]))
+r_bct_ref = auditor.auditar_atividades(itens_bbt, curso="BCT")
+check("mesmos itens no BCT usam 312h", r_bct_ref["total_exigido"] == 312)
+check("payload usa o alvo do curso",
+      auditor.payload_auditoria(r_bbt)["alvo"] == 108
+      and auditor.payload_auditoria(r_bct_ref)["alvo"] == 312)
+check("rodapé cita o regulamento do BBT",
+      "Anexo F" in auditor.formatar_auditoria(r_bbt), auditor.formatar_auditoria(r_bbt)[-200:])
+
 print(f"\n{BOLD}3. Detectores do auditor e checklist{RESET}")
 check("detecta auditoria com horas + AC",
       auditor.is_audit_request("Tenho 40h de monitoria e 100h de IC, quanto tenho de AC?"))

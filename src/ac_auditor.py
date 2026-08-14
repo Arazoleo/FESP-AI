@@ -43,6 +43,7 @@ _SINONIMOS = {
         ("atividades artísticas", ["teatro", "danca", "canto", "coral", "banda", "musica", "instrumental", "circo", "performatic", "artistic"]),
         ("concursos culturais ou exposições", ["concurso cultural", "exposicao", "mostra cultural"]),
         ("serviços sociais e voluntariado", ["voluntari", "ong", "servico social", "acao social", "trabalho comunitario", "igreja", "pastoral"]),
+        ("atividades de extensão", ["projeto de extensao", "programa de extensao", "acao de extensao", "atividade de extensao", "atividades de extensao", "siex", "extensao universitaria", "curso de extensao"]),
         ("organização de eventos externos", ["organizacao de evento", "organizei evento", "organizar evento"]),
         ("centro acadêmico ou atlética", ["centro academico", "caak", "atletica", "aaaja", "bateria universitaria"]),
     ],
@@ -172,11 +173,42 @@ def registrar_atividades(sessao: Optional[Dict], novos: List[Dict],
     return list(previos)
 
 
-def auditar_atividades(itens: List[Dict]) -> Dict:
+REGRAS_CURSO = {
+    "BCT": {
+        "total": TOTAL_HORAS,
+        "teto_eixo1": TETO_EIXO_1,
+        "regra_2_certificados": True,
+        "siex_min": None,
+        "fonte": "Regulamento de AC do BCT (2023) e o Manual da DAE (2025)",
+        "regras_texto": (
+            "teto de 104h no Eixo I, mínimo de 1h por eixo, 312h totais e "
+            "máximo de 2 certificados por instituição (exceto UNIFESP)"
+        ),
+        "comissao": "Coordenação do BCT",
+    },
+    "BBT": {
+        "total": 108,
+        "teto_eixo1": None,
+        "regra_2_certificados": False,
+        "siex_min": 36,
+        "fonte": "Regulamento de AC do BBT (Anexo F do PPC 2023)",
+        "regras_texto": (
+            "108h totais, atividade em todos os grupos obrigatoriamente e "
+            "mínimo de 36h de extensão cadastrada no SIEX UNIFESP; as horas "
+            "de cada atividade são atribuídas por parecer da coordenação"
+        ),
+        "comissao": "Comissão de Curso do BBT (CC-BBT)",
+    },
+}
+
+
+def auditar_atividades(itens: List[Dict], curso: str = "BCT") -> Dict:
     """
     Simula a acreditação: classifica cada item, aplica os tetos e mínimos do
-    regulamento e devolve o balanço por eixo com pendências e avisos.
+    regulamento do CURSO (BCT ou BBT) e devolve o balanço por eixo com
+    pendências e avisos.
     """
+    regras = REGRAS_CURSO.get((curso or "BCT").upper(), REGRAS_CURSO["BCT"])
     classificados, nao_classificados = [], []
     for item in itens:
         c = classificar_eixo(item.get("descricao", ""))
@@ -192,12 +224,11 @@ def auditar_atividades(itens: List[Dict]) -> Dict:
 
     validas = dict(brutas)
     excedente_eixo1 = 0.0
-    if validas[1] > TETO_EIXO_1:
-        excedente_eixo1 = validas[1] - TETO_EIXO_1
-        validas[1] = TETO_EIXO_1
+    if regras["teto_eixo1"] and validas[1] > regras["teto_eixo1"]:
+        excedente_eixo1 = validas[1] - regras["teto_eixo1"]
+        validas[1] = regras["teto_eixo1"]
 
-    total_valido = min(sum(validas.values()), TOTAL_HORAS + 0)
-    faltam = max(0.0, TOTAL_HORAS - sum(validas.values()))
+    faltam = max(0.0, regras["total"] - sum(validas.values()))
 
     pendencias = []
     for eixo in (1, 2, 3):
@@ -209,21 +240,40 @@ def auditar_atividades(itens: List[Dict]) -> Dict:
     avisos = []
     if excedente_eixo1:
         avisos.append(
-            f"{excedente_eixo1:.0f}h do Eixo I excedem o teto de {TETO_EIXO_1}h e não contam"
+            f"{excedente_eixo1:.0f}h do Eixo I excedem o teto de "
+            f"{regras['teto_eixo1']}h e não contam"
         )
-    contagem_inst: Dict[str, int] = {}
-    for r in classificados:
-        inst = _norm(r.get("instituicao") or "")
-        if inst and not _UNIFESP_RE.search(inst):
-            contagem_inst[inst] = contagem_inst.get(inst, 0) + 1
-    for inst, qtd in contagem_inst.items():
-        if qtd > MAX_CERT_POR_INSTITUICAO:
+    if regras["regra_2_certificados"]:
+        contagem_inst: Dict[str, int] = {}
+        for r in classificados:
+            inst = _norm(r.get("instituicao") or "")
+            if inst and not _UNIFESP_RE.search(inst):
+                contagem_inst[inst] = contagem_inst.get(inst, 0) + 1
+        for inst, qtd in contagem_inst.items():
+            if qtd > MAX_CERT_POR_INSTITUICAO:
+                avisos.append(
+                    f"{qtd} certificados de '{inst}': só {MAX_CERT_POR_INSTITUICAO} "
+                    "de uma mesma instituição são aceitos (exceto UNIFESP)"
+                )
+    if regras["siex_min"]:
+        siex_horas = sum(
+            float(r["horas"]) for r in classificados
+            if r["eixo"] == 1 and (
+                "siex" in _norm(r.get("descricao") or "")
+                or _UNIFESP_RE.search(_norm(r.get("instituicao") or ""))
+            )
+        )
+        if siex_horas < regras["siex_min"]:
             avisos.append(
-                f"{qtd} certificados de '{inst}': só {MAX_CERT_POR_INSTITUICAO} "
-                "de uma mesma instituição são aceitos (exceto UNIFESP)"
+                f"o BBT exige no mínimo {regras['siex_min']}h de extensão "
+                "cadastrada no SIEX UNIFESP - identifiquei "
+                f"{siex_horas:.0f}h; confirme o cadastro SIEX das suas "
+                "atividades de extensão"
             )
 
     return {
+        "curso": (curso or "BCT").upper(),
+        "total_exigido": regras["total"],
         "itens": classificados,
         "nao_classificados": nao_classificados,
         "horas_brutas": brutas,
@@ -246,7 +296,8 @@ def formatar_auditoria(resultado: Dict) -> str:
         linhas.append(f"- {_EIXO_NOMES[eixo]}: **{validas:.0f}h**{extra} {status}")
     linhas.append("")
     linhas.append(
-        f"**Total válido: {resultado['total_valido']:.0f}h de {TOTAL_HORAS}h**"
+        f"**Total válido: {resultado['total_valido']:.0f}h de "
+        f"{resultado.get('total_exigido', TOTAL_HORAS)}h**"
         + (
             " - você já pode solicitar a validação!"
             if resultado["apto"]
@@ -282,20 +333,25 @@ def formatar_auditoria(resultado: Dict) -> str:
 
     linhas.append("")
     linhas.append(
-        "*Regras aplicadas: teto de 104h no Eixo I, mínimo de 1h por eixo, "
-        "312h totais e máximo de 2 certificados por instituição (exceto "
-        "UNIFESP), conforme o Regulamento de AC do BCT (2023) e o Manual da "
-        "DAE (2025). Simulação orientativa: a decisão final é da comissão da "
-        "Coordenação do BCT.*"
+        _rodape_regras(resultado.get("curso", "BCT"))
     )
     return "\n".join(linhas)
+
+
+def _rodape_regras(curso: str) -> str:
+    regras = REGRAS_CURSO.get(curso, REGRAS_CURSO["BCT"])
+    return (
+        f"*Regras aplicadas ({curso}): {regras['regras_texto']}, conforme "
+        f"{regras['fonte']}. Simulação orientativa: a decisão final é da "
+        f"{regras['comissao']}.*"
+    )
 
 
 def payload_auditoria(resultado: Dict) -> Dict:
     """Payload estruturado para o frontend renderizar barras por eixo."""
     return {
         "type": "ac_report",
-        "alvo": TOTAL_HORAS,
+        "alvo": resultado.get("total_exigido", TOTAL_HORAS),
         "total": round(resultado["total_valido"]),
         "faltam": round(resultado["faltam"]),
         "apto": resultado["apto"],
@@ -305,7 +361,11 @@ def payload_auditoria(resultado: Dict) -> Dict:
                 "nome": _EIXO_NOMES[eixo],
                 "validas": round(resultado["horas_validas"][eixo]),
                 "brutas": round(resultado["horas_brutas"][eixo]),
-                "teto": TETO_EIXO_1 if eixo == 1 else None,
+                "teto": (
+                    TETO_EIXO_1
+                    if eixo == 1 and resultado.get("curso", "BCT") == "BCT"
+                    else None
+                ),
                 "ok": resultado["horas_brutas"][eixo] >= MIN_POR_EIXO,
             }
             for eixo in (1, 2, 3)
