@@ -91,9 +91,15 @@ gigante = _page(
 )
 secs = sc._extract_sections(gigante)
 check(
-    "cada seção respeita _SECTION_MAX sem descartar as seguintes",
-    len(secs) == 2 and all(len(s["texto"]) <= sc._SECTION_MAX for s in secs),
+    "seções longas viram partes (nada é truncado nem descartado)",
+    len(secs) == 4 and all(len(s["texto"]) <= sc._SECTION_MAX for s in secs)
+    and sum(len(s["texto"]) for s in secs) >= 20000,
     f"{len(secs)} seções, tamanhos {[len(s['texto']) for s in secs]}",
+)
+check(
+    "partes ganham sufixo e mantêm a âncora da seção",
+    secs[1]["titulo"].endswith("(parte 2)") and secs[1]["anchor"] == secs[0]["anchor"],
+    str([(s['titulo'], s['anchor']) for s in secs[:2]]),
 )
 
 print(f"\n{BOLD}── Multi-domínio (dae-sjc.unifesp.br, Google Sites) ──{RESET}")

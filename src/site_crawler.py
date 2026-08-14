@@ -170,13 +170,18 @@ def _extract_sections(html: str) -> List[Dict]:
             continue
         slug = _slugify(titulo)
         anchor = f"rlta-{slug}" if slug and f'id="rlta-{slug}"' in region else ""
-        sections.append({
-            "titulo": titulo,
-            "texto": texto[:_SECTION_MAX],
-            "anchor": anchor,
-        })
-        if len(sections) >= _MAX_SECTIONS:
-            break
+        partes = [
+            texto[i:i + _SECTION_MAX]
+            for i in range(0, len(texto), _SECTION_MAX)
+        ] or [""]
+        for n, parte in enumerate(partes, 1):
+            sections.append({
+                "titulo": titulo if n == 1 else f"{titulo} (parte {n})",
+                "texto": parte,
+                "anchor": anchor,
+            })
+            if len(sections) >= _MAX_SECTIONS:
+                return sections
     return sections
 
 
