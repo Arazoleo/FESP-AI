@@ -414,6 +414,16 @@ resp_bct = p.responder_requisitos("BCT", "NOTURNO")
 check("resposta do BCT inclui extras do PPC (extensão e interdisciplinares)",
       "240h" in resp_bct and "4 UCs" in resp_bct, resp_bct[:300])
 check("sigla desconhecida retorna None", p.responder_requisitos("XYZ") is None)
+check("pergunta comparativa entre 3 cursos é detectada",
+      p.is_pergunta_comparativa(
+          "qual a diferença entre Engenharia de Computação, Ciência da Computação e Matemática Computacional?"))
+check("dois cursos citados sem 'diferença' também conta",
+      p.is_pergunta_comparativa("BCC ou BMC, o que exige mais horas?"))
+check("um curso só não é comparativa",
+      not p.is_pergunta_comparativa("quantas horas preciso para me formar no BCC?"))
+check("cursos_citados extrai por nome e sigla",
+      p.cursos_citados("diferença entre engenharia de computação e o bmc") == ["EC", "BMC"],
+      str(p.cursos_citados("diferença entre engenharia de computação e o bmc")))
 check("quadro None sem horas no histórico",
       p._quadro_integralizacao("BCT", {"horas": {}}, 0, []) is None)
 

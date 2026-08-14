@@ -224,6 +224,7 @@ def build_pipeline(rag_instance):
             is_requisitos_request,
             extrair_curso_requisitos,
             responder_requisitos,
+            is_pergunta_comparativa,
         )
         from ..risco import (
             extrair_disciplina_risco,
@@ -417,6 +418,8 @@ def build_pipeline(rag_instance):
                 )
 
             if label == "requisitos_curso":
+                if is_pergunta_comparativa(pergunta_bruta):
+                    return None
                 sigla = extrair_curso_requisitos(pergunta_bruta)
                 curso_texto = ""
                 if not sigla and hist:

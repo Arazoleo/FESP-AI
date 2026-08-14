@@ -202,6 +202,33 @@ def _rotulo_criterio(c: Dict) -> str:
 
 _SIGLA_CURSO_RE = re.compile(r"\b(bct|bcc|bmc|bbt|ec|eb)\b")
 
+_NOMES_CURSOS_NORM = (
+    ("ciencia e tecnologia", "BCT"), ("interdisciplinar", "BCT"),
+    ("ciencia da computacao", "BCC"), ("matematica computacional", "BMC"),
+    ("biotecnologia", "BBT"), ("engenharia de computacao", "EC"),
+    ("engenharia biomedica", "EB"), ("engenharia de materiais", "EM"),
+)
+
+
+def cursos_citados(texto: str) -> List[str]:
+    q = _norm(texto)
+    achados = []
+    for nome, sigla in _NOMES_CURSOS_NORM:
+        if nome in q and sigla not in achados:
+            achados.append(sigla)
+    for m in _SIGLA_CURSO_RE.finditer(q):
+        s = m.group(1).upper()
+        if s not in achados:
+            achados.append(s)
+    return achados
+
+
+def is_pergunta_comparativa(texto: str) -> bool:
+    q = _norm(texto)
+    if re.search(r"\bdiferen\w+|\bcompar\w+|\bversus\b|\bou\s+melhor\b", q):
+        return True
+    return len(cursos_citados(texto)) >= 2
+
 
 def extrair_curso_requisitos(texto: str) -> str:
     from .historico import curso_sigla
