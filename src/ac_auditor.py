@@ -231,11 +231,14 @@ REGRAS_CURSO = {
         "siex_min": None,
         "usa_eixos": False,
         "tetos": None,
-        "fonte": "PPC do BCC (144h; tabela de créditos em regulamento específico)",
+        "fonte": (
+            "PPC do BCC e Tabela D1 do regulamento de AC (recuperada de "
+            "cópia arquivada; link oficial fora do ar)"
+        ),
         "regras_texto": (
-            "144h totais; a tabela de créditos por atividade está em "
-            "regulamento específico cujo link oficial está fora do ar - os "
-            "valores por atividade devem ser confirmados com a coordenação"
+            "144h totais (8 créditos; 1Cr = 18h); limites por "
+            "semestre/evento/publicação da Tabela D1, conferidos no parecer "
+            "da coordenação"
         ),
         "comissao": "Coordenação do BCC",
     },
@@ -387,7 +390,19 @@ def auditar_atividades(itens: List[Dict], curso: str = "BCT") -> Dict:
     }
 
 
-TETOS_BCC = {}
+_CR = 18.0
+TETOS_BCC = {
+    "monitoria, tutoria ou orientação": (1.0, None, "até 8Cr (144h) por semestre"),
+    "atividades de extensão": (1.0, None, "até 8Cr (144h) por semestre"),
+    "iniciação científica": (1.0, None, "até 8Cr (144h) por semestre"),
+    "eventos científicos como ouvinte": (1.0, 2 * _CR, "até 2Cr (36h) por evento"),
+    "apresentação de trabalhos": (1.0, 8 * _CR, "publicações: até 8Cr (144h) cada"),
+    "estágio não obrigatório": (1.0, 8 * _CR, "até 8Cr (144h) por estágio"),
+    "cursos e capacitações": (1.0, 8 * _CR, "até 8Cr (144h), pelas horas atribuídas"),
+    "cursos de línguas estrangeiras": (1.0, 8 * _CR, "até 8Cr (144h), pelas horas atribuídas"),
+    "centro acadêmico ou atlética": (1.0, 4 * _CR, "representação: até 4Cr (72h)"),
+    "UC optativa": (1.0, None, "eletivas excedentes: créditos atribuídos pelo professor"),
+}
 
 _TETOS_POR_CURSO = {
     "EB": TETOS_EB, "EM": TETOS_EM, "BMC": TETOS_BMC, "BCC": TETOS_BCC,

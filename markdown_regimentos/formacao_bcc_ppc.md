@@ -17,9 +17,38 @@ do curso.
   comissões ou organização de eventos; disciplinas eletivas extracurriculares;
   publicação de artigos (periódicos, conferências, divulgação); estágios não
   obrigatórios; representação discente; certificações profissionais.
-- A **tabela de créditos por atividade** fica em regulamento específico do
-  curso; o link publicado na página oficial está fora do ar - confirme os
-  valores com a coordenação do BCC.
+- A contagem oficial é em **créditos** (Tabela D1 do regulamento; 1 crédito
+  = 18 horas, então 144h = 8 créditos).
+
+### Tabela D1 - créditos por atividade
+
+| Atividade | Créditos |
+|-----------|----------|
+| Monitoria (bolsista/voluntário) | até 8Cr por semestre |
+| Atividades de extensão (bolsista/voluntário) | até 8Cr por semestre |
+| Pesquisa sob supervisão docente (bolsista/voluntário) | até 8Cr por semestre |
+| Semanas acadêmicas, congressos, simpósios, fóruns etc. | até 2Cr por evento |
+| Comissão ou organização de eventos científicos/acadêmicos | até 2Cr por evento |
+| Ouvinte em defesas de mestrado/doutorado | até 0,5Cr por evento |
+| Eletivas excedentes às horas exigidas | créditos atribuídos pelo professor |
+| Cursos extracurriculares | até 8Cr (pelas horas atribuídas) |
+| Artigo completo em periódico indexado | até 8Cr por publicação |
+| Artigo em jornal/revista de divulgação | até 2Cr por publicação |
+| Trabalho completo em evento científico | até 8Cr por publicação |
+| Resumo em evento científico | até 4Cr por publicação |
+| Estágio não obrigatório | até 8Cr por estágio |
+| Representação discente (≥75% do mandato) | até 4Cr por representação |
+| Certificações profissionais | até 8Cr por certificação |
+
+Comprovação (Tabela D2): certificados/declarações do supervisor ou professor
+responsável; publicações com cópia ou aceite; estágio com comprovante
+assinado de início e término; defesas com declaração do presidente da banca;
+eletivas com histórico escolar.
+
+Nota de proveniência: o link do regulamento na página oficial do curso está
+fora do ar; a tabela acima foi recuperada de cópia arquivada do documento
+oficial (Internet Archive). Confirme valores com a coordenação em caso de
+dúvida.
 
 ## Trabalho de Conclusão de Curso
 
