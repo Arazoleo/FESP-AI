@@ -14,7 +14,7 @@
 
 O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto de Ciência e Tecnologia da UNIFESP (campus São José dos Campos). Ele combina um **Knowledge Graph** curricular (disciplinas, pré-requisitos, docentes, cursos), **regras de inferência FOL** executadas via **PyReason** e um **LLM** (Ollama), orquestrados por um pipeline **multi-agente em LangGraph**: com RAG híbrido (vetorial + BM25) sobre ementas e regimentos e um corpus vivo do **site institucional do campus**. A tese central: o LLM interpreta e redige, mas **quem julga os fatos é o grafo** - reduzindo alucinação em respostas acadêmicas críticas (pré-requisitos, matrizes curriculares, docentes).
 
-> **Nota:** este repositório acompanha o artigo *Neuro-Symbolic Graph-RAG for Academic Advising: A Three-Cycle Evaluation of a University Web Chatbot* (CTIC - WebMedia 2026). A demo pública está em [fesp-ai.vercel.app](https://fesp-ai.vercel.app/), os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo, e o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
+> **Nota:** este repositório acompanha um artigo científico em avaliação. Os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo, e o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
 
 ## Demo em vídeo
 
