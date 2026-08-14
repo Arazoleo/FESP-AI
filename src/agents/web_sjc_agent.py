@@ -154,6 +154,28 @@ class WebSjcAgent(BaseAgent):
                     best, best_len = data.get("nome", ""), len(cn)
         return best
 
+    def _documentos_institucionais(self, question: str, k: int = 2) -> str:
+        """
+        Fusão site ↔ documentos institucionais: anexa os trechos mais
+        relevantes de regulamentos/manuais/PPCs do corpus, rotulados, para o
+        LLM compor com as páginas do site (item 9 do backlog).
+        """
+        if not getattr(self, "db", None):
+            return ""
+        try:
+            docs = self.db.similarity_search(
+                question, k=k, filter={"tipo_documento": "institucional"}
+            )
+        except Exception:
+            return ""
+        trechos = [d.page_content.strip() for d in docs if d.page_content.strip()]
+        if not trechos:
+            return ""
+        return (
+            "### [DOCUMENTOS INSTITUCIONAIS - regulamentos e manuais oficiais]\n\n"
+            + "\n---\n".join(trechos)
+        )
+
     def _kg_verified_facts(self, question: str) -> str:
         """
         Fatos verificados do KG sobre entidades citadas na pergunta.
@@ -324,6 +346,9 @@ class WebSjcAgent(BaseAgent):
             kg_facts = self._kg_verified_facts(question)
             if kg_facts:
                 contexto = kg_facts + "\n\n### [PAGINAS DO SITE]\n\n" + contexto
+            docs_inst = self._documentos_institucionais(question)
+            if docs_inst:
+                contexto = contexto + "\n\n" + docs_inst
             if student_context:
                 contexto = student_context + "\n\n" + contexto
             inputs = {"context": contexto, "question": question}

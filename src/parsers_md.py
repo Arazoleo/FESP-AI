@@ -8,6 +8,27 @@ from typing import List, Dict, Optional, Tuple
 from langchain_core.documents import Document
 
 
+def _chunk_texto(texto: str, tamanho: int = 1400) -> List[str]:
+    """Divide texto longo em pedaços por parágrafo, respeitando o tamanho."""
+    paragrafos = re.split(r"\n\n+", texto or "")
+    pedacos, atual = [], ""
+    for p in paragrafos:
+        p = p.strip()
+        if not p:
+            continue
+        if atual and len(atual) + len(p) + 2 > tamanho:
+            pedacos.append(atual)
+            atual = p
+        else:
+            atual = f"{atual}\n\n{p}" if atual else p
+        while len(atual) > tamanho * 2:
+            pedacos.append(atual[:tamanho])
+            atual = atual[tamanho:]
+    if atual:
+        pedacos.append(atual)
+    return pedacos
+
+
 class DisciplinaMarkdownParser:
     """Parser otimizado para arquivos Markdown de disciplinas."""
     
@@ -309,9 +330,38 @@ Este documento contém informações sobre:
 - Atividades complementares e extensão
 
 Para perguntas específicas, consulte os artigos e FAQs deste documento."""
-        
+
         docs.append(Document(page_content=resumo, metadata={**base_meta, 'secao': 'resumo'}))
-        
+
+        especiais = {"Objetivo", "Estrutura", "Perguntas Frequentes"}
+        secoes_gen = re.finditer(
+            r'^## (.+?)\n(.*?)(?=\n## |\Z)', content, re.DOTALL | re.MULTILINE
+        )
+        capturou_generica = False
+        for sm in secoes_gen:
+            titulo_sec = sm.group(1).strip()
+            if titulo_sec in especiais:
+                continue
+            corpo_sec = sm.group(2).strip()
+            if len(corpo_sec) < 80:
+                continue
+            capturou_generica = True
+            for pedaco in _chunk_texto(corpo_sec):
+                docs.append(Document(
+                    page_content=(
+                        f"DOCUMENTO: {doc_tipo}\nSEÇÃO: {titulo_sec}\n\n{pedaco}"
+                    ),
+                    metadata={**base_meta, 'secao': 'conteudo', 'titulo': titulo_sec},
+                ))
+
+        if not capturou_generica and len(docs) <= 2:
+            corpo_total = re.sub(r'^# .+$', '', content, count=1, flags=re.MULTILINE).strip()
+            for pedaco in _chunk_texto(corpo_total):
+                docs.append(Document(
+                    page_content=f"DOCUMENTO: {doc_tipo}\n\n{pedaco}",
+                    metadata={**base_meta, 'secao': 'conteudo'},
+                ))
+
         return docs
 
 
