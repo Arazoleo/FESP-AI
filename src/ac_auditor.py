@@ -224,6 +224,21 @@ REGRAS_CURSO = {
         ),
         "comissao": "Coordenação do BCT",
     },
+    "BCC": {
+        "total": 144,
+        "teto_eixo1": None,
+        "regra_2_certificados": False,
+        "siex_min": None,
+        "usa_eixos": False,
+        "tetos": None,
+        "fonte": "PPC do BCC (144h; tabela de créditos em regulamento específico)",
+        "regras_texto": (
+            "144h totais; a tabela de créditos por atividade está em "
+            "regulamento específico cujo link oficial está fora do ar - os "
+            "valores por atividade devem ser confirmados com a coordenação"
+        ),
+        "comissao": "Coordenação do BCC",
+    },
     "EM": {
         "total": 180,
         "teto_eixo1": None,
@@ -372,7 +387,11 @@ def auditar_atividades(itens: List[Dict], curso: str = "BCT") -> Dict:
     }
 
 
-_TETOS_POR_CURSO = {"EB": TETOS_EB, "EM": TETOS_EM, "BMC": TETOS_BMC}
+TETOS_BCC = {}
+
+_TETOS_POR_CURSO = {
+    "EB": TETOS_EB, "EM": TETOS_EM, "BMC": TETOS_BMC, "BCC": TETOS_BCC,
+}
 
 
 def _auditar_por_atividade(classificados, nao_classificados, regras, curso):
@@ -390,10 +409,10 @@ def _auditar_por_atividade(classificados, nao_classificados, regras, curso):
         })
         acc["brutas"] += float(r["horas"])
         acc["creditadas"] += float(r["horas"]) * fator
-        if regra_txt is None:
+        if regra_txt is None and tetos:
             avisos.append(
-                f"'{r['atividade']}' não está na tabela da EB - a Comissão "
-                "avalia por similaridade"
+                f"'{r['atividade']}' não está na tabela do {curso} - a "
+                "Comissão avalia por similaridade"
             )
     validas_total = 0.0
     for acc in por_atividade.values():

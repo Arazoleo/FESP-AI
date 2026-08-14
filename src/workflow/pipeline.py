@@ -355,15 +355,18 @@ def build_pipeline(rag_instance):
                     curso_ac = "EM"
                 elif re.search(r"\bbmc\b|matematica computacional", q_fold):
                     curso_ac = "BMC"
+                elif re.search(r"\bbcc\b|ciencia da computacao", q_fold):
+                    curso_ac = "BCC"
                 elif hist and hist.get("curso"):
                     curso_ac = historico_curso_sigla(hist["curso"]) or "BCT"
-                if curso_ac not in ("BCT", "BBT", "EB", "EM", "BMC"):
+                if curso_ac not in ("BCT", "BBT", "EB", "EM", "BMC", "BCC"):
                     curso_ac = "BCT"
                 fontes_ac = {
                     "BBT": ["Regulamento de AC do BBT (Anexo F do PPC 2023)"],
                     "EB": ["Regulamento de AACC da EB (PPC 2023)"],
                     "EM": ["Regulamento de AACC do EM (2023)"],
                     "BMC": ["Regimento de AACC do BMC"],
+                    "BCC": ["PPC do BCC"],
                 }.get(curso_ac, ["Regulamento de AC do BCT (2023)", "Manual da DAE (2025)"])
                 if itens_ac:
                     resultado_ac = auditar_atividades(itens_ac, curso=curso_ac)
