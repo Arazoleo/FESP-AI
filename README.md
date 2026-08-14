@@ -18,7 +18,12 @@ O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto 
 
 ## Demo em vídeo
 
-https://github.com/user-attachments/assets/5cd816ef-897a-4f88-8f67-a957c54ded1c
+
+
+https://github.com/user-attachments/assets/8f319db0-2692-4857-9046-526d356d1a38
+
+
+
 
 ![FESP-AI em execução](docs/screenshot-app.png)
 
