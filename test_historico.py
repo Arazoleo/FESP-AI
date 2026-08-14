@@ -421,6 +421,12 @@ check("dois cursos citados sem 'diferença' também conta",
       p.is_pergunta_comparativa("BCC ou BMC, o que exige mais horas?"))
 check("um curso só não é comparativa",
       not p.is_pergunta_comparativa("quantas horas preciso para me formar no BCC?"))
+check("'quantas horas de AC preciso na EB' vira requisitos",
+      p.is_requisitos_request("quantas horas de atividades complementares eu preciso na Engenharia Biomédica?"))
+check("pergunta de regra temporal não vira pre-check de matrícula",
+      not p.is_matricula_request("posso me matricular em TCC I da Engenharia Biomédica a qualquer momento?"))
+check("pre-check de matrícula real segue funcionando",
+      p.is_matricula_request("posso me matricular em Compiladores tendo cursado LFA?"))
 check("cursos_citados extrai por nome e sigla",
       p.cursos_citados("diferença entre engenharia de computação e o bmc") == ["EC", "BMC"],
       str(p.cursos_citados("diferença entre engenharia de computação e o bmc")))

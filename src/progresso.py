@@ -241,6 +241,8 @@ def extrair_curso_requisitos(texto: str) -> str:
 
 
 _REQUISITOS_CUES_RES = [re.compile(p) for p in (
+    r"quantas?\s+horas\s+de\s+(?:atividades?\s+complementares?|ac|estagio|tcc|eletivas?)\b.*\b(?:preciso|necessito|exigid|tenho\s+que)",
+    r"\b(?:preciso|necessito)\s+de\s+quantas?\s+horas\s+de\s+(?:atividades?\s+complementares?|ac|estagio|tcc|eletivas?)",
     r"\bo\s*que\s+(?:eu\s+)?(?:preciso|necessito)\s+(?:para|pra)\s+(?:me\s+)?formar",
     r"quantas?\s+horas.*\b(?:formar|integralizar|concluir|colar\s+grau)",
     r"\b(?:carga\s+horaria|horas)\b.*\b(?:para|pra|de)\s+integraliza",
@@ -722,8 +724,19 @@ _MATRICULA_CUES_RES = [re.compile(p) for p in (
 )]
 
 
+_MATRICULA_REGRA_RES = [re.compile(p) for p in (
+    r"\ba\s+qualquer\s+momento\b",
+    r"\bquando\s+posso\b",
+    r"\ba\s+partir\s+de\s+(?:quando|que\s+termo|qual\s+termo)\b",
+    r"\bem\s+que\s+(?:epoca|termo|semestre)\b",
+    r"\bquais?\s+(?:os\s+)?requisitos\b",
+)]
+
+
 def is_matricula_request(texto: str) -> bool:
     q = _norm(texto)
+    if any(p.search(q) for p in _MATRICULA_REGRA_RES):
+        return False
     if not any(p.search(q) for p in _MATRICULA_CUES_RES):
         return False
     return bool(extrair_desejadas(texto))

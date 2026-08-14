@@ -344,6 +344,7 @@ INTENT_TO_AGENT: Dict[str, str] = {
 
 REGIMENTO_FORCE_KEYWORDS = [
     "regimento", "regulamento", "norma", "artigo", "resolucao",
+    "tcc i", "tcc ii", "tcc 1", "tcc 2", "ecos",
     "evacuacao", "incendio", "seguranca", "faq", "perguntas frequentes",
     "atividade complementar", "atividades complementares",
     "trancamento", "trancar", "aprovacao", "reprovacao",
