@@ -6,10 +6,13 @@ diferentes de BCT (312h) e BBT (108h): confira o PPC do ingresso do aluno.
 
 ## Total exigido (a diferença central entre as coortes)
 
-| Coorte | Mínimo de AACC |
-|--------|----------------|
-| PPC 2023 (matriz ATIVA atual) | **36 horas** |
-| PPC 2019 | **108 horas** |
+| Coorte | Mínimo de AACC | Aprovação do regulamento |
+|--------|----------------|--------------------------|
+| PPC 2023 (matriz ATIVA atual - ingresso na EB a partir de 2023) | **36 horas** | Comissão de Curso em 20/10/2022; homologado na Congregação em 03/11/2022 |
+| PPC 2019 (ingresso na EB até 2/2022) | **108 horas** | Comissão de Curso em 21/05/2018 |
+
+Conferência de vigência: a matriz ATIVA no SIIU/Prograd (raspada em ago/2026)
+exige 36h de AC, confirmando o regulamento de 2023 como o atual.
 
 - AACC são obrigatórias para a integralização da EB.
 - Horas de AACC acumuladas **durante o BCT precisam ser revalidadas** pela EB.
