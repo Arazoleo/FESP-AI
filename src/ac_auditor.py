@@ -56,7 +56,8 @@ _SINONIMOS = {
         ("recepção de calouros e matrículas", ["recepcao de calouros", "acolhimento de calouros", "semana de recepcao", "matricula de ingressantes"]),
     ],
     3: [
-        ("iniciação científica", ["iniciacao cientifica", "ic ", " ic,", " ic.", "pibic", "pibiti", "bolsista de pesquisa"]),
+        ("iniciação científica", ["iniciacao cientifica", "ic ", " ic,", " ic.", "pibic", "pibiti", "bolsista de pesquisa", "pd&i", "pdi", "embrapii", "projeto de pesquisa"]),
+        ("empresa júnior ou startup", ["empresa junior", "startup", "start up", "start-up"]),
         ("eventos científicos como ouvinte", ["congresso", "palestra", "ouvinte", "workshop", "semana academica", "evento cientifico", "seminario"]),
         ("apresentação de trabalhos", ["apresentacao de trabalho", "apresentei trabalho", "poster", "artigo em congresso"]),
         ("competições científicas e tecnológicas", ["competicao", "maratona de programacao", "hackathon", "olimpiada", "torneio de robotica"]),
@@ -173,6 +174,31 @@ def registrar_atividades(sessao: Optional[Dict], novos: List[Dict],
     return list(previos)
 
 
+TETOS_EM = {
+    "monitoria, tutoria ou orientação": (1.0, 80, "40h/semestre, máx 80h"),
+    "atividades de extensão": (1.0, 80, "40h/semestre, máx 80h (não curricularizadas)"),
+    "iniciação científica": (1.0, 160, "40h/semestre, máx 160h (PD&I)"),
+    "eventos científicos como ouvinte": (1.0, 24, "8h por evento, máx 24h (palestras: 1h, máx 12h)"),
+    "apresentação de trabalhos": (1.0, 40, "10h por apresentação, máx 40h"),
+    "estágio não obrigatório": (1.0 / 3, 160, "1h a cada 3h, máx 160h"),
+    "cursos e capacitações": (0.5, 80, "1h a cada 2h, máx 80h"),
+    "cursos de línguas estrangeiras": (0.5, 80, "1h a cada 2h, máx 80h"),
+    "centro acadêmico ou atlética": (1.0, 40, "representação: 20h/ano, máx 40h"),
+    "empresa júnior ou startup": (1.0, 80, "40h/semestre, máx 80h"),
+}
+
+TETOS_BMC = {
+    "eventos científicos como ouvinte": (1.0, 24, "palestras 2h/evento, 24h no total"),
+    "apresentação de trabalhos": (1.0, 24, "resumos 6h/publicação, 24h no total"),
+    "monitoria, tutoria ou orientação": (1.0, None, "36h por semestre - conferido no parecer"),
+    "atividades de extensão": (1.0, None, "36h por semestre - conferido no parecer"),
+    "iniciação científica": (1.0, None, "36h por semestre - conferido no parecer"),
+    "cursos e capacitações": (1.0, None, "36h por curso - conferido no parecer"),
+    "cursos de línguas estrangeiras": (1.0, None, "36h por curso - conferido no parecer"),
+    "estágio não obrigatório": (1.0, None, "36h por estágio semestral - conferido no parecer"),
+    "UC optativa": (1.0, None, "eletivas excedentes: 36h por UC"),
+}
+
 TETOS_EB = {
     "monitoria, tutoria ou orientação": (1.0, 36, "36h/semestre, máx 36h"),
     "atividades de extensão": (1.0, 36, "36h/semestre, máx 36h"),
@@ -198,12 +224,41 @@ REGRAS_CURSO = {
         ),
         "comissao": "Coordenação do BCT",
     },
+    "EM": {
+        "total": 180,
+        "teto_eixo1": None,
+        "regra_2_certificados": False,
+        "siex_min": None,
+        "usa_eixos": False,
+        "tetos": None,
+        "fonte": "Regulamento de AACC do EM (aprovado em 10/01/2023)",
+        "regras_texto": (
+            "180h totais com teto por atividade (estágio vale 1h a cada 3h; "
+            "AACC do BCT não contabilizadas podem ser aproveitadas)"
+        ),
+        "comissao": "Comissão de Curso do EM",
+    },
+    "BMC": {
+        "total": 36,
+        "teto_eixo1": None,
+        "regra_2_certificados": False,
+        "siex_min": None,
+        "usa_eixos": False,
+        "tetos": None,
+        "fonte": "Regimento de AACC do BMC",
+        "regras_texto": (
+            "36h totais; limites por semestre/evento/publicação são conferidos "
+            "no parecer do docente responsável"
+        ),
+        "comissao": "Comissão de Curso do BMC (CCMaC)",
+    },
     "EB": {
         "total": 36,
         "teto_eixo1": None,
         "regra_2_certificados": False,
         "siex_min": None,
         "usa_eixos": False,
+        "tetos": None,
         "fonte": "Regulamento de AACC da EB (PPC 2023)",
         "regras_texto": (
             "36h totais (PPC 2023; ingressantes do PPC 2019: 108h) com teto "
@@ -317,15 +372,19 @@ def auditar_atividades(itens: List[Dict], curso: str = "BCT") -> Dict:
     }
 
 
+_TETOS_POR_CURSO = {"EB": TETOS_EB, "EM": TETOS_EM, "BMC": TETOS_BMC}
+
+
 def _auditar_por_atividade(classificados, nao_classificados, regras, curso):
     """
     Modo da EB: crédito proporcional e teto POR ATIVIDADE (Tabela 2 do
     regulamento), sem eixos.
     """
+    tetos = _TETOS_POR_CURSO.get(curso, TETOS_EB)
     por_atividade: Dict[str, Dict] = {}
     avisos = []
     for r in classificados:
-        fator, teto, regra_txt = TETOS_EB.get(r["atividade"], (1.0, None, None))
+        fator, teto, regra_txt = tetos.get(r["atividade"], (1.0, None, None))
         acc = por_atividade.setdefault(r["atividade"], {
             "brutas": 0.0, "creditadas": 0.0, "teto": teto, "regra": regra_txt,
         })
@@ -344,10 +403,11 @@ def _auditar_por_atividade(classificados, nao_classificados, regras, curso):
         acc["validas"] = validas
         validas_total += validas
     faltam = max(0.0, regras["total"] - validas_total)
-    avisos.append(
-        "coorte do PPC 2019 (ingresso na EB até 2/2022): total de 108h e "
-        "tetos maiores em monitoria/extensão"
-    )
+    if curso == "EB":
+        avisos.append(
+            "coorte do PPC 2019 (ingresso na EB até 2/2022): total de 108h e "
+            "tetos maiores em monitoria/extensão"
+        )
     return {
         "curso": curso,
         "total_exigido": regras["total"],

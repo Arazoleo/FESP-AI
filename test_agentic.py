@@ -193,6 +193,34 @@ check("formatter EB lista por atividade e cita a regra",
 check("rodapé cita o regulamento da EB",
       "AACC da EB" in texto_eb)
 
+print(f"\n{BOLD}2e. EM e BMC: tetos próprios{RESET}")
+itens_em = auditor.parsear_atividades(
+    "tenho 200h de iniciação científica, 90h de estágio não obrigatório e 100h de monitoria"
+)
+r_em = auditor.auditar_atividades(itens_em, curso="EM")
+pa_em = r_em["por_atividade"]
+check("EM: total exigido 180h", r_em["total_exigido"] == 180)
+ic = next(v for k, v in pa_em.items() if "cient" in k)
+check("EM: IC com teto de 160h (200 → 160)", ic["validas"] == 160, str(ic))
+est = next(v for k, v in pa_em.items() if "estágio" in k)
+check("EM: estágio vale 1h a cada 3h (90 → 30)", est["validas"] == 30, str(est))
+mon = next(v for k, v in pa_em.items() if "monitoria" in k)
+check("EM: monitoria com teto de 80h (100 → 80)", mon["validas"] == 80, str(mon))
+check("EM: apto (270h ≥ 180h)", r_em["apto"], str(r_em["total_valido"]))
+check("EM: sem aviso de coorte da EB",
+      not any("PPC 2019" in a for a in r_em["avisos"]))
+r_bmc = auditor.auditar_atividades(
+    auditor.parsear_atividades("tenho 30h de palestras como ouvinte e 20h de monitoria"),
+    curso="BMC",
+)
+check("BMC: total exigido 36h", r_bmc["total_exigido"] == 36)
+pal = next(v for k, v in r_bmc["por_atividade"].items() if "eventos" in k)
+check("BMC: palestras com teto de 24h (30 → 24)", pal["validas"] == 24, str(pal))
+check("BMC: apto (44h ≥ 36h)", r_bmc["apto"])
+check("classificador conhece empresa júnior",
+      auditor.classificar_eixo("participei da empresa júnior do ICT")["atividade"]
+      == "empresa júnior ou startup")
+
 print(f"\n{BOLD}3. Detectores do auditor e checklist{RESET}")
 check("detecta auditoria com horas + AC",
       auditor.is_audit_request("Tenho 40h de monitoria e 100h de IC, quanto tenho de AC?"))
