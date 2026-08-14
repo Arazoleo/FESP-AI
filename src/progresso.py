@@ -241,6 +241,7 @@ def extrair_curso_requisitos(texto: str) -> str:
 
 
 _REQUISITOS_CUES_RES = [re.compile(p) for p in (
+    r"\bo\s*que\s+(?:eu\s+)?(?:preciso|necessito)\s+(?:para|pra)\s+(?:me\s+)?formar",
     r"quantas?\s+horas.*\b(?:formar|integralizar|concluir|colar\s+grau)",
     r"\b(?:carga\s+horaria|horas)\b.*\b(?:para|pra|de)\s+integraliza",
     r"\brequisitos?\s+(?:de|para)\s+(?:integralizacao|formatura|conclusao|se\s+formar)",

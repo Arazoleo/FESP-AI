@@ -149,7 +149,8 @@ _MONTAR_GRADE_PHRASES = [
 
 _MONTAR_GRADE_INFO_EXCLUDE = [
     "quantas horas", "quanto tempo", "o que preciso", "o que e preciso",
-    "o que necessito", "requisitos para",
+    "o que eu preciso", "oq preciso", "oq eu preciso", "que eu necessito",
+    "o que necessito", "o que eu necessito", "requisitos para",
     "integralizar", "integralizacao", "formacao",
 ]
 
