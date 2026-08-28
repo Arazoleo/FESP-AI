@@ -244,6 +244,7 @@ class MultiAgentRAG:
                 "graph_data": final_state.get("graph_data"),
                 "list_data": final_state.get("list_data"),
                 "ac_data": final_state.get("ac_data"),
+                "relatorio": final_state.get("relatorio"),
                 "suggestions": suggestions,
                 "agent_metadata": self.AGENT_METADATA.get(
                     active_agent, self.AGENT_METADATA["fallback"]

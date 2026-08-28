@@ -1094,10 +1094,19 @@ class KnowledgeGraph:
             nome = self._normalize_text(data.get('nome', ''))
             codigo = self._normalize_text(str(data.get('codigo', '')))
             sigla = self._normalize_text(data.get('sigla') or '')
-            
-            if termo_normalized in nome or (sigla and termo_normalized in sigla):
+
+            # Sigla casa por IGUALDADE (por variante) - o substring deixava
+            # "ec" casar dentro de "tecnologia" (Ciência e Tecnologia),
+            # resolvendo "EC" -> BCT. O campo pode listar variantes
+            # ("AED 1 ou AED I"), então compara com cada uma. Substring de nome
+            # exige termo com >= 4 chars pelo mesmo motivo.
+            if sigla:
+                variantes = [v.strip() for v in re.split(r'\s+ou\s+|[,/]', sigla)]
+                if termo_normalized in variantes:
+                    return node
+            if len(termo_normalized) >= 4 and termo_normalized in nome:
                 return node
-        
+
         return None
     
     def get_stats(self) -> Dict:
@@ -1300,14 +1309,21 @@ class KnowledgeGraph:
     def get_info_matriz(self, curso: str) -> Optional[Dict]:
         """Retorna informações da matriz curricular de um curso."""
         cursos_to_search = self._expand_curso_search(curso)
-        
+        # Sigla canônica resolvida via normalização + aliases (robusto a
+        # "engenharia DA/DE computação" e a nomes com "(SIGLA)" embutida).
+        sigla_canonica = self._resolve_curso_to_sigla(curso)
+
         for node, data in self.graph.nodes(data=True):
             if data.get('tipo') == 'matriz_curricular':
                 nome = data.get('nome', '').lower()
                 sigla = data.get('sigla', '').lower()
-                
+
                 match_found = False
+                if sigla_canonica and sigla == sigla_canonica.lower():
+                    match_found = True
                 for curso_term in cursos_to_search:
+                    if match_found:
+                        break
                     if curso_term == sigla:
                         match_found = True
                         break

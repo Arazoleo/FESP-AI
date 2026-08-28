@@ -176,6 +176,12 @@ class IntentClassifier:
             "duração do curso de engenharia",
             "carga horária total de ciência da computação",
             "estrutura curricular de matemática computacional",
+            "quantas horas para formar em engenharia da computação",
+            "me fale sobre as horas para formar em engenharia da computação",
+            "quantas horas preciso para me formar em ciência da computação",
+            "carga horária total do curso de engenharia da computação",
+            "quantas horas tem o curso de engenharia de computação",
+            "quantas horas são necessárias para concluir o curso",
         ],
         'eletivas_curso': [
             "eletivas de computação",

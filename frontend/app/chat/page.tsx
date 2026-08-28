@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import {
+import { Copy, FileDown,
   Send,
   Plus,
   ArrowDown,
@@ -44,6 +44,7 @@ interface Message {
   graph_data?: PrereqGraphData | null
   list_data?: DisciplineListData | null
   ac_data?: AcReportData | null
+  relatorio?: boolean | null
   suggestions?: string[] | null
 }
 
@@ -189,6 +190,65 @@ function ReasoningIndicator({ firstQuery }: { firstQuery: boolean }) {
   )
 }
 
+function RelatorioButton({ conversationId }: { conversationId: string | null }) {
+  const [gerando, setGerando] = useState(false)
+  return (
+    <button
+      onClick={async () => {
+        if (!conversationId || gerando) return
+        setGerando(true)
+        try {
+          const res = await axios.post(
+            `${API_URL}/relatorio`,
+            { conversation_id: conversationId },
+            { responseType: 'blob' },
+          )
+          const url = URL.createObjectURL(res.data)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = 'relatorio_progresso.pdf'
+          a.click()
+          URL.revokeObjectURL(url)
+        } catch {
+          window.alert('Não consegui gerar o relatório agora.')
+        } finally {
+          setGerando(false)
+        }
+      }}
+      className="inline-flex items-center gap-2 rounded-lg border border-accent/40 bg-accent/10 px-3.5 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/20 disabled:opacity-40"
+      disabled={!conversationId || gerando}
+    >
+      <FileDown className="h-4 w-4" />
+      {gerando ? 'Gerando…' : 'Baixar Relatório de Progresso (PDF)'}
+    </button>
+  )
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copiado, setCopiado] = useState(false)
+  return (
+    <button
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(text)
+          setCopiado(true)
+          setTimeout(() => setCopiado(false), 1600)
+        } catch {}
+      }}
+      title={copiado ? 'Copiado!' : 'Copiar resposta'}
+      aria-label="Copiar resposta"
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11.5px] transition-colors ${
+        copiado
+          ? 'border-accent/40 bg-accent/10 text-accent'
+          : 'border-line text-paper-mute hover:border-line-strong hover:text-paper'
+      }`}
+    >
+      {copiado ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {copiado ? 'Copiado!' : 'Copiar'}
+    </button>
+  )
+}
+
 const mdComponents: React.ComponentProps<typeof ReactMarkdown>['components'] = {
   p: ({ children }) => (
     <p className="mb-3.5 leading-[1.75] text-paper/90 last:mb-0">{children}</p>
@@ -322,6 +382,7 @@ function AssistantMessage({
   onAsk,
   onSelectDiscipline,
   showSuggestions,
+  relatorioConvId,
 }: {
   message: Message
   isAnimating: boolean
@@ -329,6 +390,7 @@ function AssistantMessage({
   onAsk?: (question: string) => void
   onSelectDiscipline?: (nome: string) => void
   showSuggestions?: boolean
+  relatorioConvId?: string | null
 }) {
   const { displayed, isDone } = useTypewriter(
     message.content,
@@ -367,6 +429,15 @@ function AssistantMessage({
       )}
 
       {doneTyping && message.ac_data && <AcBars data={message.ac_data} />}
+
+      {doneTyping && (message.content || message.relatorio) && (
+        <div className="mt-2 flex flex-wrap items-center gap-2.5">
+          {message.content && <CopyButton text={message.content} />}
+          {message.relatorio && (
+            <RelatorioButton conversationId={relatorioConvId ?? null} />
+          )}
+        </div>
+      )}
 
       {doneTyping && message.list_data && onSelectDiscipline && (
         <DisciplineChips data={message.list_data} onSelect={onSelectDiscipline} />
@@ -523,6 +594,7 @@ export default function ChatPage() {
         graph_data: response.data.graph_data,
         list_data: response.data.list_data,
         ac_data: response.data.ac_data,
+        relatorio: response.data.relatorio,
         suggestions: response.data.suggestions,
       }
 
@@ -577,6 +649,7 @@ export default function ChatPage() {
         {
           role: 'assistant',
           content: resp.data.resumo,
+          relatorio: resp.data.relatorio,
           active_agent: 'symbolic_kg',
           suggestions: resp.data.suggestions,
         },
@@ -792,6 +865,7 @@ export default function ChatPage() {
                         onAsk={handleGraphAsk}
                         onSelectDiscipline={openDisciplina}
                         showSuggestions={idx === messages.length - 1 && !isLoading}
+                        relatorioConvId={conversationId}
                       />
                     </div>
                   )}

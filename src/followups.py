@@ -86,6 +86,10 @@ def suggest_followups(intent: str, term: str, response: str) -> List[str]:
     if OFFER_MARKER in (response or ""):
         sugestoes.append(BREAKDOWN_CANONICAL_QUESTION)
 
+    # Pós-auditoria/progresso: oferece o dossiê em PDF (fluxo guiado).
+    if intent in ("ac_auditoria", "progresso", "ac_checklist"):
+        sugestoes.append("Gerar meu relatório de progresso em PDF")
+
     t = _display_term(term)
     templates = _BY_INTENT.get(intent or "", [])
     if t and templates:

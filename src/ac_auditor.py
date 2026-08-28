@@ -113,6 +113,20 @@ _INSTITUICAO_RE = re.compile(
 )
 
 
+_LEADIN_RE = re.compile(
+    r"^(?:(?:mano|cara|meu|velho|entao|então|olha|ah|oi|ola|olá|bom|assim|tipo|"
+    r"e|também|tambem|tbm|tb)[,!\s]+)*(?:(?:eu\s+)?(?:tenho|tive|fiz|possuo|"
+    r"completei|participei(?:\s+de)?|realizei|cumpri|somei)\s+)?",
+    re.IGNORECASE,
+)
+
+
+def _limpar_leadin(seg: str) -> str:
+    """Tira o papo do começo do segmento ("mano tenho 1h de...")."""
+    limpo = _LEADIN_RE.sub("", seg.strip(), count=1).strip(" ,.;")
+    return limpo if limpo else seg
+
+
 def parsear_atividades(texto: str) -> List[Dict]:
     """
     Extrai itens {descricao, horas, instituicao} de uma lista em linguagem
@@ -135,7 +149,7 @@ def parsear_atividades(texto: str) -> List[Dict]:
         if mi:
             instituicao = mi.group(1).strip()
         itens.append({
-            "descricao": seg,
+            "descricao": _limpar_leadin(seg),
             "horas": horas,
             "instituicao": instituicao,
         })
@@ -325,6 +339,14 @@ def auditar_atividades(itens: List[Dict], curso: str = "BCT") -> Dict:
     classificados, nao_classificados = [], []
     for item in itens:
         c = classificar_eixo(item.get("descricao", ""))
+        if not c:
+            # typos frequentes ("doação SE sangue"): tenta variações leves
+            desc = item.get("descricao", "")
+            for variacao in (desc.replace(" se ", " de "), desc.replace(" d1 ", " de ")):
+                if variacao != desc:
+                    c = classificar_eixo(variacao)
+                    if c:
+                        break
         registro = {**item, **(c or {})}
         if c:
             classificados.append(registro)

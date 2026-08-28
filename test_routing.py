@@ -315,6 +315,37 @@ check("term p/ cursos = entidade curso",
 check("term p/ web_sjc = vazio",
       router.term_from_llm_route({"agente": "web_sjc", "entidades": {"curso": "BCC"}}) == "")
 
+print(f"\n{BOLD}── reconciliação por entidade (curso ↔ disciplina via KG) ──{RESET}")
+# O LLM pode errar o AGENTE, mas as entidades já foram aterradas: só existem
+# no dict as que o KG confirma. Quando o único fato é um CURSO, o domínio é
+# cursos; quando é uma DISCIPLINA, é disciplinas. Robusto a paráfrases -
+# resolve "horas para formar em <curso>" sem casar frases.
+router.clear_route_cache()
+fake = _FakeLLM('{"agente": "disciplinas", "intent": "ementa_disciplina", '
+                '"entidades": {"curso": "BCC", "disciplina": null}}')
+r = router.llm_route("me fale das horas para formar em bcc", "", route_kg, fake)
+check("agente 'disciplinas' + só curso aterrado → cursos",
+      r is not None and r["agente"] == "cursos", str(r))
+check("intent de disciplina vira matriz_info",
+      r is not None and r["intent"] == "matriz_info", str(r))
+check("entidade curso é preservada na reconciliação",
+      r is not None and r["entidades"].get("curso") == "Bacharelado em Ciência da Computação")
+
+fake = _FakeLLM('{"agente": "cursos", "intent": "matriz_info", '
+                '"entidades": {"disciplina": "IHC", "curso": null}}')
+r = router.llm_route("carga horaria de ihc", "", route_kg, fake)
+check("agente 'cursos' + só disciplina aterrada → disciplinas",
+      r is not None and r["agente"] == "disciplinas", str(r))
+check("intent de curso vira ementa_disciplina",
+      r is not None and r["intent"] == "ementa_disciplina", str(r))
+
+fake = _FakeLLM('{"agente": "docentes", "intent": "discipline_docentes", '
+                '"entidades": {"disciplina": "IHC", "docente": null, "curso": null}}')
+r = router.llm_route("quem leciona ihc afinal", "", route_kg, fake)
+check("não-regressão: docentes+disciplina (quem leciona) não é reconciliado",
+      r is not None and r["agente"] == "docentes" and r["intent"] == "discipline_docentes",
+      str(r))
+
 print(f"\n{BOLD}── cache LRU do llm_route (hit/miss/normalização) ──{RESET}")
 router.clear_route_cache()
 

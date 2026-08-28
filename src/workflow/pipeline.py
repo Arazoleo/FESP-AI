@@ -542,6 +542,135 @@ def build_pipeline(rag_instance):
                 ["Sessão da conversa"],
             )
 
+        # ── Relatório de Progresso em PDF: fluxo GUIADO em etapas ─────────
+        # O assistente entrevista o aluno (histórico → atividades →
+        # identificação) e só oferece o download quando o dossiê está completo.
+        hist_sessao = state.get("historico") if isinstance(state.get("historico"), dict) else {}
+        fluxo_rel = hist_sessao.get("relatorio_fluxo") or {}
+        pediu_relatorio = bool(re.search(
+            r"relat[oó]rio|\bem pdf\b|\bpdf\b.*(progresso|relat)|baixar.*(progresso|pdf)",
+            pergunta_bruta.lower(),
+        ))
+        q_bruta = pergunta_bruta.lower()
+        _SKIP_RE = re.compile(r"\b(pular|pula|sem essa|deixa|depois|nao precisa|não precisa|sem identifica\w*|anonimo|anônimo|skip)\b")
+        _AVANCA_RE = re.compile(r"\b(pronto|carreguei|enviei|feito|mandei|subi|ok|blz|beleza)\b")
+
+        def _etapa_relatorio():
+            if not hist_sessao.get("disciplinas") and not fluxo_rel.get("hist_pulado"):
+                return "historico"
+            if not hist_sessao.get("ac_itens") and not fluxo_rel.get("ac_pulado"):
+                return "ac"
+            if fluxo_rel.get("nome") is None and not fluxo_rel.get("sem_ident"):
+                return "identificacao"
+            return "pronto"
+
+        def _pergunta_da_etapa(etapa):
+            if etapa == "historico":
+                return (
+                    "Bora montar seu **Relatório de Progresso** direitinho. "
+                    "Primeiro: envia seu **Histórico Acadêmico** (botão "
+                    "*Histórico* aqui do chat) para eu preencher o quadro de "
+                    "integralização com seus dados reais. Se preferir sem ele, "
+                    "diz **\"pular\"**."
+                )
+            if etapa == "ac":
+                return (
+                    "Boa! Agora as **Atividades Complementares**: me manda a "
+                    "lista para eu simular por eixo (ex.: *40h de monitoria, "
+                    "20h de palestras, 1h de doação de sangue*). Se não quiser "
+                    "incluir, diz **\"pular\"**."
+                )
+            if etapa == "identificacao":
+                return (
+                    "Última coisa: quer o PDF **identificado**? Me manda "
+                    "*Nome, RA* (ex.: `Maria Silva, 123456`) ou diz "
+                    "**\"sem identificação\"**."
+                )
+            return None
+
+        def _resposta_fluxo(texto, extra_relatorio=False):
+            hist_sessao["relatorio_fluxo"] = fluxo_rel
+            return _resposta_simbolica(
+                texto, "relatorio_pdf", ["Sessão da conversa"],
+                relatorio=True if extra_relatorio else None,
+            )
+
+        def _finalizar_fluxo():
+            fluxo_rel["ativo"] = False
+            partes = ["Dossiê completo! Seu **Relatório de Progresso** vai com:"]
+            partes.append(
+                f"- Histórico: {len(hist_sessao.get('disciplinas') or [])} UCs e "
+                "quadro de integralização" if hist_sessao.get("disciplinas")
+                else "- Histórico: não incluído (quadro sai com os requisitos do curso)"
+            )
+            itens_ac = hist_sessao.get("ac_itens") or []
+            partes.append(
+                f"- Atividades Complementares: {len(itens_ac)} atividade(s) "
+                "simuladas por eixo" if itens_ac
+                else "- Atividades Complementares: não incluídas"
+            )
+            partes.append(
+                f"- Identificação: {fluxo_rel.get('nome')}"
+                + (f", RA {fluxo_rel['ra']}" if fluxo_rel.get("ra") else "")
+                if fluxo_rel.get("nome") else "- Sem identificação nominal"
+            )
+            partes.append("\nClique abaixo para baixar. 📄")
+            return _resposta_fluxo("\n".join(partes), extra_relatorio=True)
+
+        if fluxo_rel.get("ativo") and not pediu_relatorio:
+            etapa = _etapa_relatorio()
+            consumiu = False
+            if etapa == "historico":
+                if hist_sessao.get("disciplinas") or _AVANCA_RE.search(q_bruta):
+                    consumiu = True
+                elif _SKIP_RE.search(q_bruta):
+                    fluxo_rel["hist_pulado"] = True
+                    consumiu = True
+            elif etapa == "ac":
+                itens_msg = parsear_atividades(pergunta_bruta)
+                if itens_msg:
+                    registrar_atividades(hist_sessao, itens_msg)
+                    consumiu = True
+                elif _SKIP_RE.search(q_bruta):
+                    fluxo_rel["ac_pulado"] = True
+                    consumiu = True
+            elif etapa == "identificacao":
+                if _SKIP_RE.search(q_bruta):
+                    fluxo_rel["sem_ident"] = True
+                    consumiu = True
+                else:
+                    digitos = re.sub(r"\D", "", pergunta_bruta)
+                    ra_ok = digitos if 5 <= len(digitos) <= 9 else None
+                    nome_limpo = re.sub(r"\s+", " ",
+                                        re.sub(r"[\d.,;:]+", " ", pergunta_bruta)).strip()
+                    # tira a afirmação do começo ("Sim, Leonardo..." → "Leonardo...")
+                    nome_limpo = re.sub(
+                        r"^(?:(?:sim|claro|quero|pode(?:\s+ser)?|ok|blz|beleza|"
+                        r"aceito|isso|por favor|opa|boa)[\s!]*)+",
+                        "", nome_limpo, flags=re.IGNORECASE,
+                    ).strip()
+                    nome_limpo = re.sub(
+                        r"^(?:meu nome (?:é|e)|me chamo|sou o|sou a|sou)\s+",
+                        "", nome_limpo, flags=re.IGNORECASE,
+                    ).strip()
+                    if 3 < len(nome_limpo) < 70 and "?" not in pergunta_bruta:
+                        fluxo_rel["nome"] = nome_limpo.title()
+                        fluxo_rel["ra"] = ra_ok
+                        consumiu = True
+            if consumiu:
+                nova = _etapa_relatorio()
+                if nova == "pronto":
+                    return _finalizar_fluxo()
+                return _resposta_fluxo(_pergunta_da_etapa(nova))
+            # mensagem não é do fluxo: segue o pipeline normal (fluxo fica pendente)
+
+        if pediu_relatorio:
+            fluxo_rel["ativo"] = True
+            etapa = _etapa_relatorio()
+            if etapa == "pronto":
+                return _finalizar_fluxo()
+            return _resposta_fluxo(_pergunta_da_etapa(etapa))
+
         fast_label = None
         if is_cr_request(question):
             fast_label = "cr_consulta"

@@ -18,3 +18,4 @@ pydantic>=2.0.0
 sentence-transformers
 pypdf
 python-multipart
+fpdf2==2.8.4

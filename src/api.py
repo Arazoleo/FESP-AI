@@ -192,6 +192,7 @@ class ChatResponse(BaseModel):
     list_data: Optional[Dict] = None
     ac_data: Optional[Dict] = None
     suggestions: Optional[List[str]] = None
+    relatorio: Optional[bool] = None
 
 
 class ConversationResponse(BaseModel):
@@ -384,6 +385,7 @@ async def chat(request: ChatRequest):
         graph_data = result.get("graph_data")
         list_data = result.get("list_data")
         ac_data = result.get("ac_data")
+        relatorio_flag = bool(result.get("relatorio"))
         suggestions = result.get("suggestions")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao processar pergunta: {str(e)}")
@@ -419,6 +421,7 @@ async def chat(request: ChatRequest):
         graph_data=graph_data,
         list_data=list_data,
         ac_data=ac_data,
+        relatorio=relatorio_flag or None,
         suggestions=suggestions,
     )
 
@@ -664,6 +667,46 @@ async def graph_stats():
     return stats
 
 
+class RelatorioRequest(BaseModel):
+    conversation_id: str
+    nome: Optional[str] = None
+    ra: Optional[str] = None
+    curso: Optional[str] = None  # sigla; se ausente, deriva do histórico
+
+
+@app.post("/relatorio")
+def gerar_relatorio(req: RelatorioRequest):
+    """
+    Relatório de Progresso Acadêmico em PDF (não oficial), gerado do histórico
+    carregado na conversa + regras do curso. Nada é armazenado além da sessão.
+    """
+    from fastapi.responses import Response
+    from .relatorio_pdf import gerar_relatorio_graduacao
+    from .historico import curso_sigla as historico_curso_sigla
+
+    dados = historicos.get(req.conversation_id) or {}
+    fluxo = dados.get("relatorio_fluxo") or {}
+    nome_final = req.nome or fluxo.get("nome")
+    ra_final = req.ra or fluxo.get("ra")
+    curso = (req.curso or "").upper() or None
+    if not curso and dados.get("curso"):
+        try:
+            curso = historico_curso_sigla(dados["curso"]) or None
+        except Exception:
+            curso = None
+    curso = curso or "BCT"
+    kg = rag.knowledge_graph if (rag and rag.knowledge_graph) else None
+    try:
+        pdf = gerar_relatorio_graduacao(kg, curso, dados, nome=nome_final, ra=ra_final)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"falha ao gerar PDF: {e}")
+    return Response(
+        content=pdf, media_type="application/pdf",
+        headers={"Content-Disposition":
+                 'attachment; filename="relatorio_progresso.pdf"'},
+    )
+
+
 @app.post("/historico")
 async def carregar_historico(
     file: UploadFile = File(...),
@@ -719,6 +762,7 @@ async def carregar_historico(
             "Quanto falta para me formar?",
             "Quantas interdisciplinares eu já fiz?",
         ],
+        "relatorio": True,
     }
 
 

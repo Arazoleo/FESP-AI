@@ -662,6 +662,46 @@ def _route_cache_put(key: str, decision: dict) -> None:
         _route_cache.popitem(last=False)
 
 
+_CURSO_INTENTS: frozenset = frozenset(
+    i for i, a in INTENT_TO_AGENT.items() if a == "cursos"
+)
+
+
+def _reconcile_agent_with_entities(
+    agente: str,
+    intent: str,
+    entidades: Dict[str, str],
+    telemetry_incr: Optional[Callable[[str], None]] = None,
+):
+    """
+    Corrige o par (agente, intent) pela evidência do KG, não por frases.
+
+    As entidades já foram aterradas: só permanecem as que existem de fato no
+    grafo. Quando o LLM manda a pergunta para 'disciplinas' mas a única entidade
+    real é um CURSO (nenhuma disciplina), o domínio verdadeiro é 'cursos' - e o
+    inverso. Isso resolve, de forma robusta a paráfrases, casos como "horas para
+    formar em Engenharia da Computação" (curso) que o léxico rotulava como
+    disciplina. Só atua no eixo curso<->disciplina, onde o KG desempata sem
+    ambiguidade; docentes/regimentos ficam intactos (uma disciplina sozinha não
+    distingue "ementa de X" de "quem leciona X").
+    """
+    tem_curso = bool(entidades.get("curso"))
+    tem_disc = bool(entidades.get("disciplina"))
+    tem_doc = bool(entidades.get("docente"))
+
+    if agente == "disciplinas" and tem_curso and not tem_disc and not tem_doc:
+        if telemetry_incr:
+            telemetry_incr("route_reconcile_disc_to_curso")
+        return "cursos", (intent if intent in _CURSO_INTENTS else "matriz_info")
+
+    if agente == "cursos" and tem_disc and not tem_curso and not tem_doc:
+        if telemetry_incr:
+            telemetry_incr("route_reconcile_curso_to_disc")
+        return "disciplinas", ("ementa_disciplina" if intent in _CURSO_INTENTS or not intent else intent)
+
+    return agente, intent
+
+
 def llm_route(
     question: str,
     history: str,
@@ -726,6 +766,10 @@ def llm_route(
     grounded = _ground_entity(kg, entidades_raw.get("docente"), ("docente",))
     if grounded:
         entidades["docente"] = grounded
+
+    agente, intent = _reconcile_agent_with_entities(
+        agente, intent, entidades, telemetry_incr
+    )
 
     decision = {"agente": agente, "intent": intent, "entidades": entidades}
     _route_cache_put(cache_key, decision)

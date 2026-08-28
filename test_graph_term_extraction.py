@@ -192,6 +192,34 @@ check(
     engine._find_curso_in_text("eletivas do bcc por favor"),
 )
 
+print(f"\n{BOLD}── Carga horária de CURSO: recuperação robusta no KG ──{RESET}")
+# O dado existe e deve ser recuperável independentemente de "da"/"de" e da
+# sigla embutida no nome do nó ("Engenharia de Computação (EC)"). A decisão
+# de ROTA (curso vs disciplina) é testada no router (test_routing.py), via
+# reconciliação por entidade aterrada - não por casamento de frases aqui.
+check(
+    "get_info_matriz resolve 'engenharia da computação' (da≠de) via sigla canônica",
+    (kg.get_info_matriz("engenharia da computação") or {}).get("carga_horaria") == "3960",
+    str((kg.get_info_matriz("engenharia da computação") or {}).get("carga_horaria")),
+)
+check(
+    "get_info_matriz resolve pela sigla 'EC'",
+    (kg.get_info_matriz("EC") or {}).get("carga_horaria") == "3960",
+    str((kg.get_info_matriz("EC") or {}).get("carga_horaria")),
+)
+check(
+    "_find_curso_in_text acha curso mesmo com nome com '(EC)' e 'da'≠'de'",
+    "Engenharia de Computação" in engine._find_curso_in_text(
+        "quero saber sobre engenharia da computação"
+    ),
+    engine._find_curso_in_text("quero saber sobre engenharia da computação"),
+)
+check(
+    "_find_node: sigla 'EC' resolve o curso certo (não casa dentro de 'tecnologia')",
+    (kg.graph.nodes.get(kg._find_node("EC", "matriz_curricular") or "", {}).get("sigla")) == "EC",
+    str(kg._find_node("EC", "matriz_curricular")),
+)
+
 print(f"\n{BOLD}── Docentes por área e canonicalização de nome parcial ──{RESET}")
 check(
     "KG: get_docentes_by_area('redes complexas') retorna Lilian Berton",

@@ -307,10 +307,27 @@ class GraphRAGEngine:
         for _, data in self.kg.graph.nodes(data=True):
             if data.get("tipo") not in ("curso", "matriz_curricular"):
                 continue
-            for chave in (data.get("nome", ""), data.get("sigla") or ""):
+            # Além de nome/sigla brutos, considera o nome sem a "(SIGLA)"
+            # final — o nome do nó costuma trazê-la embutida (ex.:
+            # "Engenharia de Computação (EC)"), o que impede o match direto.
+            nome = data.get("nome", "")
+            nome_sem_sigla = re.sub(r"\s*\([A-Z]{2,5}\)\s*$", "", nome).strip()
+            for chave in (nome, nome_sem_sigla, data.get("sigla") or ""):
                 chave_norm = self.kg._normalize_text(chave)
                 if chave_norm and len(chave_norm) > best_len and f" {chave_norm} " in text_norm:
-                    best_nome, best_len = data.get("nome", ""), len(chave_norm)
+                    best_nome, best_len = nome, len(chave_norm)
+        # Rede de segurança: resolve variantes/aliases ("engenharia DA
+        # computação", "ciência da computação") para a sigla canônica e devolve
+        # o nome oficial da matriz correspondente.
+        if not best_nome:
+            for chave_norm, sigla in sorted(
+                self.kg._curso_name_to_sigla.items(), key=lambda kv: -len(kv[0])
+            ):
+                if len(chave_norm) >= 5 and f" {chave_norm} " in text_norm:
+                    for _, data in self.kg.graph.nodes(data=True):
+                        if data.get("tipo") in ("curso", "matriz_curricular") and \
+                           (data.get("sigla") or "").lower() == sigla.lower():
+                            return data.get("nome", "")
         return best_nome
 
     _DISCIPLINE_TERM_INTENTS = {
