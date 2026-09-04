@@ -87,12 +87,49 @@ def _match_disciplina(pergunta: str):
     return melhor
 
 
-def detectar(pergunta: str) -> Optional[str]:
+def _agenda_por_nome(nome_canonico: str):
+    """Acha a entrada da oferta cujo nome bate com o nome canônico do KG."""
+    dados = _carregar()
+    if not dados:
+        return None
+    alvo = _norm(nome_canonico)
+    melhor, melhor_len = None, 0
+    for nome, turmas in dados["disciplinas"].items():
+        dn = _norm(nome)
+        if dn == alvo or alvo in dn or dn in alvo:
+            if len(dn) > melhor_len:
+                melhor, melhor_len = (nome, turmas), len(dn)
+    return melhor
+
+
+def _resolver_via_kg(kg, pergunta: str):
+    """Usa o KG (nome/sigla/código) p/ resolver referência tipo 'PAA' → oferta."""
+    if kg is None:
+        return None
+    # tokens curtos (2-6 letras), siglas em CAIXA ALTA primeiro
+    cands = re.findall(r"[A-Za-zÀ-ÿ]{2,6}", pergunta)
+    cands = sorted(set(cands), key=lambda t: (0 if t.isupper() else 1, -len(t)))
+    for c in cands:
+        try:
+            nid = kg._find_node(c, tipo="disciplina")
+        except Exception:
+            nid = None
+        if not nid:
+            continue
+        nome = (kg.graph.nodes.get(nid, {}) or {}).get("nome")
+        if nome:
+            achado = _agenda_por_nome(nome)
+            if achado:
+                return achado
+    return None
+
+
+def detectar(pergunta: str, kg=None) -> Optional[str]:
     """Retorna o nome da disciplina se a pergunta é de oferta/sala/dia/prof."""
     qn = _norm(pergunta)
     if not any(g in qn for g in _GATILHOS):
         return None
-    m = _match_disciplina(pergunta)
+    m = _match_disciplina(pergunta) or _resolver_via_kg(kg, pergunta)
     return m[0] if m else None
 
 
@@ -111,7 +148,7 @@ def _fmt_encontros(encontros):
     return "; ".join(partes)
 
 
-def responder(pergunta: str, disciplina: Optional[str] = None) -> Optional[str]:
+def responder(pergunta: str, disciplina: Optional[str] = None, kg=None) -> Optional[str]:
     """Resposta determinística sobre a oferta da disciplina, ou None."""
     dados = _carregar()
     if not dados:
@@ -119,7 +156,7 @@ def responder(pergunta: str, disciplina: Optional[str] = None) -> Optional[str]:
     if disciplina and disciplina in dados["disciplinas"]:
         nome, turmas = disciplina, dados["disciplinas"][disciplina]
     else:
-        m = _match_disciplina(pergunta)
+        m = _match_disciplina(pergunta) or _resolver_via_kg(kg, pergunta)
         if not m:
             return None
         nome, turmas = m

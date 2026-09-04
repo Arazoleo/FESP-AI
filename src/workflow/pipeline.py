@@ -465,7 +465,8 @@ def build_pipeline(rag_instance):
 
             if label == "oferta_agenda":
                 # oferta REAL do semestre (sala/dia/horário/professor) da agenda
-                resposta = oferta_real.responder(pergunta_bruta)
+                resposta = oferta_real.responder(
+                    pergunta_bruta, kg=rag_instance.knowledge_graph)
                 if not resposta:
                     return None
                 return _resposta_simbolica(
@@ -478,7 +479,8 @@ def build_pipeline(rag_instance):
                 if not alvo:
                     return None
                 # se estiver na oferta real, responde com sala/dia/prof; senão heurística
-                resposta = oferta_real.responder(pergunta_bruta) \
+                resposta = oferta_real.responder(
+                    pergunta_bruta, kg=rag_instance.knowledge_graph) \
                     or responder_oferta(rag_instance.knowledge_graph, alvo)
                 if not resposta:
                     return None
@@ -697,7 +699,7 @@ def build_pipeline(rag_instance):
             fast_label = "matricula_check"
         elif extrair_disciplina_risco(pergunta_bruta):
             fast_label = "risco_reprovacao"
-        elif oferta_real.detectar(pergunta_bruta):
+        elif oferta_real.detectar(pergunta_bruta, rag_instance.knowledge_graph):
             fast_label = "oferta_agenda"
         elif extrair_disciplina_oferta(pergunta_bruta):
             fast_label = "oferta_check"
