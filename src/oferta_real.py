@@ -201,12 +201,20 @@ def _resolver_via_kg(kg, pergunta: str):
     return None
 
 
-def detectar(pergunta: str, kg=None) -> Optional[str]:
-    """Disciplina se a pergunta é (semanticamente) de oferta E a entidade casa."""
+def detectar(pergunta: str, kg=None, contexto=None) -> Optional[str]:
+    """Disciplina se a pergunta é (semanticamente) de oferta E a entidade casa.
+
+    Se a intenção é de oferta mas NENHUMA entidade aparece (follow-up curto tipo
+    'qual dia e sala', 'e o horário'), usa a última disciplina do contexto da
+    sessão — resolve a anáfora sem tracker lexical."""
     if not _tem_intencao(pergunta):
         return None
     m = _match_disciplina(pergunta) or _resolver_via_kg(kg, pergunta)
-    return m[0] if m else None
+    if m:
+        return m[0]
+    if contexto and contexto.get("disciplina"):
+        return contexto["disciplina"]
+    return None
 
 
 def _fmt_encontros(encontros):

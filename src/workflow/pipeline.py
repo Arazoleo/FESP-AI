@@ -467,13 +467,24 @@ def build_pipeline(rag_instance):
                     ["Matrizes Curriculares oficiais (SIIU/Prograd)"],
                 )
 
+            _kg = rag_instance.knowledge_graph
+            _h = state.get("historico")
+            _octx = _h.setdefault("oferta_ctx", {}) if isinstance(_h, dict) else {}
+
             if label == "oferta_raciocinio":
                 # cruza a oferta com o grafo: por docente ("o que o Prof X dá")
                 # ou por sala ("o que tem na sala 302")
-                resposta = oferta_real.responder_raciocinio(
-                    pergunta_bruta, rag_instance.knowledge_graph)
+                resposta = oferta_real.responder_raciocinio(pergunta_bruta, _kg)
                 if not resposta:
                     return None
+                # lembra a disciplina p/ follow-up ("qual dia e sala") quando o
+                # docente ministra apenas uma neste semestre
+                prof = oferta_real._extrai_docente(pergunta_bruta, _kg)
+                if prof:
+                    discs = _kg.disciplinas_do_docente_no_semestre(prof)
+                    if len(discs) == 1:
+                        _octx["disciplina"] = discs[0]
+                    _octx["docente"] = prof
                 return _resposta_simbolica(
                     resposta, "oferta_raciocinio",
                     ["Agenda de salas do campus SJC (oferta do semestre)"],
@@ -481,10 +492,12 @@ def build_pipeline(rag_instance):
 
             if label == "oferta_agenda":
                 # oferta REAL do semestre (sala/dia/horário/professor) da agenda
-                resposta = oferta_real.responder(
-                    pergunta_bruta, kg=rag_instance.knowledge_graph)
+                alvo = oferta_real.detectar(pergunta_bruta, _kg, _octx)
+                resposta = oferta_real.responder(pergunta_bruta, disciplina=alvo, kg=_kg)
                 if not resposta:
                     return None
+                if alvo:
+                    _octx["disciplina"] = alvo  # lembra p/ follow-up
                 return _resposta_simbolica(
                     resposta, "oferta_agenda",
                     ["Agenda de salas do campus SJC (oferta do semestre)"],
@@ -703,6 +716,8 @@ def build_pipeline(rag_instance):
             return _resposta_fluxo(_pergunta_da_etapa(etapa))
 
         fast_label = None
+        _h_of = state.get("historico")
+        _octx_of = _h_of.setdefault("oferta_ctx", {}) if isinstance(_h_of, dict) else {}
         if is_cr_request(question):
             fast_label = "cr_consulta"
         elif is_progresso_request(question):
@@ -717,7 +732,7 @@ def build_pipeline(rag_instance):
             fast_label = "risco_reprovacao"
         elif oferta_real.detectar_raciocinio(pergunta_bruta, rag_instance.knowledge_graph):
             fast_label = "oferta_raciocinio"
-        elif oferta_real.detectar(pergunta_bruta, rag_instance.knowledge_graph):
+        elif oferta_real.detectar(pergunta_bruta, rag_instance.knowledge_graph, _octx_of):
             fast_label = "oferta_agenda"
         elif extrair_disciplina_oferta(pergunta_bruta):
             fast_label = "oferta_check"
