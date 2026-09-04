@@ -59,6 +59,12 @@ CONTEUDO_EXEMPLOS = [
     "quais os pré-requisitos de cálculo 2",
     "o que preciso cursar antes de banco de dados",
     "quantos créditos tem álgebra linear",
+    # contato de docente NÃO é oferta (email/telefone/currículo)
+    "qual o email do professor",
+    "como entro em contato com a professora",
+    "qual o telefone do docente",
+    "qual o lattes do professor",
+    "quem é o coordenador do curso",
 ]
 
 _cache = {"mtime": None, "dados": None}
@@ -185,7 +191,13 @@ def _resolver_via_kg(kg, pergunta: str):
     pergunta sobre um docente resolvia a uma disciplina qualquer)."""
     if kg is None:
         return None
-    cands = sorted(set(re.findall(r"\b[A-ZÀ-Ý]{2,6}\b", pergunta)), key=len, reverse=True)
+    # siglas em CAIXA ALTA, com número/romano opcional: "AED", "AED 1", "AED II"
+    cands = []
+    for sig, num in re.findall(r"\b([A-ZÀ-Ý]{2,6})(?:\s+([IVX]{1,3}|\d))?\b", pergunta):
+        if num:
+            cands.append(f"{sig} {num}")   # "AED 1" (mais específico primeiro)
+        cands.append(sig)
+    cands = list(dict.fromkeys(cands))
     for c in cands:
         try:
             nid = kg._find_node(c, tipo="disciplina")
