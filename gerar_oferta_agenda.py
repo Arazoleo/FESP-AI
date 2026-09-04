@@ -40,38 +40,55 @@ DIAS_EXT = {"Seg": "segunda", "Ter": "terça", "Qua": "quarta", "Qui": "quinta",
 
 
 # ── coleta ────────────────────────────────────────────────────────────────────
-def coletar(sd: str | None = None):
-    """Retorna (reservations:list[dict], salas:dict[id->nome]) via headless."""
+def coletar(sd: str | None = None, tentativas: int = 3):
+    """Retorna (reservations:list[dict], salas:dict[id->nome]) via headless.
+
+    Espera ativamente a resposta de `dr=reservations` (o feed pode demorar) e
+    tenta de novo se vier vazio — evita gravar uma coleta falha.
+    """
     from playwright.sync_api import sync_playwright
 
     url = URL_AGENDA + (f"?sd={sd}" if sd else "")
-    dados = {}
-    with sync_playwright() as p:
-        b = p.chromium.launch()
-        pg = b.new_page()
+    for tent in range(1, tentativas + 1):
+        dados, html = {}, ""
+        with sync_playwright() as p:
+            b = p.chromium.launch()
+            pg = b.new_page()
 
-        def on_response(resp):
-            if "dr=reservations" in resp.url:
-                try:
-                    dados["res"] = resp.json().get("reservations", [])
-                except Exception as e:
-                    dados["err"] = str(e)
+            def on_response(resp):
+                if "dr=reservations" in resp.url:
+                    try:
+                        dados["res"] = resp.json().get("reservations", [])
+                    except Exception as e:
+                        dados["err"] = str(e)
 
-        pg.on("response", on_response)
-        pg.goto(url, wait_until="networkidle", timeout=90_000)
-        pg.wait_for_timeout(3500)
-        html = pg.content()
-        b.close()
+            pg.on("response", on_response)
+            try:
+                pg.goto(url, wait_until="networkidle", timeout=90_000)
+            except Exception as e:
+                print(f"[agenda] tentativa {tent}: erro ao carregar ({e})")
+            # espera ativa até ~20s pela captura das reservas
+            for _ in range(40):
+                if dados.get("res"):
+                    break
+                pg.wait_for_timeout(500)
+            html = pg.content()
+            b.close()
 
-    salas = {}
-    for m in re.finditer(
-        r'<td class="resourcename"[^>]*data-resourceid="(\d+)"[^>]*>(.*?)</td>',
-        html, re.S,
-    ):
-        nome = re.sub(r"\s+", " ", H.unescape(re.sub(r"<[^>]+>", " ", m.group(2)))).strip()
-        if nome:
-            salas[m.group(1)] = nome
-    return dados.get("res", []), salas
+        res = dados.get("res", [])
+        if res:
+            salas = {}
+            for m in re.finditer(
+                r'<td class="resourcename"[^>]*data-resourceid="(\d+)"[^>]*>(.*?)</td>',
+                html, re.S,
+            ):
+                nome = re.sub(r"\s+", " ",
+                              H.unescape(re.sub(r"<[^>]+>", " ", m.group(2)))).strip()
+                if nome:
+                    salas[m.group(1)] = nome
+            return res, salas
+        print(f"[agenda] tentativa {tent}/{tentativas}: coleta vazia, repetindo...")
+    return [], {}
 
 
 # ── parse do rótulo ───────────────────────────────────────────────────────────
@@ -220,6 +237,12 @@ def main():
     print(f"[agenda] coletando oferta ({semestre}) da agenda do campus...")
     reservations, salas = coletar(args.data)
     print(f"[agenda] {len(reservations)} reservas, {len(salas)} salas")
+    # SEGURANÇA: nunca sobrescrever os dados bons com uma coleta vazia/insuficiente
+    MINIMO = 20
+    if len(reservations) < MINIMO:
+        print(f"[agenda] ABORTADO: só {len(reservations)} reservas (< {MINIMO}). "
+              f"Mantendo a oferta anterior — nada foi sobrescrito.")
+        raise SystemExit(1)
     grupos = montar(reservations, salas)
     na_base = carregar_disciplinas_grad()
     n_base = sum(1 for (d, _t) in grupos if _norm(d) in na_base)

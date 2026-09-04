@@ -58,25 +58,32 @@ def _norm(s: str) -> str:
 
 
 def _match_disciplina(pergunta: str):
-    """Acha a disciplina da oferta mencionada na pergunta (nome, turmas) ou None."""
+    """Acha a disciplina da oferta mencionada na pergunta (nome, turmas) ou None.
+
+    Casa por (a) nome completo na pergunta, (b) 2+ palavras significativas da
+    disciplina presentes, ou (c) uma única palavra distintiva (>=6 letras).
+    Vence quem tiver mais/maiores palavras em comum (ex.: "análise real" ganha
+    de "...análise de regressão" quando a pergunta traz "real").
+    """
     dados = _carregar()
     if not dados:
         return None
     qn = " " + _norm(pergunta) + " "
-    melhor, melhor_len = None, 0
+    qtoks = {t for t in qn.split() if len(t) > 3 and t not in _STOP}
+    melhor, melhor_score = None, 0
     for nome, turmas in dados["disciplinas"].items():
         dn = _norm(nome)
-        cand = 0
         if f" {dn} " in qn:
-            cand = len(dn)
+            score = 100 + len(dn)
         else:
-            toks = [t for t in dn.split() if len(t) > 3 and t not in _STOP]
-            for i in range(len(toks) - 1):
-                sh = f"{toks[i]} {toks[i+1]}"
-                if f" {sh} " in qn and len(sh) > cand:
-                    cand = len(sh)
-        if cand > melhor_len:
-            melhor, melhor_len = (nome, turmas), cand
+            dtoks = [t for t in dn.split() if len(t) > 3 and t not in _STOP]
+            comuns = [t for t in dtoks if t in qtoks]
+            # distintividade: >=2 palavras em comum OU uma palavra longa (>=6)
+            if not comuns or not (len(comuns) >= 2 or max(map(len, comuns)) >= 6):
+                continue
+            score = sum(len(t) for t in comuns)
+        if score > melhor_score:
+            melhor, melhor_score = (nome, turmas), score
     return melhor
 
 
