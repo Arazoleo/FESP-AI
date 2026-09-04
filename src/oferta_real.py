@@ -59,6 +59,8 @@ CONTEUDO_EXEMPLOS = [
     "quais os pré-requisitos de cálculo 2",
     "o que preciso cursar antes de banco de dados",
     "quantos créditos tem álgebra linear",
+    "qual a carga horária de compiladores",
+    "quantas horas tem a disciplina de banco de dados",
     # contato de docente NÃO é oferta (email/telefone/currículo)
     "qual o email do professor",
     "como entro em contato com a professora",
