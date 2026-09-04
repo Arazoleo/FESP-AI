@@ -234,6 +234,10 @@ def build_pipeline(rag_instance):
         from ..trilhas import is_trilha_request, montar_trilha, formatar_trilha
         from ..oferta import extrair_disciplina_oferta, responder_oferta
         from .. import oferta_real
+        try:  # intenção de oferta por SIMILARIDADE semântica (não por lista de palavras)
+            oferta_real.configurar_semantica(getattr(rag_instance, "embeddings", None))
+        except Exception:
+            pass
         from ..interdisciplinares import (
             is_lista_interdisciplinares,
             extrair_disciplina_check,

@@ -21,12 +21,87 @@ _ORDEM = {d: i for i, d in enumerate(["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb",
 
 _STOP = {"introducao", "a", "as", "o", "os", "de", "da", "do", "das", "dos",
          "e", "em", "para", "com", "the"}
+# Fallback lexical (só quando não há modelo de embeddings — ex.: testes locais
+# com stub). Em produção a intenção é decidida SEMANTICAMENTE (ver abaixo).
 _GATILHOS = ("sala", "salas", "onde", "local", "dia", "dias", "horario",
              "que horas", "quando", "hora", "professor", "prof", "quem",
              "ministra", "leciona", "oferta", "ofertad", "grade", "aula",
              "aulas", "acontece")
 
+# Exemplos semânticos da INTENÇÃO de oferta (sala/dia/horário/quem-dá-no-semestre).
+# A pergunta é comparada por embedding ao centróide destes exemplos — sem listas
+# de palavras. Alinha com o EmbeddingAgentRouter do projeto.
+OFERTA_EXEMPLOS = [
+    "qual a sala de redes neurais",
+    "onde é a aula de cálculo numérico",
+    "em que sala tem álgebra linear",
+    "que dias tem aula de geometria analítica",
+    "qual o horário de física",
+    "que horas é a aula de compiladores",
+    "quando é a aula de inferência",
+    "quem está dando banco de dados neste semestre",
+    "qual professor dá algoritmos este semestre",
+    "que disciplinas o professor Quiles leciona agora",
+    "quais matérias o professor está dando neste semestre",
+    "o que tem aula na sala 302",
+    "quais disciplinas acontecem na sala 407",
+    "a grade de horários do semestre",
+]
+# Exemplos "contraste": conteúdo/ementa/pré-requisito — o classificador escolhe o
+# centróide MAIS PRÓXIMO (nearest-centroid, como o EmbeddingAgentRouter), sem
+# threshold fixo e sem lista de palavras.
+CONTEUDO_EXEMPLOS = [
+    "qual a ementa de redes neurais",
+    "o que é geometria analítica",
+    "do que trata inteligência artificial",
+    "descreva a disciplina de algoritmos",
+    "o que se estuda em compiladores",
+    "quais os pré-requisitos de cálculo 2",
+    "o que preciso cursar antes de banco de dados",
+    "quantos créditos tem álgebra linear",
+]
+
 _cache = {"mtime": None, "dados": None}
+_sem = {"emb": None, "c_of": None, "c_ct": None}
+
+
+def configurar_semantica(embeddings_model, threshold: float = None):
+    """Pré-computa os centróides de oferta e de conteúdo (uma vez)."""
+    if embeddings_model is None or _sem["c_of"] is not None:
+        return
+    try:
+        import numpy as np
+        vo = embeddings_model.embed_documents(OFERTA_EXEMPLOS)
+        vc = embeddings_model.embed_documents(CONTEUDO_EXEMPLOS)
+        _sem["emb"] = embeddings_model
+        _sem["c_of"] = np.mean(vo, axis=0).astype("float32")
+        _sem["c_ct"] = np.mean(vc, axis=0).astype("float32")
+    except Exception:
+        _sem["emb"] = None
+
+
+def _intencao_oferta(pergunta: str):
+    """True se a pergunta está mais perto do centróide de OFERTA que do de
+    conteúdo (nearest-centroid). None se não há modelo de embeddings."""
+    if _sem["emb"] is None or _sem["c_of"] is None:
+        return None
+    try:
+        import numpy as np
+        q = np.array(_sem["emb"].embed_query(pergunta), dtype="float32")
+        def _cos(c):
+            n = np.linalg.norm(q) * np.linalg.norm(c)
+            return float(np.dot(q, c) / n) if n else 0.0
+        return _cos(_sem["c_of"]) > _cos(_sem["c_ct"])
+    except Exception:
+        return None
+
+
+def _tem_intencao(pergunta: str) -> bool:
+    """Intenção de oferta: semântica se houver modelo, senão fallback lexical."""
+    sem = _intencao_oferta(pergunta)
+    if sem is not None:
+        return sem
+    return any(g in _norm(pergunta) for g in _GATILHOS)
 
 
 def _carregar() -> Optional[dict]:
@@ -125,9 +200,8 @@ def _resolver_via_kg(kg, pergunta: str):
 
 
 def detectar(pergunta: str, kg=None) -> Optional[str]:
-    """Retorna o nome da disciplina se a pergunta é de oferta/sala/dia/prof."""
-    qn = _norm(pergunta)
-    if not any(g in qn for g in _GATILHOS):
+    """Disciplina se a pergunta é (semanticamente) de oferta E a entidade casa."""
+    if not _tem_intencao(pergunta):
         return None
     m = _match_disciplina(pergunta) or _resolver_via_kg(kg, pergunta)
     return m[0] if m else None
@@ -179,63 +253,58 @@ def _fmt_lista(discs):
     return "; ".join(discs[:-1]) + " e " + discs[-1]
 
 
-def _rac_por_sala(kg, pergunta: str) -> Optional[str]:
-    qn = _norm(pergunta)
-    m = re.search(r"sala\s+([0-9]{2,4}[a-z]?)|lab[a-z. ]{0,18}([0-9]{2,4})", qn)
-    if not m:
-        return None
-    if not any(g in qn for g in ("o que", "quais", "que disciplina", "que aula",
-                                 "que materia", "tem aula", "acontece", "rola", "ocupa")):
-        return None
-    discs, label = kg.disciplinas_na_sala(m.group(0))
-    if not discs:
-        return None
-    return (f"Neste semestre ({kg._oferta_semestre}), na **{label or m.group(0)}** "
-            f"têm aula: {_fmt_lista(discs)}.\n\n_Fonte: agenda de salas do campus SJC._")
+# extração de ENTIDADE (grounding) — separada da intenção (que é semântica)
+def _extrai_sala_ref(pergunta: str) -> Optional[str]:
+    m = re.search(r"sala\s+([0-9]{2,4}[a-z]?)|lab[a-z. ]{0,18}([0-9]{2,4})",
+                  _norm(pergunta))
+    return m.group(0) if m else None
 
 
-def _rac_por_docente(kg, pergunta: str) -> Optional[str]:
-    qn = _norm(pergunta)
-    if not any(g in qn for g in ("disciplina", "materia", "da aula", "leciona",
-                                 "ministra", "ensina", "o que")):
-        return None
+def _extrai_docente(pergunta: str) -> Optional[str]:
     m = re.search(r"prof(?:essor|essora|a)?\.?\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+){0,3})",
                   pergunta, re.I)
-    nome = m.group(1).strip() if m else None
-    if not nome:
+    if not m:
         return None
-    # o nome vem primeiro; corta no primeiro verbo/preposição/stopword
     _PARA = {"de", "da", "do", "que", "no", "na", "nesse", "neste", "esse", "este",
-             "semestre", "ministra", "leciona", "ensina", "da", "esta", "atualmente",
+             "semestre", "ministra", "leciona", "ensina", "esta", "atualmente",
              "agora", "aula", "aulas", "e"}
     toks = []
-    for w in nome.split():
+    for w in m.group(1).split():
         if _norm(w) in _PARA:
             break
         toks.append(w)
     nome = " ".join(toks).strip()
-    if not nome:
-        return None
-    discs = kg.disciplinas_do_docente_no_semestre(nome)
-    if not discs:
-        return None
-    return (f"No semestre {kg._oferta_semestre}, Prof(a). {nome} ministra: "
-            f"**{_fmt_lista(discs)}**.\n\n_Fonte: agenda de salas do campus SJC. "
-            f"Vale confirmar com a coordenação._")
+    return nome or None
 
 
 def detectar_raciocinio(pergunta: str, kg=None) -> bool:
-    """Pergunta de raciocínio sobre a oferta (por docente ou por sala)?"""
+    """Intenção de oferta (semântica) + entidade sala/docente aterrada no grafo."""
     if kg is None or not getattr(kg, "_oferta_semestre", ""):
         return False
-    return bool(_rac_por_sala(kg, pergunta) or _rac_por_docente(kg, pergunta))
+    if not _tem_intencao(pergunta):
+        return False
+    return bool(_extrai_sala_ref(pergunta) or _extrai_docente(pergunta))
 
 
 def responder_raciocinio(pergunta: str, kg=None) -> Optional[str]:
-    """Responde consultas que cruzam a oferta com docente/sala."""
+    """Responde cruzando a oferta com a sala ou o docente aterrado no grafo."""
     if kg is None:
         return None
-    return _rac_por_sala(kg, pergunta) or _rac_por_docente(kg, pergunta)
+    sala = _extrai_sala_ref(pergunta)
+    if sala:
+        discs, label = kg.disciplinas_na_sala(sala)
+        if discs:
+            return (f"Neste semestre ({kg._oferta_semestre}), na **{label or sala}** "
+                    f"têm aula: {_fmt_lista(discs)}."
+                    f"\n\n_Fonte: agenda de salas do campus SJC._")
+    prof = _extrai_docente(pergunta)
+    if prof:
+        discs = kg.disciplinas_do_docente_no_semestre(prof)
+        if discs:
+            return (f"No semestre {kg._oferta_semestre}, Prof(a). {prof} ministra: "
+                    f"**{_fmt_lista(discs)}**.\n\n_Fonte: agenda de salas do campus "
+                    f"SJC. Vale confirmar com a coordenação._")
+    return None
 
 
 def esta_ofertada(disciplina: str) -> Optional[Tuple[str, str]]:
