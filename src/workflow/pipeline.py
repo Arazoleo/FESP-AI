@@ -490,10 +490,25 @@ def build_pipeline(rag_instance):
                     ["Agenda de salas do campus SJC (oferta do semestre)"],
                 )
 
+            if label == "oferta_ambiguo":
+                # sigla ambígua (ex.: 'AED' = I ou II) → follow-up de esclarecimento
+                resposta = oferta_real.responder_ambiguo(pergunta_bruta, _kg)
+                if not resposta:
+                    return None
+                return _resposta_simbolica(
+                    resposta, "oferta_ambiguo",
+                    ["Agenda de salas do campus SJC (oferta do semestre)"],
+                )
+
             if label == "oferta_agenda":
                 # oferta REAL do semestre (sala/dia/horário/professor) da agenda
                 alvo = oferta_real.detectar(pergunta_bruta, _kg, _octx)
-                resposta = oferta_real.responder(pergunta_bruta, disciplina=alvo, kg=_kg)
+                # disciplina(s) explícita(s) → responde TODAS (composta 'X e Y');
+                # sem disciplina na frase → follow-up, usa a do contexto (alvo)
+                if oferta_real._todas_disciplinas(pergunta_bruta):
+                    resposta = oferta_real.responder(pergunta_bruta, kg=_kg)
+                else:
+                    resposta = oferta_real.responder(pergunta_bruta, disciplina=alvo, kg=_kg)
                 if not resposta:
                     return None
                 if alvo:
@@ -734,6 +749,8 @@ def build_pipeline(rag_instance):
             fast_label = "oferta_raciocinio"
         elif oferta_real.detectar(pergunta_bruta, rag_instance.knowledge_graph, _octx_of):
             fast_label = "oferta_agenda"
+        elif oferta_real.detectar_ambiguo(pergunta_bruta, rag_instance.knowledge_graph):
+            fast_label = "oferta_ambiguo"
         elif extrair_disciplina_oferta(pergunta_bruta):
             fast_label = "oferta_check"
         elif is_requisitos_request(pergunta_bruta):

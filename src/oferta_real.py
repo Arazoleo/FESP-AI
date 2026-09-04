@@ -61,6 +61,9 @@ CONTEUDO_EXEMPLOS = [
     "quantos créditos tem álgebra linear",
     "qual a carga horária de compiladores",
     "quantas horas tem a disciplina de banco de dados",
+    "a disciplina de cálculo tem quantas horas no total",
+    "carga horária total de álgebra linear",
+    "quantas horas de carga tem redes neurais",
     # contato de docente NÃO é oferta (email/telefone/currículo)
     "qual o email do professor",
     "como entro em contato com a professora",
@@ -246,28 +249,71 @@ def _fmt_encontros(encontros):
     return "; ".join(partes)
 
 
-def responder(pergunta: str, disciplina: Optional[str] = None, kg=None) -> Optional[str]:
-    """Resposta determinística sobre a oferta da disciplina, ou None."""
+def _todas_disciplinas(pergunta: str):
+    """Disciplinas da oferta mencionadas, UMA por trecho casado da pergunta.
+
+    Agrupa por SPAN (o pedaço da pergunta que casou): se duas disciplinas casam o
+    mesmo trecho (ex.: 'redes neurais' → Introdução vs Aplicações), fica só a
+    melhor (bônus p/ quem está no catálogo de graduação). Trechos distintos
+    ('X e Y') geram disciplinas distintas → pergunta composta."""
     dados = _carregar()
     if not dados:
-        return None
-    if disciplina and disciplina in dados["disciplinas"]:
-        nome, turmas = disciplina, dados["disciplinas"][disciplina]
-    else:
-        m = _match_disciplina(pergunta) or _resolver_via_kg(kg, pergunta)
-        if not m:
-            return None
-        nome, turmas = m
-    linhas = [f"Na oferta de {dados['semestre']}, **{nome}** está assim:"]
+        return []
+    qn = " " + _norm(pergunta) + " "
+    por_span = {}  # span -> (nome, score)
+    for nome, turmas in dados["disciplinas"].items():
+        dn = _norm(nome)
+        span, score = None, 0
+        if f" {dn} " in qn:
+            span, score = dn, 100 + len(dn)
+        else:
+            toks = [t for t in dn.split() if len(t) > 3 and t not in _STOP]
+            for i in range(len(toks) - 1):
+                sh = f"{toks[i]} {toks[i+1]}"
+                if f" {sh} " in qn:
+                    span, score = sh, len(sh)
+                    break
+        if not span:
+            continue
+        if turmas and turmas[0].get("no_catalogo"):
+            score += 1  # desempate: prefere a de graduação
+        if span not in por_span or score > por_span[span][1]:
+            por_span[span] = (nome, score)
+    return [n for n, _ in sorted(por_span.values(), key=lambda x: -x[1])]
+
+
+def _fmt_disciplina(nome, turmas):
+    linhas = [f"**{nome}**:"]
     for t in turmas:
         prof = t.get("professor") or "professor não informado na agenda"
         quando = _fmt_encontros(t.get("encontros", []))
         linhas.append(f"- **Turma {t['turma']}** — Prof. {prof} — {quando}.")
-    linhas.append(
-        f"\n_Fonte: agenda de salas do campus SJC (coletado em "
-        f"{dados['coletado_em']}). Vale confirmar mudanças pontuais com a "
-        f"coordenação._")
     return "\n".join(linhas)
+
+
+def responder(pergunta: str, disciplina: Optional[str] = None, kg=None) -> Optional[str]:
+    """Resposta determinística sobre a oferta de uma OU MAIS disciplinas."""
+    dados = _carregar()
+    if not dados:
+        return None
+    if disciplina and disciplina in dados["disciplinas"]:
+        alvos = [disciplina]
+    else:
+        alvos = _todas_disciplinas(pergunta)  # pega composta "X e Y"
+        if not alvos:
+            m = _resolver_via_kg(kg, pergunta)
+            alvos = [m[0]] if m else []
+    if not alvos:
+        return None
+    blocos = [_fmt_disciplina(n, dados["disciplinas"][n]) for n in alvos[:4]]
+    sem = dados["semestre"]
+    if len(blocos) == 1:
+        texto = f"Na oferta de {sem}, {blocos[0]}"
+    else:
+        texto = f"Na oferta de {sem}:\n\n" + "\n\n".join(blocos)
+    return (f"{texto}\n\n_Fonte: agenda de salas do campus SJC (coletado em "
+            f"{dados['coletado_em']}). Vale confirmar mudanças pontuais com a "
+            f"coordenação._")
 
 
 def _fmt_lista(discs):
@@ -353,6 +399,61 @@ def responder_raciocinio(pergunta: str, kg=None) -> Optional[str]:
                     f"**{_fmt_lista(discs)}**.\n\n_Fonte: agenda de salas do campus "
                     f"SJC. Vale confirmar com a coordenação._")
     return None
+
+
+_sigmap = {"key": None, "map": None}
+
+
+def _sigla_map(kg):
+    """Mapa {base_da_sigla -> {disciplinas}} das disciplinas ofertadas (cacheado)."""
+    dados = _carregar()
+    if not dados or kg is None:
+        return {}
+    if _sigmap["key"] == _cache["mtime"] and _sigmap["map"] is not None:
+        return _sigmap["map"]
+    m = {}
+    for nome in dados["disciplinas"]:
+        try:
+            nid = kg._find_node(nome, "disciplina")
+        except Exception:
+            nid = None
+        if not nid:
+            continue
+        sig = _norm((kg.graph.nodes.get(nid, {}) or {}).get("sigla") or "")
+        for variante in re.split(r"\bou\b|[,/]", sig):
+            palavras = variante.split()
+            if palavras:
+                m.setdefault(palavras[0], set()).add(nome)
+    _sigmap["key"] = _cache["mtime"]
+    _sigmap["map"] = m
+    return m
+
+
+def detectar_ambiguo(pergunta: str, kg=None):
+    """Sigla base (ex.: 'AED') que mapeia p/ 2+ disciplinas e não resolve sozinha."""
+    if kg is None or not _tem_intencao(pergunta):
+        return None
+    smap = _sigla_map(kg)
+    for sig in re.findall(r"\b([A-ZÀ-Ý]{2,6})\b", pergunta):
+        b = _norm(sig)
+        if b in smap and len(smap[b]) >= 2:
+            try:
+                resolve = kg._find_node(sig, "disciplina")
+            except Exception:
+                resolve = None
+            if not resolve:  # a sigla sozinha é ambígua
+                return sorted(smap[b])
+    return None
+
+
+def responder_ambiguo(pergunta: str, kg=None) -> Optional[str]:
+    """Follow-up de desambiguação: pergunta qual disciplina o usuário quer."""
+    cands = detectar_ambiguo(pergunta, kg)
+    if not cands:
+        return None
+    lst = " ou ".join(f"**{c}**" for c in cands)
+    return (f"Essa sigla pode ser {lst}. De qual você quer a informação da oferta "
+            f"(sala, dia, horário ou professor)?")
 
 
 def esta_ofertada(disciplina: str) -> Optional[Tuple[str, str]]:
