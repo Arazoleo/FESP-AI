@@ -16,6 +16,11 @@ class KnowledgeGraph:
         self._authoritative_nodes: Set[str] = set()
         self._curso_name_to_sigla: Dict[str, str] = {}
         self._kgc: Optional["KGCompletion"] = None
+        # oferta do semestre (injetada da agenda de salas) — ver carregar_oferta
+        self._oferta_semestre: str = ""
+        self._oferta_por_docente: Dict[str, set] = {}
+        self._oferta_por_sala: Dict[str, set] = {}
+        self._oferta_sala_label: Dict[str, str] = {}
 
     @property
     def kgc(self) -> "KGCompletion":
@@ -1201,7 +1206,76 @@ class KnowledgeGraph:
                     break
         
         return resultados
-    
+
+    # ── Oferta do semestre (agenda de salas) integrada ao grafo ──────────────
+    def carregar_oferta(self, oferta_json_path: str) -> int:
+        """Injeta a oferta do semestre (professor/sala/horário da agenda) nos nós
+        de disciplina e cria índices por docente e por sala. Resolve cada
+        disciplina da agenda ao nó do KG (nome/sigla/código) — assim a oferta se
+        integra ao currículo, docentes e salas já existentes. Retorna nº de
+        disciplinas casadas."""
+        import json as _json
+        try:
+            with open(oferta_json_path, encoding="utf-8") as f:
+                dados = _json.load(f)
+        except Exception:
+            return 0
+        self._oferta_semestre = dados.get("semestre", "")
+        self._oferta_por_docente, self._oferta_por_sala, self._oferta_sala_label = {}, {}, {}
+        casadas = 0
+        for nome_agenda, turmas in (dados.get("disciplinas") or {}).items():
+            nid = self._find_node(nome_agenda, tipo="disciplina")
+            canon = self.graph.nodes[nid].get("nome") if nid else nome_agenda
+            if nid:
+                self.graph.nodes[nid]["oferta"] = {
+                    "semestre": self._oferta_semestre, "turmas": turmas}
+                casadas += 1
+            for t in turmas:
+                prof = t.get("professor")
+                if prof:
+                    self._oferta_por_docente.setdefault(
+                        self._normalize_text(prof), set()).add(canon)
+                    doc_id = self._find_docente_id(prof)
+                    if doc_id and nid:
+                        self.graph.add_edge(nid, doc_id, relacao="MINISTRA_SEMESTRE",
+                                            semestre=self._oferta_semestre,
+                                            turma=t.get("turma"))
+                for e in t.get("encontros", []):
+                    sala = e.get("sala")
+                    if sala:
+                        sk = self._normalize_text(sala)
+                        self._oferta_por_sala.setdefault(sk, set()).add(canon)
+                        self._oferta_sala_label[sk] = sala
+        return casadas
+
+    def oferta_de(self, disciplina: str) -> Optional[Dict]:
+        """Oferta do semestre (turmas/prof/sala/horário) de uma disciplina."""
+        nid = self._find_node(disciplina, tipo="disciplina")
+        if nid:
+            return self.graph.nodes[nid].get("oferta")
+        return None
+
+    def disciplinas_do_docente_no_semestre(self, docente: str) -> List[str]:
+        """Disciplinas que um professor ministra NESTE semestre (pela agenda)."""
+        alvo = self._normalize_text(docente)
+        alvo_w = set(alvo.split())
+        res = set()
+        for prof_key, discs in self._oferta_por_docente.items():
+            pk_w = set(prof_key.split())
+            if alvo in prof_key or prof_key in alvo or (alvo_w & pk_w):
+                res |= discs
+        return sorted(res)
+
+    def disciplinas_na_sala(self, sala: str):
+        """(disciplinas, rótulo da sala) com aula numa sala neste semestre."""
+        alvo = self._normalize_text(sala)
+        res, label = set(), None
+        for sk, discs in self._oferta_por_sala.items():
+            if alvo and (alvo in sk or sk in alvo):
+                res |= discs
+                label = self._oferta_sala_label.get(sk, sala)
+        return sorted(res), label
+
     def get_todos_termos_do_curso(self, curso: str) -> Dict[int, List[Dict]]:
         """Retorna todas as disciplinas de todos os termos de um curso."""
         resultados = {}

@@ -463,6 +463,18 @@ def build_pipeline(rag_instance):
                     ["Matrizes Curriculares oficiais (SIIU/Prograd)"],
                 )
 
+            if label == "oferta_raciocinio":
+                # cruza a oferta com o grafo: por docente ("o que o Prof X dá")
+                # ou por sala ("o que tem na sala 302")
+                resposta = oferta_real.responder_raciocinio(
+                    pergunta_bruta, rag_instance.knowledge_graph)
+                if not resposta:
+                    return None
+                return _resposta_simbolica(
+                    resposta, "oferta_raciocinio",
+                    ["Agenda de salas do campus SJC (oferta do semestre)"],
+                )
+
             if label == "oferta_agenda":
                 # oferta REAL do semestre (sala/dia/horário/professor) da agenda
                 resposta = oferta_real.responder(
@@ -699,6 +711,8 @@ def build_pipeline(rag_instance):
             fast_label = "matricula_check"
         elif extrair_disciplina_risco(pergunta_bruta):
             fast_label = "risco_reprovacao"
+        elif oferta_real.detectar_raciocinio(pergunta_bruta, rag_instance.knowledge_graph):
+            fast_label = "oferta_raciocinio"
         elif oferta_real.detectar(pergunta_bruta, rag_instance.knowledge_graph):
             fast_label = "oferta_agenda"
         elif extrair_disciplina_oferta(pergunta_bruta):

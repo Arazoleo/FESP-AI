@@ -172,6 +172,72 @@ def responder(pergunta: str, disciplina: Optional[str] = None, kg=None) -> Optio
     return "\n".join(linhas)
 
 
+def _fmt_lista(discs):
+    discs = sorted(set(discs))
+    if len(discs) <= 1:
+        return discs[0] if discs else ""
+    return "; ".join(discs[:-1]) + " e " + discs[-1]
+
+
+def _rac_por_sala(kg, pergunta: str) -> Optional[str]:
+    qn = _norm(pergunta)
+    m = re.search(r"sala\s+([0-9]{2,4}[a-z]?)|lab[a-z. ]{0,18}([0-9]{2,4})", qn)
+    if not m:
+        return None
+    if not any(g in qn for g in ("o que", "quais", "que disciplina", "que aula",
+                                 "que materia", "tem aula", "acontece", "rola", "ocupa")):
+        return None
+    discs, label = kg.disciplinas_na_sala(m.group(0))
+    if not discs:
+        return None
+    return (f"Neste semestre ({kg._oferta_semestre}), na **{label or m.group(0)}** "
+            f"têm aula: {_fmt_lista(discs)}.\n\n_Fonte: agenda de salas do campus SJC._")
+
+
+def _rac_por_docente(kg, pergunta: str) -> Optional[str]:
+    qn = _norm(pergunta)
+    if not any(g in qn for g in ("disciplina", "materia", "da aula", "leciona",
+                                 "ministra", "ensina", "o que")):
+        return None
+    m = re.search(r"prof(?:essor|essora|a)?\.?\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+){0,3})",
+                  pergunta, re.I)
+    nome = m.group(1).strip() if m else None
+    if not nome:
+        return None
+    # o nome vem primeiro; corta no primeiro verbo/preposição/stopword
+    _PARA = {"de", "da", "do", "que", "no", "na", "nesse", "neste", "esse", "este",
+             "semestre", "ministra", "leciona", "ensina", "da", "esta", "atualmente",
+             "agora", "aula", "aulas", "e"}
+    toks = []
+    for w in nome.split():
+        if _norm(w) in _PARA:
+            break
+        toks.append(w)
+    nome = " ".join(toks).strip()
+    if not nome:
+        return None
+    discs = kg.disciplinas_do_docente_no_semestre(nome)
+    if not discs:
+        return None
+    return (f"No semestre {kg._oferta_semestre}, Prof(a). {nome} ministra: "
+            f"**{_fmt_lista(discs)}**.\n\n_Fonte: agenda de salas do campus SJC. "
+            f"Vale confirmar com a coordenação._")
+
+
+def detectar_raciocinio(pergunta: str, kg=None) -> bool:
+    """Pergunta de raciocínio sobre a oferta (por docente ou por sala)?"""
+    if kg is None or not getattr(kg, "_oferta_semestre", ""):
+        return False
+    return bool(_rac_por_sala(kg, pergunta) or _rac_por_docente(kg, pergunta))
+
+
+def responder_raciocinio(pergunta: str, kg=None) -> Optional[str]:
+    """Responde consultas que cruzam a oferta com docente/sala."""
+    if kg is None:
+        return None
+    return _rac_por_sala(kg, pergunta) or _rac_por_docente(kg, pergunta)
+
+
 def esta_ofertada(disciplina: str) -> Optional[Tuple[str, str]]:
     """Se a disciplina consta na oferta corrente, retorna (nome, semestre)."""
     dados = _carregar()

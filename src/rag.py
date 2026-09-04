@@ -297,7 +297,17 @@ class RAGUnifesp:
                 docentes_arg,
                 cursos_arg
             )
-            
+
+            # integra a oferta do semestre (agenda de salas) ao grafo
+            try:
+                from pathlib import Path as _P
+                oferta_path = (_P(str(self.config.DISCIPLINAS_DIR)).parent
+                               / "jsons_regimentos" / "oferta_semestre.json")
+                n_of = self.knowledge_graph.carregar_oferta(str(oferta_path))
+                print(f"Oferta do semestre integrada ao KG: {n_of} disciplinas")
+            except Exception as e:
+                print(f"Oferta não integrada ao KG: {e}")
+
             self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings, llm=self.aux_llm)
 
             self.graph_rag.initialize_classifier()
