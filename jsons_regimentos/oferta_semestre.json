@@ -1,0 +1,4444 @@
+{
+ "semestre": "2026/2",
+ "coletado_em": "2026-09-03",
+ "fonte": "https://agendamentos.unifesp.br/sjc/Web/view-schedule.php",
+ "disciplinas": {
+  "Química Geral": [
+   {
+    "turma": "I",
+    "professor": "Raquel",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 204 - 110 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Métodos Matemáticos para Engenharia": [
+   {
+    "turma": "I",
+    "professor": "Paiva",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Tópicos Interdisciplinares em Computação V (Neurociência Computacional)": [
+   {
+    "turma": "I",
+    "professor": "Elbert",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Laboratório de Engenharia Bioquímica": [
+   {
+    "turma": "I",
+    "professor": "Elisabeth",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "08:00",
+      "fim": "12:00",
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "08:00",
+      "fim": "12:00",
+      "sala": "sala 305 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Engenharia de Microestrutura de Metais e Ligas": [
+   {
+    "turma": "I",
+    "professor": "Kátia",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Fenômenos Mecânicos": [
+   {
+    "turma": "IB",
+    "professor": "Thaciana",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 204 - 110 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Thaciana",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 204 - 110 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "ID",
+    "professor": "Ana Ma. Espírito Santo",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Ana Ma. Espírito Santo",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Manuel",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IC",
+    "professor": "Antonelli",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Controle de Sistemas Dinâmicos": [
+   {
+    "turma": "I",
+    "professor": "Paiva",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Sérgio",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Fisiologia Humana II": [
+   {
+    "turma": "IB",
+    "professor": "Tatiana",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Tatiana",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Flavio",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 307 - 58 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "RPVMM II": [
+   {
+    "turma": "I",
+    "professor": "Horácio",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Leduíno",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Equações Diferenciais Ordinárias": [
+   {
+    "turma": "I",
+    "professor": "Cláudia Aline",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Sala 203 - 69 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Sala 203 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Geometria Analítica": [
+   {
+    "turma": "IA",
+    "professor": "Renato",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Sala 203 - 69 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Sala 203 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Renato",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Sala 203 - 69 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Sala 203 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IC",
+    "professor": "Vanessa",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Ana Moreira",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 302 - 69 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Thadeu Senne",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Botânica e Fisiologia Vegetal": [
+   {
+    "turma": "I",
+    "professor": "Michael",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 205 - 56 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 205 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Mudança do Clima e Sociedade": [
+   {
+    "turma": "I",
+    "professor": "Amado",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Séries e Equações Diferenciais Ordinárias": [
+   {
+    "turma": "ID",
+    "professor": "Gama",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 207 - 56 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 207 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Ângelo",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 306 - 112 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IE",
+    "professor": "Gama",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 207 - 56 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 207 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Ângelo",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 306 - 112 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Daniela Oliveira",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 302 - 69 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IC",
+    "professor": "Thiago Castilho",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 306 - 112 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Thiago Castilho",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 204 - 110 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Geometria Diferencial": [
+   {
+    "turma": "I",
+    "professor": "Patrícia",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Tratamentos Térmicos": [
+   {
+    "turma": "I",
+    "professor": "Aline Capella",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 209 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Eletrônica": [
+   {
+    "turma": "I",
+    "professor": "Gurjão",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Aoki",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 309 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 309 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Projetos em Engenharia Biomédica": [
+   {
+    "turma": "I",
+    "professor": "Urban",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 301 - 73 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Urban",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Redes Neurais Artificiais": [
+   {
+    "turma": "I",
+    "professor": "Quiles",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 302 - 69 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Cálculo Numérico": [
+   {
+    "turma": "IB",
+    "professor": "Lobosco",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Lobosco",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Leduíno",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Felipe",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Circuitos Elétricos I": [
+   {
+    "turma": "IA",
+    "professor": "Henrique",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Henrique",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Edson",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 301 - 73 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Sistemas Embarcados": [
+   {
+    "turma": "I",
+    "professor": "Fernanda",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 305 - 51 lugares"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. 402 - Engenharia de Computação II: Sistemas Embarcados"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 305 - 51 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. 402 - Engenharia de Computação II: Sistemas Embarcados"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Aoki",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 402 - Engenharia de Computação II: Sistemas Embarcados"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 309 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 309 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 402 - Engenharia de Computação II: Sistemas Embarcados"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Microbiologia Geral": [
+   {
+    "turma": "I",
+    "professor": "Elisa",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Fernando",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 207 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 207 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Lab. De Sistemas Computacionais (Circuitos Digitais)": [
+   {
+    "turma": "IA",
+    "professor": "Sérgio",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. 401 - Engenharia de Computação I: Sistemas Computacionais"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "IB",
+    "professor": "Marcorin",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. 401 - Engenharia de Computação I: Sistemas Computacionais"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Marcorin",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 401 - Engenharia de Computação I: Sistemas Computacionais"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Analise de Investimentos e Riscos": [
+   {
+    "turma": "I",
+    "professor": "Sato",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Sato",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 207 - 56 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Internet das Coisas": [
+   {
+    "turma": "I",
+    "professor": "Gabriel",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Gabriel",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 406 - Engenharia de Computação III: Robótica e Controle Aplicado"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 406 - Engenharia de Computação III: Robótica e Controle Aplicado"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Programação Concorrente e Distribuída": [
+   {
+    "turma": "I",
+    "professor": "Álvaro",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Denise",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Matemática Geral": [
+   {
+    "turma": "I",
+    "professor": "Karen",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Daniela Oliveira",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 302 - 69 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Biologia de Sistemas": [
+   {
+    "turma": "I",
+    "professor": "André",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 204 - 110 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "André",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Probabilidade": [
+   {
+    "turma": "I",
+    "professor": "Samia",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 205 - 56 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 205 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Samia",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Ecologia Avançada": [
+   {
+    "turma": "I",
+    "professor": "Amado",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Termodinâmica Química": [
+   {
+    "turma": "I",
+    "professor": "Silvia",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Silvia",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Seleção de Materiais": [
+   {
+    "turma": "I",
+    "professor": "Quinteiro",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 301 - 73 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Quinteiro",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 301 - 73 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Otimização Inteira": [
+   {
+    "turma": "I",
+    "professor": "Horácio",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 302 - 69 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Engenharia Médica Aplicada": [
+   {
+    "turma": "I",
+    "professor": "Adenauer",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Adenauer",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 310 - 99 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Metodologia da Pesquisa e Comunicação Científica": [
+   {
+    "turma": "I",
+    "professor": "Gurjão",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 305 - 51 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Análise Real II": [
+   {
+    "turma": "I",
+    "professor": "Vanessa",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 307 - 58 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Cláudia Aline",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Sala 203 - 69 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Sala 203 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Farmacologia Molecular": [
+   {
+    "turma": "I",
+    "professor": "Flávio",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Teoria de Grafos": [
+   {
+    "turma": "I",
+    "professor": "Luis",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 309 - 56 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Lab.de Sistemas Computacionais: SO": [
+   {
+    "turma": "I",
+    "professor": "Tiago Oliveira",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. 401 - Engenharia de Computação I: Sistemas Computacionais"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. 401 - Engenharia de Computação I: Sistemas Computacionais"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Tiago Oliveira",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 401 - Engenharia de Computação I: Sistemas Computacionais"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 401 - Engenharia de Computação I: Sistemas Computacionais"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Algoritmos e Estruturas de Dados II": [
+   {
+    "turma": "I",
+    "professor": "Lilia Berton",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Lilia Berton",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Modelagem Computacional": [
+   {
+    "turma": "I",
+    "professor": "Lobosco",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Lobosco",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Fundamentos de Eletrônica Aplicada": [
+   {
+    "turma": "I",
+    "professor": "Fernanda",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. 406 - Engenharia de Computação III: Robótica e Controle Aplicado"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Fernanda",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 406 - Engenharia de Computação III: Robótica e Controle Aplicado"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Programação Orientada a Objetos": [
+   {
+    "turma": "I",
+    "professor": "Otávio",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Rodrigo",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Fenômenos do Contínuo Experimental": [
+   {
+    "turma": "N",
+    "professor": "Fabiano",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Física II sala 216 - 2° andar"
+     },
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Pesquisa Operacional": [
+   {
+    "turma": "N",
+    "professor": "Chaves",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Imunologia Aplicada": [
+   {
+    "turma": "N",
+    "professor": "Loures",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 209 - 56 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 209 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Ciência e Tecnologia dos Materiais": [
+   {
+    "turma": "N",
+    "professor": "Leonardo",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "I",
+    "professor": "Gisele",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 205 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 205 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Fenômenos Eletromagnéticos": [
+   {
+    "turma": "NA",
+    "professor": "Nirton",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 306 - 112 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Nirton",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 306 - 112 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Kelly",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 306 - 112 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Kelly",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 306 - 112 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Biologia Geral": [
+   {
+    "turma": "N",
+    "professor": "Michael",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "I",
+    "professor": "Ana Izabel",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Eletrotécnica": [
+   {
+    "turma": "N",
+    "professor": "Fabiano",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "I",
+    "professor": "Fabiano",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 209 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Termodinâmica dos Sólidos": [
+   {
+    "turma": "N",
+    "professor": "Aline Capella",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 209 - 56 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 209 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "I",
+    "professor": "Gisele",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 205 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 205 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Algoritmos e Estruturas de Dados I": [
+   {
+    "turma": "NB",
+    "professor": "Luis",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Regina",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Regina",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Engenharia de Software": [
+   {
+    "turma": "N",
+    "professor": "Otávio",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "I",
+    "professor": "Fábio",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Arquitetura e organização de Computadores": [
+   {
+    "turma": "N",
+    "professor": "Denise",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Fundamentos de Biologia Moderna": [
+   {
+    "turma": "IA",
+    "professor": "Ana Izabel",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Ana Izabel",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Economia": [
+   {
+    "turma": "IA",
+    "professor": "Juliana Scriptore",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Juliana Scriptore",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Juliana Scriptore",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Juliana Scriptore",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Metalurgia Mecânica": [
+   {
+    "turma": "I",
+    "professor": "Danieli Aparecida",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "08:00",
+      "fim": "12:00",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Ciência, Tecnologia, Sociedade e Ambiente (CTSA)": [
+   {
+    "turma": "IA",
+    "professor": "Vanessa Pereira",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "IE",
+    "professor": "Raiane",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 307 - 58 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "IB",
+    "professor": "Vanessa Pereira",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "IF",
+    "professor": "Raiane",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 307 - 58 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "ID",
+    "professor": "Walter",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "NA",
+    "professor": "Walter",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "NB",
+    "professor": "Evandro",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "NC",
+    "professor": "Raiane",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "IC",
+    "professor": "Evandro",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "IG",
+    "professor": "Raiane",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 301 - 73 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Tópicos Interdisciplinas em Computação VI (Competições em Ciências de Dados)": [
+   {
+    "turma": "I",
+    "professor": "Márcio",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Processamento de Termoplásticos": [
+   {
+    "turma": "I",
+    "professor": "Passador",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "Sala 203 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Projeto e Análise de Algoritmos": [
+   {
+    "turma": "IA",
+    "professor": "Sanderson",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Reginaldo",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Reginaldo",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Álgebra Linear II": [
+   {
+    "turma": "I",
+    "professor": "Abbas",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 207 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 207 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Tiago Macedo",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 301 - 73 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Biossensores": [
+   {
+    "turma": "I",
+    "professor": "Marli",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Sistemas Mecânicos": [
+   {
+    "turma": "I",
+    "professor": "Kunkel",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Kunkel",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Anatomia": [
+   {
+    "turma": "I",
+    "professor": "Fernando",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Fernando",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Fundamentos da Eng. Bioquímica": [
+   {
+    "turma": "I",
+    "professor": "Roberson",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Elisabeth",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Mecânica Geral": [
+   {
+    "turma": "I",
+    "professor": "Eudes",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 306 - 112 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Eudes",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Matemática Discreta": [
+   {
+    "turma": "IB",
+    "professor": "Erwin",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Erwin",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Robson",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IC",
+    "professor": "Felipe",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Tiago Macedo",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Química Geral Experimental": [
+   {
+    "turma": "IB",
+    "professor": "Hugo",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "Lab. Química Geral I - sala 316 - 3° andar"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 309 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Maraísa",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "sala 305 - 51 lugares"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "Lab. Quí­mica Geral II - sala 314 - 3o andar"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Hugo",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "Lab. Química Geral I - sala 316 - 3° andar"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 307 - 58 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Maraísa",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "sala 302 - 69 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "Lab. Quí­mica Geral II - sala 314 - 3o andar"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Redes de Computadores": [
+   {
+    "turma": "I",
+    "professor": "Bruno Kimura",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Desenho Técnico Básico": [
+   {
+    "turma": "IA",
+    "professor": "Shida",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Shida",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Shida",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Shida",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Biologia Molecular do Gene": [
+   {
+    "turma": "I",
+    "professor": "Luciane",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Luciane",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Bioquímica II": [
+   {
+    "turma": "I",
+    "professor": "Conceição",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 207 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 207 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Conceição",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Sala 203 - 69 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Sala 203 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Lógica de Programação": [
+   {
+    "turma": "I",
+    "professor": "Didier",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 208 - 97 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Didier",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Teoria dos Números e Criptografia": [
+   {
+    "turma": "I",
+    "professor": "Grasiele",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 210 - 110 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Robson",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Biotecnologia Ambiental I": [
+   {
+    "turma": "I",
+    "professor": "Danielle",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 301 - 73 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Danielle",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 301 - 73 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Arquitetura e Organização de Computadores": [
+   {
+    "turma": "I",
+    "professor": "Fábio Cappabianco",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 303 - 100 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Instrumentos Biomédicos": [
+   {
+    "turma": "I",
+    "professor": "Roberson",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 304 - 99 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Métodos Numéricos para Eq. Diferenciais": [
+   {
+    "turma": "I",
+    "professor": "Thadeu Senne",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 305 - 51 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 305 - 51 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Inferência e Análise de Regressão": [
+   {
+    "turma": "I",
+    "professor": "Luzia",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 307 - 58 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Luzia",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     },
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Compiladores": [
+   {
+    "turma": "I",
+    "professor": "Rodrigo",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Galvão",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Laboratório de Circuitos Elétricos": [
+   {
+    "turma": "I",
+    "professor": "Gabriel",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "TECNOLOGIA SOCIAL: PRÁXIS E CONTRA-HEGEMONIA": [
+   {
+    "turma": "N",
+    "professor": "Evandro",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "I",
+    "professor": "Evandro",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 306 - 112 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Funções Analíticas": [
+   {
+    "turma": "N",
+    "professor": "Ana Moreira",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 302 - 69 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 207 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "I",
+    "professor": "Leandro",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 302 - 69 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "08:00",
+      "fim": "10:00",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Biotecnologia de Energias Renováveis II": [
+   {
+    "turma": "N",
+    "professor": "Danielle",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 307 - 58 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Tecnologia de Tintas e Vernizes": [
+   {
+    "turma": "I",
+    "professor": "Maurício",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "08:00",
+      "fim": "12:00",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Laboratório de Eletrônica Digital": [
+   {
+    "turma": "IC",
+    "professor": "Gurjão",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 305 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IA",
+    "professor": "Karina",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 305 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NA",
+    "professor": "Karina",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 305 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Karina",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "NB",
+    "professor": "Karina",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 309 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Fundamentos de Administração": [
+   {
+    "turma": "I",
+    "professor": "Iraci",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Gestão de projetos": [
+   {
+    "turma": "I",
+    "professor": "Iraci",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Processamento de Materiais Cerâmicos": [
+   {
+    "turma": "I",
+    "professor": "Leonardo",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 209 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Química Analítica": [
+   {
+    "turma": "I",
+    "professor": "Elias",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 309 - 56 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Laboratório de Microbiologia": [
+   {
+    "turma": "I",
+    "professor": "Elisa",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 305 - 51 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Elisa",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 305 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Laboratório de Sistemas computacionais - Eng.de Sistemas": [
+   {
+    "turma": "I",
+    "professor": "Tiago Silva",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. 402 - Engenharia de Computação II: Sistemas Embarcados"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Tiago Silva",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 402 - Engenharia de Computação II: Sistemas Embarcados"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Processamento de Sinais": [
+   {
+    "turma": "I",
+    "professor": "Martini",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Martini",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Química Orgânica Experimental": [
+   {
+    "turma": "N",
+    "professor": "João",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "sala 309 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Laboratório de Bioquímica Analítica": [
+   {
+    "turma": "I",
+    "professor": "Conceição",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "08:00",
+      "fim": "12:00",
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "08:00",
+      "fim": "12:00",
+      "sala": "sala 305 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Projetos Sustentáveis em Polímeros": [
+   {
+    "turma": "I",
+    "professor": "Ana Paula Lemes",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "08:00",
+      "fim": "12:00",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "08:00",
+      "fim": "12:00",
+      "sala": "sala 308 - 90 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Reologia dos Materiais": [
+   {
+    "turma": "I",
+    "professor": "Lilia",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Engenharia de Materiais": [
+   {
+    "turma": "I",
+    "professor": "Passador",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Ana Paula Albers",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 204 - 110 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Tópicos Interdisciplinares em Computação VII (Acessibilidade Digital)": [
+   {
+    "turma": "I",
+    "professor": "Tiago Silva",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Tiago Silva",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Bioquímica I": [
+   {
+    "turma": "I",
+    "professor": "Martin",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 206 - 100 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Martin",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 201 - 100 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "sala 201 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Reciclagem de Materiais (Reof)": [
+   {
+    "turma": "I",
+    "professor": "Lilia",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Processamento de Termorrígidos e Elastômeros": [
+   {
+    "turma": "I",
+    "professor": "Passador",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 303 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Nanotecnologia": [
+   {
+    "turma": "I",
+    "professor": "Elias",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 309 - 56 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Elias",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 307 - 58 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Banco de Dados": [
+   {
+    "turma": "I",
+    "professor": "Daniela Musa",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Daniela Musa",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Computação Gráfica": [
+   {
+    "turma": "I",
+    "professor": "Ana",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Ana",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Vidros, Vitrocerâmicos e Vidrados": [
+   {
+    "turma": "N",
+    "professor": "Eliandra",
+    "encontros": [
+     {
+      "dia": "Qui",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "sala 209 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Introdução à Biotecnologia": [
+   {
+    "turma": "I",
+    "professor": "Dayane",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Dayane",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 206 - 100 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Cerâmicas Refratárias": [
+   {
+    "turma": "I",
+    "professor": "Ana Paula Albers",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "10:00",
+      "fim": "12:00",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Cultura dos Jogos Digitais": [
+   {
+    "turma": "I",
+    "professor": "Vanessa",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 208 - 97 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Praticas em Projetos Extensionistas II": [
+   {
+    "turma": "I",
+    "professor": "Marli",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 302 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Marli",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "Sala 203 - 69 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Experimentando a Engenharia de Materiais": [
+   {
+    "turma": "I",
+    "professor": "Ana Paula Albers",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 304 - 99 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Engenharia Clínica Hospitalar Aplicada": [
+   {
+    "turma": "I",
+    "professor": "Matheus",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "sala 308 - 90 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Lab. Biologia Molecular e Celular": [
+   {
+    "turma": "I",
+    "professor": "Claudia",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "sala 309 - 56 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "13:30",
+      "fim": "17:30",
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Claudia",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "sala 305 - 51 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Iniciação aos PEPICTs II": [
+   {
+    "turma": "I",
+    "professor": "Edson",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": false
+   },
+   {
+    "turma": "N",
+    "professor": "Edson",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 210 - 110 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "Segurança da Informação": [
+   {
+    "turma": "I",
+    "professor": "Fábio Cappabianco",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Biotecnologia Animal": [
+   {
+    "turma": "N",
+    "professor": "Loures",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "sala 209 - 56 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
+  "Aplicações de Redes Neurais de Aprendizado Profundo em Sinais e Imagens Médicas": [
+   {
+    "turma": "N",
+    "professor": "Matheus",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "23:00",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ],
+  "TCC-I - EC": [
+   {
+    "turma": "N",
+    "professor": "Marcorin",
+    "encontros": [
+     {
+      "dia": "Sex",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. 401 - Engenharia de Computação I: Sistemas Computacionais"
+     }
+    ],
+    "no_catalogo": false
+   }
+  ]
+ }
+}

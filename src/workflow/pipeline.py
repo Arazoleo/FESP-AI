@@ -233,6 +233,7 @@ def build_pipeline(rag_instance):
         )
         from ..trilhas import is_trilha_request, montar_trilha, formatar_trilha
         from ..oferta import extrair_disciplina_oferta, responder_oferta
+        from .. import oferta_real
         from ..interdisciplinares import (
             is_lista_interdisciplinares,
             extrair_disciplina_check,
@@ -462,16 +463,28 @@ def build_pipeline(rag_instance):
                     ["Matrizes Curriculares oficiais (SIIU/Prograd)"],
                 )
 
+            if label == "oferta_agenda":
+                # oferta REAL do semestre (sala/dia/horário/professor) da agenda
+                resposta = oferta_real.responder(pergunta_bruta)
+                if not resposta:
+                    return None
+                return _resposta_simbolica(
+                    resposta, "oferta_agenda",
+                    ["Agenda de salas do campus SJC (oferta do semestre)"],
+                )
+
             if label == "oferta_check":
                 alvo = extrair_disciplina_oferta(pergunta_bruta) or disciplina_hint
                 if not alvo:
                     return None
-                resposta = responder_oferta(rag_instance.knowledge_graph, alvo)
+                # se estiver na oferta real, responde com sala/dia/prof; senão heurística
+                resposta = oferta_real.responder(pergunta_bruta) \
+                    or responder_oferta(rag_instance.knowledge_graph, alvo)
                 if not resposta:
                     return None
                 return _resposta_simbolica(
                     resposta, "oferta_check",
-                    ["Knowledge Graph (matriz curricular)"],
+                    ["Agenda de salas do campus SJC / Knowledge Graph"],
                 )
 
             if label == "trilha":
@@ -684,6 +697,8 @@ def build_pipeline(rag_instance):
             fast_label = "matricula_check"
         elif extrair_disciplina_risco(pergunta_bruta):
             fast_label = "risco_reprovacao"
+        elif oferta_real.detectar(pergunta_bruta):
+            fast_label = "oferta_agenda"
         elif extrair_disciplina_oferta(pergunta_bruta):
             fast_label = "oferta_check"
         elif is_requisitos_request(pergunta_bruta):

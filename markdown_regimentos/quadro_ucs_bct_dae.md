@@ -506,7 +506,11 @@ O PPC 2023 do BCT exige **4 UCs Eletivas Interdisciplinares**, independentemente
 
 ## UCs Eletivas com Carga Horária Extensionista - BCT (104 UCs)
 
-O BCT (PPC 2023) exige **240 horas de extensão** cumpridas em Eletivas Extensionistas ou Atividades Complementares Extensionistas. Estudantes que ingressaram ANTES de 2023 estão dispensados das 240 horas extensionistas. Estas são as eletivas que dão horas de extensão:
+O BCT (PPC 2023) exige **240 horas de extensão** cumpridas em Eletivas Extensionistas ou Atividades Complementares Extensionistas. Estudantes que ingressaram ANTES de 2023 estão dispensados das 240 horas extensionistas.
+
+**Como essas horas são entregues (matérias extensionistas x projetos de extensão):** se você cumpre a extensão **dentro de matérias** (as UCs/Eletivas Extensionistas listadas abaixo), a carga de extensão já é lançada automaticamente no seu Histórico Escolar ao concluir a UC — **não é preciso abrir processo no SEI**. Já as horas feitas em **projetos/ações de extensão fora das matérias** (ex.: projeto de extensão como bolsista ou voluntário, certificadas no SIEX) precisam ser acreditadas como **Atividades Complementares Extensionistas (ACE)** por meio de peticionamento no SEI, com formulário próprio.
+
+Estas são as eletivas que dão horas de extensão:
 
 | Termo | Código | UC | CH Total | CH Extensão | Pré-requisitos (código) | Equivalentes (código) |
 |-------|--------|----|----------|-------------|------------------------|----------------------|
