@@ -178,12 +178,14 @@ def _agenda_por_nome(nome_canonico: str):
 
 
 def _resolver_via_kg(kg, pergunta: str):
-    """Usa o KG (nome/sigla/código) p/ resolver referência tipo 'PAA' → oferta."""
+    """Usa o KG p/ resolver SIGLA tipo 'PAA'/'GA' → disciplina → oferta.
+
+    Só testa tokens em CAIXA ALTA (siglas) — nomes por extenso já são casados por
+    _match_disciplina; testar qualquer palavra gerava falso-positivo (ex.: uma
+    pergunta sobre um docente resolvia a uma disciplina qualquer)."""
     if kg is None:
         return None
-    # tokens curtos (2-6 letras), siglas em CAIXA ALTA primeiro
-    cands = re.findall(r"[A-Za-zÀ-ÿ]{2,6}", pergunta)
-    cands = sorted(set(cands), key=lambda t: (0 if t.isupper() else 1, -len(t)))
+    cands = sorted(set(re.findall(r"\b[A-ZÀ-Ý]{2,6}\b", pergunta)), key=len, reverse=True)
     for c in cands:
         try:
             nid = kg._find_node(c, tipo="disciplina")
@@ -260,21 +262,45 @@ def _extrai_sala_ref(pergunta: str) -> Optional[str]:
     return m.group(0) if m else None
 
 
-def _extrai_docente(pergunta: str) -> Optional[str]:
-    m = re.search(r"prof(?:essor|essora|a)?\.?\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+){0,3})",
-                  pergunta, re.I)
-    if not m:
-        return None
-    _PARA = {"de", "da", "do", "que", "no", "na", "nesse", "neste", "esse", "este",
-             "semestre", "ministra", "leciona", "ensina", "esta", "atualmente",
-             "agora", "aula", "aulas", "e"}
+_PARA_NOME = {"de", "da", "do", "que", "no", "na", "nesse", "neste", "esse", "este",
+              "semestre", "ministra", "leciona", "ensina", "esta", "esta", "estao",
+              "atualmente", "agora", "aula", "aulas", "e", "dando", "da", "dao"}
+
+
+def _limpa_nome(bruto: str) -> str:
     toks = []
-    for w in m.group(1).split():
-        if _norm(w) in _PARA:
+    for w in (bruto or "").split():
+        if _norm(w) in _PARA_NOME:
             break
         toks.append(w)
-    nome = " ".join(toks).strip()
-    return nome or None
+    return " ".join(toks).strip()
+
+
+def _extrai_docente(pergunta: str, kg=None) -> Optional[str]:
+    """Aterra o nome do docente no KG (índice de docentes) — sem exigir 'prof'.
+
+    Candidatos: o nome após 'prof', e qualquer palavra Capitalizada; o KG decide
+    quem é docente. Assim 'quais disciplinas o Didier dá' funciona."""
+    m = re.search(r"prof(?:essor|essora|a)?\.?\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+){0,2})",
+                  pergunta, re.I)
+    prof_nome = _limpa_nome(m.group(1)) if m else None
+    if kg is None:
+        return prof_nome
+    cands = ([prof_nome] if prof_nome else [])
+    cands += re.findall(r"\b([A-ZÀ-Ý][a-zà-ÿ]{2,})\b", pergunta)  # nomes Capitalizados
+    vistos = set()
+    for c in cands:
+        nome = _limpa_nome(c)
+        chave = _norm(nome)
+        if not nome or chave in vistos:
+            continue
+        vistos.add(chave)
+        try:
+            if kg._find_docente_id(nome):
+                return nome
+        except Exception:
+            pass
+    return None
 
 
 def detectar_raciocinio(pergunta: str, kg=None) -> bool:
@@ -283,7 +309,7 @@ def detectar_raciocinio(pergunta: str, kg=None) -> bool:
         return False
     if not _tem_intencao(pergunta):
         return False
-    return bool(_extrai_sala_ref(pergunta) or _extrai_docente(pergunta))
+    return bool(_extrai_sala_ref(pergunta) or _extrai_docente(pergunta, kg))
 
 
 def responder_raciocinio(pergunta: str, kg=None) -> Optional[str]:
@@ -297,7 +323,7 @@ def responder_raciocinio(pergunta: str, kg=None) -> Optional[str]:
             return (f"Neste semestre ({kg._oferta_semestre}), na **{label or sala}** "
                     f"têm aula: {_fmt_lista(discs)}."
                     f"\n\n_Fonte: agenda de salas do campus SJC._")
-    prof = _extrai_docente(pergunta)
+    prof = _extrai_docente(pergunta, kg)
     if prof:
         discs = kg.disciplinas_do_docente_no_semestre(prof)
         if discs:
