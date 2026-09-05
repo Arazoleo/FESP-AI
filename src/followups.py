@@ -81,7 +81,25 @@ def _display_term(term: str) -> str:
     return " ".join(palavras)
 
 
-def suggest_followups(intent: str, term: str, response: str) -> List[str]:
+_DOCENTE_TEMPLATES = [
+    "Quais disciplinas {t} leciona?",
+    "Quais as áreas de pesquisa de {t}?",
+    "Qual o contato de {t}?",
+]
+
+
+def _eh_docente(kg, term: str) -> bool:
+    """Grounding: o termo é um PROFESSOR no grafo? (evita aplicar templates de
+    disciplina — 'pré-requisitos de {t}' — a um nome de docente)."""
+    if kg is None or not term:
+        return False
+    try:
+        return bool(kg._find_docente_id(term))
+    except Exception:
+        return False
+
+
+def suggest_followups(intent: str, term: str, response: str, kg=None) -> List[str]:
     sugestoes: List[str] = []
     if OFFER_MARKER in (response or ""):
         sugestoes.append(BREAKDOWN_CANONICAL_QUESTION)
@@ -92,6 +110,9 @@ def suggest_followups(intent: str, term: str, response: str) -> List[str]:
 
     t = _display_term(term)
     templates = _BY_INTENT.get(intent or "", [])
+    # se o termo é um docente, usa templates de docente (não de disciplina)
+    if t and _eh_docente(kg, term):
+        templates = _DOCENTE_TEMPLATES
     if t and templates:
         for tmpl in templates:
             pergunta = tmpl.format(t=t)

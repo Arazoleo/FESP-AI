@@ -230,6 +230,7 @@ class MultiAgentRAG:
                 final_state.get("intent", ""),
                 final_state.get("term", ""),
                 final_state.get("response", ""),
+                kg=self.knowledge_graph,
             )
 
             return {
