@@ -147,6 +147,20 @@ check("tolerância de tokens NÃO casa espúrio (Cálculo 1 ≠ Cálculo 2)",
       kg._find_node("Cálculo 1", "disciplina") != kg._find_node("Cálculo 2", "disciplina")
       or kg._find_node("Cálculo 1", "disciplina") is None)
 
+# grounding de entidades no texto (base NÃO-LEXICAL do rastreio de contexto)
+_dm = kg.disciplinas_mencionadas("qual a ementa de Banco de Dados?")
+check("disciplinas_mencionadas aterra disciplina citada em prosa",
+      "Banco de Dados" in _dm, str(_dm))
+_dm2 = kg.disciplinas_mencionadas("- Banco de Dados — cobre X\n- Cálculo Numérico — cobre Y")
+check("disciplinas_mencionadas preserva ordem de ocorrência (p/ 'a primeira')",
+      _dm2[:2] == ["Banco de Dados", "Cálculo Numérico"], str(_dm2))
+_algum_doc = next((d.get("nome") for _n, d in kg.graph.nodes(data=True)
+                   if d.get("tipo") == "docente"
+                   and len((d.get("nome") or "").split()) >= 2), None)
+if _algum_doc:
+    check("docente_mencionado aterra nome completo em prosa",
+          kg.docente_mencionado(f"falar com {_algum_doc}") == _algum_doc)
+
 # ── 3. Contato/disciplinas de grupo de docentes ──────────────────────────────
 print(f"\n{BOLD}── grupo de docentes: grounding + iteração no grafo ──{RESET}")
 

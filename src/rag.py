@@ -316,6 +316,14 @@ class RAGUnifesp:
             except Exception as e:
                 print(f"Ponte conceito→área não integrada ao KG: {e}")
 
+            # injeta o KG no rastreio de contexto → grounding de entidades
+            # (disciplina/docente) sem regex de nome.
+            try:
+                from .context_resolver import set_knowledge_graph as _ctx_set_kg
+                _ctx_set_kg(self.knowledge_graph)
+            except Exception as e:
+                print(f"Context resolver sem KG: {e}")
+
             self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings, llm=self.aux_llm)
 
             self.graph_rag.initialize_classifier()

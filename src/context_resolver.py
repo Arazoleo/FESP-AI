@@ -22,6 +22,26 @@ from .atividades_complementares import (
 
 logger = logging.getLogger(__name__)
 
+# KG injetado no boot (rag.sync) — base do grounding NÃO-LEXICAL de entidades
+# (disciplina/docente): substitui a extração por regex de nome.
+_KG = None
+
+
+def set_knowledge_graph(kg):
+    """Injeta o Knowledge Graph para grounding de entidades no rastreio de contexto."""
+    global _KG
+    _KG = kg
+
+
+# ordinais → índice (resolução de referência a item de lista; não é roteamento)
+_ORDINAIS = {
+    "primeira": 0, "primeiro": 0, "1a": 0, "1ª": 0, "1º": 0,
+    "segunda": 1, "segundo": 1, "2a": 1, "2ª": 1, "2º": 1,
+    "terceira": 2, "terceiro": 2, "3a": 2, "3ª": 2, "3º": 2,
+    "quarta": 3, "quarto": 3, "quinta": 4, "quinto": 4,
+    "ultima": -1, "último": -1, "última": -1, "ultimo": -1,
+}
+
 _CURSO_ALT = (
     r'(?:bcc|bct|bbt|ec|engenharia\s+de\s+computa[cç][aã]o|'
     r'ci[eê]ncia\s+da\s+computa[cç][aã]o|ci[eê]ncia\s+e\s+tecnologia|'
@@ -119,98 +139,25 @@ class ConversationContext:
         if termo_match:
             self.termo = termo_match.group(1)
         
-        _DISC_REJEITAR = frozenset({
-            'o', 'a', 'os', 'as', 'que', 'qual', 'quais',
-            'essa', 'esse', 'esta', 'este', 'essas', 'esses',
-            'ela', 'ele', 'elas', 'eles', 'dela', 'dele',
-            'isso', 'isto', 'aquilo', 'aquela', 'aquele',
-            'essa disciplina', 'esta disciplina', 'essa matéria', 'esta matéria',
-            'essa cadeira', 'esta cadeira',
-        })
-        disc_patterns = [
-            r'disciplina\s+(?:de\s+)?(.+?)(?:\?|$)',
-            r'pr[eé]-?requisitos?\s+(?:de|da|do)\s+(.+?)(?:\?|,|\.|$)',
-            r'quem\s+leciona\s+(.+?)(?:\?|$)',
-            r'o\s+que\s+[eé]\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?(.+?)(?:\?|$)',
-            r'o\s+que\s+(?:se\s+)?(?:estuda|aprende)\s+em\s+(.+?)(?:\?|$)',
-            r'(?:fale|fala|me\s+fale|me\s+fala)(?:\s+mais)?\s+sobre\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?(.+?)(?:\?|$)',
-            r'(?:o\s+que\s+(?:vc|você\s+)?sabe|sabe)\s+sobre\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?(.+?)(?:\?|$)',
-            r'ementa\s+(?:de|da|do)\s+(.+?)(?:\?|$)',
-            r'(?:descreva|explique|explica|me\s+explique)\s+(?:a\s+(?:disciplina\s+(?:de\s+)?)?)?(.+?)(?:\?|$)',
-            r'(?:professores?|docentes?)\s+(?:d[aã]o|leciona[m]?|ensina[m]?)\s+(.+?)(?:\?|$)',
-        ]
-        for pattern in disc_patterns:
-            match = re.search(pattern, message_lower)
-            if match:
-                start, end = match.span(1)
-                disc_name = message[start:end].strip()
-                disc_name = re.sub(r'[,\.\?]+$', '', disc_name).strip()
-                disc_name = re.sub(r'\s+(?:da|de|do|das|dos)\s*$', '', disc_name, flags=re.IGNORECASE).strip()
-                disc_lower = disc_name.lower()
-                if disc_lower not in _DISC_REJEITAR and len(disc_name) >= 3:
-                    if not re.search(r'\b(?:professor[a]?|docente)\b', disc_lower):
-                        if not protect_disc:
-                            self.disciplina = disc_name
-                            if role == "user":
-                                self.disciplina_from_user = True
-                        break
-
-        mudanca_disc = re.search(r'^(?:e\s+(?:de|sobre)|sobre)\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)', message, re.IGNORECASE)
-        if mudanca_disc and not protect_disc:
-            self.disciplina = mudanca_disc.group(1).strip()
-            if role == "user":
-                self.disciplina_from_user = True
-
-        if (
-            role == "user"
-            and not self.disciplina
-            and len(message.split()) <= 5
-            and not re.search(r'[?!]', message)
-            and not re.search(r'\b(?:que|qual|quais|quem|como|onde|quando|sim|não|nao|é|sao|são|tem|tenho|quero|preciso)\b', message_lower)
-            and re.match(r'^[A-ZÀ-Ú]', message)
-        ):
-            candidate = message.strip().rstrip('.,')
-            if len(candidate) >= 3 and not _COURSE_ONLY_RE.match(candidate):
-                self.disciplina = candidate
-                self.disciplina_from_user = True
-
-        if role == "assistant" and not protect_disc:
-            verbos_comuns = {'cursar', 'lecionar', 'fazer', 'pegar', 'estudar', 'ter', 'para'}
-            resp_disc_patterns = [
-                r'(?:para\s+cursar|pr[eé]-requisitos?\s+(?:de|da))\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
-                r'[Aa]\s+disciplina\s+(?:de\s+)?([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)',
-                r'^([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-Za-zÀ-ú]+)*)\s+[eé]\s+uma\s+disciplina',
-            ]
-            for pattern in resp_disc_patterns:
-                m = re.search(pattern, message, re.MULTILINE)
-                if m:
-                    disc = m.group(1).strip()
-                    if disc.lower() not in verbos_comuns and len(disc) >= 3:
-                        self.disciplina = disc
-                        break
-        
-        docente_patterns = [
-            r'professor(?:a)?\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)',
-            r'[Qq]uem\s+[eé]\s+(?:o\s+|a\s+)?([A-ZÀ-Ú][a-zà-ú]+\s+[A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)*)\??',
-        ]
-        for pattern in docente_patterns:
-            match = re.search(pattern, message)
-            if match:
-                nome = match.group(1).strip()
-                if nome.lower() not in ['me', 'fale', 'sobre', 'qual', 'quem', 'onde', 'como']:
-                    self.docente = nome
-                    break
-        
-        if role == "assistant":
-            # [ \t] (não \s) para o nome NÃO cruzar quebra de linha e engolir a
-            # frase de fecho do humanizer ("- Fábio Faria\n\nSe você..." não deve
-            # virar "Fábio Faria\n\nSe").
-            docentes = re.findall(r'^-[ \t]+([A-ZÀ-Ú][a-zà-ú]+(?:[ \t]+[A-ZÀ-Ú][a-zà-ú]+)+)', message, re.MULTILINE)
+        # ── GROUNDING de entidades (NÃO lexical): a disciplina e o(s) docente(s)
+        # citados vêm do KG (nome do nó presente no texto), não de regex de nome.
+        # Funciona em prosa OU bullets, em ordem de ocorrência — resolve "a
+        # primeira" (lista) e o grupo "eles" sem depender de formatação. ──
+        kg = _KG
+        if kg is not None:
+            docente_novo = kg.docente_mencionado(message)
+            if docente_novo:
+                self.docente = docente_novo
+            docentes = kg.docentes_mencionados(message)
             if docentes:
                 self.docentes_list = docentes
 
-            disciplinas = re.findall(r'^-[ \t]+([A-ZÀ-Ú][a-zà-ú]+(?:[ \t]+[a-zà-ú]+)*)\s+\(', message, re.MULTILINE)
+            disciplinas = kg.disciplinas_mencionadas(message)
             if disciplinas:
+                if not protect_disc:
+                    self.disciplina = disciplinas[0]
+                    if role == "user":
+                        self.disciplina_from_user = True
                 self.disciplinas_list = disciplinas
 
 
@@ -357,6 +304,21 @@ class ContextResolver:
                 f"[CONTEXT][oferta-ac] aceite '{question}' → '{resolved}'"
             )
             return resolved, True
+
+        # Anáfora ORDINAL ("a primeira", "a última") → item da última lista de
+        # disciplinas ATERRADA (grounding), resolvendo referência a item de lista
+        # (ex.: após "disciplinas da área de X"). Reescreve por sufixo explícito.
+        if context.disciplinas_list:
+            _lista = context.disciplinas_list
+            for _raw in question_lower.replace("?", " ").replace(",", " ").split():
+                _idx = _ORDINAIS.get(_raw)
+                if _idx is not None and -len(_lista) <= _idx < len(_lista):
+                    alvo = _lista[_idx]
+                    resolved = f"{question.rstrip('?').strip()} (referindo-se a {alvo})"
+                    context.disciplina = alvo
+                    context.disciplina_from_user = True
+                    logger.info(f"[CONTEXT][ordinal] '{question}' → '{resolved}'")
+                    return resolved, True
 
         explicit_match = re.search(
             r'(?:com\s+(?:o|a)\s+)([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)+)',

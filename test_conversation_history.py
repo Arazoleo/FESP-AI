@@ -154,6 +154,13 @@ check("template do conversa tem o ponto de inserção", substituido != tpl)
 
 print(f"\n{BOLD}── Anáfora de curso no ContextResolver ──{RESET}")
 cr_mod = _import_module("src.context_resolver", "src/context_resolver.py")
+# grounding de entidades agora vem do KG (não regex): injeta um KG real
+_kg_ctx = _import_module("src.knowledge_graph", "src/knowledge_graph.py").KnowledgeGraph()
+_kg_ctx.build_from_directories(
+    "./markdown_disciplinas", "./markdown_regimentos",
+    "./markdown_docentes", "./markdown_cursos",
+)
+cr_mod.set_knowledge_graph(_kg_ctx)
 resolver = cr_mod.ContextResolver()
 resolver.update_context("t1", "Como funciona a Matriz Curricular do BCC?", "user")
 hist_msgs = [

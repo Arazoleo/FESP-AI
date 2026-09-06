@@ -1666,25 +1666,81 @@ class KnowledgeGraph:
         out.sort(key=lambda x: -x["score"])
         return out[:top_k]
 
-    def docentes_mencionados(self, texto: str) -> List[str]:
-        """Docentes (nome completo) citados no texto, por grounding no grafo —
-        funciona em PROSA ou bullets (o tracker lexical só captura bullets).
-        Resolve a anáfora de grupo ('eles') independentemente do formato com que
-        o LLM apresentou a lista. Exige 2+ tokens (evita casar 1º nome comum)."""
+    def entidades_mencionadas(self, texto: str, tipo: str,
+                              min_chars: int = 4, min_tokens: int = 1) -> List[str]:
+        """Entidades do KG do `tipo` citadas no texto, por GROUNDING (nome do nó
+        aparece no texto), ordenadas por 1ª ocorrência e com match mais longo
+        preferido (evita 'Cálculo' casar dentro de 'Cálculo Numérico'). Base não
+        lexical do contexto: substitui extração de nome por regex."""
         if not texto:
             return []
-        t = f" {self._normalize_text(texto)} "
-        achados: List[str] = []
+        t = self._normalize_text(texto)
+        achados = []  # (pos, len, nome)
         for _nid, d in self.graph.nodes(data=True):
-            if d.get("tipo") != "docente":
+            if d.get("tipo") != tipo:
                 continue
             nome = d.get("nome", "")
             if not nome:
                 continue
             n = self._normalize_text(nome)
-            if n and " " in n and f" {n} " in t and nome not in achados:
-                achados.append(nome)
-        return achados
+            if len(n) < min_chars or len(n.split()) < min_tokens:
+                continue
+            pos = t.find(n)
+            if pos < 0:
+                continue
+            antes = t[pos - 1] if pos > 0 else " "
+            depois = t[pos + len(n)] if pos + len(n) < len(t) else " "
+            if antes.isalnum() or depois.isalnum():  # exige fronteira de palavra
+                continue
+            achados.append((pos, len(n), nome))
+        achados.sort(key=lambda x: (x[0], -x[1]))
+        out, cobertos = [], []
+        for pos, ln, nome in achados:
+            if any(pos >= cp and pos + ln <= cp + cl for cp, cl in cobertos):
+                continue
+            if nome not in out:
+                out.append(nome)
+            cobertos.append((pos, ln))
+        return out
+
+    def docentes_mencionados(self, texto: str) -> List[str]:
+        """Docentes (nome completo) citados no texto, por grounding — funciona em
+        PROSA ou bullets. Exige 2+ tokens (evita casar 1º nome comum)."""
+        return self.entidades_mencionadas(texto, "docente", min_chars=4, min_tokens=2)
+
+    def disciplinas_mencionadas(self, texto: str) -> List[str]:
+        """Disciplinas citadas no texto, por grounding, em ordem de ocorrência —
+        resolve anáfora de lista ('a primeira') sem regex de bullet."""
+        return self.entidades_mencionadas(texto, "disciplina", min_chars=5)
+
+    def docente_mencionado(self, texto: str) -> str:
+        """O docente citado no texto: nome completo (match mais longo) ou, na
+        falta, um nome/sobrenome que identifique UM único docente ('a lilian' →
+        Lilian Berton; 'prof Quiles' → Sérgio Quiles). Grounding, sem regex."""
+        if not texto:
+            return ""
+        text_norm = f" {self._normalize_text(texto)} "
+        text_words = set(text_norm.split())
+        best_nome, best_len = "", 0
+        partial: Dict[str, set] = {}
+        for _, data in self.graph.nodes(data=True):
+            if data.get("tipo") != "docente":
+                continue
+            nome = data.get("nome", "")
+            nome_norm = self._normalize_text(nome)
+            if not nome_norm:
+                continue
+            if f" {nome_norm} " in text_norm:
+                if len(nome_norm) > best_len:
+                    best_nome, best_len = nome, len(nome_norm)
+                continue
+            for w in nome_norm.split():
+                if len(w) >= 4 and w in text_words:
+                    partial.setdefault(w, set()).add(nome)
+        if best_nome:
+            return best_nome
+        unicos = {next(iter(nomes)) for nomes in partial.values() if len(nomes) == 1}
+        return unicos.pop() if len(unicos) == 1 else ""
 
     def get_docente_info(self, docente: str) -> Optional[Dict]:
         """Retorna informações completas de um docente (nome, email, sala, áreas)."""
