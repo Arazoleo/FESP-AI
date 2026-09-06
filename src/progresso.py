@@ -249,6 +249,15 @@ _REQUISITOS_CUES_RES = [re.compile(p) for p in (
     r"\brequisitos?\s+(?:de|para)\s+(?:integralizacao|formatura|conclusao|se\s+formar)",
     r"\bo\s+que\s+(?:o\s+curso\s+)?exige\s+para\s+(?:se\s+)?formar",
     r"\bpreciso\s+de\s+quantas\s+horas\b",
+    # frases naturais/informais de formatura (o handler é gated por grounding do
+    # curso, então detecção ampla é segura - sem curso, cai fora)
+    r"\bcolar\s+grau\b",
+    r"\bintegraliza",
+    r"\bformatura\b",
+    r"\bconcluir\s+(?:o\s+|a\s+|meu\s+|minha\s+)?(?:curso|gradua|bct|bcc|bbt|bmc)\b",
+    r"\b(?:o\s*que|oque|quais?)\s+(?:eu\s+)?(?:preciso|falta[mn]?|necessito|garantir|exig\w+|requisitos?)\b.*\b(?:formar|concluir|colar\s+grau|integraliz|formatura|gradua)",
+    r"\b(?:requisitos?|exigencias?|criterios?)\b.*\b(?:formar|formatura|concluir|integraliz|colar\s+grau|gradua)",
+    r"\b(?:me\s+)?formar\s+(?:em|no|na)\b",
 )]
 
 

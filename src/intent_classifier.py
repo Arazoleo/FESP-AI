@@ -145,6 +145,14 @@ class IntentClassifier:
             "quem trabalha com processamento de linguagem natural",
             "especialistas em segurança da informação",
         ],
+        'disciplinas_by_area': [
+            "quais disciplinas cobrem a área de otimização",
+            "que matérias são da área de engenharia de software",
+            "disciplinas da área de processamento de alto desempenho",
+            "quais matérias tratam de otimização",
+            "que disciplinas abordam aprendizado de máquina",
+            "onde eu estudo otimização no curso",
+        ],
         'docente_leciona_disciplina': [
             "o professor João leciona banco de dados",
             "a professora Maria dá aula de cálculo",
@@ -337,6 +345,11 @@ class IntentClassifier:
         'docentes_by_area': [
             r'(?:trabalham?|pesquisam?|especialistas?)\s+(?:com|em)\s+(.+?)(?:\?|$)',
             r'(?:professore?s?|docentes?)\s+(?:de|em)\s+(.+?)(?:\?|$)',
+        ],
+        'disciplinas_by_area': [
+            r'(?:[aá]rea\s+de)\s+(.+?)(?:\?|$)',
+            r'(?:disciplinas?|mat[eé]rias?)\s+(?:que\s+)?(?:cobrem|tratam(?:\s+de)?|abordam|s[aã]o\s+d[ao])\s+(.+?)(?:\?|$)',
+            r'(?:estudo|estudar)\s+(.+?)(?:\s+no\s+curso)?(?:\?|$)',
         ],
         'disciplinas_termo': [
             r'(?:termo|semestre|per[ií]odo)\s+(\d+)\s+(?:de|do|da)\s+(.+?)(?:\?|$)',

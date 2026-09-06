@@ -48,6 +48,7 @@ SYMBOLIC_DIRECT_INTENTS: frozenset = frozenset({
     "discipline_docentes",
     "docente_leciona_disciplina",
     "docentes_by_area",
+    "disciplinas_by_area",
 })
 
 META_CAPABILITIES_RESPONSE = """Sim. Tenho acesso a informações da UNIFESP ICT sobre:

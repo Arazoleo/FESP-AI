@@ -62,6 +62,10 @@ class GraphRAGEngine:
                 r'(?:quem\s+)?(?:trabalha|pesquisa|[eé]\s+especialista)\s+(?:com|em)\s+(.+?)(?:\?|$)',
                 r'especialistas?\s+(?:em|de)\s+(.+?)(?:\?|$)',
             ],
+            'disciplinas_by_area': [
+                r'(?:quais?\s+)?(?:disciplinas?|mat[eé]rias?)\s+(?:que\s+)?(?:cobrem|tratam(?:\s+de)?|abordam)\s+(?:[aá]rea\s+de\s+)?(.+?)(?:\?|$)',
+                r'(?:disciplinas?|mat[eé]rias?)\s+d[ao]?\s*[aá]rea\s+de\s+(.+?)(?:\?|$)',
+            ],
             'docente_areas': [
                 r'(?:quais?\s+)?(?:as?\s+)?[aá]reas?\s+(?:de\s+)?(?:especializa[çc][aã]o|pesquisa|atua[çc][aã]o)\s+(?:de|do|da)\s+(?:professor(?:a)?|docente)?\s*(.+?)(?:\?|$)',
                 r'(?:em\s+que|quais?\s+[aá]reas?)\s+(?:o\s+|a\s+)?(.+?)\s+(?:pesquisa|trabalha|atua|[eé]\s+especialista)(?:\?|$)',
@@ -617,6 +621,21 @@ class GraphRAGEngine:
         if base:
             regras.append(f"`base_recomendada` por conceitos pressupostos ({len(base)})")
 
+        # Camada APRENDIDA: pré-requisitos prováveis por link prediction
+        # (conceito+IDF+termo+docente+ementa, validado held-out). Entram como
+        # recomendação com crença, nunca como pré-requisito obrigatório.
+        try:
+            from .rule_miner import sugerir_prereqs
+            learned = sugerir_prereqs(self.kg, termo, top_k=3)
+        except Exception:
+            learned = []
+        for s in learned:
+            recomendacoes.setdefault(s["candidato"], []).append(
+                f"pré-requisito provável por link prediction (confiança {s['crenca']:.0%})"
+            )
+        if learned:
+            regras.append(f"`learned_prereq` link prediction validado ({len(learned)})")
+
         secao = ""
         if recomendacoes:
             linhas = "\n".join(
@@ -984,7 +1003,24 @@ O(A) professor(a) **{termo}** leciona {len(disciplinas)} disciplina(s)."""
 Total: {len(docentes)} docente(s) trabalham com **{termo}**."""
             else:
                 return f"Não encontrei docentes especialistas em **{termo}**."
-        
+
+        elif query_type == 'disciplinas_by_area':
+            ds = self.kg.disciplinas_da_area(termo)
+            if ds:
+                linhas = chr(10).join(
+                    f"- **{d['nome']}** — cobre {', '.join(d['conceitos'][:4])}"
+                    for d in ds)
+                return (
+                    f"**Disciplinas ligadas à área de {termo}:**\n\n{linhas}\n\n"
+                    "_Derivado da ponte aprendida conceito→área (relação "
+                    "`PERTENCE_A`, ponderada por crença) — não é uma lista oficial "
+                    "da matriz._")
+            else:
+                return (
+                    f"Não encontrei disciplinas ligadas à área de **{termo}** pela "
+                    "ponte conceito→área (pode não haver docente dessa área com "
+                    "ementa mapeada).")
+
         elif query_type == 'docente_areas':
             areas = self.kg.get_areas_of_docente(termo)
             if areas:

@@ -202,11 +202,14 @@ class ConversationContext:
                     break
         
         if role == "assistant":
-            docentes = re.findall(r'^-\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[A-ZÀ-Ú][a-zà-ú]+)+)', message, re.MULTILINE)
+            # [ \t] (não \s) para o nome NÃO cruzar quebra de linha e engolir a
+            # frase de fecho do humanizer ("- Fábio Faria\n\nSe você..." não deve
+            # virar "Fábio Faria\n\nSe").
+            docentes = re.findall(r'^-[ \t]+([A-ZÀ-Ú][a-zà-ú]+(?:[ \t]+[A-ZÀ-Ú][a-zà-ú]+)+)', message, re.MULTILINE)
             if docentes:
                 self.docentes_list = docentes
-            
-            disciplinas = re.findall(r'^-\s+([A-ZÀ-Ú][a-zà-ú]+(?:\s+[a-zà-ú]+)*)\s+\(', message, re.MULTILINE)
+
+            disciplinas = re.findall(r'^-[ \t]+([A-ZÀ-Ú][a-zà-ú]+(?:[ \t]+[a-zà-ú]+)*)\s+\(', message, re.MULTILINE)
             if disciplinas:
                 self.disciplinas_list = disciplinas
 

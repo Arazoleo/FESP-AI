@@ -308,6 +308,14 @@ class RAGUnifesp:
             except Exception as e:
                 print(f"Oferta não integrada ao KG: {e}")
 
+            # fecha o loop NSAI: materializa a ponte APRENDIDA conceito→área
+            # (pertence_a) como relação simbólica no grafo, com crença.
+            try:
+                n_ca = self.knowledge_graph.aprender_conceito_area(min_crenca=0.35)
+                print(f"Ponte aprendida conceito→área integrada ao KG: {n_ca} relações PERTENCE_A")
+            except Exception as e:
+                print(f"Ponte conceito→área não integrada ao KG: {e}")
+
             self.graph_rag = GraphRAGEngine(self.knowledge_graph, self.embeddings, llm=self.aux_llm)
 
             self.graph_rag.initialize_classifier()

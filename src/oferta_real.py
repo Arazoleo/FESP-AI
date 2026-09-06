@@ -67,42 +67,70 @@ CONTEUDO_EXEMPLOS = [
     # contato de docente NÃO é oferta (email/telefone/currículo)
     "qual o email do professor",
     "como entro em contato com a professora",
+    "como falo com o professor",
+    "como falo com ele",
+    "como converso com a professora",
     "qual o telefone do docente",
     "qual o lattes do professor",
     "quem é o coordenador do curso",
+    # área de pesquisa/atuação do docente NÃO é oferta (é perfil, não agenda)
+    "quais as áreas de pesquisa do professor",
+    "em que o professor trabalha",
+    "o que o docente pesquisa",
+    "quais as áreas de atuação da professora",
+    # buscar orientador/IC por área NÃO é oferta (é docente por área)
+    "quem trabalha com visão computacional",
+    "quem pesquisa aprendizado de máquina",
+    "com quem faço iniciação científica em otimização",
+    "com quem faço ic de processamento de imagens",
+    # bibliografia/livros NÃO é oferta (é conteúdo da disciplina)
+    "qual a bibliografia de banco de dados",
+    "quais os livros de compiladores",
 ]
 
 _cache = {"mtime": None, "dados": None}
 _sem = {"emb": None, "c_of": None, "c_ct": None}
 
 
+def _norm_rows(v):
+    import numpy as np
+    a = np.array(v, dtype="float32")
+    n = np.linalg.norm(a, axis=1, keepdims=True)
+    n[n == 0] = 1.0
+    return a / n
+
+
 def configurar_semantica(embeddings_model, threshold: float = None):
-    """Pré-computa os centróides de oferta e de conteúdo (uma vez)."""
+    """Pré-computa as matrizes (normalizadas) de exemplos de oferta e conteúdo.
+
+    Usa nearest-NEIGHBOR (similaridade ao exemplo mais próximo de cada classe),
+    NÃO centróide-médio: o CONTEUDO reúne clusters semânticos distintos
+    (conteúdo-de-disciplina como ementa/pré-req/créditos E perfil-de-docente
+    como área de pesquisa/contato) — a média de um único centróide dilui ambos e
+    vaza para OFERTA. O vizinho mais próximo respeita cada cluster."""
     if embeddings_model is None or _sem["c_of"] is not None:
         return
     try:
-        import numpy as np
-        vo = embeddings_model.embed_documents(OFERTA_EXEMPLOS)
-        vc = embeddings_model.embed_documents(CONTEUDO_EXEMPLOS)
         _sem["emb"] = embeddings_model
-        _sem["c_of"] = np.mean(vo, axis=0).astype("float32")
-        _sem["c_ct"] = np.mean(vc, axis=0).astype("float32")
+        _sem["c_of"] = _norm_rows(embeddings_model.embed_documents(OFERTA_EXEMPLOS))
+        _sem["c_ct"] = _norm_rows(embeddings_model.embed_documents(CONTEUDO_EXEMPLOS))
     except Exception:
         _sem["emb"] = None
 
 
 def _intencao_oferta(pergunta: str):
-    """True se a pergunta está mais perto do centróide de OFERTA que do de
-    conteúdo (nearest-centroid). None se não há modelo de embeddings."""
+    """True se a pergunta está mais perto de ALGUM exemplo de OFERTA que de
+    qualquer exemplo de conteúdo (nearest-neighbor). None se não há embeddings."""
     if _sem["emb"] is None or _sem["c_of"] is None:
         return None
     try:
         import numpy as np
         q = np.array(_sem["emb"].embed_query(pergunta), dtype="float32")
-        def _cos(c):
-            n = np.linalg.norm(q) * np.linalg.norm(c)
-            return float(np.dot(q, c) / n) if n else 0.0
-        return _cos(_sem["c_of"]) > _cos(_sem["c_ct"])
+        nq = np.linalg.norm(q)
+        if nq == 0:
+            return None
+        q = q / nq
+        return float((_sem["c_of"] @ q).max()) > float((_sem["c_ct"] @ q).max())
     except Exception:
         return None
 

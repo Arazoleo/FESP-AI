@@ -152,6 +152,32 @@ def humanize_kg_response(llm, question: str, kg_response: str, history: str = ""
         return kg_response
 
 
+def _disciplinas_por_area(pergunta: str, kg) -> "Optional[tuple]":
+    """
+    Detecta 'disciplinas da ÁREA de X' e aterra X num nó de área do KG, usando a
+    ponte APRENDIDA conceito→área. Âncora robusta: a palavra 'área' (a intenção
+    de área de pesquisa) + grounding do termo num nó AREA com resultado. Precede
+    a oferta no roteamento (que senão captura o nome de disciplina homônimo).
+    Retorna (area_termo, [disciplinas]) ou None (auto-gated pelo grounding).
+    """
+    if not pergunta or kg is None:
+        return None
+    # para na 1ª pontuação; depois apara cláusula ("... que disciplinas vejo")
+    m = re.search(r'[áa]reas?\s+(?:de\s+|d[oa]s?\s+)?([^,?.;!]+)', pergunta, re.IGNORECASE)
+    if not m:
+        return None
+    termo = re.split(
+        r'\s+(?:que|qual|quais|pra|para|onde|devo|posso|no\s+curso|do\s+curso)\b',
+        m.group(1), maxsplit=1, flags=re.IGNORECASE)[0].strip(" ?.!,")
+    if not termo:
+        return None
+    try:
+        ds = kg.disciplinas_da_area(termo)
+    except Exception:
+        return None
+    return (termo, ds) if ds else None
+
+
 def build_pipeline(rag_instance):
     """
     Constrói e compila o LangGraph com os agentes especializados.
@@ -234,8 +260,10 @@ def build_pipeline(rag_instance):
         from ..trilhas import is_trilha_request, montar_trilha, formatar_trilha
         from ..oferta import extrair_disciplina_oferta, responder_oferta
         from .. import oferta_real
+        from .. import contatos_docentes
         try:  # intenção de oferta por SIMILARIDADE semântica (não por lista de palavras)
             oferta_real.configurar_semantica(getattr(rag_instance, "embeddings", None))
+            contatos_docentes.configurar(getattr(rag_instance, "embeddings", None))
         except Exception:
             pass
         from ..interdisciplinares import (
@@ -733,6 +761,34 @@ def build_pipeline(rag_instance):
         fast_label = None
         _h_of = state.get("historico")
         _octx_of = _h_of.setdefault("oferta_ctx", {}) if isinstance(_h_of, dict) else {}
+
+        # Anáfora de grupo ("como falo com eles" após uma lista de docentes):
+        # usa as entidades já aterradas + grounding no grafo + intenção semântica.
+        _resp_grupo = contatos_docentes.responder_grupo(
+            getattr(rag_instance, "graph_rag", None),
+            pergunta_bruta,
+            _h_of.get("_docentes_ativos") if isinstance(_h_of, dict) else None,
+        )
+        if _resp_grupo:
+            return _resposta_simbolica(
+                _resp_grupo, "contatos_grupo", ["Corpo docente / agenda do ICT"]
+            )
+
+        # Disciplinas por ÁREA de pesquisa (ponte APRENDIDA conceito→área):
+        # precede a oferta, que senão captura o nome de disciplina homônimo.
+        _area_res = _disciplinas_por_area(pergunta_bruta, rag_instance.knowledge_graph)
+        if _area_res:
+            _area_nome, _area_ds = _area_res
+            _area_linhas = "\n".join(
+                f"- **{d['nome']}** — cobre {', '.join(d['conceitos'][:4])}"
+                for d in _area_ds)
+            return _resposta_simbolica(
+                f"**Disciplinas ligadas à área de {_area_nome}:**\n\n{_area_linhas}"
+                "\n\n_Derivado da ponte aprendida conceito→área (`PERTENCE_A`, "
+                "ponderada por crença) — não é a lista oficial da matriz._",
+                "disciplinas_by_area", ["Ponte conceito→área (KG, aprendida)"],
+            )
+
         if is_cr_request(question):
             fast_label = "cr_consulta"
         elif is_progresso_request(question):

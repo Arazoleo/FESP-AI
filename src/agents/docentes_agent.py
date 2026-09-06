@@ -67,6 +67,40 @@ class DocentesAgent(BaseAgent):
         return ""
 
     def retrieve(self, question: str, intent: str, term: str) -> str:
+        base = self._retrieve_core(question, intent, term)
+        # Enriquecimento anti-alucinação: injeta as ÁREAS DE PESQUISA (fato do
+        # grafo) dos docentes citados no contexto — evita o agente dizer "não
+        # tenho as áreas deles" para dado que EXISTE na base. Grounding, não
+        # regex: docentes_mencionados casa nome completo no texto.
+        areas = self._enrich_docentes_areas(question, base)
+        if areas:
+            base = f"{base}\n\n{areas}" if base else areas
+        return base
+
+    def _enrich_docentes_areas(self, question: str, base: str) -> str:
+        kg = getattr(self.rag, "knowledge_graph", None)
+        if kg is None:
+            return ""
+        texto = f"{question or ''}\n{base or ''}"
+        try:
+            nomes = kg.docentes_mencionados(texto)
+        except Exception:
+            return ""
+        linhas = []
+        for nome in nomes[:8]:
+            try:
+                areas = kg.get_areas_of_docente(nome)
+            except Exception:
+                areas = []
+            if areas:
+                linhas.append(f"- {nome}: {', '.join(areas)}")
+        if not linhas:
+            return ""
+        return ("[ÁREAS DE PESQUISA dos docentes citados - dados do grafo, "
+                "use SÓ estes; se um docente não aparece aqui, diga que não "
+                "tem a área dele na base]\n" + "\n".join(linhas))
+
+    def _retrieve_core(self, question: str, intent: str, term: str) -> str:
         parts = []
 
         if intent in self.GRAPH_INTENTS and self.graph_rag:

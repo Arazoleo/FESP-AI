@@ -310,9 +310,32 @@ class InferenceEngine:
                 f"{', '.join(co[:4])}"
             )
 
+        learned = self._learned_prereq_line(disciplina)
+        if learned:
+            lines.append(learned)
+
         if not lines:
             return ""
         return "[FATOS INFERIDOS - InferenceEngine]\n" + "\n".join(f"  • {l}" for l in lines)
+
+    def _learned_prereq_line(self, disciplina: str) -> str:
+        """
+        Camada APRENDIDA: pré-requisitos PROVÁVEIS (link prediction conceitual),
+        sempre marcados como sugestão com crença — nunca como fato curado.
+        Preserva a tese anti-alucinação: o LLM deve apresentar como possibilidade.
+        """
+        try:
+            from .rule_miner import sugerir_prereqs
+            sug = sugerir_prereqs(self.kg, disciplina, top_k=3)
+        except Exception:
+            return ""
+        if not sug:
+            return ""
+        strs = [f"{s['candidato']} [~{s['crenca']:.0%}]" for s in sug]
+        return (
+            "[Regra learned_prereq | link prediction, NÃO curado, SUGESTÃO] "
+            f"Pré-requisitos prováveis a confirmar: {', '.join(strs)}"
+        )
 
     def _infer_unlock_context(self, term: str) -> str:
         completed = [d.strip() for d in term.split(",") if d.strip()]

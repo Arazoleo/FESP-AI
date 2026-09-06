@@ -1,6 +1,6 @@
 # Oferta de disciplinas do semestre (grade de aulas)
 
-**Semestre:** 2026/2. **Fonte:** Agenda de salas do campus São José dos Campos (https://agendamentos.unifesp.br/sjc/Web/view-schedule.php), **coletado em** 2026-09-03.
+**Semestre:** 2026/2. **Fonte:** Agenda de salas do campus São José dos Campos (https://agendamentos.unifesp.br/sjc/Web/view-schedule.php), **coletado em** 2026-09-05.
 
 Esta é a grade de oferta do semestre extraída da agenda de reservas de salas do campus: para cada turma, o **professor**, os **dias e horários** e a **sala**. É a oferta real do semestre (não a previsão por paridade). Reservas de pós-graduação, monitorias e eventos foram descartadas. Como a fonte é a agenda de salas, vale confirmar mudanças pontuais com a coordenação.
 
@@ -18,7 +18,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma N** — Prof. Lilia Berton — segunda 19:00–21:00 (Lab. Inf. 403 - 55 lugares); quarta 19:00–21:00 (sala 303 - 100 lugares)
 
 ## Analise de Investimentos e Riscos  _(não consta no catálogo da base)_
-- **Turma I** — Prof. Sato — segunda 13:30–15:30 (Lab. Inf. 403 - 55 lugares); terça 10:00–12:00 (sala 208 - 97 lugares); terça 10:00–12:00 (Lab. Inf. 405 - 52 lugares); quinta 10:00–12:00 (Lab. Inf. 405 - 52 lugares)
+- **Turma I** — Prof. Sato — segunda 13:30–15:30 (Lab. Inf. 403 - 55 lugares); terça 10:00–12:00 (Lab. Inf. 405 - 52 lugares); terça 10:00–12:00 (sala 208 - 97 lugares); quinta 10:00–12:00 (Lab. Inf. 405 - 52 lugares)
 - **Turma N** — Prof. Sato — quarta 19:00–21:00 (sala 207 - 56 lugares)
 
 ## Análise Real II
@@ -26,7 +26,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma N** — Prof. Cláudia Aline — segunda 21:00–23:00 (Sala 203 - 69 lugares); quarta 21:00–23:00 (Sala 203 - 69 lugares)
 
 ## Anatomia
-- **Turma I** — Prof. Fernando — terça 13:30–15:30 (sala 303 - 100 lugares); terça 13:30–15:30 (Lab Bio II/Fisiologia - sala 318 - 3° andar)
+- **Turma I** — Prof. Fernando — terça 13:30–15:30 (Lab Bio II/Fisiologia - sala 318 - 3° andar); terça 13:30–15:30 (sala 303 - 100 lugares)
 - **Turma N** — Prof. Fernando — quinta 21:00–23:00 (sala 303 - 100 lugares); quinta 21:00–23:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar)
 
 ## Aplicações de Redes Neurais de Aprendizado Profundo em Sinais e Imagens Médicas  _(não consta no catálogo da base)_
@@ -63,7 +63,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 
 ## Biotecnologia Ambiental I
 - **Turma I** — Prof. Danielle — terça 15:30–17:30 (sala 301 - 73 lugares); quinta 15:30–17:30 (sala 301 - 73 lugares)
-- **Turma N** — Prof. Danielle — terça 19:00–21:00 (sala 301 - 73 lugares); quinta 19:00–21:00 (Lab. Inf. 404 - 51 lugares); quinta 19:00–21:00 (sala 301 - 73 lugares)
+- **Turma N** — Prof. Danielle — terça 19:00–21:00 (sala 301 - 73 lugares); quinta 19:00–21:00 (sala 301 - 73 lugares); quinta 19:00–21:00 (Lab. Inf. 404 - 51 lugares)
 
 ## Biotecnologia Animal
 - **Turma N** — Prof. Loures — sexta 19:00–23:00 (sala 209 - 56 lugares)
@@ -113,7 +113,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma N** — Prof. Ana — quinta 21:00–23:00 (Lab. Inf. 407 - 66 lugares); sexta 21:00–23:00 (Lab. Inf. 407 - 66 lugares)
 
 ## Controle de Sistemas Dinâmicos
-- **Turma I** — Prof. Paiva — segunda 10:00–12:00 (sala 210 - 110 lugares); segunda 10:00–12:00 (Lab. Inf. 405 - 52 lugares); sexta 10:00–12:00 (Lab. Inf. 405 - 52 lugares)
+- **Turma I** — Prof. Paiva — segunda 10:00–12:00 (Lab. Inf. 405 - 52 lugares); segunda 10:00–12:00 (sala 210 - 110 lugares); sexta 10:00–12:00 (Lab. Inf. 405 - 52 lugares)
 - **Turma N** — Prof. Sérgio — segunda 19:00–21:00 (Lab. Inf. 405 - 52 lugares); quarta 19:00–21:00 (Lab. Inf. 405 - 52 lugares)
 
 ## Cultura dos Jogos Digitais
@@ -174,8 +174,8 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 
 ## Fisiologia Humana II
 - **Turma IA** — Prof. Tatiana — segunda 13:30–15:30 (Lab Bio II/Fisiologia - sala 318 - 3° andar); segunda 13:30–15:30 (sala 307 - 58 lugares); quarta 13:30–15:30 (Lab Bio II/Fisiologia - sala 318 - 3° andar); quarta 13:30–15:30 (sala 307 - 58 lugares)
-- **Turma IB** — Prof. Tatiana — segunda 10:00–12:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar); segunda 10:00–12:00 (sala 307 - 58 lugares); quarta 10:00–12:00 (sala 307 - 58 lugares); quarta 10:00–12:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar)
-- **Turma N** — Prof. Flavio — segunda 21:00–23:00 (sala 307 - 58 lugares); segunda 21:00–23:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar); quarta 21:00–23:00 (sala 307 - 58 lugares); quarta 21:00–23:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar)
+- **Turma IB** — Prof. Tatiana — segunda 10:00–12:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar); segunda 10:00–12:00 (sala 307 - 58 lugares); quarta 10:00–12:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar); quarta 10:00–12:00 (sala 307 - 58 lugares)
+- **Turma N** — Prof. Flavio — segunda 21:00–23:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar); segunda 21:00–23:00 (sala 307 - 58 lugares); quarta 21:00–23:00 (sala 307 - 58 lugares); quarta 21:00–23:00 (Lab Bio II/Fisiologia - sala 318 - 3° andar)
 
 ## Funções Analíticas
 - **Turma I** — Prof. Leandro — quarta 08:00–10:00 (sala 302 - 69 lugares); sexta 08:00–10:00 (sala 302 - 69 lugares)
@@ -218,7 +218,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma N** — Prof. Edson — sexta 19:00–21:00 (sala 210 - 110 lugares)
 
 ## Instrumentos Biomédicos
-- **Turma I** — Prof. Roberson — terça 15:30–17:30 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); terça 15:30–17:30 (sala 304 - 99 lugares); quinta 15:30–17:30 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); quinta 15:30–17:30 (sala 304 - 99 lugares)
+- **Turma I** — Prof. Roberson — terça 15:30–17:30 (sala 304 - 99 lugares); terça 15:30–17:30 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); quinta 15:30–17:30 (sala 304 - 99 lugares); quinta 15:30–17:30 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar)
 
 ## Internet das Coisas
 - **Turma I** — Prof. Gabriel — segunda 13:30–15:30 (Lab. Inf. 404 - 51 lugares); quarta 13:30–15:30 (Lab. Inf. 404 - 51 lugares)
@@ -251,7 +251,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 
 ## Introdução à Nanotecnologia
 - **Turma I** — Prof. Elias — quinta 15:30–17:30 (sala 309 - 56 lugares); quinta 15:30–17:30 (Lab. Química Orgânica e Síntese - sala 315 - 3° andar)
-- **Turma N** — Prof. Elias — quinta 19:00–21:00 (sala 307 - 58 lugares); quinta 19:00–21:00 (Lab. Química Orgânica e Síntese - sala 315 - 3° andar)
+- **Turma N** — Prof. Elias — quinta 19:00–21:00 (Lab. Química Orgânica e Síntese - sala 315 - 3° andar); quinta 19:00–21:00 (sala 307 - 58 lugares)
 
 ## Introdução à Pesquisa Operacional
 - **Turma N** — Prof. Chaves — segunda 19:00–21:00 (sala 206 - 100 lugares); quarta 19:00–21:00 (sala 206 - 100 lugares)
@@ -261,7 +261,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 
 ## Lab. Biologia Molecular e Celular  _(não consta no catálogo da base)_
 - **Turma I** — Prof. Claudia — sexta 13:30–17:30 (Lab. Bio I - sala 317 - 3° andar); sexta 13:30–17:30 (sala 309 - 56 lugares)
-- **Turma N** — Prof. Claudia — sexta 19:00–23:00 (Lab. Bio I - sala 317 - 3° andar); sexta 19:00–23:00 (sala 305 - 51 lugares)
+- **Turma N** — Prof. Claudia — sexta 19:00–23:00 (sala 305 - 51 lugares); sexta 19:00–23:00 (Lab. Bio I - sala 317 - 3° andar)
 
 ## Lab. De Sistemas Computacionais (Circuitos Digitais)  _(não consta no catálogo da base)_
 - **Turma IA** — Prof. Sérgio — segunda 13:30–15:30 (Lab. 401 - Engenharia de Computação I: Sistemas Computacionais)
@@ -273,7 +273,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma N** — Prof. Tiago Oliveira — segunda 19:00–21:00 (Lab. 401 - Engenharia de Computação I: Sistemas Computacionais); quarta 19:00–21:00 (Lab. 401 - Engenharia de Computação I: Sistemas Computacionais)
 
 ## Laboratório de Bioquímica Analítica
-- **Turma I** — Prof. Conceição — quinta 08:00–12:00 (sala 305 - 51 lugares); quinta 08:00–12:00 (Lab. Bio I - sala 317 - 3° andar)
+- **Turma I** — Prof. Conceição — quinta 08:00–12:00 (Lab. Bio I - sala 317 - 3° andar); quinta 08:00–12:00 (sala 305 - 51 lugares)
 
 ## Laboratório de Circuitos Elétricos
 - **Turma I** — Prof. Gabriel — terça 15:30–17:30 (Lab. Eletrônica - sala 312 - 3° andar)
@@ -283,14 +283,14 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma IB** — Prof. Karina — sexta 15:30–17:30 (Lab. Eletrônica - sala 312 - 3° andar); sexta 15:30–17:30 (sala 308 - 90 lugares)
 - **Turma IC** — Prof. Gurjão — quarta 10:00–12:00 (Lab. Eletrônica - sala 312 - 3° andar); quarta 10:00–12:00 (sala 305 - 51 lugares)
 - **Turma NA** — Prof. Karina — quinta 19:00–21:00 (Lab. Eletrônica - sala 312 - 3° andar); quinta 19:00–21:00 (sala 305 - 51 lugares)
-- **Turma NB** — Prof. Karina — sexta 19:00–21:00 (Lab. Eletrônica - sala 312 - 3° andar); sexta 19:00–21:00 (sala 309 - 56 lugares)
+- **Turma NB** — Prof. Karina — sexta 19:00–21:00 (sala 309 - 56 lugares); sexta 19:00–21:00 (Lab. Eletrônica - sala 312 - 3° andar)
 
 ## Laboratório de Engenharia Bioquímica
-- **Turma I** — Prof. Elisabeth — segunda 08:00–12:00 (sala 305 - 51 lugares); segunda 08:00–12:00 (Lab. Bio I - sala 317 - 3° andar)
+- **Turma I** — Prof. Elisabeth — segunda 08:00–12:00 (Lab. Bio I - sala 317 - 3° andar); segunda 08:00–12:00 (sala 305 - 51 lugares)
 
 ## Laboratório de Microbiologia
 - **Turma I** — Prof. Elisa — quarta 15:30–17:30 (sala 305 - 51 lugares); quarta 15:30–17:30 (Lab. Bio I - sala 317 - 3° andar)
-- **Turma N** — Prof. Elisa — quarta 19:00–21:00 (sala 305 - 51 lugares); quarta 19:00–21:00 (Lab. Bio I - sala 317 - 3° andar)
+- **Turma N** — Prof. Elisa — quarta 19:00–21:00 (Lab. Bio I - sala 317 - 3° andar); quarta 19:00–21:00 (sala 305 - 51 lugares)
 
 ## Laboratório de Sistemas computacionais - Eng.de Sistemas  _(não consta no catálogo da base)_
 - **Turma I** — Prof. Tiago Silva — quarta 15:30–17:30 (Lab. 402 - Engenharia de Computação II: Sistemas Embarcados)
@@ -376,8 +376,8 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma N** — Prof. Reginaldo — terça 19:00–21:00 (sala 303 - 100 lugares); quinta 19:00–21:00 (sala 303 - 100 lugares)
 
 ## Projetos em Engenharia Biomédica
-- **Turma I** — Prof. Urban — segunda 13:30–15:30 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); segunda 13:30–15:30 (sala 301 - 73 lugares); segunda 13:30–15:30 (Lab. Eletrônica - sala 312 - 3° andar); quarta 13:30–15:30 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); quarta 13:30–15:30 (sala 301 - 73 lugares); quarta 13:30–15:30 (Lab. Eletrônica - sala 312 - 3° andar)
-- **Turma N** — Prof. Urban — segunda 21:00–23:00 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); segunda 21:00–23:00 (sala 301 - 73 lugares); segunda 21:00–23:00 (Lab. Eletrônica - sala 312 - 3° andar); quarta 21:00–23:00 (sala 301 - 73 lugares); quarta 21:00–23:00 (Lab. Eletrônica - sala 312 - 3° andar); quarta 21:00–23:00 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar)
+- **Turma I** — Prof. Urban — segunda 13:30–15:30 (sala 301 - 73 lugares); segunda 13:30–15:30 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); segunda 13:30–15:30 (Lab. Eletrônica - sala 312 - 3° andar); quarta 13:30–15:30 (sala 301 - 73 lugares); quarta 13:30–15:30 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); quarta 13:30–15:30 (Lab. Eletrônica - sala 312 - 3° andar)
+- **Turma N** — Prof. Urban — segunda 21:00–23:00 (sala 301 - 73 lugares); segunda 21:00–23:00 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); segunda 21:00–23:00 (Lab. Eletrônica - sala 312 - 3° andar); quarta 21:00–23:00 (sala 301 - 73 lugares); quarta 21:00–23:00 (Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar); quarta 21:00–23:00 (Lab. Eletrônica - sala 312 - 3° andar)
 
 ## Projetos Sustentáveis em Polímeros  _(não consta no catálogo da base)_
 - **Turma I** — Prof. Ana Paula Lemes — quinta 08:00–12:00 (sala 308 - 90 lugares); quinta 08:00–12:00 (Lab. Inf. 404 - 51 lugares)
@@ -389,10 +389,10 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma I** — Prof. Raquel — segunda 08:00–10:00 (sala 204 - 110 lugares); quarta 08:00–10:00 (sala 204 - 110 lugares)
 
 ## Química Geral Experimental
-- **Turma IA** — Prof. Hugo — sexta 13:30–17:30 (Lab. Química Geral I - sala 316 - 3° andar); sexta 13:30–17:30 (sala 307 - 58 lugares)
-- **Turma IB** — Prof. Hugo — terça 13:30–17:30 (Lab. Química Geral I - sala 316 - 3° andar); terça 13:30–17:30 (sala 309 - 56 lugares)
+- **Turma IA** — Prof. Hugo — sexta 13:30–17:30 (sala 307 - 58 lugares); sexta 13:30–17:30 (Lab. Química Geral I - sala 316 - 3° andar)
+- **Turma IB** — Prof. Hugo — terça 13:30–17:30 (sala 309 - 56 lugares); terça 13:30–17:30 (Lab. Química Geral I - sala 316 - 3° andar)
 - **Turma NA** — Prof. Maraísa — terça 19:00–23:00 (Lab. Quí­mica Geral II - sala 314 - 3o andar); terça 19:00–23:00 (sala 305 - 51 lugares)
-- **Turma NB** — Prof. Maraísa — sexta 19:00–23:00 (sala 302 - 69 lugares); sexta 19:00–23:00 (Lab. Quí­mica Geral II - sala 314 - 3o andar)
+- **Turma NB** — Prof. Maraísa — sexta 19:00–23:00 (Lab. Quí­mica Geral II - sala 314 - 3o andar); sexta 19:00–23:00 (sala 302 - 69 lugares)
 
 ## Química Orgânica Experimental
 - **Turma N** — Prof. João — quarta 19:00–23:00 (sala 309 - 56 lugares); quarta 19:00–23:00 (Lab. Química Orgânica e Síntese - sala 315 - 3° andar)
@@ -427,7 +427,7 @@ Esta é a grade de oferta do semestre extraída da agenda de reservas de salas d
 - **Turma NB** — Prof. Thiago Castilho — terça 19:00–21:00 (sala 204 - 110 lugares); quinta 19:00–21:00 (sala 204 - 110 lugares)
 
 ## Sistemas Embarcados
-- **Turma I** — Prof. Fernanda — segunda 13:30–15:30 (sala 305 - 51 lugares); segunda 13:30–15:30 (Lab. 402 - Engenharia de Computação II: Sistemas Embarcados); quarta 13:30–15:30 (sala 305 - 51 lugares); quarta 13:30–15:30 (Lab. 402 - Engenharia de Computação II: Sistemas Embarcados)
+- **Turma I** — Prof. Fernanda — segunda 13:30–15:30 (Lab. 402 - Engenharia de Computação II: Sistemas Embarcados); segunda 13:30–15:30 (sala 305 - 51 lugares); quarta 13:30–15:30 (Lab. 402 - Engenharia de Computação II: Sistemas Embarcados); quarta 13:30–15:30 (sala 305 - 51 lugares)
 - **Turma N** — Prof. Aoki — terça 19:00–21:00 (sala 309 - 56 lugares); terça 19:00–21:00 (Lab. 402 - Engenharia de Computação II: Sistemas Embarcados); quinta 19:00–21:00 (sala 309 - 56 lugares); quinta 19:00–21:00 (Lab. 402 - Engenharia de Computação II: Sistemas Embarcados)
 
 ## Sistemas Mecânicos

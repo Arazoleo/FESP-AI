@@ -370,12 +370,21 @@ async def chat(request: ChatRequest):
     
     context_resolver.update_context(conversation_id, request.message, 'user')
 
+    # Ponte: expõe ao pipeline as ENTIDADES de docentes já aterradas na conversa
+    # (para anáfora de grupo "eles/elas") - não é texto, é a lista de docentes.
+    _hist = historicos.setdefault(conversation_id, {})
+    try:
+        _ctx = context_resolver.get_context(conversation_id)
+        _hist["_docentes_ativos"] = list(getattr(_ctx, "docentes_list", []) or [])
+    except Exception:
+        pass
+
     try:
         result = rag.query_with_metadata(
             enhanced_question,
             history=history_text,
             original_question=request.message,
-            historico=historicos.setdefault(conversation_id, {}),
+            historico=_hist,
         )
         response_text = result["response"]
         active_agent = result.get("active_agent", "fallback")
@@ -398,7 +407,19 @@ async def chat(request: ChatRequest):
     conversations[conversation_id].append(assistant_message)
     
     context_resolver.update_context(conversation_id, response_text, 'assistant')
-    
+
+    # Captura por GROUNDING os docentes citados na resposta (prosa OU bullets) —
+    # resolve a anáfora de grupo "eles" mesmo quando o LLM responde em prosa
+    # corrida (o tracker lexical só pega listas com "- Nome").
+    try:
+        _kg = getattr(rag, "knowledge_graph", None)
+        if _kg is not None:
+            _ground = _kg.docentes_mencionados(response_text)
+            if len(_ground) >= 2:
+                context_resolver.get_context(conversation_id).docentes_list = _ground
+    except Exception:
+        pass
+
     logger.info(f"[AGENT] Agente ativo: {active_agent}")
     
     agent_info = None

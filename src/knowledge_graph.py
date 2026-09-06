@@ -1500,7 +1500,13 @@ class KnowledgeGraph:
                     is_match = True
                 elif len(area_normalized) > 5 and area_normalized in nome_area:
                     is_match = True
-                
+                elif len(nome_words) >= 2 and nome_words.issubset(area_words):
+                    # nome da área aparece DENTRO do termo (grounding em texto):
+                    # "com quem faço ic de visão computacional" → Visão
+                    # Computacional. Robusto a lead-ins ("ic de/em", "trabalha
+                    # com", "pesquisa") sem lista de prefixos.
+                    is_match = True
+
                 if is_match:
                     for pred in self.graph.predecessors(node):
                         edge_data = self.graph.get_edge_data(pred, node)
@@ -1566,7 +1572,104 @@ class KnowledgeGraph:
                         break
         
         return areas
-    
+
+    def aprender_conceito_area(self, min_crenca: float = 0.5) -> int:
+        """
+        Materializa no grafo a ponte APRENDIDA conceito→área: deriva
+            especialista_em(D,A) ∧ leciona(D,X) ∧ aborda(X,C) → pertence_a(C,A)
+        e grava como arestas PERTENCE_A (conceito → área) com a crença em
+        `confidence` e `aprendido=True` (proveniência). Só entra o que bate
+        `min_crenca`. Conecta o espaço granular (conceitos) ao temático (áreas),
+        fechando a lacuna do KG. Idempotente (key fixa). Retorna nº de arestas.
+        """
+        try:
+            from .rule_miner import ligar_conceito_area
+            ligacoes = ligar_conceito_area(self)
+        except Exception:
+            return 0
+        n = 0
+        for lig in ligacoes:
+            if lig["crenca"] < min_crenca:
+                continue
+            c_id, a_id = lig["conceito"], lig["area"]  # já são node ids
+            if not self.graph.has_node(c_id) or not self.graph.has_node(a_id):
+                continue
+            self.graph.add_edge(
+                c_id, a_id, key="pertence_a", relacao="PERTENCE_A",
+                confidence=lig["crenca"], aprendido=True,
+                evidencia=lig["evidencia"],
+            )
+            n += 1
+        return n
+
+    def disciplinas_da_area(self, area: str, top_k: int = 10) -> List[Dict]:
+        """
+        Disciplinas que cobrem uma ÁREA, via a ponte APRENDIDA:
+            disciplina —aborda→ conceito —pertence_a→ área
+        Ranqueia por cobertura ponderada pela crença conceito→área. Retorna
+        [{nome, score, conceitos}]. Vazio se a ponte ainda não foi materializada.
+        """
+        from collections import defaultdict
+        # candidatos por nome, insensível a acento/caixa (usuário digita sem
+        # acento) - casa contra os nós de área reais via _normalize_text.
+        cand = {self._normalize_text(a.replace("AREA:", "").replace("area:", ""))
+                for a in self._expand_area_search(area)}
+        cand.add(self._normalize_text(area or ""))
+        cand.discard("")
+        alvos = set()
+        for nid, d in self.graph.nodes(data=True):
+            if d.get("tipo") != "area":
+                continue
+            nome = self._normalize_text(d.get("nome") or nid.replace("AREA:", ""))
+            if nome in cand:
+                alvos.add(nid)
+        if not alvos:
+            return []
+        conc_belief: Dict[str, float] = {}
+        for aid in alvos:
+            for c_id, _a, d in self.graph.in_edges(aid, data=True):
+                if d.get("relacao") == "PERTENCE_A":
+                    conc_belief[c_id] = max(
+                        conc_belief.get(c_id, 0.0), d.get("confidence", 0.0))
+        if not conc_belief:
+            return []
+        disc_score: Dict[str, float] = defaultdict(float)
+        disc_conc: Dict[str, list] = defaultdict(list)
+        for c_id, bel in conc_belief.items():
+            for d_id, _c, ed in self.graph.in_edges(c_id, data=True):
+                if ed.get("relacao") == "ABORDA" and \
+                        self.graph.nodes[d_id].get("tipo") == "disciplina":
+                    disc_score[d_id] += bel
+                    disc_conc[d_id].append(
+                        self.graph.nodes[c_id].get("nome") or c_id.replace("CONC:", ""))
+        out = [{
+            "nome": self.graph.nodes[d_id].get("nome", d_id),
+            "score": round(sc, 3),
+            "conceitos": disc_conc[d_id][:6],
+        } for d_id, sc in disc_score.items()]
+        out.sort(key=lambda x: -x["score"])
+        return out[:top_k]
+
+    def docentes_mencionados(self, texto: str) -> List[str]:
+        """Docentes (nome completo) citados no texto, por grounding no grafo —
+        funciona em PROSA ou bullets (o tracker lexical só captura bullets).
+        Resolve a anáfora de grupo ('eles') independentemente do formato com que
+        o LLM apresentou a lista. Exige 2+ tokens (evita casar 1º nome comum)."""
+        if not texto:
+            return []
+        t = f" {self._normalize_text(texto)} "
+        achados: List[str] = []
+        for _nid, d in self.graph.nodes(data=True):
+            if d.get("tipo") != "docente":
+                continue
+            nome = d.get("nome", "")
+            if not nome:
+                continue
+            n = self._normalize_text(nome)
+            if n and " " in n and f" {n} " in t and nome not in achados:
+                achados.append(nome)
+        return achados
+
     def get_docente_info(self, docente: str) -> Optional[Dict]:
         """Retorna informações completas de um docente (nome, email, sala, áreas)."""
         docente_id = self._find_docente_id(docente)

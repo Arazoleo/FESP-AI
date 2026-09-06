@@ -264,6 +264,10 @@ class PyReasonEngine(InferenceEngine):
                 f"{', '.join(co[:4])}"
             )
 
+        learned = self._learned_prereq_line(disciplina)
+        if learned:
+            lines.append(learned)
+
         if not lines:
             return ""
         return "[FATOS INFERIDOS - PyReasonEngine]\n" + "\n".join(f"  • {l}" for l in lines)
