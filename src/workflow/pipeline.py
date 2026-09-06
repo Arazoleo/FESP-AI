@@ -261,9 +261,11 @@ def build_pipeline(rag_instance):
         from ..oferta import extrair_disciplina_oferta, responder_oferta
         from .. import oferta_real
         from .. import contatos_docentes
-        try:  # intenção de oferta por SIMILARIDADE semântica (não por lista de palavras)
+        from .. import semantic_router
+        try:  # intenção por SIMILARIDADE semântica (não por lista de palavras)
             oferta_real.configurar_semantica(getattr(rag_instance, "embeddings", None))
             contatos_docentes.configurar(getattr(rag_instance, "embeddings", None))
+            semantic_router.configurar(getattr(rag_instance, "embeddings", None))
         except Exception:
             pass
         from ..interdisciplinares import (
@@ -815,6 +817,19 @@ def build_pipeline(rag_instance):
             hist_sessao is not None and _refere_proprias_ucs(pergunta_bruta)
         ):
             fast_label = "trilha"
+
+        # Rede semântica (NÃO lexical): se os detectores lexicais não pegaram,
+        # o router NN captura PARÁFRASES de intent de fluxo que a phrase-list
+        # perde (limiar alto rejeita conteúdo). Lexical = precisão; semântico =
+        # robustez a reformulações.
+        if not fast_label:
+            try:
+                _sem = semantic_router.rotulo(pergunta_bruta)
+                if _sem:
+                    fast_label = _sem
+            except Exception:
+                pass
+
         if fast_label:
             resposta_agentica = _agentico(fast_label)
             if resposta_agentica:

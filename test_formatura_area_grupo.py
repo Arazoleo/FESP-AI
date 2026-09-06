@@ -270,5 +270,23 @@ else:
         check(f"oferta detectada: {q[:42]}",
               oferta_real._intencao_oferta(q) is True)
 
+    # semantic_router (rede semântica de fluxo, NN): paráfrases → intent;
+    # conteúdo → None (limiar rejeita o ímã matricula_check)
+    sr = _import_module("semantic_router", "src/semantic_router.py")
+    sr.configurar(_emb)
+    FLUXO = [
+        ("me ajuda a planejar meus próximos semestres", "trilha"),
+        ("consigo pegar cálculo 2 agora", "matricula_check"),
+        ("qual o meu coeficiente de rendimento", "cr_consulta"),
+        ("quanto ainda falta pra eu me formar", "progresso"),
+    ]
+    for q, esperado in FLUXO:
+        check(f"fluxo por paráfrase: {q[:38]} → {esperado}",
+              sr.rotulo(q) == esperado, str(sr.classificar(q)))
+    for q in ["qual a ementa de compiladores", "me fala sobre cálculo 2",
+              "quem leciona banco de dados"]:
+        check(f"conteúdo NÃO vira fluxo: {q[:38]}", sr.rotulo(q) is None,
+              str(sr.classificar(q)))
+
 print(f"\n{BOLD}{_passed} passed, {_failed} failed{RESET}")
 sys.exit(1 if _failed else 0)
