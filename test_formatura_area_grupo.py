@@ -161,6 +161,14 @@ if _algum_doc:
     check("docente_mencionado aterra nome completo em prosa",
           kg.docente_mencionado(f"falar com {_algum_doc}") == _algum_doc)
 
+# declaração composta "to fazendo X, <pergunta>": grounding pega só a disciplina
+_hist_mod = _import_module("historico", "src/historico.py")
+_curs = _hist_mod.extrair_cursando(
+    "estou fazendo Banco de Dados, sabe a sala que é?", kg)
+check("extrair_cursando aterra só a disciplina, ignora fragmento de pergunta",
+      "Banco de Dados" in _curs
+      and not any("sala" in c.lower() for c in _curs), str(_curs))
+
 # ── 3. Contato/disciplinas de grupo de docentes ──────────────────────────────
 print(f"\n{BOLD}── grupo de docentes: grounding + iteração no grafo ──{RESET}")
 

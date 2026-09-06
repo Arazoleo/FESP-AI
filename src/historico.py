@@ -607,22 +607,31 @@ _CURSANDO_STOPWORDS = frozenset({
 })
 
 
-def extrair_cursando(texto: str) -> List[str]:
+def extrair_cursando(texto: str, kg=None) -> List[str]:
     m = _CURSANDO_RE.search(_norm(texto))
     if not m:
         return []
     trecho = m.group(1)
     trecho = re.sub(
-        r"\b(?:e\s+)?(?:se\s+eu|quanto|qual|quais|o\s+que|oq|como)\b.*$",
+        r"\b(?:e\s+)?(?:se\s+eu|quanto|qual|quais|o\s+que|oq|como|sabe|onde|"
+        r"quando|em\s+que|que\s+dia|tem)\b.*$",
         "", trecho,
     ).strip(" ,;")
+    # GROUNDING (interpretação): as disciplinas declaradas são os nós de
+    # disciplina PRESENTES no trecho — ignora fragmentos de pergunta que o aluno
+    # emendou ("...sabe a sala que é?"). Sem KG (testes), fallback lexical.
+    if kg is not None:
+        try:
+            return kg.disciplinas_mencionadas(trecho)
+        except Exception:
+            pass
     partes = re.split(r",| e |;", trecho)
     nomes = [p.strip(" .?!") for p in partes if p and len(p.strip(" .?!")) >= 3]
     return [n for n in nomes if n not in _CURSANDO_STOPWORDS]
 
 
-def is_cursando_decl(texto: str) -> bool:
-    return bool(extrair_cursando(texto))
+def is_cursando_decl(texto: str, kg=None) -> bool:
+    return bool(extrair_cursando(texto, kg))
 
 
 def extrair_nota_uniforme(texto: str) -> Optional[float]:
@@ -706,7 +715,7 @@ def registrar_cursando(dados: Dict, nomes: List[str], kg=None) -> List[Dict]:
 
 
 def responder_cursando(dados: Dict, texto: str, kg=None) -> str:
-    itens = registrar_cursando(dados, extrair_cursando(texto), kg)
+    itens = registrar_cursando(dados, extrair_cursando(texto, kg), kg)
     linhas = ["**Anotei o seu semestre atual nesta conversa:**", ""]
     for i in itens:
         marca = "" if i["no_kg"] else " (não achei no sistema; assumi 4 créditos)"
@@ -735,8 +744,8 @@ def responder_cr(dados: Optional[Dict], texto: str, kg=None) -> str:
             "só nesta conversa e é descartado depois. O CR da UNIFESP é a média "
             "ponderada dos conceitos pelas unidades de crédito de cada UC."
         )
-    if extrair_cursando(texto):
-        registrar_cursando(dados, extrair_cursando(texto), kg)
+    if extrair_cursando(texto, kg):
+        registrar_cursando(dados, extrair_cursando(texto, kg), kg)
 
     cr = dados.get("cr_geral") or dados.get("cr_calculado")
     disciplinas = dados.get("disciplinas", [])

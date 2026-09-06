@@ -279,6 +279,7 @@ def build_pipeline(rag_instance):
             responder_cr,
             is_cursando_decl,
             responder_cursando,
+            extrair_cursando,
             aprovadas as historico_aprovadas,
             curso_sigla as historico_curso_sigla,
             extrair_disciplina_cursei,
@@ -621,14 +622,23 @@ def build_pipeline(rag_instance):
         if (
             hist_sessao is not None
             and not is_cr_request(pergunta_bruta)
-            and is_cursando_decl(pergunta_bruta)
+            and is_cursando_decl(pergunta_bruta, rag_instance.knowledge_graph)
         ):
+            _kg = rag_instance.knowledge_graph
+            _resp_curs = responder_cursando(hist_sessao, pergunta_bruta, _kg)
+            # Mensagem COMPOSTA: se o aluno emendou uma pergunta de oferta
+            # (sala/dia/horário) sobre a disciplina que declarou, responde-a
+            # também — interpreta as duas partes do que foi dito.
+            try:
+                _decls = extrair_cursando(pergunta_bruta, _kg)
+                if _decls and oferta_real._tem_intencao(pergunta_bruta):
+                    _of = oferta_real.responder(pergunta_bruta, _decls[0], _kg)
+                    if _of:
+                        _resp_curs = f"{_resp_curs}\n\n---\n\n{_of}"
+            except Exception:
+                pass
             return _resposta_simbolica(
-                responder_cursando(
-                    hist_sessao, pergunta_bruta, rag_instance.knowledge_graph
-                ),
-                "cursando_decl",
-                ["Sessão da conversa"],
+                _resp_curs, "cursando_decl", ["Sessão da conversa"],
             )
 
         # ── Relatório de Progresso em PDF: fluxo GUIADO em etapas ─────────
