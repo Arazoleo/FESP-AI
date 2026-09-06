@@ -36,10 +36,20 @@ class DisciplinasAgent(BaseAgent):
 
         raw_name = self._resolve_discipline_name(question, term)
         discipline_name = self._normalize_discipline_name(raw_name) if raw_name else None
+        vetor_ok = False
         if discipline_name and self.db:
             docs = self._fetch_discipline_docs(discipline_name, question.lower())
             if docs:
                 parts.append(self._format_docs(docs))
+                vetor_ok = True
+
+        # Fallback anti-alucinação: se o vector store não trouxe a disciplina mas
+        # o nó do KG tem os fatos (ementa/carga/créditos), usa o KG — evita negar
+        # ementa que EXISTE na base (o vector store pode não ter indexado).
+        if not vetor_ok:
+            kg_facts = self._kg_disciplina_facts(discipline_name or raw_name)
+            if kg_facts:
+                parts.append(kg_facts)
 
         if not parts and self.rag.retriever:
             docs = self.rag.retriever.invoke(question)
@@ -51,6 +61,33 @@ class DisciplinasAgent(BaseAgent):
                 parts.append(site_ctx)
 
         return "\n\n".join(parts) if parts else ""
+
+    def _kg_disciplina_facts(self, name: str) -> str:
+        """Fatos da disciplina direto do nó do KG (ementa/carga/créditos/código),
+        fallback quando o vector store não indexou a disciplina. Só o que EXISTE."""
+        kg = self.knowledge_graph
+        if not kg or not name:
+            return ""
+        try:
+            nid = kg._find_node(name, "disciplina")
+        except Exception:
+            nid = None
+        if not nid:
+            return ""
+        d = kg.graph.nodes[nid]
+        linhas = [f"DISCIPLINA: {d.get('nome', name)}"]
+        if d.get("codigo"):
+            linhas.append(f"Código: {d['codigo']}")
+        if d.get("ementa"):
+            linhas.append(f"EMENTA / CONTEÚDO PROGRAMÁTICO:\n{d['ementa']}")
+        if d.get("carga_horaria"):
+            linhas.append(f"Carga horária: {d['carga_horaria']}")
+        if d.get("creditos"):
+            linhas.append(f"Créditos: {d['creditos']}")
+        if len(linhas) <= 1:
+            return ""
+        return ("[FATOS DO GRAFO - disciplina (dados verificados; use SÓ estes)]\n"
+                + "\n".join(linhas))
 
     def _site_supplement(self, question: str) -> str:
         """Top seções do site do campus relevantes à pergunta, com link."""

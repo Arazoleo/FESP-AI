@@ -138,6 +138,15 @@ if _area_amostra:
           len(kg.get_docentes_by_area(f"com quem faço ic de {_area_amostra}")) >= 1,
           _area_amostra)
 
+# grounding tolerante de nome (oferta↔catálogo): variação à/às não quebra
+_nid_as = kg._find_node("Introdução às Redes Neurais Artificiais", "disciplina")
+if _nid_as:
+    check("nome com variação à/às aterra no mesmo nó do catálogo (oferta↔catálogo)",
+          kg._find_node("Introdução à Redes Neurais Artificiais", "disciplina") == _nid_as)
+check("tolerância de tokens NÃO casa espúrio (Cálculo 1 ≠ Cálculo 2)",
+      kg._find_node("Cálculo 1", "disciplina") != kg._find_node("Cálculo 2", "disciplina")
+      or kg._find_node("Cálculo 1", "disciplina") is None)
+
 # ── 3. Contato/disciplinas de grupo de docentes ──────────────────────────────
 print(f"\n{BOLD}── grupo de docentes: grounding + iteração no grafo ──{RESET}")
 

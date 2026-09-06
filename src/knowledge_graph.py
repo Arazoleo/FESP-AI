@@ -1112,6 +1112,22 @@ class KnowledgeGraph:
             if len(termo_normalized) >= 4 and termo_normalized in nome:
                 return node
 
+        # Fallback tolerante: casa por CONJUNTO de tokens de conteúdo, ignorando
+        # palavras funcionais (a/as/de/da/e...). Resolve variações do tipo
+        # "Introdução à Redes Neurais" (oferta) vs "Introdução às Redes Neurais"
+        # (catálogo). Exige >= 2 tokens de conteúdo p/ não casar espúrio.
+        _STOP = {"a", "as", "o", "os", "de", "da", "do", "das", "dos",
+                 "e", "em", "para", "no", "na", "com"}
+        q_tokens = {t for t in termo_normalized.split() if t not in _STOP}
+        if len(q_tokens) >= 2:
+            for node, data in self.graph.nodes(data=True):
+                if tipo and data.get('tipo') != tipo:
+                    continue
+                n_tokens = {t for t in self._normalize_text(data.get('nome', '')).split()
+                            if t not in _STOP}
+                if q_tokens == n_tokens:
+                    return node
+
         return None
     
     def get_stats(self) -> Dict:
