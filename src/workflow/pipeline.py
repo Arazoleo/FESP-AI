@@ -934,6 +934,19 @@ def build_pipeline(rag_instance):
                 "active_agent": "web_sjc",
             }
 
+        # Rede semântica de DOMÍNIO (fallback): paráfrases de noticias/web_sjc que
+        # a phrase-list perde. Margem grande (conteúdo <0.30, limiar 0.45) →
+        # não sequestra pergunta de conteúdo.
+        try:
+            _dom = semantic_router.rotulo_dominio(question_lower)
+        except Exception:
+            _dom = None
+        if _dom:
+            return {
+                **state, "intent": _dom, "term": "", "confidence": 0.85,
+                "active_agent": _dom,
+            }
+
         intent = "unknown"
         term = ""
         confidence = 0.0

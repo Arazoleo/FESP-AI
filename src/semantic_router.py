@@ -65,51 +65,93 @@ FLOW_EXAMPLES = {
     ],
 }
 
-_S = {"emb": None, "labels": [], "mat": None}
+# Domínio (seleção de agente): MUITO mais separável de conteúdo que os intents
+# de fluxo (negativos <0.30 vs positivos >0.50), então limiar mais baixo é seguro.
+# montar_grade fica de fora (overlapa com 'trilha'); is_conversational e
+# phrase_override seguem lexicais (heurística sutil/correção de rota).
+DOMAIN_EXAMPLES = {
+    "noticias": [
+        "quais as notícias do campus",
+        "novidades da unifesp",
+        "o que está acontecendo no ict",
+        "tem alguma novidade no campus",
+        "últimas notícias da universidade",
+    ],
+    "web_sjc": [
+        "onde fica a secretaria",
+        "horário de funcionamento do campus",
+        "como faço rematrícula",
+        "telefone da secretaria acadêmica",
+        "como emito meu histórico escolar",
+        "como funciona o restaurante universitário",
+    ],
+}
+
+_FLOW = {"emb": None, "labels": [], "mat": None, "limiar": 0.66}
+_DOM = {"emb": None, "labels": [], "mat": None, "limiar": 0.45}
 
 
-def configurar(embeddings_model, limiar: float = 0.66) -> None:
-    """Pré-computa a matriz normalizada de exemplos (uma vez)."""
-    if embeddings_model is None or _S["mat"] is not None:
+def _config(state: dict, examples: dict, embeddings_model, limiar: float) -> None:
+    if embeddings_model is None or state["mat"] is not None:
         return
     try:
         import numpy as np
-        pares = [(lab, ex) for lab, exs in FLOW_EXAMPLES.items() for ex in exs]
-        vecs = embeddings_model.embed_documents([ex for _, ex in pares])
-        a = np.array(vecs, dtype="float32")
+        pares = [(lab, ex) for lab, exs in examples.items() for ex in exs]
+        a = np.array(embeddings_model.embed_documents([ex for _, ex in pares]),
+                     dtype="float32")
         a /= (np.linalg.norm(a, axis=1, keepdims=True) + 1e-9)
-        _S["emb"] = embeddings_model
-        _S["labels"] = [lab for lab, _ in pares]
-        _S["mat"] = a
-        _S["limiar"] = limiar
+        state["emb"] = embeddings_model
+        state["labels"] = [lab for lab, _ in pares]
+        state["mat"] = a
+        state["limiar"] = limiar
     except Exception:
-        _S["emb"] = None
+        state["emb"] = None
 
 
-def classificar(pergunta: str) -> Optional[Tuple[str, float]]:
-    """(rótulo, score) do intent de fluxo mais próximo, se acima do limiar;
-    senão None (o chamador cai no detector lexical). Não lexical: nearest-neighbor
-    sobre exemplos."""
-    if _S["mat"] is None or not pergunta:
+def _classify(state: dict, pergunta: str) -> Optional[Tuple[str, float]]:
+    if state["mat"] is None or not pergunta:
         return None
     try:
         import numpy as np
-        q = np.array(_S["emb"].embed_query(pergunta), dtype="float32")
+        q = np.array(state["emb"].embed_query(pergunta), dtype="float32")
         nq = np.linalg.norm(q)
         if nq == 0:
             return None
         q = q / nq
-        sims = _S["mat"] @ q
+        sims = state["mat"] @ q
         j = int(sims.argmax())
         score = float(sims[j])
-        if score < _S.get("limiar", 0.62):
+        if score < state["limiar"]:
             return None
-        return _S["labels"][j], score
+        return state["labels"][j], score
     except Exception:
         return None
 
 
+def configurar(embeddings_model, limiar: float = 0.66) -> None:
+    """Pré-computa os exemplos de FLUXO (uma vez)."""
+    _config(_FLOW, FLOW_EXAMPLES, embeddings_model, limiar)
+    _config(_DOM, DOMAIN_EXAMPLES, embeddings_model, _DOM["limiar"])
+
+
+def classificar(pergunta: str) -> Optional[Tuple[str, float]]:
+    """(rótulo, score) do intent de FLUXO mais próximo acima do limiar; senão
+    None (chamador cai no lexical). Nearest-neighbor, não lexical."""
+    return _classify(_FLOW, pergunta)
+
+
 def rotulo(pergunta: str) -> Optional[str]:
-    """Só o rótulo (ou None) — açúcar para o roteamento."""
+    """Só o rótulo de FLUXO (ou None)."""
     r = classificar(pergunta)
+    return r[0] if r else None
+
+
+def classificar_dominio(pergunta: str) -> Optional[Tuple[str, float]]:
+    """(agente, score) do domínio mais próximo (noticias/web_sjc) acima do
+    limiar; senão None. Rede semântica sobre os detectores de domínio lexicais."""
+    return _classify(_DOM, pergunta)
+
+
+def rotulo_dominio(pergunta: str) -> Optional[str]:
+    r = classificar_dominio(pergunta)
     return r[0] if r else None

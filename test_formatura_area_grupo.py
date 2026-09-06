@@ -288,5 +288,16 @@ else:
         check(f"conteúdo NÃO vira fluxo: {q[:38]}", sr.rotulo(q) is None,
               str(sr.classificar(q)))
 
+    # rede semântica de DOMÍNIO (margem grande vs conteúdo)
+    for q, esperado in [("o que rolou de novo na unifesp", "noticias"),
+                        ("tem novidade no campus", "noticias"),
+                        ("como tiro meu histórico escolar", "web_sjc")]:
+        check(f"domínio por paráfrase: {q[:36]} → {esperado}",
+              sr.rotulo_dominio(q) == esperado, str(sr.classificar_dominio(q)))
+    for q in ["qual a ementa de compiladores", "quais as eletivas de bcc",
+              "quem leciona banco de dados"]:
+        check(f"conteúdo NÃO vira domínio: {q[:36]}",
+              sr.rotulo_dominio(q) is None, str(sr.classificar_dominio(q)))
+
 print(f"\n{BOLD}{_passed} passed, {_failed} failed{RESET}")
 sys.exit(1 if _failed else 0)
