@@ -127,6 +127,16 @@ check("casamento de área é insensível a acento (otimizacao == Otimização)",
       len(kg.disciplinas_da_area("otimizacao")) == len(ds_ot))
 check("área inexistente retorna vazio (auto-gated)",
       kg.disciplinas_da_area("gastronomia molecular") == [])
+# grounding de área DENTRO do texto: lead-ins ("ic de/em", "trabalha com") não
+# quebram o casamento (nome da área aparece no termo)
+_area_amostra = next((d.get("nome") for _n, d in kg.graph.nodes(data=True)
+                      if d.get("tipo") == "area"
+                      and len((d.get("nome") or "").split()) >= 2
+                      and kg.get_docentes_by_area(d.get("nome"))), None)
+if _area_amostra:
+    check("get_docentes_by_area aterra área dentro de termo com lead-in",
+          len(kg.get_docentes_by_area(f"com quem faço ic de {_area_amostra}")) >= 1,
+          _area_amostra)
 
 # ── 3. Contato/disciplinas de grupo de docentes ──────────────────────────────
 print(f"\n{BOLD}── grupo de docentes: grounding + iteração no grafo ──{RESET}")

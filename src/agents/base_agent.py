@@ -184,6 +184,15 @@ class BaseAgent(ABC):
 
         context = self.retrieve(question, intent, term)
         context = self._com_consulta_lateral(context, question, term)
+        # Enriquecimento anti-alucinação UNIFORME: fatos do grafo sobre os
+        # docentes citados (áreas de pesquisa + contato), por grounding — evita
+        # QUALQUER agente negar dado que existe na base.
+        fact_sheet = self._kg_fact_sheet(question, context)
+        if fact_sheet:
+            context = (
+                (context + "\n\n" + fact_sheet).strip()
+                if context and context.strip() else fact_sheet
+            )
         if student_context:
             context = (
                 student_context + "\n\n" + context if context and context.strip()
@@ -303,6 +312,46 @@ class BaseAgent(ABC):
         except Exception:
             pass
         return (context + "\n\n" + bloco).strip() if context else bloco
+
+    def _kg_fact_sheet(self, question: str, context: str) -> str:
+        """Fatos do KG sobre os DOCENTES citados na pergunta/contexto (áreas de
+        pesquisa + contato), por grounding (docentes_mencionados). Uniforme a
+        todos os agentes; só inclui o que EXISTE (honesto). Impede o LLM de
+        dizer "não tenho as áreas/contato deles" para dado que a base tem."""
+        kg = self.knowledge_graph
+        if kg is None:
+            return ""
+        texto = f"{question or ''}\n{context or ''}"
+        try:
+            nomes = kg.docentes_mencionados(texto)
+        except Exception:
+            return ""
+        if not nomes:
+            return ""
+        linhas = []
+        for nome in nomes[:8]:
+            campos = []
+            try:
+                areas = kg.get_areas_of_docente(nome)
+            except Exception:
+                areas = []
+            if areas:
+                campos.append("áreas de pesquisa: " + ", ".join(areas))
+            try:
+                info = kg.get_docente_info(nome) or {}
+            except Exception:
+                info = {}
+            if info.get("email"):
+                campos.append("email: " + info["email"])
+            if info.get("sala"):
+                campos.append("sala: " + info["sala"])
+            if campos:
+                linhas.append(f"- {nome} — " + "; ".join(campos))
+        if not linhas:
+            return ""
+        return ("[FATOS DO GRAFO sobre os docentes citados - dados verificados; "
+                "use SÓ estes; se um docente não aparece aqui, diga que não tem "
+                "o dado dele na base, NÃO invente]\n" + "\n".join(linhas))
 
     def _kgc_suggestion(self, term: str) -> str:
         """
