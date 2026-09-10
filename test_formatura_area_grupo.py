@@ -169,6 +169,14 @@ check("extrair_cursando aterra só a disciplina, ignora fragmento de pergunta",
       "Banco de Dados" in _curs
       and not any("sala" in c.lower() for c in _curs), str(_curs))
 
+# prazo de integralização por curso (Art. 151): BCC 8 sem → 12 (+50%, +2 anos)
+_prog = _import_module("progresso", "src/progresso.py")
+_rp_bcc = _prog.responder_prazo("BCC", kg) or ""
+check("responder_prazo(BCC) calcula 12 semestres e cita o Art. 151",
+      "12 semestres" in _rp_bcc and "151" in _rp_bcc, _rp_bcc[:80])
+check("responder_prazo funciona p/ outro curso (EC, 10 sem → 15)",
+      "15 semestres" in (_prog.responder_prazo("EC", kg) or ""))
+
 # ── 3. Contato/disciplinas de grupo de docentes ──────────────────────────────
 print(f"\n{BOLD}── grupo de docentes: grounding + iteração no grafo ──{RESET}")
 
@@ -306,6 +314,14 @@ else:
               "quem leciona banco de dados"]:
         check(f"conteúdo NÃO vira domínio: {q[:36]}",
               sr.rotulo_dominio(q) is None, str(sr.classificar_dominio(q)))
+
+    # PRAZO (tempo) vs requisitos (horas): contrastivo semântico, não regex
+    for q in ["quanto tempo a mais posso estender o BCC", "qual o prazo máximo",
+              "posso prorrogar por quantos anos"]:
+        check(f"eh_prazo detecta tempo: {q[:34]}", sr.eh_prazo(q) is True)
+    for q in ["o que preciso pra colar grau", "quantas horas de AC no bcc",
+              "quais os requisitos pra formar"]:
+        check(f"eh_prazo NÃO confunde com horas: {q[:30]}", sr.eh_prazo(q) is False)
 
 print(f"\n{BOLD}{_passed} passed, {_failed} failed{RESET}")
 sys.exit(1 if _failed else 0)

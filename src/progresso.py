@@ -51,6 +51,46 @@ def _carregar_requisitos() -> List[Dict]:
     return _requisitos_cache
 
 
+def responder_prazo(sigla: str, kg, curso_texto: str = "") -> Optional[str]:
+    """Prazo MÁXIMO de integralização de um curso (Resolução CONSU 246/2023,
+    Art. 151): mínimo + acréscimo por modalidade (integral +50%, noturno/parcial
+    +75%, excepcional até +100%). O mínimo vem do nº de termos da matriz no KG,
+    então vale para BCC e qualquer outro curso — determinístico, não lexical."""
+    import math
+    if not sigla or kg is None:
+        return None
+    try:
+        termos = kg.get_todos_termos_do_curso(sigla)
+        minimo = max((int(t) for t in termos.keys()), default=0) if termos else 0
+    except Exception:
+        minimo = 0
+    if not minimo:
+        return None
+    req = requisitos_do_curso(sigla, curso_texto)
+    nome = req["nome"].title() if req and req.get("nome") else sigla.upper()
+    noturno = "noturno" in _norm(curso_texto)
+    fator, acr, rotulo = (1.75, "75%", "noturno (parcial)") if noturno \
+        else (1.50, "50%", "integral")
+    maximo = math.ceil(minimo * fator)
+    excep = math.ceil(minimo * 2.0)
+    extra = (maximo - minimo) / 2
+    return (
+        f"**Prazo para concluir o {sigla.upper()}**\n\n"
+        f"Pela Resolução CONSU nº 246/2023 (Art. 151), o prazo máximo de "
+        f"integralização é o tempo mínimo mais um acréscimo por modalidade: "
+        f"**{acr}** para cursos **{rotulo}** (e até **100%** em casos "
+        f"excepcionais, aprovados pela Comissão de Curso e homologados pelo "
+        f"Conselho de Graduação).\n\n"
+        f"O {nome} tem **{minimo} semestres** de duração mínima, então o prazo "
+        f"máximo padrão é **{maximo} semestres** (~{maximo/2:.0f} anos) — você "
+        f"pode estender em até **{extra:.0f} ano(s)** além do mínimo; em caso "
+        f"excepcional, até **{excep} semestres**.\n\n"
+        f"*Fonte: Regulamento dos Cursos de Graduação da Unifesp (Resolução "
+        f"CONSU nº 246/2023), Art. 151. Turmas de 2020–2022 têm +2 semestres "
+        f"pela Portaria 566/2022.*"
+    )
+
+
 def requisitos_do_curso(sigla: str, curso_texto: str = "") -> Optional[Dict]:
     sigla = (sigla or "").upper()
     entradas = [e for e in _carregar_requisitos() if e["sigla"] == sigla]

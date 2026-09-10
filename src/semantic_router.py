@@ -90,6 +90,42 @@ DOMAIN_EXAMPLES = {
 _FLOW = {"emb": None, "labels": [], "mat": None, "limiar": 0.66}
 _DOM = {"emb": None, "labels": [], "mat": None, "limiar": 0.45}
 
+# Distinção PRAZO (tempo/prorrogação → regimentos) vs REQUISITOS (carga/horas),
+# contrastiva por nearest-neighbor (como _intencao_oferta), NÃO lexical.
+PRAZO_EX = [
+    "quanto tempo a mais posso estender o curso",
+    "qual o prazo máximo de integralização",
+    "posso prorrogar minha graduação por quantos anos",
+    "por quantos semestres posso estender a graduação",
+    "quanto tempo tenho para concluir o curso",
+    "até quando posso me formar",
+]
+_PRAZO = {"emb": None, "prazo": None, "req": None}
+
+
+def _nr(vecs):
+    import numpy as np
+    a = np.array(vecs, dtype="float32")
+    a /= (np.linalg.norm(a, axis=1, keepdims=True) + 1e-9)
+    return a
+
+
+def eh_prazo(pergunta: str) -> bool:
+    """True se a pergunta é de PRAZO/tempo (prorrogação, 'estender', 'quanto
+    tempo a mais') e não de carga horária — contrastivo prazo×requisitos."""
+    if _PRAZO["prazo"] is None or not pergunta:
+        return False
+    try:
+        import numpy as np
+        q = np.array(_PRAZO["emb"].embed_query(pergunta), dtype="float32")
+        n = np.linalg.norm(q)
+        if n == 0:
+            return False
+        q = q / n
+        return float((_PRAZO["prazo"] @ q).max()) > float((_PRAZO["req"] @ q).max())
+    except Exception:
+        return False
+
 
 def _config(state: dict, examples: dict, embeddings_model, limiar: float) -> None:
     if embeddings_model is None or state["mat"] is not None:
@@ -129,9 +165,17 @@ def _classify(state: dict, pergunta: str) -> Optional[Tuple[str, float]]:
 
 
 def configurar(embeddings_model, limiar: float = 0.66) -> None:
-    """Pré-computa os exemplos de FLUXO (uma vez)."""
+    """Pré-computa os exemplos de FLUXO, DOMÍNIO e PRAZO (uma vez)."""
     _config(_FLOW, FLOW_EXAMPLES, embeddings_model, limiar)
     _config(_DOM, DOMAIN_EXAMPLES, embeddings_model, _DOM["limiar"])
+    if embeddings_model is not None and _PRAZO["prazo"] is None:
+        try:
+            _PRAZO["emb"] = embeddings_model
+            _PRAZO["prazo"] = _nr(embeddings_model.embed_documents(PRAZO_EX))
+            _PRAZO["req"] = _nr(embeddings_model.embed_documents(
+                FLOW_EXAMPLES["requisitos_curso"]))
+        except Exception:
+            _PRAZO["emb"] = None
 
 
 def classificar(pergunta: str) -> Optional[Tuple[str, float]]:

@@ -250,6 +250,7 @@ def build_pipeline(rag_instance):
             is_requisitos_request,
             extrair_curso_requisitos,
             responder_requisitos,
+            responder_prazo,
             is_pergunta_comparativa,
         )
         from ..risco import (
@@ -481,6 +482,11 @@ def build_pipeline(rag_instance):
 
             if label == "requisitos_curso":
                 if is_pergunta_comparativa(pergunta_bruta):
+                    return None
+                # pergunta de PRAZO/tempo (prorrogação, "estender") é norma do
+                # Regulamento, não carga horária — recusa aqui (cobre também o
+                # caso em que o router semântico roteou pra cá) e cai p/ regimentos.
+                if _eh_prazo:
                     return None
                 sigla = extrair_curso_requisitos(pergunta_bruta)
                 curso_texto = ""
@@ -773,6 +779,26 @@ def build_pipeline(rag_instance):
         fast_label = None
         _h_of = state.get("historico")
         _octx_of = _h_of.setdefault("oferta_ctx", {}) if isinstance(_h_of, dict) else {}
+        # PRAZO/prorrogação (tempo) vs requisitos (carga): distinção SEMÂNTICA
+        # (contrastivo NN, não lexical). Prazo é norma do Regulamento (Art. 151).
+        try:
+            _eh_prazo = semantic_router.eh_prazo(pergunta_bruta)
+        except Exception:
+            _eh_prazo = False
+        # Resposta determinística de prazo por curso (BCC e demais): calcula o
+        # máximo pelo Art. 151 sobre a duração mínima da matriz. Sem curso
+        # aterrado, cai no regimentos (resposta geral) mais adiante.
+        if _eh_prazo:
+            _sig_prazo = extrair_curso_requisitos(pergunta_bruta)
+            if _sig_prazo:
+                _rp = responder_prazo(
+                    _sig_prazo, rag_instance.knowledge_graph, pergunta_bruta)
+                if _rp:
+                    return _resposta_simbolica(
+                        _rp, "prazo_integralizacao",
+                        ["Regulamento dos Cursos de Graduação "
+                         "(Resolução CONSU 246/2023, Art. 151)"],
+                    )
 
         # Anáfora de grupo ("como falo com eles" após uma lista de docentes):
         # usa as entidades já aterradas + grounding no grafo + intenção semântica.
@@ -821,7 +847,7 @@ def build_pipeline(rag_instance):
             fast_label = "oferta_ambiguo"
         elif extrair_disciplina_oferta(pergunta_bruta):
             fast_label = "oferta_check"
-        elif is_requisitos_request(pergunta_bruta):
+        elif is_requisitos_request(pergunta_bruta) and not _eh_prazo:
             fast_label = "requisitos_curso"
         elif is_trilha_request(question) and not (
             hist_sessao is not None and _refere_proprias_ucs(pergunta_bruta)
@@ -886,6 +912,18 @@ def build_pipeline(rag_instance):
                 "intent": "faqs",
                 "term": "",
                 "confidence": 0.95,
+                "active_agent": "regimentos",
+            }
+
+        # prazo/prorrogação de integralização é norma do Regulamento (Resolução
+        # 246/2023, Art. 151) — roteia ao agente de regimentos, que tem o texto.
+        if _eh_prazo:
+            telemetry_incr("prazo_integralizacao_regimentos")
+            return {
+                **state,
+                "intent": "faqs",
+                "term": "",
+                "confidence": 0.9,
                 "active_agent": "regimentos",
             }
 
