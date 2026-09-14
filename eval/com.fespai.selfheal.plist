@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  launchd — tick diário do loop de auto-correção (Fase 4), 09:00.
+  Instalar:
+    cp eval/com.fespai.selfheal.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.fespai.selfheal.plist
+  Modo SEGURO por padrão (só triagem/orquestração). Para autonomia opt-in,
+  adicione a env FIXER_AUTO=1 no bloco EnvironmentVariables abaixo.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.fespai.selfheal</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/arazoleonardo/fespai/eval/run_self_heal.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>FESPAI_REPO</key>
+    <string>/Users/arazoleonardo/fespai</string>
+    <key>PATH</key>
+    <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>9</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/arazoleonardo/fespai/chroma_db_unifesp/self_heal.launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/arazoleonardo/fespai/chroma_db_unifesp/self_heal.launchd.log</string>
+</dict>
+</plist>
