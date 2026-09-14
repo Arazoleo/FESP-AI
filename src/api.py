@@ -438,7 +438,8 @@ async def chat(request: ChatRequest):
         from .workflow.second_chance import is_miss_response
         log_turn(conversation_id, request.message, active_agent, intent,
                  (_time.perf_counter() - _t0) * 1000.0,
-                 is_miss_response(response_text))
+                 is_miss_response(response_text),
+                 answer=response_text)
     except Exception:
         pass
 

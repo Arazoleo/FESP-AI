@@ -18,10 +18,19 @@ cd "$REPO"
 
 {
   echo "==== self-heal tick $(date '+%Y-%m-%d %H:%M:%S') ===="
+  # garante a versão mais nova dos scripts no container (robusto a restart)
+  for s in triage_misses.py analisar_conversas.py self_heal.py; do
+    docker cp "eval/$s" "$CONTAINER:/app/eval/" 2>/dev/null || true
+  done
   # triagem precisa dos embeddings/KG → roda no container; escreve os tickets
   # no volume compartilhado chroma_db_unifesp/.
   docker exec "$CONTAINER" bash -lc \
     "cd /app && python eval/triage_misses.py" \
+    2>&1 | grep -vE "NotOpenSSL|warnings.warn|httpx:" || true
+  # análise de gargalo por conversa inteira (LLM) — fecha o ponto cego do
+  # oráculo de miss (resposta confiante-mas-errada, reformulação, abandono).
+  docker exec "$CONTAINER" bash -lc \
+    "cd /app && python eval/analisar_conversas.py --max-llm 30" \
     2>&1 | grep -vE "NotOpenSSL|warnings.warn|httpx:" || true
   # orquestração é I/O puro dos JSONL (sem embeddings) → roda no host, lê os
   # tickets que a triagem gravou no volume compartilhado.
