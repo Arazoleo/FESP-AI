@@ -25,8 +25,14 @@ from datetime import datetime
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.getenv("FESPAI_DATA_DIR", os.path.join(ROOT, "chroma_db_unifesp"))
 TICKETS = os.path.join(DATA, "triage_tickets.jsonl")
+BOTTLENECKS = os.path.join(DATA, "conversation_bottlenecks.jsonl")
 WORKORDERS = os.path.join(DATA, "self_heal_workorders.jsonl")
 CURATION = os.path.join(DATA, "data_curation_queue.jsonl")
+
+# gargalos de conversa com severidade >= isto viram work order. Tipo 'dado' vai
+# p/ curadoria; tipo 'roteamento/qualidade/latencia/ux' é o valor NOVO que o
+# oráculo de miss não enxerga (resposta confiante-errada, lentidão, abandono).
+SEV_MIN = 4
 
 
 def _load(path):
@@ -46,10 +52,50 @@ def _hint(rep):
     )
 
 
+def _branch_slug(rep):
+    return "fix/" + "".join(
+        c if c.isalnum() else "-" for c in (rep or "").lower())[:40].strip("-")
+
+
+def _workorders_de_conversa():
+    """Gargalos da análise de conversa (LLM) que o oráculo de miss NÃO vê:
+    resposta confiante-errada, roteamento errado, latência, abandono. Agrega
+    por (tipo, gargalo) e emite work order com a correção sugerida pelo LLM.
+    Tipo 'dado' fica de fora (vira curadoria, não PR de código)."""
+    bott = _load(BOTTLENECKS)
+    agreg = {}
+    for b in bott:
+        d = b.get("diagnostico") or {}
+        tipo = (d.get("tipo") or "").lower()
+        sev = int(d.get("severidade", 0) or 0)
+        if not d or tipo == "dado" or sev < SEV_MIN:
+            continue
+        garg = (d.get("gargalo") or "").strip()
+        chave = (tipo, garg[:60])
+        if chave not in agreg:
+            agreg[chave] = {
+                "representante": garg, "frequencia": 0, "exemplos": [],
+                "tipo_hint": f"conversa:{tipo}", "origem": "conversa",
+                "severidade": sev, "correcao_sugerida": d.get("correcao_sugerida", ""),
+                "hint": _hint(garg),
+                "branch_sugerida": _branch_slug(garg),
+                "criado_em": datetime.now().isoformat(timespec="seconds"),
+            }
+        a = agreg[chave]
+        a["frequencia"] += 1
+        a["severidade"] = max(a["severidade"], sev)
+        cid = b.get("cid", "")
+        if cid and cid not in a["exemplos"]:
+            a["exemplos"].append(cid)
+    return list(agreg.values())
+
+
 def main():
     tickets = _load(TICKETS)
-    if not tickets:
-        print("Sem tickets. Rode antes: python eval/triage_misses.py")
+    conversa = _workorders_de_conversa()
+    if not tickets and not conversa:
+        print("Sem tickets nem gargalos. Rode antes: python eval/triage_misses.py "
+              "&& python eval/analisar_conversas.py")
         return
 
     # Emite TODOS os tickets recorrentes como work orders ranqueadas. O `tipo`
@@ -64,11 +110,18 @@ def main():
             "representante": rep, "frequencia": t.get("frequencia"),
             "exemplos": t.get("exemplos", []),
             "tipo_hint": t.get("tipo", "indefinido"),
+            "origem": "miss",
             "hint": _hint(rep),
-            "branch_sugerida": "fix/" + "".join(
-                c if c.isalnum() else "-" for c in rep.lower())[:40].strip("-"),
+            "branch_sugerida": _branch_slug(rep),
             "criado_em": datetime.now().isoformat(timespec="seconds"),
         })
+    # + gargalos de conversa (qualidade/latência/ux/roteamento) — valor que o
+    # oráculo de miss não captura. Ranqueia por impacto: miss por frequência,
+    # conversa por severidade × ocorrências.
+    workorders.extend(conversa)
+    workorders.sort(key=lambda w: (w.get("frequencia", 0)
+                    * (w.get("severidade", 1) if w.get("origem") == "conversa" else 1)),
+                    reverse=True)
 
     with open(WORKORDERS, "w", encoding="utf-8") as f:
         for w in workorders:
@@ -76,13 +129,16 @@ def main():
     # a fila de curadoria começa vazia; o fixer a alimenta ao classificar como dado
     if not os.path.exists(CURATION):
         open(CURATION, "w").close()
-    print(f"{len(workorders)} work orders → {WORKORDERS}")
+    print(f"{len(workorders)} work orders ({len(tickets)} de miss + "
+          f"{len(conversa)} de conversa) → {WORKORDERS}")
     print(f"fila de curadoria de dado (alimentada pelo fixer) → {CURATION}")
 
     print("\n== WORK ORDERS (ordem de impacto; tipo = palpite, fixer confirma) ==")
-    for w in workorders[:10]:
-        print(f"  [{w['frequencia']}x] {w['representante'][:50]:50} "
-              f"hint={w['tipo_hint'][:22]}")
+    for w in workorders[:12]:
+        marca = "💬" if w.get("origem") == "conversa" else "  "
+        extra = f"sev{w.get('severidade')}" if w.get("origem") == "conversa" \
+            else f"hint={w['tipo_hint'][:18]}"
+        print(f"  {marca}[{w['frequencia']}x] {w['representante'][:46]:46} {extra}")
 
 
 if __name__ == "__main__":
