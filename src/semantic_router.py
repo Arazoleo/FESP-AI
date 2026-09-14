@@ -76,6 +76,12 @@ DOMAIN_EXAMPLES = {
         "o que está acontecendo no ict",
         "tem alguma novidade no campus",
         "últimas notícias da universidade",
+        # eventos/congressos são anunciados nas notícias (não no site de ingresso)
+        "tem algum congresso acontecendo",
+        "quando é o congresso acadêmico da unifesp",
+        "inscrições para o congresso acadêmico",
+        "quais eventos e congressos vão acontecer no campus",
+        "como participo do congresso acadêmico",
     ],
     "web_sjc": [
         "onde fica a secretaria",
