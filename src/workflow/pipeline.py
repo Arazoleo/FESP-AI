@@ -785,20 +785,6 @@ def build_pipeline(rag_instance):
             _eh_prazo = semantic_router.eh_prazo(pergunta_bruta)
         except Exception:
             _eh_prazo = False
-        # Resposta determinística de prazo por curso (BCC e demais): calcula o
-        # máximo pelo Art. 151 sobre a duração mínima da matriz. Sem curso
-        # aterrado, cai no regimentos (resposta geral) mais adiante.
-        if _eh_prazo:
-            _sig_prazo = extrair_curso_requisitos(pergunta_bruta)
-            if _sig_prazo:
-                _rp = responder_prazo(
-                    _sig_prazo, rag_instance.knowledge_graph, pergunta_bruta)
-                if _rp:
-                    return _resposta_simbolica(
-                        _rp, "prazo_integralizacao",
-                        ["Regulamento dos Cursos de Graduação "
-                         "(Resolução CONSU 246/2023, Art. 151)"],
-                    )
 
         # Anáfora de grupo ("como falo com eles" após uma lista de docentes):
         # usa as entidades já aterradas + grounding no grafo + intenção semântica.
@@ -915,9 +901,21 @@ def build_pipeline(rag_instance):
                 "active_agent": "regimentos",
             }
 
-        # prazo/prorrogação de integralização é norma do Regulamento (Resolução
-        # 246/2023, Art. 151) — roteia ao agente de regimentos, que tem o texto.
+        # prazo/prorrogação de integralização (Resolução 246/2023, Art. 151):
+        # com curso aterrado, resposta determinística por curso; sem curso, cai
+        # no agente de regimentos (regra geral). Roda DEPOIS dos fluxos
+        # (progresso/cr/etc.) pra não preemptá-los.
         if _eh_prazo:
+            _sig_prazo = extrair_curso_requisitos(pergunta_bruta)
+            _rp = responder_prazo(
+                _sig_prazo, rag_instance.knowledge_graph, pergunta_bruta
+            ) if _sig_prazo else None
+            if _rp:
+                return _resposta_simbolica(
+                    _rp, "prazo_integralizacao",
+                    ["Regulamento dos Cursos de Graduação "
+                     "(Resolução CONSU 246/2023, Art. 151)"],
+                )
             telemetry_incr("prazo_integralizacao_regimentos")
             return {
                 **state,

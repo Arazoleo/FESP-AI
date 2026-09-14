@@ -41,11 +41,18 @@ cors_origins = [
     "http://frontend:3000",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
+    "https://fesp-ai.vercel.app",
+]
+# origens extras via env (CORS_ORIGINS separadas por vírgula), sem mexer no código
+cors_origins += [
+    o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
+    # previews do Vercel (fesp-ai-<hash>-*.vercel.app) também liberados
+    allow_origin_regex=r"https://fesp-ai-.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -319,7 +326,9 @@ async def health():
 async def chat(request: ChatRequest):
     if rag is None:
         raise HTTPException(status_code=503, detail="RAG nao inicializado")
-    
+
+    import time as _time
+    _t0 = _time.perf_counter()
     conversation_id = request.conversation_id or str(uuid4())
     
     cleanup_old_conversations()
@@ -421,7 +430,18 @@ async def chat(request: ChatRequest):
         pass
 
     logger.info(f"[AGENT] Agente ativo: {active_agent}")
-    
+
+    # Log de interações (post-hoc de uso): pergunta + roteamento + latência +
+    # miss. Privacidade e à prova de falha dentro do módulo.
+    try:
+        from .interaction_log import log_turn
+        from .workflow.second_chance import is_miss_response
+        log_turn(conversation_id, request.message, active_agent, intent,
+                 (_time.perf_counter() - _t0) * 1000.0,
+                 is_miss_response(response_text))
+    except Exception:
+        pass
+
     agent_info = None
     if agent_metadata:
         agent_info = AgentInfo(

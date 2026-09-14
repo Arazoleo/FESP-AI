@@ -110,9 +110,11 @@ def _nr(vecs):
     return a
 
 
-def eh_prazo(pergunta: str) -> bool:
+def eh_prazo(pergunta: str, piso: float = 0.33) -> bool:
     """True se a pergunta é de PRAZO/tempo (prorrogação, 'estender', 'quanto
-    tempo a mais') e não de carga horária — contrastivo prazo×requisitos."""
+    tempo a mais') e não de carga horária. Contrastivo prazo×requisitos COM
+    piso absoluto: exige proximidade real ao cluster de prazo, senão perguntas
+    não relacionadas ('oi', 'obrigado') cairiam como prazo por acaso."""
     if _PRAZO["prazo"] is None or not pergunta:
         return False
     try:
@@ -122,7 +124,8 @@ def eh_prazo(pergunta: str) -> bool:
         if n == 0:
             return False
         q = q / n
-        return float((_PRAZO["prazo"] @ q).max()) > float((_PRAZO["req"] @ q).max())
+        s_prazo = float((_PRAZO["prazo"] @ q).max())
+        return s_prazo >= piso and s_prazo > float((_PRAZO["req"] @ q).max())
     except Exception:
         return False
 
