@@ -1,0 +1,293 @@
+{
+  "n": 12,
+  "detalhes": [
+    {
+      "pergunta": "Quais são todos os pré-requisitos (a cadeia completa) de Análise de Algoritmos?",
+      "tipo": "prereq_cadeia",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Para compreender a disciplina de **Análise de Algoritmos**, o estudante precisa de uma base sólida que transita entre a matemática discreta e a implementação prática de software. A \"cadeia completa\" de pré-requisitos pode ser dividida em três pilares fundamentais:\n\n### 1. Pilar Matemático (Fundament"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Os pré-requisitos de Análise de Algoritmos são:\n\n* Algoritmos e Estruturas de Dados II (MAC0323)\n* Algoritmos e Estruturas de Dados I (MAC0121)"
+      },
+      "B3": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "A cadeia completa de pré-requisitos de Análise de Algoritmos é:\n\n* Algoritmos e Estruturas de Dados II"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos de Análise de Algoritmos são:\n\n* Algoritmos e Estruturas de Dados I\n* Algoritmos e Estruturas de Dados II\n* Introdução à Computação"
+      }
+    },
+    {
+      "pergunta": "Quais são todos os pré-requisitos (a cadeia completa) de Sistemas Operacionais?",
+      "tipo": "prereq_cadeia",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Para compreender a disciplina de **Sistemas Operacionais (SO)** em sua totalidade, é necessário percorrer uma cadeia de conhecimentos que vai desde a lógica básica até a interface direta com o hardware.\n\nAbaixo, apresento a cadeia completa de pré-requisitos, organizada por níveis de dependência:\n\n##"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Os pré-requisitos de Sistemas Operacionais são:\n\n- Algoritmos e Estruturas de Dados II (Código: MAC0323)"
+      },
+      "B3": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Os pré-requisitos de Sistemas Operacionais são:\n\n* Algoritmos e Estruturas de Dados II"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos completos de Sistemas Operacionais são:\n\n* Algoritmos e Estruturas de Dados I\n* Algoritmos e Estruturas de Dados II\n* Introdução à Computação"
+      }
+    },
+    {
+      "pergunta": "Quais são todos os pré-requisitos (a cadeia completa) de Funções Diferenciáveis e Séries?",
+      "tipo": "prereq_cadeia",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Para compreender plenamente a disciplina de **Funções Diferenciáveis e Séries** (geralmente inserida em cursos de Análise Real ou Cálculo Avançado), é necessário percorrer uma cadeia de pré-requisitos que vai desde a base aritmética até a análise rigorosa.\n\nAbaixo, listo a cadeia completa, dividida "
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Os pré-requisitos de Funções Diferenciáveis e Séries são:\n\n- Cálculo Diferencial e Integral II (Código: MAT2454)"
+      },
+      "B3": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Os pré-requisitos de Funções Diferenciáveis e Séries são:\n\n* Cálculo Diferencial e Integral II"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos de Funções Diferenciáveis e Séries são:\n\n* Cálculo Diferencial e Integral I\n* Cálculo Diferencial e Integral II"
+      }
+    },
+    {
+      "pergunta": "Quais são todos os pré-requisitos (a cadeia completa) de Conceitos Fundamentais de Linguagens de Programação?",
+      "tipo": "prereq_cadeia",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para compreender a disciplina de **Conceitos Fundamentais de Linguagens de Programação** (também conhecida como Paradigmas de Programação), o estudante precisa de uma base que combine a capacidade de implementar algoritmos, a compreensão de como o hardware processa a informação e a fundamentação mat"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos da cadeia completa de Conceitos Fundamentais de Linguagens de Programação são:\n\n* Introdução ao Desenvolvimento de Sistemas de Software (MAC0350)\n* Algoritmos e Estruturas de Dados I (MAC0121)\n* Técnicas de Programação I (MAC0216)\n* Introdução à Computação (MAC0110)"
+      },
+      "B3": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Os pré-requisitos de Conceitos Fundamentais de Linguagens de Programação são:\n\n* Introdução ao Desenvolvimento de Sistemas de Software."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos completos de Conceitos Fundamentais de Linguagens de Programação são:\n\n* Algoritmos e Estruturas de Dados I\n* Introdução ao Desenvolvimento de Sistemas de Software\n* Introdução à Computação\n* Técnicas de Programação I"
+      }
+    },
+    {
+      "pergunta": "Qual é o pré-requisito direto de Álgebra Linear I?",
+      "tipo": "prereq_direto",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "O pré-requisito direto de **Álgebra Linear I** é, geralmente, a disciplina de **Cálculo Diferencial e Integral I** (ou Matemática Básica/Pré-Cálculo, dependendo da grade curricular da instituição).\n\nAs disciplinas pertinentes que fundamentam o conhecimento necessário para cursar Álgebra Linear I são"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O pré-requisito direto de Álgebra Linear I é:\n\n* Vetores e Geometria (Código: MAT0112)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O pré-requisito direto de Álgebra Linear I é:\n\n* Vetores e Geometria"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O pré-requisito direto de Álgebra Linear I é:\n\n* Vetores e Geometria"
+      }
+    },
+    {
+      "pergunta": "Qual é o pré-requisito direto de Laboratório de Métodos Numéricos?",
+      "tipo": "prereq_direto",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para cursar a disciplina de **Laboratório de Métodos Numéricos**, o pré-requisito direto geralmente é:\n\n*   **Métodos Numéricos** (ou Cálculo Numérico)\n\nDependendo da grade curricular da instituição, podem ser exigidos pré-requisitos indiretos ou concomitantes, tais como:\n\n1.  **Cálculo Diferencial "
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos diretos de Laboratório de Métodos Numéricos são:\n\n- Álgebra Linear I (Código: MAT0122)\n- Introdução à Computação (Código: MAC0110)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos diretos de Laboratório de Métodos Numéricos são:\n* Álgebra Linear I\n* Introdução à Computação"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos diretos de Laboratório de Métodos Numéricos são:\n* Álgebra Linear I\n* Introdução à Computação"
+      }
+    },
+    {
+      "pergunta": "Qual é o pré-requisito direto de Cálculo Diferencial e Integral II?",
+      "tipo": "prereq_direto",
+      "B1": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O pré-requisito direto de **Cálculo Diferencial e Integral II** é:\n\n*   **Cálculo Diferencial e Integral I** (ou Cálculo I)\n\n**Disciplinas pertinentes para a base de conhecimento:**\nPara um desempenho satisfatório nesta disciplina, é fundamental o domínio de conteúdos de:\n1.  **Pré-Cálculo / Matemát"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O pré-requisito direto de Cálculo Diferencial e Integral II é:\n\n* Cálculo Diferencial e Integral I (Código: MAT2453)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O pré-requisito direto de Cálculo Diferencial e Integral II é:\n\n* Cálculo Diferencial e Integral I."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O pré-requisito direto de Cálculo Diferencial e Integral II é:\n\n* Cálculo Diferencial e Integral I"
+      }
+    },
+    {
+      "pergunta": "Quais disciplinas dependem diretamente de Introdução à Computação?",
+      "tipo": "dependentes",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Como assistente acadêmico, informo que a disciplina de **Introdução à Computação** serve como a base fundamental para quase todo o currículo de Ciência da Computação, Engenharia de Software e Sistemas de Informação.\n\nAs disciplinas que dependem diretamente dela (pré-requisitos) podem ser divididas n"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas que dependem diretamente de Introdução à Computação são:\n\n* Técnicas de Programação I\n* Lógica e Verificação de Programas\n* Algoritmos e Estruturas de Dados I"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem diretamente de Introdução à Computação são:\n\n* Algoritmos e Estruturas de Dados I\n* Modelagem e Simulação\n* Laboratório de Métodos Numéricos\n* Técnicas de Programação I\n* Lógica e Verificação de Programas"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem diretamente de Introdução à Computação são:\n\n* Algoritmos e Estruturas de Dados I\n* Modelagem e Simulação\n* Laboratório de Métodos Numéricos\n* Técnicas de Programação I\n* Lógica e Verificação de Programas"
+      }
+    },
+    {
+      "pergunta": "Quais disciplinas dependem diretamente de Algoritmos e Estruturas de Dados I?",
+      "tipo": "dependentes",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, informo que a disciplina de **Algoritmos e Estruturas de Dados I (AED I)** é a base fundamental para a maioria das matérias de computação. Ela fornece os conceitos de complexidade (Big O), manipulação de memória e a organização lógica de dados, que são pré-requisitos essen"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas que dependem diretamente de Algoritmos e Estruturas de Dados I são:\n\n* Algoritmos e Estruturas de Dados II\n* Introdução ao Desenvolvimento de Sistemas de Software"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem diretamente de Algoritmos e Estruturas de Dados I são:\n\n* Caminhos na Computação\n* Algoritmos e Estruturas de Dados II\n* Introdução ao Desenvolvimento de Sistemas de Software"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem diretamente de Algoritmos e Estruturas de Dados I são:\n\n* Caminhos na Computação\n* Algoritmos e Estruturas de Dados II\n* Introdução ao Desenvolvimento de Sistemas de Software"
+      }
+    },
+    {
+      "pergunta": "Qual o plano de estudos mínimo, do zero, para chegar a Análise de Algoritmos?",
+      "tipo": "plano",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para chegar à **Análise de Algoritmos** partindo do zero, você precisa construir uma base sólida que transita entre a lógica matemática e a implementação prática. A análise de algoritmos não trata de \"como programar\", mas de \"como medir a eficiência\" do que foi programado.\n\nAbaixo, apresento o plano"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para chegar à disciplina de Análise de Algoritmos, o plano de estudos mínimo é:\n\n1. Algoritmos e Estruturas de Dados I (Código: MAC0121)\n2. Algoritmos e Estruturas de Dados II (Código: MAC0323)\n3. Análise de Algoritmos (Código: MAC0338)"
+      },
+      "B3": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para chegar a Análise de Algoritmos, o plano de estudos mínimo é:\n\n1. Algoritmos e Estruturas de Dados II\n2. Análise de Algoritmos"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O plano de estudos mínimo é:\n\n1. Introdução à Computação\n2. Algoritmos e Estruturas de Dados I\n3. Algoritmos e Estruturas de Dados II\n4. Análise de Algoritmos"
+      }
+    },
+    {
+      "pergunta": "Qual o plano de estudos mínimo, do zero, para chegar a Sistemas Operacionais?",
+      "tipo": "plano",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para compreender Sistemas Operacionais (SO) de forma profunda, não basta saber programar; é necessário entender como o software interage com o hardware. O estudo de SO é a intersecção entre a Ciência da Computação e a Engenharia Elétrica.\n\nAbaixo, apresento o plano de estudos mínimo, organizado de f"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para chegar a Sistemas Operacionais, o plano de estudos mínimo é:\n\n* Algoritmos e Estruturas de Dados II (Código: MAC0323)\n* Sistemas Operacionais (Código: MAC0422)"
+      },
+      "B3": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para chegar a Sistemas Operacionais, o plano de estudos mínimo é:\n\n1. Algoritmos e Estruturas de Dados II\n2. Sistemas Operacionais"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O plano de estudos mínimo para chegar a Sistemas Operacionais é:\n\n1. Introdução à Computação\n2. Algoritmos e Estruturas de Dados I\n3. Algoritmos e Estruturas de Dados II\n4. Sistemas Operacionais"
+      }
+    },
+    {
+      "pergunta": "Já cursei Introdução à Computação, Cálculo Diferencial e Integral I e Vetores e Geometria. Quais disciplinas eu desbloqueei?",
+      "tipo": "desbloqueio",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para determinar com precisão quais disciplinas você desbloqueou, seria necessário analisar a **grade curricular (fluxograma)** específica do seu curso e da sua instituição, pois cada universidade possui pré-requisitos diferentes.\n\nNo entanto, com base na estrutura padrão da maioria dos cursos de Ciê"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Com base nos fatos fornecidos, as disciplinas desbloqueadas são:\n\n* Cálculo Diferencial e Integral II (MAT2454)\n* Álgebra Linear I (MAT0122)"
+      },
+      "B3": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Com base nos fatos disponíveis, não é possível determinar quais disciplinas foram desbloqueadas, pois a lista de pré-requisitos do currículo não foi fornecida."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas desbloqueadas são:\n\n* Algoritmos e Estruturas de Dados I\n* Cálculo Diferencial e Integral II\n* Lógica e Verificação de Programas\n* Modelagem e Simulação\n* Técnicas de Programação I\n* Álgebra Linear I"
+      }
+    }
+  ]
+}
