@@ -1,0 +1,36 @@
+{
+  "curso": "Bacharelado em Ciência da Computação",
+  "instituicao": "USP - IME",
+  "curriculo": "45052",
+  "fonte": "JupiterWeb (uspdigital.usp.br) - grade e requisitos oficiais, coletado 2026-09",
+  "observacoes": [
+    "MAC0316 lista MAC0350 como requisito no programa 45052 (possivel inconsistencia do JupiterWeb: pre-req em semestre posterior).",
+    "Pre-reqs de MAC0350 (MAC0121, MAC0216) sao 'Indicacao de Conjunto' no sistema, nao requisito estrito.",
+    "23 disciplinas obrigatorias; semestres 6 e 8 so tem eletivas."
+  ],
+  "disciplinas": [
+    {"codigo": "MAC0101", "nome": "Integração na Universidade e na Profissão", "semestre": 1, "prereqs": []},
+    {"codigo": "MAC0105", "nome": "Fundamentos de Matemática para a Computação", "semestre": 1, "prereqs": []},
+    {"codigo": "MAC0110", "nome": "Introdução à Computação", "semestre": 1, "prereqs": []},
+    {"codigo": "MAC0329", "nome": "Álgebra Booleana e Aplicações em Arquitetura de Computadores", "semestre": 1, "prereqs": []},
+    {"codigo": "MAT0112", "nome": "Vetores e Geometria", "semestre": 1, "prereqs": []},
+    {"codigo": "MAT2453", "nome": "Cálculo Diferencial e Integral I", "semestre": 1, "prereqs": []},
+    {"codigo": "MAC0121", "nome": "Algoritmos e Estruturas de Dados I", "semestre": 2, "prereqs": ["MAC0110"]},
+    {"codigo": "MAC0216", "nome": "Técnicas de Programação I", "semestre": 2, "prereqs": ["MAC0110"]},
+    {"codigo": "MAC0239", "nome": "Lógica e Verificação de Programas", "semestre": 2, "prereqs": ["MAC0110"]},
+    {"codigo": "MAE0119", "nome": "Introdução à Probabilidade e à Estatística", "semestre": 2, "prereqs": []},
+    {"codigo": "MAT0122", "nome": "Álgebra Linear I", "semestre": 2, "prereqs": ["MAT0112"]},
+    {"codigo": "MAT2454", "nome": "Cálculo Diferencial e Integral II", "semestre": 2, "prereqs": ["MAT2453"]},
+    {"codigo": "MAC0102", "nome": "Caminhos na Computação", "semestre": 3, "prereqs": ["MAC0121"]},
+    {"codigo": "MAC0209", "nome": "Modelagem e Simulação", "semestre": 3, "prereqs": ["MAC0110"]},
+    {"codigo": "MAC0210", "nome": "Laboratório de Métodos Numéricos", "semestre": 3, "prereqs": ["MAT0122", "MAC0110"]},
+    {"codigo": "MAC0323", "nome": "Algoritmos e Estruturas de Dados II", "semestre": 3, "prereqs": ["MAC0121"]},
+    {"codigo": "MAT0236", "nome": "Funções Diferenciáveis e Séries", "semestre": 3, "prereqs": ["MAT2454"]},
+    {"codigo": "MAC0316", "nome": "Conceitos Fundamentais de Linguagens de Programação", "semestre": 4, "prereqs": ["MAC0350"]},
+    {"codigo": "MAC0338", "nome": "Análise de Algoritmos", "semestre": 4, "prereqs": ["MAC0323"]},
+    {"codigo": "MAC0350", "nome": "Introdução ao Desenvolvimento de Sistemas de Software", "semestre": 5, "prereqs": ["MAC0121", "MAC0216"]},
+    {"codigo": "MAC0422", "nome": "Sistemas Operacionais", "semestre": 5, "prereqs": ["MAC0323"]},
+    {"codigo": "FLC0474", "nome": "Língua Portuguesa", "semestre": 7, "prereqs": []},
+    {"codigo": "MAC0499", "nome": "Trabalho de Formatura Supervisionado", "semestre": 7, "prereqs": []}
+  ]
+}
