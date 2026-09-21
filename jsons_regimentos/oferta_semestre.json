@@ -1,6 +1,6 @@
 {
  "semestre": "2026/2",
- "coletado_em": "2026-09-05",
+ "coletado_em": "2026-09-21",
  "fonte": "https://agendamentos.unifesp.br/sjc/Web/view-schedule.php",
  "disciplinas": {
   "Química Geral": [
@@ -233,13 +233,13 @@
       "dia": "Seg",
       "inicio": "10:00",
       "fim": "12:00",
-      "sala": "Lab. Inf. 405 - 52 lugares"
+      "sala": "sala 210 - 110 lugares"
      },
      {
       "dia": "Seg",
       "inicio": "10:00",
       "fim": "12:00",
-      "sala": "sala 210 - 110 lugares"
+      "sala": "Lab. Inf. 405 - 52 lugares"
      },
      {
       "dia": "Sex",
@@ -279,13 +279,13 @@
       "dia": "Seg",
       "inicio": "10:00",
       "fim": "12:00",
-      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+      "sala": "sala 307 - 58 lugares"
      },
      {
       "dia": "Seg",
       "inicio": "10:00",
       "fim": "12:00",
-      "sala": "sala 307 - 58 lugares"
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
      },
      {
       "dia": "Qua",
@@ -310,18 +310,12 @@
       "dia": "Seg",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+      "sala": "sala 307 - 58 lugares"
      },
      {
       "dia": "Seg",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "sala 307 - 58 lugares"
-     },
-     {
-      "dia": "Qua",
-      "inicio": "13:30",
-      "fim": "15:30",
       "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
      },
      {
@@ -329,6 +323,12 @@
       "inicio": "13:30",
       "fim": "15:30",
       "sala": "sala 307 - 58 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
      }
     ],
     "no_catalogo": true
@@ -605,13 +605,13 @@
       "dia": "Seg",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "sala 306 - 112 lugares"
+      "sala": "sala 309 - 56 lugares"
      },
      {
       "dia": "Qua",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "sala 306 - 112 lugares"
+      "sala": "sala 303 - 100 lugares"
      }
     ],
     "no_catalogo": true
@@ -643,13 +643,13 @@
       "dia": "Seg",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "sala 306 - 112 lugares"
+      "sala": "sala 303 - 100 lugares"
      },
      {
       "dia": "Qua",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "sala 306 - 112 lugares"
+      "sala": "sala 305 - 51 lugares"
      }
     ],
     "no_catalogo": true
@@ -797,13 +797,13 @@
       "dia": "Seg",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "sala 301 - 73 lugares"
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
      },
      {
       "dia": "Seg",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+      "sala": "sala 301 - 73 lugares"
      },
      {
       "dia": "Seg",
@@ -821,13 +821,13 @@
       "dia": "Qua",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
      },
      {
       "dia": "Qua",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
      }
     ],
     "no_catalogo": true
@@ -846,31 +846,31 @@
       "dia": "Seg",
       "inicio": "21:00",
       "fim": "23:00",
-      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
      },
      {
       "dia": "Seg",
       "inicio": "21:00",
       "fim": "23:00",
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
       "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "21:00",
+      "fim": "23:00",
+      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
      },
      {
       "dia": "Qua",
       "inicio": "21:00",
       "fim": "23:00",
       "sala": "sala 301 - 73 lugares"
-     },
-     {
-      "dia": "Qua",
-      "inicio": "21:00",
-      "fim": "23:00",
-      "sala": "Laboratório de Bio Engenharia e Instrumentação Biomédica - sala 313 - 3º andar"
-     },
-     {
-      "dia": "Qua",
-      "inicio": "21:00",
-      "fim": "23:00",
-      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
      }
     ],
     "no_catalogo": true
@@ -1080,13 +1080,13 @@
       "dia": "Ter",
       "inicio": "19:00",
       "fim": "21:00",
-      "sala": "sala 309 - 56 lugares"
+      "sala": "Lab. 402 - Engenharia de Computação II: Sistemas Embarcados"
      },
      {
       "dia": "Ter",
       "inicio": "19:00",
       "fim": "21:00",
-      "sala": "Lab. 402 - Engenharia de Computação II: Sistemas Embarcados"
+      "sala": "sala 309 - 56 lugares"
      },
      {
       "dia": "Qui",
@@ -1553,46 +1553,6 @@
     "no_catalogo": true
    }
   ],
-  "Engenharia Médica Aplicada": [
-   {
-    "turma": "I",
-    "professor": "Adenauer",
-    "encontros": [
-     {
-      "dia": "Seg",
-      "inicio": "15:30",
-      "fim": "17:30",
-      "sala": "sala 303 - 100 lugares"
-     },
-     {
-      "dia": "Qua",
-      "inicio": "15:30",
-      "fim": "17:30",
-      "sala": "Lab. Inf. 404 - 51 lugares"
-     }
-    ],
-    "no_catalogo": true
-   },
-   {
-    "turma": "N",
-    "professor": "Adenauer",
-    "encontros": [
-     {
-      "dia": "Seg",
-      "inicio": "19:00",
-      "fim": "21:00",
-      "sala": "sala 310 - 99 lugares"
-     },
-     {
-      "dia": "Qua",
-      "inicio": "19:00",
-      "fim": "21:00",
-      "sala": "Lab. Inf. 404 - 51 lugares"
-     }
-    ],
-    "no_catalogo": true
-   }
-  ],
   "Metodologia da Pesquisa e Comunicação Científica": [
    {
     "turma": "I",
@@ -1798,6 +1758,46 @@
     "no_catalogo": false
    }
   ],
+  "Engenharia Médica Aplicada": [
+   {
+    "turma": "I",
+    "professor": "Adenauer",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 405 - 52 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Adenauer",
+    "encontros": [
+     {
+      "dia": "Seg",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 310 - 99 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
   "Fundamentos de Eletrônica Aplicada": [
    {
     "turma": "I",
@@ -1861,27 +1861,6 @@
       "inicio": "19:00",
       "fim": "21:00",
       "sala": "Lab. Inf. 405 - 52 lugares"
-     }
-    ],
-    "no_catalogo": true
-   }
-  ],
-  "Fenômenos do Contínuo Experimental": [
-   {
-    "turma": "N",
-    "professor": "Fabiano",
-    "encontros": [
-     {
-      "dia": "Seg",
-      "inicio": "19:00",
-      "fim": "21:00",
-      "sala": "Lab. Física II sala 216 - 2° andar"
-     },
-     {
-      "dia": "Seg",
-      "inicio": "19:00",
-      "fim": "21:00",
-      "sala": "sala 204 - 110 lugares"
      }
     ],
     "no_catalogo": true
@@ -2171,6 +2150,25 @@
       "inicio": "21:00",
       "fim": "23:00",
       "sala": "Lab. Inf. 404 - 51 lugares"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "IB",
+    "professor": "Arlindo",
+    "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 403 - 55 lugares"
+     },
+     {
+      "dia": "Qui",
+      "inicio": "13:30",
+      "fim": "15:30",
+      "sala": "Lab. Inf. 403 - 55 lugares"
      }
     ],
     "no_catalogo": true
@@ -2715,13 +2713,13 @@
       "dia": "Ter",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
+      "sala": "sala 303 - 100 lugares"
      },
      {
       "dia": "Ter",
       "inicio": "13:30",
       "fim": "15:30",
-      "sala": "sala 303 - 100 lugares"
+      "sala": "Lab Bio II/Fisiologia - sala 318 - 3° andar"
      }
     ],
     "no_catalogo": true
@@ -3211,13 +3209,13 @@
       "dia": "Qui",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "sala 210 - 110 lugares"
+      "sala": "sala 308 - 90 lugares"
      },
      {
       "dia": "Qui",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "sala 308 - 90 lugares"
+      "sala": "sala 210 - 110 lugares"
      }
     ],
     "no_catalogo": true
@@ -3372,13 +3370,13 @@
       "dia": "Ter",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "sala 307 - 58 lugares"
+      "sala": "Lab. Inf. 405 - 52 lugares"
      },
      {
       "dia": "Ter",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "Lab. Inf. 405 - 52 lugares"
+      "sala": "sala 307 - 58 lugares"
      },
      {
       "dia": "Qui",
@@ -3475,6 +3473,12 @@
     "turma": "N",
     "professor": "Evandro",
     "encontros": [
+     {
+      "dia": "Ter",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Inf. 407 - 66 lugares"
+     },
      {
       "dia": "Ter",
       "inicio": "19:00",
@@ -3583,13 +3587,13 @@
       "dia": "Qua",
       "inicio": "10:00",
       "fim": "12:00",
-      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+      "sala": "sala 305 - 51 lugares"
      },
      {
       "dia": "Qua",
       "inicio": "10:00",
       "fim": "12:00",
-      "sala": "sala 305 - 51 lugares"
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
      }
     ],
     "no_catalogo": true
@@ -3602,13 +3606,13 @@
       "dia": "Qui",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+      "sala": "sala 305 - 51 lugares"
      },
      {
       "dia": "Qui",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "sala 305 - 51 lugares"
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
      }
     ],
     "no_catalogo": true
@@ -3621,13 +3625,13 @@
       "dia": "Qui",
       "inicio": "19:00",
       "fim": "21:00",
-      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+      "sala": "sala 305 - 51 lugares"
      },
      {
       "dia": "Qui",
       "inicio": "19:00",
       "fim": "21:00",
-      "sala": "sala 305 - 51 lugares"
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
      }
     ],
     "no_catalogo": true
@@ -3640,13 +3644,13 @@
       "dia": "Sex",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
+      "sala": "sala 308 - 90 lugares"
      },
      {
       "dia": "Sex",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "sala 308 - 90 lugares"
+      "sala": "Lab. Eletrônica - sala 312 - 3° andar"
      }
     ],
     "no_catalogo": true
@@ -3731,53 +3735,13 @@
       "dia": "Qua",
       "inicio": "13:30",
       "fim": "17:30",
-      "sala": "sala 309 - 56 lugares"
+      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
      },
      {
       "dia": "Qua",
       "inicio": "13:30",
       "fim": "17:30",
-      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
-     }
-    ],
-    "no_catalogo": true
-   }
-  ],
-  "Laboratório de Microbiologia": [
-   {
-    "turma": "I",
-    "professor": "Elisa",
-    "encontros": [
-     {
-      "dia": "Qua",
-      "inicio": "15:30",
-      "fim": "17:30",
-      "sala": "sala 305 - 51 lugares"
-     },
-     {
-      "dia": "Qua",
-      "inicio": "15:30",
-      "fim": "17:30",
-      "sala": "Lab. Bio I - sala 317 - 3° andar"
-     }
-    ],
-    "no_catalogo": true
-   },
-   {
-    "turma": "N",
-    "professor": "Elisa",
-    "encontros": [
-     {
-      "dia": "Qua",
-      "inicio": "19:00",
-      "fim": "21:00",
-      "sala": "Lab. Bio I - sala 317 - 3° andar"
-     },
-     {
-      "dia": "Qua",
-      "inicio": "19:00",
-      "fim": "21:00",
-      "sala": "sala 305 - 51 lugares"
+      "sala": "sala 309 - 56 lugares"
      }
     ],
     "no_catalogo": true
@@ -3839,6 +3803,40 @@
     "no_catalogo": true
    }
   ],
+  "Laboratório de Microbiologia": [
+   {
+    "turma": "I",
+    "professor": "Elisa",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "15:30",
+      "fim": "17:30",
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   },
+   {
+    "turma": "N",
+    "professor": "Elisa",
+    "encontros": [
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "sala 305 - 51 lugares"
+     },
+     {
+      "dia": "Qua",
+      "inicio": "19:00",
+      "fim": "21:00",
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
+     }
+    ],
+    "no_catalogo": true
+   }
+  ],
   "Química Orgânica Experimental": [
    {
     "turma": "N",
@@ -3848,13 +3846,13 @@
       "dia": "Qua",
       "inicio": "19:00",
       "fim": "23:00",
-      "sala": "sala 309 - 56 lugares"
+      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
      },
      {
       "dia": "Qua",
       "inicio": "19:00",
       "fim": "23:00",
-      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
+      "sala": "sala 309 - 56 lugares"
      }
     ],
     "no_catalogo": true
@@ -4052,13 +4050,13 @@
       "dia": "Qui",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "sala 309 - 56 lugares"
+      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
      },
      {
       "dia": "Qui",
       "inicio": "15:30",
       "fim": "17:30",
-      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
+      "sala": "sala 309 - 56 lugares"
      }
     ],
     "no_catalogo": true
@@ -4071,13 +4069,13 @@
       "dia": "Qui",
       "inicio": "19:00",
       "fim": "21:00",
-      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
+      "sala": "sala 307 - 58 lugares"
      },
      {
       "dia": "Qui",
       "inicio": "19:00",
       "fim": "21:00",
-      "sala": "sala 307 - 58 lugares"
+      "sala": "Lab. Química Orgânica e Síntese - sala 315 - 3° andar"
      }
     ],
     "no_catalogo": true
@@ -4334,13 +4332,13 @@
       "dia": "Sex",
       "inicio": "19:00",
       "fim": "23:00",
-      "sala": "sala 305 - 51 lugares"
+      "sala": "Lab. Bio I - sala 317 - 3° andar"
      },
      {
       "dia": "Sex",
       "inicio": "19:00",
       "fim": "23:00",
-      "sala": "Lab. Bio I - sala 317 - 3° andar"
+      "sala": "sala 305 - 51 lugares"
      }
     ],
     "no_catalogo": false
