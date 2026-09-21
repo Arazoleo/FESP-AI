@@ -15,6 +15,7 @@ import json
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_JSON = os.path.join(ROOT, "replicacao_usp", "curso_usp_bcc.json")
+EMENTAS_JSON = os.path.join(ROOT, "replicacao_usp", "ementas_usp_bcc.json")
 OUT_DIR = os.path.join(ROOT, "markdown_usp_bcc")
 
 
@@ -50,6 +51,14 @@ def main():
     discs = data["disciplinas"]
     curso = f"{data.get('curso','Bacharelado em Ciência da Computação')} ({data.get('instituicao','USP')})"
     nome_por_codigo = {d["codigo"]: d["nome"] for d in discs}
+
+    # mescla ementas oficiais (JupiterWeb), se coletadas
+    ementas = {}
+    if os.path.exists(EMENTAS_JSON):
+        ementas = json.load(open(EMENTAS_JSON, encoding="utf-8")).get("ementas", {})
+    for d in discs:
+        if not d.get("ementa") and ementas.get(d["codigo"]):
+            d["ementa"] = ementas[d["codigo"]]
 
     os.makedirs(OUT_DIR, exist_ok=True)
     n = 0

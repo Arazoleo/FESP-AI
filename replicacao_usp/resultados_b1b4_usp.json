@@ -1,5 +1,5 @@
 {
-  "n": 12,
+  "n": 40,
   "detalhes": [
     {
       "pergunta": "Quais são todos os pré-requisitos (a cadeia completa) de Análise de Algoritmos?",
@@ -7,17 +7,17 @@
       "B1": {
         "label": "I",
         "score": 0.0,
-        "resposta": "Para compreender a disciplina de **Análise de Algoritmos**, o estudante precisa de uma base sólida que transita entre a matemática discreta e a implementação prática de software. A \"cadeia completa\" de pré-requisitos pode ser dividida em três pilares fundamentais:\n\n### 1. Pilar Matemático (Fundament"
+        "resposta": "Para compreender a **Análise de Algoritmos** em nível acadêmico, é necessário percorrer uma cadeia de conhecimentos que vai desde a lógica básica até a matemática discreta e a programação estruturada. A análise de algoritmos não trata apenas de \"fazer o código funcionar\", mas de provar a eficiência "
       },
       "B2": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Os pré-requisitos de Análise de Algoritmos são:\n\n* Algoritmos e Estruturas de Dados II (MAC0323)\n* Algoritmos e Estruturas de Dados I (MAC0121)"
+        "resposta": "Os pré-requisitos da disciplina Análise de Algoritmos (MAC0338) são:\n\n* Algoritmos e Estruturas de Dados II (MAC0323)\n* Algoritmos e Estruturas de Dados I (MAC0121)"
       },
       "B3": {
         "label": "P",
         "score": 0.5,
-        "resposta": "A cadeia completa de pré-requisitos de Análise de Algoritmos é:\n\n* Algoritmos e Estruturas de Dados II"
+        "resposta": "A disciplina de Análise de Algoritmos possui o seguinte pré-requisito:\n\n* Algoritmos e Estruturas de Dados II"
       },
       "B4": {
         "label": "C",
@@ -31,12 +31,12 @@
       "B1": {
         "label": "I",
         "score": 0.0,
-        "resposta": "Para compreender a disciplina de **Sistemas Operacionais (SO)** em sua totalidade, é necessário percorrer uma cadeia de conhecimentos que vai desde a lógica básica até a interface direta com o hardware.\n\nAbaixo, apresento a cadeia completa de pré-requisitos, organizada por níveis de dependência:\n\n##"
+        "resposta": "Para compreender a disciplina de **Sistemas Operacionais (SO)** em sua totalidade, é necessário percorrer uma cadeia de conhecimentos que vai desde a lógica básica até a interface entre hardware e software.\n\nAbaixo, listo a cadeia completa de pré-requisitos, dividida por etapas de dependência:\n\n### "
       },
       "B2": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Os pré-requisitos de Sistemas Operacionais são:\n\n- Algoritmos e Estruturas de Dados II (Código: MAC0323)"
+        "resposta": "O pré-requisito de Sistemas Operacionais é:\n\n* Algoritmos e Estruturas de Dados II (Código: MAC0323)"
       },
       "B3": {
         "label": "P",
@@ -55,12 +55,12 @@
       "B1": {
         "label": "I",
         "score": 0.0,
-        "resposta": "Para compreender plenamente a disciplina de **Funções Diferenciáveis e Séries** (geralmente inserida em cursos de Análise Real ou Cálculo Avançado), é necessário percorrer uma cadeia de pré-requisitos que vai desde a base aritmética até a análise rigorosa.\n\nAbaixo, listo a cadeia completa, dividida "
+        "resposta": "Para compreender plenamente a disciplina de **Funções Diferenciáveis e Séries** (geralmente inserida em cursos de Análise Real ou Cálculo Avançado), é necessário percorrer uma cadeia de pré-requisitos que vai desde a base algébrica até a análise rigorosa.\n\nAbaixo, listo a cadeia completa, dividida p"
       },
       "B2": {
-        "label": "P",
-        "score": 0.5,
-        "resposta": "Os pré-requisitos de Funções Diferenciáveis e Séries são:\n\n- Cálculo Diferencial e Integral II (Código: MAT2454)"
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos da cadeia completa de Funções Diferenciáveis e Séries são:\n\n* Cálculo Diferencial e Integral II (Código: MAT2454)\n* Cálculo Diferencial e Integral I (Código: MAT2453)"
       },
       "B3": {
         "label": "P",
@@ -70,7 +70,7 @@
       "B4": {
         "label": "C",
         "score": 1.0,
-        "resposta": "Os pré-requisitos de Funções Diferenciáveis e Séries são:\n\n* Cálculo Diferencial e Integral I\n* Cálculo Diferencial e Integral II"
+        "resposta": "Os pré-requisitos completos de Funções Diferenciáveis e Séries são:\n\n* Cálculo Diferencial e Integral I\n* Cálculo Diferencial e Integral II"
       }
     },
     {
@@ -79,17 +79,17 @@
       "B1": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Para compreender a disciplina de **Conceitos Fundamentais de Linguagens de Programação** (também conhecida como Paradigmas de Programação), o estudante precisa de uma base que combine a capacidade de implementar algoritmos, a compreensão de como o hardware processa a informação e a fundamentação mat"
+        "resposta": "Para compreender a disciplina de **Conceitos Fundamentais de Linguagens de Programação** (também conhecida como Paradigmas de Programação), o estudante precisa de uma base que combine a capacidade de implementar algoritmos, a compreensão de como o hardware processa instruções e a fundamentação matem"
       },
       "B2": {
-        "label": "C",
-        "score": 1.0,
-        "resposta": "Os pré-requisitos da cadeia completa de Conceitos Fundamentais de Linguagens de Programação são:\n\n* Introdução ao Desenvolvimento de Sistemas de Software (MAC0350)\n* Algoritmos e Estruturas de Dados I (MAC0121)\n* Técnicas de Programação I (MAC0216)\n* Introdução à Computação (MAC0110)"
+        "label": "P",
+        "score": 0.5,
+        "resposta": "A cadeia completa de pré-requisitos de Conceitos Fundamentais de Linguagens de Programação (MAC0316) é:\n\n1. Introdução ao Desenvolvimento de Sistemas de Software (MAC0350)"
       },
       "B3": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Os pré-requisitos de Conceitos Fundamentais de Linguagens de Programação são:\n\n* Introdução ao Desenvolvimento de Sistemas de Software."
+        "resposta": "A cadeia completa de pré-requisitos de Conceitos Fundamentais de Linguagens de Programação é:\n\n* Introdução ao Desenvolvimento de Sistemas de Software"
       },
       "B4": {
         "label": "C",
@@ -103,17 +103,17 @@
       "B1": {
         "label": "I",
         "score": 0.0,
-        "resposta": "O pré-requisito direto de **Álgebra Linear I** é, geralmente, a disciplina de **Cálculo Diferencial e Integral I** (ou Matemática Básica/Pré-Cálculo, dependendo da grade curricular da instituição).\n\nAs disciplinas pertinentes que fundamentam o conhecimento necessário para cursar Álgebra Linear I são"
+        "resposta": "O pré-requisito direto de **Álgebra Linear I** é, geralmente, a disciplina de **Cálculo Diferencial e Integral I** (ou Matemática Básica/Fundamentos de Matemática, dependendo da grade curricular da instituição).\n\nAs disciplinas pertinentes que fornecem a base necessária são:\n\n1.  **Cálculo I:** Para"
       },
       "B2": {
         "label": "C",
         "score": 1.0,
-        "resposta": "O pré-requisito direto de Álgebra Linear I é:\n\n* Vetores e Geometria (Código: MAT0112)"
+        "resposta": "O pré-requisito direto de Álgebra Linear I é:\n\n- Vetores e Geometria (Código: MAT0112)"
       },
       "B3": {
         "label": "C",
         "score": 1.0,
-        "resposta": "O pré-requisito direto de Álgebra Linear I é:\n\n* Vetores e Geometria"
+        "resposta": "O pré-requisito direto de Álgebra Linear I é:\n\n* Vetores e Geometria."
       },
       "B4": {
         "label": "C",
@@ -132,7 +132,7 @@
       "B2": {
         "label": "C",
         "score": 1.0,
-        "resposta": "Os pré-requisitos diretos de Laboratório de Métodos Numéricos são:\n\n- Álgebra Linear I (Código: MAT0122)\n- Introdução à Computação (Código: MAC0110)"
+        "resposta": "Os pré-requisitos diretos de Laboratório de Métodos Numéricos são:\n\n* Álgebra Linear I (Código: MAT0122)\n* Introdução à Computação (Código: MAC0110)"
       },
       "B3": {
         "label": "C",
@@ -151,7 +151,7 @@
       "B1": {
         "label": "C",
         "score": 1.0,
-        "resposta": "O pré-requisito direto de **Cálculo Diferencial e Integral II** é:\n\n*   **Cálculo Diferencial e Integral I** (ou Cálculo I)\n\n**Disciplinas pertinentes para a base de conhecimento:**\nPara um desempenho satisfatório nesta disciplina, é fundamental o domínio de conteúdos de:\n1.  **Pré-Cálculo / Matemát"
+        "resposta": "O pré-requisito direto de Cálculo Diferencial e Integral II é **Cálculo Diferencial e Integral I**."
       },
       "B2": {
         "label": "C",
@@ -175,12 +175,12 @@
       "B1": {
         "label": "I",
         "score": 0.0,
-        "resposta": "Como assistente acadêmico, informo que a disciplina de **Introdução à Computação** serve como a base fundamental para quase todo o currículo de Ciência da Computação, Engenharia de Software e Sistemas de Informação.\n\nAs disciplinas que dependem diretamente dela (pré-requisitos) podem ser divididas n"
+        "resposta": "Como assistente acadêmico, informo que a disciplina de **Introdução à Computação** serve como a base fundamental para quase todo o currículo de Ciência da Computação, Engenharia de Software e Sistemas de Informação. Ela fornece os conceitos de lógica, representação de dados e a mentalidade algorítmi"
       },
       "B2": {
         "label": "P",
         "score": 0.5,
-        "resposta": "As disciplinas que dependem diretamente de Introdução à Computação são:\n\n* Técnicas de Programação I\n* Lógica e Verificação de Programas\n* Algoritmos e Estruturas de Dados I"
+        "resposta": "As disciplinas que dependem diretamente de Introdução à Computação são:\n\n* Técnicas de Programação I\n* Laboratório de Métodos Numéricos\n* Lógica e Verificação de Programas"
       },
       "B3": {
         "label": "C",
@@ -199,12 +199,12 @@
       "B1": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Como assistente acadêmico, informo que a disciplina de **Algoritmos e Estruturas de Dados I (AED I)** é a base fundamental para a maioria das matérias de computação. Ela fornece os conceitos de complexidade (Big O), manipulação de memória e a organização lógica de dados, que são pré-requisitos essen"
+        "resposta": "Como assistente acadêmico, informo que a disciplina de **Algoritmos e Estruturas de Dados I (AED I)** é a base fundamental para a computação. A maioria das disciplinas avançadas de Ciência da Computação, Engenharia de Software e Sistemas de Informação depende diretamente dos conceitos de manipulação"
       },
       "B2": {
-        "label": "P",
-        "score": 0.5,
-        "resposta": "As disciplinas que dependem diretamente de Algoritmos e Estruturas de Dados I são:\n\n* Algoritmos e Estruturas de Dados II\n* Introdução ao Desenvolvimento de Sistemas de Software"
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem diretamente de Algoritmos e Estruturas de Dados I são:\n\n* Caminhos na Computação\n* Algoritmos e Estruturas de Dados II\n* Introdução ao Desenvolvimento de Sistemas de Software"
       },
       "B3": {
         "label": "C",
@@ -223,12 +223,12 @@
       "B1": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Para chegar à **Análise de Algoritmos** partindo do zero, você precisa construir uma base sólida que transita entre a lógica matemática e a implementação prática. A análise de algoritmos não trata de \"como programar\", mas de \"como medir a eficiência\" do que foi programado.\n\nAbaixo, apresento o plano"
+        "resposta": "Para chegar à **Análise de Algoritmos** com a base necessária para compreender a complexidade computacional (Notação Big O), a eficiência de memória e a otimização de código, você precisa de um caminho que combine matemática discreta e fundamentos de programação.\n\nAbaixo, apresento o plano de estudo"
       },
       "B2": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Para chegar à disciplina de Análise de Algoritmos, o plano de estudos mínimo é:\n\n1. Algoritmos e Estruturas de Dados I (Código: MAC0121)\n2. Algoritmos e Estruturas de Dados II (Código: MAC0323)\n3. Análise de Algoritmos (Código: MAC0338)"
+        "resposta": "Para chegar à disciplina de Análise de Algoritmos, o plano de estudos mínimo é:\n\n1. Algoritmos e Estruturas de Dados II (Código: MAC0323)\n2. Análise de Algoritmos (Código: MAC0338)"
       },
       "B3": {
         "label": "P",
@@ -247,12 +247,12 @@
       "B1": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Para compreender Sistemas Operacionais (SO) de forma profunda, não basta saber programar; é necessário entender como o software interage com o hardware. O estudo de SO é a intersecção entre a Ciência da Computação e a Engenharia Elétrica.\n\nAbaixo, apresento o plano de estudos mínimo, organizado de f"
+        "resposta": "Para compreender Sistemas Operacionais (SO) de forma profunda, não basta saber programar; é preciso entender como o software interage com o hardware. O estudo de SOs é a intersecção entre a Ciência da Computação e a Engenharia de Computação.\n\nAbaixo, apresento o plano de estudos mínimo, organizado d"
       },
       "B2": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Para chegar a Sistemas Operacionais, o plano de estudos mínimo é:\n\n* Algoritmos e Estruturas de Dados II (Código: MAC0323)\n* Sistemas Operacionais (Código: MAC0422)"
+        "resposta": "Para chegar a Sistemas Operacionais, o plano de estudos mínimo é:\n\n1. Algoritmos e Estruturas de Dados II (Código: MAC0323)\n2. Sistemas Operacionais (Código: MAC0422)"
       },
       "B3": {
         "label": "P",
@@ -262,7 +262,7 @@
       "B4": {
         "label": "C",
         "score": 1.0,
-        "resposta": "O plano de estudos mínimo para chegar a Sistemas Operacionais é:\n\n1. Introdução à Computação\n2. Algoritmos e Estruturas de Dados I\n3. Algoritmos e Estruturas de Dados II\n4. Sistemas Operacionais"
+        "resposta": "O plano de estudos mínimo é:\n\n1. Introdução à Computação\n2. Algoritmos e Estruturas de Dados I\n3. Algoritmos e Estruturas de Dados II\n4. Sistemas Operacionais"
       }
     },
     {
@@ -271,7 +271,7 @@
       "B1": {
         "label": "P",
         "score": 0.5,
-        "resposta": "Para determinar com precisão quais disciplinas você desbloqueou, seria necessário analisar a **grade curricular (fluxograma)** específica do seu curso e da sua instituição, pois cada universidade possui pré-requisitos diferentes.\n\nNo entanto, com base na estrutura padrão da maioria dos cursos de Ciê"
+        "resposta": "Para determinar com precisão quais disciplinas você desbloqueou, seria necessário analisar a **grade curricular (fluxograma)** específica da sua instituição e do seu curso. No entanto, com base na estrutura padrão da maioria dos cursos de Ciência da Computação, Engenharia de Software e Sistemas de I"
       },
       "B2": {
         "label": "P",
@@ -281,12 +281,684 @@
       "B3": {
         "label": "I",
         "score": 0.0,
-        "resposta": "Com base nos fatos disponíveis, não é possível determinar quais disciplinas foram desbloqueadas, pois a lista de pré-requisitos do currículo não foi fornecida."
+        "resposta": "Para responder a essa pergunta, é necessário consultar os pré-requisitos diretos de cada disciplina do currículo."
       },
       "B4": {
         "label": "C",
         "score": 1.0,
         "resposta": "As disciplinas desbloqueadas são:\n\n* Algoritmos e Estruturas de Dados I\n* Cálculo Diferencial e Integral II\n* Lógica e Verificação de Programas\n* Modelagem e Simulação\n* Técnicas de Programação I\n* Álgebra Linear I"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Análise de Algoritmos? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a disciplina de **Análise de Algoritmos**, que é um pilar fundamental da Ciência da Computação e da Engenharia de Software.\n\n### O que se estuda em Análise de Algoritmos?\n\nA disciplina de Análise de Algoritmos foca no estudo rigoroso da **eficiência** de "
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Análise de Algoritmos (MAC0338), estuda-se:\n\n* Complexidade de tempo e espaço de algoritmos;\n* Análise assintótica (notação O, Ômega e Teta);\n* Análise de pior caso e análise probabilística;\n* Análise amortizada de estruturas dinâmicas;\n* Paradigmas de projeto, especificamente programa"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Análise de Algoritmos, estuda-se:\n\n*   **Complexidade de algoritmos:** análise de tempo e espaço.\n*   **Análise assintótica:** notações O, Ômega e Teta.\n*   **Tipos de análise:** análise de pior caso e análise probabilística.\n*   **Estruturas dinâmicas:** análise amortizada.\n*   **P"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Análise de Algoritmos, estuda-se:\n\n*   **Análise de Algoritmos:** Complexidade de tempo e espaço; análise assintótica (notação O, Ômega e Teta); análise de pior caso e análise probabilística; análise amortizada de estruturas dinâmicas.\n*   **Paradigmas de projeto:** Programação dinâ"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Sistemas Operacionais? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a disciplina de **Sistemas Operacionais (SO)**.\n\nEsta disciplina é fundamental nos cursos de Ciência da Computação, Engenharia de Software e Sistemas de Informação. Seu objetivo principal é compreender a camada de software que gerencia o hardware do compu"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Sistemas Operacionais (MAC0422), estuda-se:\n\n*   **Introdução a arquiteturas:** convencionais, multiprocessadores, paralelas com memória distribuída e redes.\n*   **Gerenciamento de memória:** real vs. virtual, paginação, segmentação e cache.\n*   **Processos:** estados, contexto, escalo"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Sistemas Operacionais, estuda-se o seguinte conteúdo:\n\n*   **Introdução a arquiteturas:** convencionais, multiprocessadores, paralelas com memória distribuída e redes.\n*   **Gerenciamento de memória:** real vs. virtual, paginação, segmentação e cache.\n*   **Processos:** estados, con"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Sistemas Operacionais, estuda-se o seguinte conteúdo:\n\n*   **Introdução a arquiteturas:** convencionais, multiprocessadores, paralelas com memória distribuída e redes.\n*   **Gerenciamento de memória:** real vs. virtual, paginação, segmentação e cache.\n*   **Processos:** estados, con"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Algoritmos e Estruturas de Dados I? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a disciplina de **Algoritmos e Estruturas de Dados I (AED I)**.\n\nEsta é uma disciplina fundamental nos cursos de Ciência da Computação, Engenharia de Software e Sistemas de Informação. Seu objetivo principal é ensinar o aluno a organizar dados de forma ef"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Algoritmos e Estruturas de Dados I (Código: MAC0121), estuda-se:\n\n- Noções informais de prova de correção e medida de desempenho de algoritmos;\n- Tipos abstratos de dados;\n- Vetores, matrizes, strings;\n- Alocação dinâmica de memória e apontadores;\n- Listas ligadas, árvores binárias, pi"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Algoritmos e Estruturas de Dados I, estuda-se:\n\n*   **Algoritmos e Estruturas de Dados I:** Noções informais de prova de correção e medida de desempenho de algoritmos; tipos abstratos de dados; vetores, matrizes, strings; alocação dinâmica de memória; apontadores; listas ligadas; ár"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Algoritmos e Estruturas de Dados I, estuda-se:\n\n*   **Algoritmos e Estruturas de Dados I:** Noções informais de prova de correção e medida de desempenho de algoritmos; tipos abstratos de dados; vetores, matrizes, strings; alocação dinâmica de memória; apontadores; listas ligadas; ár"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Algoritmos e Estruturas de Dados II? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, informo que a disciplina de **Algoritmos e Estruturas de Dados II (AED II)** é a continuação natural do estudo de organização de dados, focando em estruturas mais complexas, otimização de performance e a análise rigorosa da eficiência computacional.\n\nEnquanto a primeira pa"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Algoritmos e Estruturas de Dados II (Código: MAC0323), estuda-se:\n\n- Tipos abstratos de dados e suas implementações.\n- Análise de complexidade de tempo e espaço (pior caso, caso médio, análise amortizada).\n- Tabelas de símbolos: árvores de busca balanceadas, hashing, tries ternárias.\n-"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Algoritmos e Estruturas de Dados II, estuda-se o seguinte conteúdo:\n\n*   **Tipos abstratos de dados e suas implementações.**\n*   **Análise de complexidade de tempo e espaço:** pior caso, caso médio e análise amortizada.\n*   **Tabelas de símbolos:** hashing, tries ternárias e árvores"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Algoritmos e Estruturas de Dados II, estuda-se:\n\n*   **Tipos abstratos de dados e suas implementações.**\n*   **Análise de complexidade de tempo e espaço**, abrangendo pior caso, caso médio e análise amortizada.\n*   **Tabelas de símbolos**, incluindo hashing, tries ternárias e árvore"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Introdução à Computação? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a disciplina de **Introdução à Computação**.\n\nEsta disciplina serve como a base fundamental para qualquer curso de Tecnologia da Informação (Ciência da Computação, Engenharia de Software, Sistemas de Informação, etc.). Seu objetivo principal é fornecer um"
+      },
+      "B2": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Com base nos fatos fornecidos, não há informações sobre a ementa ou o conteúdo da disciplina Introdução à Computação (Código: MAC0110), apenas a menção a ela como pré-requisito para as disciplinas Técnicas de Programação I e Modelagem e Simulação."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Introdução à Computação, estuda-se:\n\n*   **Introdução e Fundamentos:** Breve história da computação e noções de organização e funcionamento de computadores e programas.\n*   **Linguagens de Programação:** Conceitos de entrada e saída; comandos de atribuição, seleção e repetição; expr"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Introdução à Computação, estuda-se:\n\n*   **Introdução e Fundamentos:** Breve história da computação e noções de organização e funcionamento de computadores e programas.\n*   **Linguagens de Programação:** Conceitos de entrada e saída; comandos de atribuição, seleção e repetição; expr"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Lógica e Verificação de Programas? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a disciplina de **Lógica e Verificação de Programas**.\n\nEsta disciplina situa-se na interseção entre a Ciência da Computação e a Matemática Discreta. Seu objetivo principal não é ensinar a programar, mas sim fornecer as ferramentas matemáticas para **prov"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Lógica e Verificação de Programas (MAC0239), estuda-se:\n\n*   **Lógica Formal:** cálculo proposicional (sintaxe, semântica, métodos de prova), cálculo de predicados de primeira ordem e noções intuitivas de correção e completude.\n*   **Verificação de Programas:** semântica axiomática dos"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Lógica e Verificação de Programas, estuda-se o seguinte conteúdo:\n\n*   **Lógica Formal:** cálculo proposicional (sintaxe, semântica, métodos de prova), cálculo de predicados de primeira ordem e noções intuitivas de correção e completude.\n*   **Verificação de Programas:** semântica a"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Lógica e Verificação de Programas, estuda-se:\n\n*   **Lógica Formal:** cálculo proposicional (sintaxe, semântica, métodos de prova), cálculo de predicados de primeira ordem e noções intuitivas de correção e completude.\n*   **Verificação de Programas:** semântica axiomática dos comand"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Conceitos Fundamentais de Linguagens de Programação? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a disciplina de **Conceitos Fundamentais de Linguagens de Programação** (muitas vezes denominada apenas como *Paradigmas de Linguagem de Programação*).\n\n### Descrição Geral\nEsta disciplina não visa ensinar a sintaxe de uma linguagem específica, mas sim a "
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Conceitos Fundamentais de Linguagens de Programação (MAC0316), estuda-se:\n\n*   **Linguagens funcionais:** funções como valores de primeira ordem, polimorfismo, ambientes e fechamentos, e avaliação 'adiada'.\n*   **Linguagens orientadas a objetos:** tipos abstratos de dados, módulos, her"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Conceitos Fundamentais de Linguagens de Programação, estuda-se o seguinte conteúdo:\n\n*   **Linguagens funcionais:** funções como valores de primeira ordem, polimorfismo, ambientes e fechamentos, e avaliação 'adiada'.\n*   **Linguagens orientadas a objetos:** tipos abstratos de dados,"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Conceitos Fundamentais de Linguagens de Programação, estuda-se o seguinte conteúdo:\n\n*   **Linguagens funcionais:** funções como valores de primeira ordem, polimorfismo, ambientes e fechamentos, e avaliação 'adiada'.\n*   **Linguagens orientadas a objetos:** tipos abstratos de dados,"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Cálculo Diferencial e Integral I? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a estrutura e o conteúdo programático da disciplina de **Cálculo Diferencial e Integral I**.\n\nEsta disciplina é a base do cálculo infinitesimal e tem como objetivo principal estudar a variação de grandezas e a acumulação de quantidades. O foco central é a"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Cálculo Diferencial e Integral I (Código: MAT2453), estuda-se:\n\n- Funções trigonométricas e exponenciais;\n- Funções compostas e inversas;\n- Limites e continuidade;\n- Derivadas: definição, interpretações geométrica e física, regras de derivação e regra da cadeia;\n- Aplicações de derivad"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Cálculo Diferencial e Integral I, estudam-se os seguintes conteúdos:\n\n*   **Funções:** trigonométricas, exponenciais, compostas e inversas.\n*   **Limites e continuidade.**\n*   **Derivadas:** definição, interpretações física e geométrica, regras de derivação e regra da cadeia.\n*   **"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Cálculo Diferencial e Integral I, estudam-se os seguintes conteúdos:\n\n*   **Funções:** trigonométricas, exponenciais, compostas e inversas.\n*   **Limites e continuidade.**\n*   **Derivadas:** definição, interpretações geométrica e física, regras de derivação e regra da cadeia.\n*   **"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Álgebra Linear I? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a estrutura e o conteúdo programático típico da disciplina de **Álgebra Linear I**.\n\nA Álgebra Linear I é a base fundamental para diversas áreas da ciência, engenharia e economia. Seu objetivo principal é o estudo de vetores, espaços vetoriais e transform"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Álgebra Linear I (MAT0122), estuda-se:\n\n- Espaços vetoriais: definição, subespaços, dependência linear, bases, dimensão.\n- Cálculo matricial, determinantes, sistemas lineares.\n- Transformações lineares e matrizes, núcleo, imagem, posto.\n- Espaços com produto interno: produto interno, n"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Álgebra Linear I, estudam-se os seguintes conteúdos:\n\n*   **Espaços vetoriais:** definição, subespaços, dependência linear, bases e dimensão.\n*   **Cálculo matricial:** determinantes e sistemas lineares.\n*   **Transformações lineares e matrizes:** núcleo, imagem e posto.\n*   **Espaç"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Álgebra Linear I, estuda-se o seguinte conteúdo:\n\n*   **Espaços vetoriais:** definição, subespaços, dependência linear, bases e dimensão.\n*   **Cálculo matricial:** determinantes e sistemas lineares.\n*   **Transformações lineares e matrizes:** núcleo, imagem e posto.\n*   **Espaços c"
+      }
+    },
+    {
+      "pergunta": "O que se estuda na disciplina Introdução ao Desenvolvimento de Sistemas de Software? Descreva o conteúdo.",
+      "tipo": "ementa",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, descrevo a seguir a natureza e o conteúdo programático da disciplina de **Introdução ao Desenvolvimento de Sistemas de Software**.\n\nEsta disciplina serve como a base fundamental para qualquer estudante de computação ou engenharia de software. Seu objetivo principal é apres"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina Introdução ao Desenvolvimento de Sistemas de Software (MAC0350), estuda-se:\n\n*   Boas práticas para desenvolvimento de software colaborativo e ferramentas de gestão de projetos;\n*   Orientação a objetos (encapsulamento, herança, polimorfismo, interfaces e exceções);\n*   Arcabouços para"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Introdução ao Desenvolvimento de Sistemas de Software, estuda-se:\n\n*   **Introdução ao Desenvolvimento de Sistemas de Software:**\n    *   Boas práticas para desenvolvimento de software colaborativo e ferramentas de gestão de projetos.\n    *   Orientação a objetos (encapsulamento, he"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Na disciplina de Introdução ao Desenvolvimento de Sistemas de Software, estuda-se:\n\n*   **Introdução ao Desenvolvimento de Sistemas de Software:**\n    *   Boas práticas para desenvolvimento de software colaborativo e ferramentas de gestão de projetos.\n    *   Orientação a objetos (encapsulamento, he"
+      }
+    },
+    {
+      "pergunta": "Quais são os pré-requisitos de Algoritmos e Estruturas de Dados III no currículo obrigatório do BCC?",
+      "tipo": "falsa_premissa",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Para responder a essa pergunta com precisão, é importante notar que a grade curricular pode variar ligeiramente entre diferentes universidades. No entanto, seguindo o padrão acadêmico da maioria dos cursos de Bacharelado em Ciência da Computação (BCC) no Brasil, os pré-requisitos para **Algoritmos e"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, não há informações sobre a disciplina Algoritmos e Estruturas de Dados III."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, a disciplina 'Algoritmos e Estruturas de Dados III' não consta no currículo obrigatório do BCC-USP; portanto, não há informações sobre seus pré-requisitos."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, a disciplina 'Algoritmos e Estruturas de Dados III' não consta no currículo obrigatório do BCC-USP; portanto, não há informações sobre seus pré-requisitos."
+      }
+    },
+    {
+      "pergunta": "Quais são os pré-requisitos de Cálculo Diferencial e Integral III no currículo obrigatório do BCC?",
+      "tipo": "falsa_premissa",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Para cursar a disciplina de **Cálculo Diferencial e Integral III** no currículo obrigatório do Bacharelado em Ciência da Computação (BCC), os pré-requisitos fundamentais são:\n\n1.  **Cálculo Diferencial e Integral I**: Focado em limites, derivadas e introdução à integração de funções de uma única var"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, não há informações sobre a disciplina \"Cálculo Diferencial e Integral III\"."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos disponíveis, não há informações sobre os pré-requisitos de 'Cálculo Diferencial e Integral III', pois a disciplina não consta no currículo obrigatório do BCC-USP presente no grafo."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos disponíveis, não há informações sobre os pré-requisitos de 'Cálculo Diferencial e Integral III', pois a disciplina não consta no currículo obrigatório do BCC-USP presente no grafo."
+      }
+    },
+    {
+      "pergunta": "Quais são os pré-requisitos de Teoria dos Grafos no currículo obrigatório do BCC?",
+      "tipo": "falsa_premissa",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Como assistente acadêmico, informo que, embora a grade curricular possa variar ligeiramente entre diferentes instituições de ensino superior, a disciplina de **Teoria dos Grafos** no curso de Bacharelado em Ciência da Computação (BCC) geralmente exige a base de raciocínio lógico e estruturas discret"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, não há informações sobre a disciplina de Teoria dos Grafos."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, a disciplina 'Teoria dos Grafos' não consta no currículo obrigatório do BCC-USP; portanto, não há informações sobre seus pré-requisitos."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, a disciplina 'Teoria dos Grafos' não consta no currículo obrigatório do BCC-USP; portanto, não há informações sobre seus pré-requisitos."
+      }
+    },
+    {
+      "pergunta": "Quem ministra Análise de Algoritmos neste semestre?",
+      "tipo": "abstencao",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, informo que não tenho acesso em tempo real aos sistemas de gestão escolar, horários de aulas ou listas de professores da sua instituição específica.\n\nPara obter essa informação, recomendo que você consulte:\n\n1. **O Portal do Aluno/SIGAA** (ou sistema equivalente da sua uni"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, não há informações sobre quem ministra a disciplina Análise de Algoritmos."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos disponíveis, não é possível responder a essa pergunta, pois o grafo [KG] não contém informações sobre docentes."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos disponíveis, não é possível responder a essa pergunta, pois o grafo [KG] não contém informações sobre docentes."
+      }
+    },
+    {
+      "pergunta": "Em qual sala e horário é oferecida Introdução à Computação?",
+      "tipo": "abstencao",
+      "B1": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Sinto muito, mas você não forneceu o documento, a grade horária ou o contexto necessário com as informações de salas e horários.\n\nPara que eu possa responder a essa pergunta, por favor, envie o arquivo ou o texto contendo o cronograma das aulas.\n\nAssim que você fornecer os dados, listarei as discipl"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, não há informações sobre a sala ou o horário da disciplina Introdução à Computação.\n\nDisciplinas pertinentes:\n- Introdução à Computação (MAC0110)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos disponíveis, não é possível responder a essa pergunta, pois o grafo [KG] não contém informações sobre salas ou horários."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos disponíveis, não é possível responder a essa pergunta, pois o grafo [KG] não contém informações sobre salas ou horários."
+      }
+    },
+    {
+      "pergunta": "Qual professor é responsável por Sistemas Operacionais?",
+      "tipo": "abstencao",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para responder a essa pergunta, eu precisaria ter acesso ao catálogo de professores ou ao cronograma acadêmico da sua instituição específica, pois a responsabilidade por essa disciplina varia de acordo com a universidade ou faculdade.\n\nNo entanto, do ponto de vista acadêmico, a disciplina de **Siste"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos fornecidos, não há informações sobre qual professor é responsável pela disciplina de Sistemas Operacionais."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos disponíveis, não é possível responder a essa pergunta, pois o grafo não contém informações sobre docentes."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Com base nos fatos disponíveis, não é possível responder a essa pergunta, pois o grafo não contém informações sobre docentes."
+      }
+    },
+    {
+      "pergunta": "Quais são os pré-requisitos de Cálculo Diferencial e Integral I?",
+      "tipo": "raiz",
+      "B1": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Para cursar a disciplina de **Cálculo Diferencial e Integral I** com sucesso, o estudante deve possuir um domínio sólido de conceitos matemáticos fundamentais, geralmente abrangidos no Ensino Médio ou em disciplinas de nivelamento universitário.\n\nOs pré-requisitos essenciais dividem-se nas seguintes"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Cálculo Diferencial e Integral I não possui pré-requisitos listados."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos de Cálculo Diferencial e Integral I são: nenhum."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Os pré-requisitos de Cálculo Diferencial e Integral I são: nenhum."
+      }
+    },
+    {
+      "pergunta": "Quais são os pré-requisitos de Álgebra Booleana e Aplicações em Arquitetura de Computadores?",
+      "tipo": "raiz",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Para compreender a disciplina de **Álgebra Booleana e Aplicações em Arquitetura de Computadores**, o estudante precisa de uma base sólida em raciocínio lógico e fundamentos de eletricidade/eletrônica.\n\nOs pré-requisitos podem ser divididos entre conhecimentos matemáticos e técnicos. As disciplinas p"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina Álgebra Booleana e Aplicações em Arquitetura de Computadores (MAC0329) não possui pré-requisitos listados."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina de Álgebra Booleana e Aplicações em Arquitetura de Computadores não possui pré-requisitos."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina Álgebra Booleana e Aplicações em Arquitetura de Computadores não possui pré-requisitos."
+      }
+    },
+    {
+      "pergunta": "Quais disciplinas dependem diretamente de Cálculo Diferencial e Integral I?",
+      "tipo": "dependentes",
+      "B1": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "Como assistente acadêmico, informo que o Cálculo Diferencial e Integral I é a base fundamental para a maioria das ciências exatas, engenharias e economia. As disciplinas que dependem diretamente de seus conceitos (limites, derivadas e integrais básicas) são:\n\n**1. Continuidade Matemática Direta:**\n*"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina que depende diretamente de Cálculo Diferencial e Integral I é:\n\n* Cálculo Diferencial e Integral II (Código: MAT2454)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem diretamente de Cálculo Diferencial e Integral I são:\n\n* Cálculo Diferencial e Integral II."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina que depende diretamente de Cálculo Diferencial e Integral I é:\n\n* Cálculo Diferencial e Integral II."
+      }
+    },
+    {
+      "pergunta": "Quais disciplinas dependem diretamente de Técnicas de Programação I?",
+      "tipo": "dependentes",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Como assistente acadêmico, informo que a disciplina de **Técnicas de Programação I** (ou Algoritmos e Programação I) serve como a base fundamental para quase todo o currículo de cursos de Computação, Sistemas de Informação e Engenharia de Software.\n\nAs disciplinas que dependem diretamente dela (pré-"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina que depende diretamente de Técnicas de Programação I é:\n\n* Introdução ao Desenvolvimento de Sistemas de Software (Código: MAC0350)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina que depende diretamente de Técnicas de Programação I é:\n\n* Introdução ao Desenvolvimento de Sistemas de Software."
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina que depende diretamente de Técnicas de Programação I é:\n\n* Introdução ao Desenvolvimento de Sistemas de Software."
+      }
+    },
+    {
+      "pergunta": "Quais disciplinas obrigatórias do BCC não têm nenhum pré-requisito?",
+      "tipo": "grafo_aberto",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Para responder a essa pergunta com precisão, seria necessário ter acesso à grade curricular específica da instituição de ensino, pois as disciplinas obrigatórias e seus pré-requisitos variam entre universidades (ex: USP, UNICAMP, UFMG, UFRJ).\n\nNo entanto, em um currículo padrão de **Bacharelado em C"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas obrigatórias do BCC que não têm nenhum pré-requisito são:\n\n* Vetores e Geometria (Código: MAT0112)\n* Cálculo Diferencial e Integral I (Código: MAT2453)"
+      },
+      "B3": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas obrigatórias que não têm nenhum pré-requisito são:\n\n* Análise de Algoritmos (Incorreto, possui pré-requisito) -> *Correção*:\n* Cálculo Diferencial e Integral I\n* Fundamentos de Matemática para a Computação\n* Integração na Universidade e na Profissão\n* Introdução à Computação\n* Introdu"
+      },
+      "B4": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas obrigatórias que não têm nenhum pré-requisito são:\n\n* Algoritmos e Estruturas de Dados I (Incorreto, possui pré-requisito) -> *Correção*:\n* Introdução à Computação\n* Cálculo Diferencial e Integral I\n* Fundamentos de Matemática para a Computação\n* Integração na Universidade e na Profis"
+      }
+    },
+    {
+      "pergunta": "Quais disciplinas dependem, direta ou indiretamente, de Introdução à Computação?",
+      "tipo": "grafo_aberto",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, informo que a disciplina de **Introdução à Computação** serve como o alicerce fundamental para quase todo o currículo de Ciência da Computação, Engenharia de Software e Sistemas de Informação. Ela fornece a base de lógica, representação de dados e conceitos de hardware/sof"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas que dependem de Introdução à Computação são:\n\n*   **Técnicas de Programação I** (dependência direta)\n*   **Introdução ao Desenvolvimento de Sistemas de Software** (dependência indireta, via Técnicas de Programação I)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem, direta ou indiretamente, de Introdução à Computação são:\n\n* Algoritmos e Estruturas de Dados I\n* Algoritmos e Estruturas de Dados II\n* Análise de Algoritmos\n* Caminhos na Computação\n* Introdução ao Desenvolvimento de Sistemas de Software\n* Conceitos Fundamentais de Lingu"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem, direta ou indiretamente, de Introdução à Computação são:\n\n* Algoritmos e Estruturas de Dados I\n* Algoritmos e Estruturas de Dados II\n* Análise de Algoritmos\n* Caminhos na Computação\n* Introdução ao Desenvolvimento de Sistemas de Software\n* Conceitos Fundamentais de Lingu"
+      }
+    },
+    {
+      "pergunta": "Quais disciplinas dependem, direta ou indiretamente, de Algoritmos e Estruturas de Dados I?",
+      "tipo": "grafo_aberto",
+      "B1": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "Como assistente acadêmico, informo que a disciplina de **Algoritmos e Estruturas de Dados I (AED I)** é a pedra angular de quase todo o currículo de Ciência da Computação, Engenharia de Software e Sistemas de Informação. Ela fornece a base lógica e a eficiência necessária para a implementação de qua"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas que dependem, direta ou indiretamente, de Algoritmos e Estruturas de Dados I são:\n\n*   Introdução ao Desenvolvimento de Sistemas de Software (MAC0350)\n*   Caminhos na Computação (MAC0102)\n*   Algoritmos e Estruturas de Dados II (MAC0323)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem, direta ou indiretamente, de Algoritmos e Estruturas de Dados I são:\n\n* Algoritmos e Estruturas de Dados II\n* Análise de Algoritmos\n* Caminhos na Computação\n* Introdução ao Desenvolvimento de Sistemas de Software\n* Conceitos Fundamentais de Linguagens de Programação\n* Sis"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que dependem, direta ou indiretamente, de Algoritmos e Estruturas de Dados I são:\n\n* Algoritmos e Estruturas de Dados II\n* Caminhos na Computação\n* Introdução ao Desenvolvimento de Sistemas de Software\n* Análise de Algoritmos\n* Sistemas Operacionais\n* Conceitos Fundamentais de Linguag"
+      }
+    },
+    {
+      "pergunta": "Qual disciplina obrigatória do BCC estuda paginação e gerenciamento de memória virtual?",
+      "tipo": "ementa_reversa",
+      "B1": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina obrigatória do curso de Bacharelado em Ciência da Computação (BCC) que estuda paginação e gerenciamento de memória virtual é:\n\n*   **Sistemas Operacionais**"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina que estuda paginação e gerenciamento de memória virtual é:\n\n* Sistemas Operacionais (Código: MAC0422)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina que estuda paginação e gerenciamento de memória virtual é:\n\n* Sistemas Operacionais (Código: MAC0422)"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "A disciplina que estuda paginação e gerenciamento de memória virtual é:\n\n* Sistemas Operacionais (Código: MAC0422)"
+      }
+    },
+    {
+      "pergunta": "Qual disciplina obrigatória do BCC ensina herança e polimorfismo?",
+      "tipo": "ementa_reversa",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "A disciplina obrigatória do curso de Bacharelado em Ciência da Computação (BCC) que ensina herança e polimorfismo é:\n\n*   **Programação Orientada a Objetos (POO)**"
+      },
+      "B2": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas que ensinam herança e polimorfismo são:\n\n*   Conceitos Fundamentais de Linguagens de Programação (MAC0316)\n*   Introdução ao Desenvolvimento de Sistemas de Software (MAC0350)"
+      },
+      "B3": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas que ensinam herança e polimorfismo são:\n\n*   Conceitos Fundamentais de Linguagens de Programação (MAC0316)\n*   Introdução ao Desenvolvimento de Sistemas de Software (MAC0350)"
+      },
+      "B4": {
+        "label": "P",
+        "score": 0.5,
+        "resposta": "As disciplinas que ensinam herança e polimorfismo são:\n\n*   Conceitos Fundamentais de Linguagens de Programação (MAC0316)\n*   Introdução ao Desenvolvimento de Sistemas de Software (MAC0350)"
+      }
+    },
+    {
+      "pergunta": "Quais disciplinas obrigatórias do BCC abordam análise amortizada?",
+      "tipo": "ementa_reversa",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "No currículo típico de um curso de Bacharelado em Ciência da Computação (BCC), a análise amortizada não é geralmente o foco central de uma disciplina inteira, mas sim um tópico fundamental dentro de matérias de algoritmos.\n\nAs disciplinas obrigatórias que abordam a análise amortizada são:\n\n1.  **Aná"
+      },
+      "B2": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que abordam análise amortizada são:\n\n* Algoritmos e Estruturas de Dados II (MAC0323)\n* Análise de Algoritmos (MAC0338)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que abordam análise amortizada são:\n\n* Algoritmos e Estruturas de Dados II (MAC0323)\n* Análise de Algoritmos (MAC0338)"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas que abordam análise amortizada são:\n\n* Algoritmos e Estruturas de Dados II (MAC0323)\n* Análise de Algoritmos (MAC0338)"
+      }
+    },
+    {
+      "pergunta": "Quantas disciplinas obrigatórias tem o currículo 45052 do BCC?",
+      "tipo": "numerico",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Para responder a essa pergunta com precisão, eu precisaria ter acesso ao documento ou ao banco de dados específico do currículo **45052** do curso de Bacharelado em Ciência da Computação (BCC) da sua instituição, pois a numeração de currículos varia entre universidades.\n\nNo entanto, como assistente "
+      },
+      "B2": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Com base nos fatos fornecidos, não há informações sobre o currículo 45052 ou sobre a obrigatoriedade das disciplinas."
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O currículo possui as seguintes disciplinas obrigatórias:\n\n1. Algoritmos e Estruturas de Dados I\n2. Algoritmos e Estruturas de Dados II\n3. Análise de Algoritmos\n4. Caminhos na Computação\n5. Conceitos Fundamentais de Linguagens de Programação\n6. Cálculo Diferencial e Integral I\n7. Cálculo Diferencial"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "O currículo possui as seguintes disciplinas obrigatórias:\n\n1. Algoritmos e Estruturas de Dados I\n2. Algoritmos e Estruturas de Dados II\n3. Análise de Algoritmos\n4. Caminhos na Computação\n5. Conceitos Fundamentais de Linguagens de Programação\n6. Cálculo Diferencial e Integral I\n7. Cálculo Diferencial"
+      }
+    },
+    {
+      "pergunta": "Quantas disciplinas obrigatórias do BCC têm exatamente um pré-requisito direto?",
+      "tipo": "numerico",
+      "B1": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Para responder a essa pergunta com precisão, é necessário ter acesso ao **fluxograma ou à grade curricular específica** da instituição de ensino em questão, pois a estrutura do curso de Bacharelado em Ciência da Computação (BCC) varia entre universidades (ex: USP, UNICAMP, UFMG, UFRJ).\n\nNo entanto, "
+      },
+      "B2": {
+        "label": "I",
+        "score": 0.0,
+        "resposta": "Existem 2 disciplinas:\n\n* Cálculo Diferencial e Integral II (MAT2454)\n* Conceitos Fundamentais de Linguagens de Programação (MAC0316)"
+      },
+      "B3": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas obrigatórias que possuem exatamente um pré-requisito direto são:\n\n1. Algoritmos e Estruturas de Dados I (Pré-requisito: Introdução à Computação)\n2. Algoritmos e Estruturas de Dados II (Pré-requisito: Algoritmos e Estruturas de Dados I)\n3. Análise de Algoritmos (Pré-requisito: Algoritm"
+      },
+      "B4": {
+        "label": "C",
+        "score": 1.0,
+        "resposta": "As disciplinas obrigatórias que possuem exatamente um pré-requisito direto são:\n\n1. Algoritmos e Estruturas de Dados I (Pré-requisito: Introdução à Computação)\n2. Algoritmos e Estruturas de Dados II (Pré-requisito: Algoritmos e Estruturas de Dados I)\n3. Análise de Algoritmos (Pré-requisito: Algoritm"
       }
     }
   ]
