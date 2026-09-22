@@ -1,0 +1,27 @@
+name: Espelhar para GPAM-ai
+
+# Mantém GPAM-ai/FESP-AI como espelho exato de Arazoleo/FESP-AI.
+# Roda a cada push/branch/tag e a cada delete de ref. Requer o secret
+# MIRROR_TOKEN: um PAT com permissão de escrita (contents) em GPAM-ai/FESP-AI.
+
+on:
+  push:
+    branches: ['**']
+    tags: ['**']
+  delete:
+
+concurrency:
+  group: mirror-gpam
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar (mirror) o repositório de origem
+        run: git clone --mirror "https://github.com/${{ github.repository }}.git" repo.git
+
+      - name: Empurrar para o espelho GPAM-ai
+        working-directory: repo.git
+        run: |
+          git push --mirror "https://x-access-token:${{ secrets.MIRROR_TOKEN }}@github.com/GPAM-ai/FESP-AI.git"
