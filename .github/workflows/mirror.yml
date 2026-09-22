@@ -16,6 +16,9 @@ concurrency:
 
 jobs:
   mirror:
+    # Só roda no repositório de origem. Se este arquivo for espelhado para
+    # GPAM-ai (ou qualquer fork), o job é pulado em vez de falhar.
+    if: github.repository == 'Arazoleo/FESP-AI'
     runs-on: ubuntu-latest
     steps:
       - name: Clonar (mirror) o repositório de origem
