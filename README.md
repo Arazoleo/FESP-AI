@@ -15,14 +15,17 @@
 O **FESP-AI** é um assistente acadêmico **neurossimbólico** para o Instituto de Ciência e Tecnologia da UNIFESP (campus São José dos Campos). Ele combina um **Knowledge Graph** curricular (disciplinas, pré-requisitos, docentes, cursos), **regras de inferência FOL** executadas via **PyReason** e um **LLM** (Ollama), orquestrados por um pipeline **multi-agente em LangGraph**: com RAG híbrido (vetorial + BM25) sobre ementas e regimentos e um corpus vivo do **site institucional do campus**. A tese central: o LLM interpreta e redige, mas **quem julga os fatos é o grafo** - reduzindo alucinação em respostas acadêmicas críticas (pré-requisitos, matrizes curriculares, docentes).
 
 > **Nota:** este repositório acompanha um artigo científico em avaliação. Os números da seção [Avaliação](#avaliação-três-ciclos) correspondem aos reportados no artigo, e o material de apoio do Ciclo 2 está em [`docs/usability_report.md`](docs/usability_report.md).
-
+/Users/arazoleonardo/fespai/demoshortFespAI.mp4
 ## Demo em vídeo
 
 
 
 
 
-https://github.com/user-attachments/assets/71e5d304-fc13-4806-9856-2484c72239f9
+
+
+https://github.com/user-attachments/assets/dbede47e-e209-4bbe-8d84-115225447fd9
+
 
 
 
