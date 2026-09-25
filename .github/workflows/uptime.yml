@@ -1,0 +1,36 @@
+name: Monitor de uptime (público)
+
+# Roda nos servidores do GitHub (externo ao Mac): chama a URL pública e, se ela
+# não responder 200, dispara alerta no ntfy. Pega o caso que o watchdog on-box
+# não cobre: Mac desligado/dormindo/travado no FileVault.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # a cada 15 min (o cron do GitHub pode atrasar)
+  workflow_dispatch:            # permite disparo manual (teste)
+
+concurrency:
+  group: uptime
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    # Só no repo de origem — não roda em espelhos/forks.
+    if: github.repository == 'Arazoleo/FESP-AI'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checar URL pública e alertar se cair
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          URL: https://macbook-air-de-leonardo.tail7bcfab.ts.net/api/cursos
+        run: |
+          code=$(curl -s -m 25 -o /dev/null -w '%{http_code}' "$URL" || echo "000")
+          echo "HTTP $code para $URL"
+          if [ "$code" != "200" ]; then
+            curl -s -H "Title: FESP-AI — monitor externo" -H "Priority: urgent" -H "Tags: rotating_light" \
+              -d "🔴 URL pública fora do ar (HTTP $code). O Mac pode estar desligado, dormindo ou travado na senha do FileVault após reboot." \
+              "https://ntfy.sh/${NTFY_TOPIC}"
+            echo "::error::Serviço público fora (HTTP $code)"
+            exit 1
+          fi
+          echo "OK — serviço público no ar."
