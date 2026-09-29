@@ -90,6 +90,16 @@ DOMAIN_EXAMPLES = {
         "telefone da secretaria acadêmica",
         "como emito meu histórico escolar",
         "como funciona o restaurante universitário",
+        # pedido EXPLÍCITO de buscar no site do campus (meta-instrução): tem
+        # prioridade sobre a anáfora de contexto (ex.: curso ativo) porque o
+        # roteador de domínio roda antes do caminho do KG. NN por exemplo →
+        # não dilui as tópicas acima.
+        "olhe no site",
+        "dá uma olhada no site do instituto",
+        "procura no site da unifesp",
+        "veja na página oficial do campus",
+        "isso está atualizado no site?",
+        "confere no site se mudou",
     ],
 }
 

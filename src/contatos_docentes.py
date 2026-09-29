@@ -19,8 +19,18 @@ DISC_EX = [
     "quais matérias eles ensinam", "quais as áreas de pesquisa deles",
     "em que eles trabalham",
 ]
+# Classe de REJEIÇÃO: mensagens que NÃO são anáfora de grupo (saudação, pedir
+# pra olhar no site, dúvida se a info mudou, outra intenção). Sem esta classe o
+# classificador binário sempre escolhia contato/disciplinas e sequestrava todo
+# turno seguinte enquanto houvesse docentes ativos no contexto.
+OUTRO_EX = [
+    "oi", "olá", "bom dia", "tudo bem", "obrigado", "valeu",
+    "olhe no site", "procura no site do instituto", "veja na página da unifesp",
+    "acho que trocou", "será que mudou o coordenador", "talvez no site tenha o novo",
+    "e as notícias", "quais os cursos", "qual a ementa dessa disciplina",
+]
 
-_C = {"emb": None, "contato": None, "disc": None}
+_C = {"emb": None, "contato": None, "disc": None, "outro": None}
 
 
 def configurar(embeddings_model):
@@ -33,12 +43,15 @@ def configurar(embeddings_model):
             embeddings_model.embed_documents(CONTATO_EX), axis=0).astype("float32")
         _C["disc"] = np.mean(
             embeddings_model.embed_documents(DISC_EX), axis=0).astype("float32")
+        _C["outro"] = np.mean(
+            embeddings_model.embed_documents(OUTRO_EX), axis=0).astype("float32")
     except Exception:
         _C["emb"] = None
 
 
 def _intent_grupo(pergunta):
-    """'contato' | 'disciplinas' | None (sem modelo) — por similaridade."""
+    """'contato' | 'disciplinas' | None. None = não é anáfora de grupo (a classe
+    OUTRO venceu, ou msg vazia/sem modelo) → o pipeline segue o roteamento normal."""
     if _C["emb"] is None or _C["contato"] is None:
         return None
     try:
@@ -46,10 +59,16 @@ def _intent_grupo(pergunta):
         q = np.array(_C["emb"].embed_query(pergunta), dtype="float32")
 
         def cos(c):
+            if c is None:
+                return -1.0
             n = np.linalg.norm(q) * np.linalg.norm(c)
             return float(np.dot(q, c) / n) if n else 0.0
 
-        return "contato" if cos(_C["contato"]) >= cos(_C["disc"]) else "disciplinas"
+        c_contato, c_disc, c_outro = cos(_C["contato"]), cos(_C["disc"]), cos(_C["outro"])
+        # rejeição: se a msg está mais perto de "não é sobre o grupo", solta.
+        if c_outro >= max(c_contato, c_disc):
+            return None
+        return "contato" if c_contato >= c_disc else "disciplinas"
     except Exception:
         return None
 
