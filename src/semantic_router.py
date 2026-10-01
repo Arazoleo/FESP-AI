@@ -126,11 +126,14 @@ def _nr(vecs):
     return a
 
 
-def eh_prazo(pergunta: str, piso: float = 0.33) -> bool:
+def eh_prazo(pergunta: str, piso: float = 0.45, margem: float = 0.08) -> bool:
     """True se a pergunta é de PRAZO/tempo (prorrogação, 'estender', 'quanto
     tempo a mais') e não de carga horária. Contrastivo prazo×requisitos COM
-    piso absoluto: exige proximidade real ao cluster de prazo, senão perguntas
-    não relacionadas ('oi', 'obrigado') cairiam como prazo por acaso."""
+    abstenção: binário de mundo fechado escolhe um lado até p/ pergunta que não
+    é de nenhum ('tem estágio no BCC': 0.358 × 0.352 → virava prazo). Exige
+    proximidade real (piso) E vitória clara (margem). Calibrado no
+    embeddinggemma: positivos ≥0.50 c/ margem ≥0.12; fora-do-domínio ≤0.40 c/
+    margem ≤0.05."""
     if _PRAZO["prazo"] is None or not pergunta:
         return False
     try:
@@ -141,7 +144,7 @@ def eh_prazo(pergunta: str, piso: float = 0.33) -> bool:
             return False
         q = q / n
         s_prazo = float((_PRAZO["prazo"] @ q).max())
-        return s_prazo >= piso and s_prazo > float((_PRAZO["req"] @ q).max())
+        return s_prazo >= piso and s_prazo - float((_PRAZO["req"] @ q).max()) >= margem
     except Exception:
         return False
 

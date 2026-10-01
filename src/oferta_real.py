@@ -118,9 +118,17 @@ def configurar_semantica(embeddings_model, threshold: float = None):
         _sem["emb"] = None
 
 
+# Piso de abstenção: o contraste oferta×conteúdo é de mundo fechado, então
+# pergunta que não é de nenhum dos dois ('matriz curricular de engenharia de
+# materiais', 'tem estágio no BCC') caía em oferta por margem ~0.02. Positivos
+# reais ficam ≥0.58; fora-do-domínio ≤0.40 (embeddinggemma).
+OFERTA_PISO = 0.50
+
+
 def _intencao_oferta(pergunta: str):
     """True se a pergunta está mais perto de ALGUM exemplo de OFERTA que de
-    qualquer exemplo de conteúdo (nearest-neighbor). None se não há embeddings."""
+    qualquer exemplo de conteúdo (nearest-neighbor) E passa do piso. None se não
+    há embeddings."""
     if _sem["emb"] is None or _sem["c_of"] is None:
         return None
     try:
@@ -130,7 +138,8 @@ def _intencao_oferta(pergunta: str):
         if nq == 0:
             return None
         q = q / nq
-        return float((_sem["c_of"] @ q).max()) > float((_sem["c_ct"] @ q).max())
+        s_of = float((_sem["c_of"] @ q).max())
+        return s_of >= OFERTA_PISO and s_of > float((_sem["c_ct"] @ q).max())
     except Exception:
         return None
 
