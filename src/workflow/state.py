@@ -25,3 +25,4 @@ class AgentState(TypedDict, total=False):
     ac_data: Optional[Dict[str, Any]]
     relatorio: Optional[bool]
     historico: Optional[Dict[str, Any]]
+    suggestions: List[str]

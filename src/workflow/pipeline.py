@@ -204,6 +204,73 @@ def build_pipeline(rag_instance):
         embedding_router = EmbeddingAgentRouter(rag_instance._rag.embeddings, confidence_threshold=0.58)
         embedding_router.initialize()
 
+    # Limiares da desambiguação (ajustáveis por env sem editar código).
+    # CONFLITO: score mínimo de um comunicado para disputar com o KG.
+    # MARGEM: diferença máx. entre as 2 melhores fontes p/ considerar "empate".
+    _COMUNICADO_CONFLITO_LIMIAR = float(os.getenv("FESPAI_COMUNICADO_CONFLITO", "0.58"))
+    _AMBIG_MARGEM = float(os.getenv("FESPAI_AMBIG_MARGEM", "0.04"))
+    _AMBIG_PISO = float(os.getenv("FESPAI_AMBIG_PISO", "0.60"))
+
+    def _comunicado_conflito(question):
+        """Há um comunicado institucional com match forte para esta pergunta?
+
+        Sonda o Chroma e devolve {titulo, data, score} do melhor comunicado acima
+        do limiar, ou None. É o sinal de CONFLITO: quando o KG já tem resposta por
+        entidade E um comunicado também casa forte, a fonte certa é ambígua.
+        """
+        # rag_instance é o RAGUnifesp (build_pipeline recebe self._rag): o Chroma
+        # fica em .db direto. Mantém fallback p/ ._rag.db por robustez.
+        db = getattr(rag_instance, "db", None) or getattr(
+            getattr(rag_instance, "_rag", None), "db", None
+        )
+        if db is None:
+            return None
+        try:
+            hits = db.similarity_search_with_relevance_scores(question, k=4)
+        except Exception:
+            return None
+        for doc, score in hits or []:
+            src = (getattr(doc, "metadata", None) or {}).get("source", "")
+            if "markdown_comunicados" in src and score >= _COMUNICADO_CONFLITO_LIMIAR:
+                titulo, data = "", ""
+                # 1ª escolha: cabeçalho carimbado, se o chunk o contiver.
+                for l in (doc.page_content or "").splitlines():
+                    l = l.strip()
+                    if l.lower().startswith("# comunicado institucional:"):
+                        titulo = l.split(":", 1)[1].strip()
+                    elif l.lower().startswith("> data:"):
+                        data = l.split(":", 1)[1].strip()
+                # Fallback robusto: deriva do nome do arquivo (sempre presente).
+                # formato: AAAA-MM-DD_slug-do-assunto_<id8>.md
+                if not titulo or not data:
+                    nome = src.split("/")[-1].rsplit(".", 1)[0]
+                    partes = nome.split("_")
+                    if not data and partes and re.match(r"\d{4}-\d{2}-\d{2}", partes[0]):
+                        data = data or partes[0]
+                    meio = partes[1:-1] if len(partes) >= 3 else partes[1:]
+                    slug = "-".join(meio) if meio else nome
+                    titulo = titulo or slug.replace("-", " ").strip().capitalize()
+                return {"titulo": titulo or "comunicado institucional",
+                        "data": data, "score": float(score)}
+        return None
+
+    def _resposta_clarify(state, opcoes, pergunta_label=""):
+        """Monta a resposta de ESCLARECIMENTO: o agente pergunta de volta em vez de
+        chutar entre fontes. `opcoes` = lista de rótulos clicáveis (via suggestions)."""
+        corpo = pergunta_label or "Posso responder isso de mais de uma forma. Qual você quer?"
+        telemetry_incr("route_clarify")
+        return {
+            **state,
+            "response": corpo,
+            "intent": "clarify",
+            "term": "",
+            "confidence": 1.0,
+            "active_agent": "clarify",
+            "context": corpo,
+            "sources": [],
+            "suggestions": opcoes[:3],
+        }
+
     def router_node(state: AgentState) -> AgentState:
         """Classifica a intent e decide qual agente chamar."""
         question = state.get("enhanced_question") or state.get("question", "")
@@ -306,6 +373,40 @@ def build_pipeline(rag_instance):
             }
 
         pergunta_bruta = state.get("question_original") or state.get("question") or question
+
+        # Desambiguação de FONTES (no topo, antes dos handlers simbólicos do KG):
+        # se o KG reivindica a pergunta por entidade E um comunicado institucional
+        # também casa forte, pergunta de volta em vez de chutar a fonte — igual ao
+        # Claude. Fica aqui porque vários handlers (coordenação, docentes, etc.)
+        # respondem pelo KG antes do bloco graph_rag lá embaixo.
+        if rag_instance.graph_rag:
+            try:
+                _ug, _di, _dt = rag_instance.graph_rag.should_use_graph(question)
+            except Exception:
+                _ug, _di, _dt = False, "", ""
+            if _ug and _di:
+                _conf = _comunicado_conflito(question)
+                if _conf:
+                    # Sigla curta (bct, bcc, ...) fica mais legível em maiúscula.
+                    _alvo = _dt or "o registro institucional"
+                    if _dt and len(_dt) <= 5 and _dt.isalpha():
+                        _alvo = _dt.upper()
+                    _data = f" ({_conf['data']})" if _conf.get("data") else ""
+                    _msg = (
+                        "Posso te responder de duas formas sobre isso:\n\n"
+                        f"1. **Informação institucional** sobre {_alvo}.\n"
+                        f"2. **Um comunicado recente** por email: "
+                        f"\"{_conf['titulo']}\"{_data}.\n\n"
+                        "Sobre qual você quer saber?"
+                    )
+                    return _resposta_clarify(
+                        state,
+                        opcoes=[
+                            f"Comunicado: {_conf['titulo']}",
+                            f"Informação institucional sobre {_alvo}",
+                        ],
+                        pergunta_label=_msg,
+                    )
 
         def _agentico(label: str, disciplina_hint: str = None):
             hist = state.get("historico")
@@ -1080,6 +1181,33 @@ def build_pipeline(rag_instance):
                 term = term_from_llm_route(routed_llm)
                 telemetry_incr("llm_route_decisor")
             elif emb_agent:
+                # Gate de ambiguidade: caímos no desempate por embedding (sem
+                # override de frase, sem decisão confiante do LLM). Se as 2 melhores
+                # fontes empatam (ambas altas e margem pequena), é coin-flip real →
+                # pergunta de volta em vez de chutar.
+                ranked = embedding_router.route_ranked(question) if embedding_router else []
+                if (
+                    len(ranked) >= 2
+                    and ranked[0][1] >= _AMBIG_PISO
+                    and ranked[1][1] >= _AMBIG_PISO
+                    and (ranked[0][1] - ranked[1][1]) < _AMBIG_MARGEM
+                ):
+                    a1, a2 = ranked[0][0], ranked[1][0]
+                    rotulo = {
+                        "disciplinas": "a disciplina (ementa, pré-requisitos)",
+                        "docentes": "o docente (contato, quem leciona)",
+                        "cursos": "o curso (matriz, termos, eletivas)",
+                        "regimentos": "a norma/regimento",
+                    }
+                    msg = (
+                        "Sua pergunta pode ser sobre mais de um tema. Você quer saber "
+                        f"sobre {rotulo.get(a1, a1)} ou {rotulo.get(a2, a2)}?"
+                    )
+                    return _resposta_clarify(
+                        state,
+                        opcoes=[rotulo.get(a1, a1).capitalize(), rotulo.get(a2, a2).capitalize()],
+                        pergunta_label=msg,
+                    )
                 active_agent = emb_agent
                 confidence = emb_conf
                 telemetry_incr("llm_route_fallback_embedding")
@@ -1290,9 +1418,13 @@ def build_pipeline(rag_instance):
         """
         return state
 
+    def clarify_node(state: AgentState) -> AgentState:
+        """Pass-through: a pergunta de esclarecimento já foi montada no router_node."""
+        return state
+
     def select_agent(state: AgentState) -> str:
         agent = state.get("active_agent", "fallback")
-        if agent in ("meta", "symbolic_kg"):
+        if agent in ("meta", "symbolic_kg", "clarify"):
             return agent
         if agent in agents:
             return agent
@@ -1312,6 +1444,7 @@ def build_pipeline(rag_instance):
     graph.add_node("fallback", fallback_node)
     graph.add_node("meta", meta_node)
     graph.add_node("symbolic_kg", symbolic_kg_node)
+    graph.add_node("clarify", clarify_node)
 
     graph.set_entry_point("router")
 
@@ -1330,10 +1463,11 @@ def build_pipeline(rag_instance):
             "fallback": "fallback",
             "meta": "meta",
             "symbolic_kg": "symbolic_kg",
+            "clarify": "clarify",
         },
     )
 
-    for agent_name in ["disciplinas", "docentes", "cursos", "regimentos", "conversa", "montar_grade", "noticias", "web_sjc", "fallback", "meta", "symbolic_kg"]:
+    for agent_name in ["disciplinas", "docentes", "cursos", "regimentos", "conversa", "montar_grade", "noticias", "web_sjc", "fallback", "meta", "symbolic_kg", "clarify"]:
         graph.add_edge(agent_name, END)
 
     return graph.compile()

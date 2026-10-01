@@ -87,6 +87,12 @@ class MultiAgentRAG:
             "color": "#14b8a6",
             "icon": "Layers",
         },
+        "clarify": {
+            "label": "Esclarecimento",
+            "description": "Fontes em conflito ou pergunta ambígua - o assistente pergunta de volta",
+            "color": "#f59e0b",
+            "icon": "HelpCircle",
+        },
     }
 
     def __init__(self, config: Config = None):
@@ -225,13 +231,17 @@ class MultiAgentRAG:
                     final_state["response"] = offered
                     telemetry.incr("ac_offer_appended")
 
-            from .followups import suggest_followups
-            suggestions = suggest_followups(
-                final_state.get("intent", ""),
-                final_state.get("term", ""),
-                final_state.get("response", ""),
-                kg=self.knowledge_graph,
-            )
+            # Clarify já traz suas próprias opções clicáveis (as interpretações em
+            # conflito). Só gera followups normais quando não é esclarecimento.
+            suggestions = final_state.get("suggestions")
+            if not suggestions:
+                from .followups import suggest_followups
+                suggestions = suggest_followups(
+                    final_state.get("intent", ""),
+                    final_state.get("term", ""),
+                    final_state.get("response", ""),
+                    kg=self.knowledge_graph,
+                )
 
             return {
                 "response": final_state.get("response", ""),

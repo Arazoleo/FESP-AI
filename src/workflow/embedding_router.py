@@ -125,22 +125,33 @@ class EmbeddingAgentRouter:
         Retorna (agente, confiança) com base na similaridade ao centróide de cada agente.
         Se confiança < threshold, retorna ("", 0.0) para o caller usar fallback.
         """
-        if not self._initialized or not self._centroids:
+        ranked = self.route_ranked(question)
+        if not ranked:
             return "", 0.0
+        best_agent, best_score = ranked[0]
+        if best_score >= self.confidence_threshold:
+            return best_agent, float(best_score)
+        return "", float(best_score)
+
+    def route_ranked(self, question: str) -> List[Tuple[str, float]]:
+        """
+        Ranking completo [(agente, score)] por similaridade, do maior ao menor.
+
+        Base do gate de ambiguidade: com o top-2 dá pra medir a MARGEM entre as
+        duas melhores fontes e detectar empate semântico (score alto e próximo).
+        """
+        if not self._initialized or not self._centroids:
+            return []
         try:
             q_embed = np.array(
                 self.embeddings_model.embed_query(question), dtype=np.float32
             )
-            best_agent = ""
-            best_score = -1.0
-            for agent, centroid in self._centroids.items():
-                sim = self._cosine_similarity(q_embed, centroid)
-                if sim > best_score:
-                    best_score = sim
-                    best_agent = agent
-            if best_score >= self.confidence_threshold:
-                return best_agent, float(best_score)
-            return "", float(best_score)
+            pares = [
+                (agent, self._cosine_similarity(q_embed, centroid))
+                for agent, centroid in self._centroids.items()
+            ]
+            pares.sort(key=lambda x: x[1], reverse=True)
+            return [(a, float(s)) for a, s in pares]
         except Exception as e:
             logger.debug("[EmbeddingAgentRouter] Erro ao rotear: %s", e)
-            return "", 0.0
+            return []
