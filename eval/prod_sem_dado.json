@@ -1,0 +1,6 @@
+{
+  "_doc": "Perguntas de produção cujo dado NÃO existe em nenhuma base (entidade desconhecida). O correto é o miss honesto ('não tenho esse dado'), não uma resposta inventada. gen_prod_tests.py tira estas da suíte de não-miss e exige o miss. Comparação por pergunta normalizada.",
+  "perguntas": [
+    "quem é leonardo arazo"
+  ]
+}

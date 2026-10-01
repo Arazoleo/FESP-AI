@@ -16,7 +16,7 @@ GREEN, RED, RESET = "\033[92m", "\033[91m", "\033[0m"
 _passed = _failed = 0
 
 # (pergunta, frequencia_em_producao)
-CASOS = [('quero trancar o semestre', 6), ('onde vejo minhas notas?', 6), ('Qual os professores de rpvmm?', 6), ('quanto tempo dura a graduação?', 5), ('Tem algum professor que trabalha com Redes Complexas?', 5), ('quantos creditos tem algebra linear 2?', 5), ('qual o prazo maximo de integralizacao do BCC?', 4), ('Quais disciplinas o professor Sanderson leciona?', 3), ('Quem é Leonardo Arazo', 3), ('como me inscrevo nesse congresso', 3)]
+CASOS = [('quantos creditos tem algebra linear 2?', 7), ('quero trancar o semestre', 6), ('onde vejo minhas notas?', 6), ('Qual os professores de rpvmm?', 6), ('quanto tempo dura a graduação?', 5), ('Tem algum professor que trabalha com Redes Complexas?', 5), ('como me inscrevo nesse congresso', 5), ('qual o prazo maximo de integralizacao do BCC?', 4), ('Quais disciplinas o professor Sanderson leciona?', 3)]
 
 
 def _perguntar(q):
@@ -40,6 +40,22 @@ for q, freq in CASOS:
     else:
         _failed += 1
         print(f"{RED}XX [{freq}x] {q[:52]} -> {d.get('active_agent')}{RESET}")
+
+# Entidades sem dado em nenhuma base (eval/prod_sem_dado.json): o correto é o
+# miss honesto, não uma resposta "aterrada" inventada.
+SEM_DADO = [('Quem é Leonardo Arazo', 3)]
+for q, freq in SEM_DADO:
+    try:
+        d = _perguntar(q)
+        ok = is_miss_response(d.get("response", ""))
+    except Exception as e:
+        ok, d = False, {"active_agent": f"ERRO {e}"}
+    if ok:
+        _passed += 1
+        print(f"{GREEN}OK{RESET} [{freq}x] {q[:52]} -> miss honesto")
+    else:
+        _failed += 1
+        print(f"{RED}XX [{freq}x] {q[:52]} -> deveria admitir que não sabe{RESET}")
 
 print(f"\n{_passed} passed, {_failed} failed "
       f"(regressões de produção)")

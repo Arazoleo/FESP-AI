@@ -28,6 +28,7 @@ DATA = os.getenv("FESPAI_DATA_DIR", os.path.join(ROOT, "chroma_db_unifesp"))
 TICKETS = os.path.join(DATA, "triage_tickets.jsonl")
 MISSES = os.path.join(DATA, "misses_queue.jsonl")
 OUT = os.path.join(ROOT, "test_prod_regressions.py")
+SEM_DADO = os.path.join(ROOT, "eval", "prod_sem_dado.json")
 
 _min = 2
 if "--min" in sys.argv:
@@ -56,6 +57,14 @@ def _casos():
     # fallback: agrega o misses_queue bruto
     c = collections.Counter(_norm(m.get("question", "")) for m in _load(MISSES))
     return [(q, n) for q, n in c.most_common() if n >= _min and q]
+
+
+def _sem_dado():
+    """Perguntas (normalizadas) em que o miss honesto é o comportamento certo."""
+    if not os.path.exists(SEM_DADO):
+        return set()
+    with open(SEM_DADO, encoding="utf-8") as f:
+        return {_norm(q) for q in json.load(f).get("perguntas", [])}
 
 
 TEMPLATE = '''"""
@@ -101,6 +110,22 @@ for q, freq in CASOS:
         _failed += 1
         print(f"{{RED}}XX [{{freq}}x] {{q[:52]}} -> {{d.get('active_agent')}}{{RESET}}")
 
+# Entidades sem dado em nenhuma base (eval/prod_sem_dado.json): o correto é o
+# miss honesto, não uma resposta "aterrada" inventada.
+SEM_DADO = {sem_dado!r}
+for q, freq in SEM_DADO:
+    try:
+        d = _perguntar(q)
+        ok = is_miss_response(d.get("response", ""))
+    except Exception as e:
+        ok, d = False, {{"active_agent": f"ERRO {{e}}"}}
+    if ok:
+        _passed += 1
+        print(f"{{GREEN}}OK{{RESET}} [{{freq}}x] {{q[:52]}} -> miss honesto")
+    else:
+        _failed += 1
+        print(f"{{RED}}XX [{{freq}}x] {{q[:52]}} -> deveria admitir que não sabe{{RESET}}")
+
 print(f"\\n{{_passed}} passed, {{_failed}} failed "
       f"(regressões de produção)")
 sys.exit(1 if _failed else 0)
@@ -111,8 +136,11 @@ def main():
     casos = _casos()
     if not casos:
         print("sem casos recorrentes (rode a triagem antes)."); return
+    sd = _sem_dado()
+    sem_dado = [c for c in casos if _norm(c[0]) in sd]
+    casos = [c for c in casos if _norm(c[0]) not in sd]
     with open(OUT, "w", encoding="utf-8") as f:
-        f.write(TEMPLATE.format(casos=casos))
+        f.write(TEMPLATE.format(casos=casos, sem_dado=sem_dado))
     print(f"gerado {OUT} com {len(casos)} casos (>= {_min}x em produção)")
 
 
