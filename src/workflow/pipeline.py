@@ -199,9 +199,15 @@ def build_pipeline(rag_instance):
         "web_sjc": WebSjcAgent(rag_instance),
     }
 
+    # rag_instance é o RAGUnifesp (build_pipeline recebe self._rag): os embeddings
+    # ficam em .embeddings direto. Antes isto checava ._rag.embeddings, que não
+    # existe nesse objeto, e o router nunca inicializava. Mantém fallback p/ ._rag.
+    _router_emb = getattr(rag_instance, "embeddings", None) or getattr(
+        getattr(rag_instance, "_rag", None), "embeddings", None
+    )
     embedding_router = None
-    if getattr(rag_instance, "_rag", None) and getattr(rag_instance._rag, "embeddings", None):
-        embedding_router = EmbeddingAgentRouter(rag_instance._rag.embeddings, confidence_threshold=0.58)
+    if _router_emb:
+        embedding_router = EmbeddingAgentRouter(_router_emb, confidence_threshold=0.58)
         embedding_router.initialize()
 
     # Limiares da desambiguação (ajustáveis por env sem editar código).

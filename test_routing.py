@@ -418,5 +418,39 @@ try:
 except SystemExit:
     print("(eval_neurosymbolic requer requests - pulando)")
 
+print(f"\n{BOLD}── EmbeddingAgentRouter (centróides simétricos + ranking) ──{RESET}")
+try:
+    import numpy as _np
+    emb_spec = importlib.util.spec_from_file_location("emb_router", ROOT / "src/workflow/embedding_router.py")
+    emb_router = importlib.util.module_from_spec(emb_spec)
+    emb_spec.loader.exec_module(emb_router)
+
+    class _FakeEmb:
+        """embed_query e embed_documents divergem, como num modelo com prefixo."""
+        def __init__(self):
+            self.doc_calls = 0
+        def _vec(self, t):
+            t = t.lower()
+            return [1.0 if "professor" in t or "quem" in t else 0.0,
+                    1.0 if "ementa" in t or "disciplina" in t else 0.0, 0.1]
+        def embed_query(self, t):
+            return self._vec(t)
+        def embed_documents(self, ts):
+            self.doc_calls += 1
+            return [[0.0, 0.0, 1.0] for _ in ts]
+
+    fake = _FakeEmb()
+    r = emb_router.EmbeddingAgentRouter(fake, confidence_threshold=0.5)
+    r.initialize()
+    check("initialize embeda exemplos pelo caminho da query (não embed_documents)",
+          r._initialized and fake.doc_calls == 0, f"doc_calls={fake.doc_calls}")
+    rk = r.route_ranked("qual a ementa da disciplina")
+    check("route_ranked ordena do maior ao menor score",
+          len(rk) >= 2 and all(rk[i][1] >= rk[i + 1][1] for i in range(len(rk) - 1)))
+    check("route_ranked vazio quando não inicializado",
+          emb_router.EmbeddingAgentRouter(None).route_ranked("x") == [])
+except ImportError:
+    print("(numpy indisponível - pulando)")
+
 print(f"\n{BOLD}{_passed} passed, {_failed} failed{RESET}")
 sys.exit(1 if _failed else 0)

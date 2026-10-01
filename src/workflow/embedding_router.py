@@ -104,7 +104,11 @@ class EmbeddingAgentRouter:
             for agent, examples in AGENT_EXAMPLES.items():
                 if not examples:
                     continue
-                vecs = self.embeddings_model.embed_documents(examples)
+                # Exemplos são PERGUNTAS comparadas à pergunta do usuário (tarefa
+                # simétrica): embeda pelo mesmo caminho da query. Com
+                # embed_documents, modelos com prefixo de tarefa (mxbai) ficam
+                # assimétricos e os scores caem abaixo do limiar (~0.46 máx.).
+                vecs = [self.embeddings_model.embed_query(e) for e in examples]
                 self._centroids[agent] = np.mean(vecs, axis=0).astype(np.float32)
             self._initialized = True
             logger.info(
