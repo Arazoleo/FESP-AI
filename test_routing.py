@@ -418,6 +418,22 @@ try:
 except SystemExit:
     print("(eval_neurosymbolic requer requests - pulando)")
 
+print(f"\n{BOLD}── comunicado_em_conflito (critério relativo: top-1 + piso) ──{RESET}")
+class _Doc:
+    def __init__(self, source):
+        self.metadata = {"source": source}
+_COM = "markdown_comunicados/2026-08-18_plantao-de-duvidas-bct_1a01523b.md"
+_KG = "markdown_cursos/matriz_curricular_bct.md"
+# Scores reais do mxbai p/ reformulações do mesmo pedido (oscilavam em torno de 0.58).
+for sc in (0.550, 0.565, 0.579, 0.597):
+    check(f"comunicado top-1 com {sc} dispara conflito",
+          router.comunicado_em_conflito([(_Doc(_COM), sc), (_Doc(_KG), 0.40)]) is not None)
+check("comunicado abaixo do piso não dispara (ex.: 'quem é o coordenador do BCT' 0.437)",
+      router.comunicado_em_conflito([(_Doc(_COM), 0.437)]) is None)
+check("comunicado forte mas NÃO top-1 não dispara (corpus institucional vence)",
+      router.comunicado_em_conflito([(_Doc(_KG), 0.593), (_Doc(_COM), 0.57)]) is None)
+check("sem hits → None", router.comunicado_em_conflito([]) is None)
+
 print(f"\n{BOLD}── EmbeddingAgentRouter (centróides simétricos + ranking) ──{RESET}")
 try:
     import numpy as _np

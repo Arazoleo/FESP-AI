@@ -33,6 +33,7 @@ from langchain_core.output_parsers import StrOutputParser
 from .state import AgentState
 from .router import (
     route_intent,
+    comunicado_em_conflito,
     phrase_override,
     llm_route,
     term_from_llm_route,
@@ -213,7 +214,7 @@ def build_pipeline(rag_instance):
     # Limiares da desambiguação (ajustáveis por env sem editar código).
     # CONFLITO: score mínimo de um comunicado para disputar com o KG.
     # MARGEM: diferença máx. entre as 2 melhores fontes p/ considerar "empate".
-    _COMUNICADO_CONFLITO_LIMIAR = float(os.getenv("FESPAI_COMUNICADO_CONFLITO", "0.58"))
+    _COMUNICADO_CONFLITO_LIMIAR = float(os.getenv("FESPAI_COMUNICADO_CONFLITO", "0.50"))
     _AMBIG_MARGEM = float(os.getenv("FESPAI_AMBIG_MARGEM", "0.04"))
     _AMBIG_PISO = float(os.getenv("FESPAI_AMBIG_PISO", "0.60"))
 
@@ -235,29 +236,30 @@ def build_pipeline(rag_instance):
             hits = db.similarity_search_with_relevance_scores(question, k=4)
         except Exception:
             return None
-        for doc, score in hits or []:
+        achado = comunicado_em_conflito(hits, _COMUNICADO_CONFLITO_LIMIAR)
+        if achado:
+            doc, score = achado
             src = (getattr(doc, "metadata", None) or {}).get("source", "")
-            if "markdown_comunicados" in src and score >= _COMUNICADO_CONFLITO_LIMIAR:
-                titulo, data = "", ""
-                # 1ª escolha: cabeçalho carimbado, se o chunk o contiver.
-                for l in (doc.page_content or "").splitlines():
-                    l = l.strip()
-                    if l.lower().startswith("# comunicado institucional:"):
-                        titulo = l.split(":", 1)[1].strip()
-                    elif l.lower().startswith("> data:"):
-                        data = l.split(":", 1)[1].strip()
-                # Fallback robusto: deriva do nome do arquivo (sempre presente).
-                # formato: AAAA-MM-DD_slug-do-assunto_<id8>.md
-                if not titulo or not data:
-                    nome = src.split("/")[-1].rsplit(".", 1)[0]
-                    partes = nome.split("_")
-                    if not data and partes and re.match(r"\d{4}-\d{2}-\d{2}", partes[0]):
-                        data = data or partes[0]
-                    meio = partes[1:-1] if len(partes) >= 3 else partes[1:]
-                    slug = "-".join(meio) if meio else nome
-                    titulo = titulo or slug.replace("-", " ").strip().capitalize()
-                return {"titulo": titulo or "comunicado institucional",
-                        "data": data, "score": float(score)}
+            titulo, data = "", ""
+            # 1ª escolha: cabeçalho carimbado, se o chunk o contiver.
+            for l in (doc.page_content or "").splitlines():
+                l = l.strip()
+                if l.lower().startswith("# comunicado institucional:"):
+                    titulo = l.split(":", 1)[1].strip()
+                elif l.lower().startswith("> data:"):
+                    data = l.split(":", 1)[1].strip()
+            # Fallback robusto: deriva do nome do arquivo (sempre presente).
+            # formato: AAAA-MM-DD_slug-do-assunto_<id8>.md
+            if not titulo or not data:
+                nome = src.split("/")[-1].rsplit(".", 1)[0]
+                partes = nome.split("_")
+                if not data and partes and re.match(r"\d{4}-\d{2}-\d{2}", partes[0]):
+                    data = data or partes[0]
+                meio = partes[1:-1] if len(partes) >= 3 else partes[1:]
+                slug = "-".join(meio) if meio else nome
+                titulo = titulo or slug.replace("-", " ").strip().capitalize()
+            return {"titulo": titulo or "comunicado institucional",
+                    "data": data, "score": float(score)}
         return None
 
     def _resposta_clarify(state, opcoes, pergunta_label=""):

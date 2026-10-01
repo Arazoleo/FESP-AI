@@ -487,6 +487,27 @@ def phrase_override(question_lower: str, current_agent: str = "") -> Optional[st
     return None
 
 
+def comunicado_em_conflito(hits, limiar: float = 0.50):
+    """
+    Decide se um comunicado institucional disputa a pergunta com o KG.
+
+    `hits` = [(doc, score)] do Chroma, já ordenado por relevância. Critério
+    RELATIVO: o comunicado precisa ser o top-1 do corpus inteiro (vence ementas,
+    matrizes, regimentos) e passar de um piso. Um limiar absoluto sozinho ficava
+    no fio da navalha: o mesmo pedido, reformulado, oscilava 0.55–0.60 em torno
+    de 0.58 e o clarify disparava ou não ao acaso.
+
+    Retorna (doc, score) do comunicado ou None.
+    """
+    if not hits:
+        return None
+    doc, score = hits[0]
+    src = (getattr(doc, "metadata", None) or {}).get("source", "")
+    if "markdown_comunicados" in src and score >= limiar:
+        return doc, score
+    return None
+
+
 LLM_ROUTE_AGENTS: frozenset = frozenset({
     "disciplinas", "docentes", "cursos", "regimentos",
     "conversa", "montar_grade", "noticias", "web_sjc",
