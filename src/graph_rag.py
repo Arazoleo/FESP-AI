@@ -165,6 +165,7 @@ class GraphRAGEngine:
                 intent, term = self._fix_docente_direction(
                     question, result.intent, result.term
                 )
+                intent, term = self._fix_curso_vs_disciplina(question, intent, term)
                 termo = self._post_process_term(question, intent, term)
                 termo = self._ground_discipline_term(question, intent, termo)
                 termo = self._ground_curso_term(question, intent, termo)
@@ -174,10 +175,46 @@ class GraphRAGEngine:
         use, intent, termo = self._regex_fallback(question)
         if use and intent and termo:
             intent, termo = self._fix_docente_direction(question, intent, termo)
+            intent, termo = self._fix_curso_vs_disciplina(question, intent, termo)
             termo = self._ground_discipline_term(question, intent, termo)
             termo = self._ground_curso_term(question, intent, termo)
             termo = self._ground_docente_term(question, intent, termo)
         return use, intent, termo
+
+    # Intents cujo argumento é um CURSO. O classificador de intenção é de mundo
+    # fechado (centróide entre ~21 intents): "quantos créditos tem álgebra
+    # linear 2" cai em matriz_info por parecer "quantos termos tem o BCC".
+    # Checagem de TIPO da entidade aterrada no KG corrige isso sem léxico.
+    _CURSO_INTENTS = {
+        'matriz_info', 'todos_termos_curso', 'eletivas_curso', 'disciplinas_termo',
+    }
+    _ROMANOS = {"1": "i", "2": "ii", "3": "iii", "4": "iv", "5": "v", "6": "vi"}
+
+    def _disciplina_do_termo(self, termo: str) -> str:
+        """Nó-disciplina do KG p/ o termo, tolerando numeral arábico × romano
+        ('algebra linear 2' → 'Álgebra Linear II'). '' se não resolve."""
+        termo = (termo or "").strip()
+        if not termo:
+            return ""
+        candidatos = [termo]
+        m = re.match(r"^(.*\S)\s+(\d)$", termo)
+        if m and m.group(2) in self._ROMANOS:
+            candidatos.insert(0, f"{m.group(1)} {self._ROMANOS[m.group(2)]}")
+        for c in candidatos:
+            node_id = self.kg._find_node(c, "disciplina")
+            if node_id:
+                return self.kg.graph.nodes[node_id].get("nome", "") or node_id.split(":", 1)[-1]
+        return ""
+
+    def _fix_curso_vs_disciplina(self, question: str, intent: str, termo: str):
+        """Intent de CURSO sem curso na pergunta, mas com disciplina aterrada →
+        é pergunta sobre a disciplina (créditos/carga/ementa): ementa_disciplina."""
+        if intent not in self._CURSO_INTENTS or self._find_curso_in_text(question):
+            return intent, termo
+        disc = self._disciplina_do_termo(termo) or self._find_discipline_in_text(question)
+        if disc:
+            return 'ementa_disciplina', disc
+        return intent, termo
 
     _DOCENTE_DIRECTION_INTENTS = {
         'docente_disciplines', 'discipline_docentes', 'disciplina_docentes',
@@ -847,10 +884,20 @@ class GraphRAGEngine:
             "edges": self._direct_prereq_edges(nomes),
         }
 
+    def _normaliza_termo_query(self, query_type: str, termo: str):
+        """disciplinas_termo SEM número de termo ("quais disciplinas tem no BCT")
+        é pedido da matriz inteira: aterra o curso no KG e vira
+        todos_termos_curso, em vez de 'Formato inválido'."""
+        if query_type == 'disciplinas_termo' and ':' not in (termo or ''):
+            curso = self._find_curso_in_text(termo or '') or termo
+            return 'todos_termos_curso', curso
+        return query_type, termo
+
     def query_graph(self, query_type: str, termo: str) -> Optional[str]:
         """
         Executa uma query no Knowledge Graph e formata a resposta.
         """
+        query_type, termo = self._normaliza_termo_query(query_type, termo)
         if query_type in ('prerequisite_chain', 'dependents', 'discipline_docentes', 'recommended_before'):
             termo = self._resolve_discipline_term(termo)
 

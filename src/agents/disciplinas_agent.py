@@ -51,6 +51,12 @@ class DisciplinasAgent(BaseAgent):
             if kg_facts:
                 parts.append(kg_facts)
 
+        # Créditos moram na aresta matriz→disciplina (INCLUI), não no .md nem no
+        # nó: sem isto o agente nega créditos que EXISTEM no grafo.
+        creditos = self._kg_creditos(discipline_name or raw_name)
+        if creditos:
+            parts.append(creditos)
+
         if not parts and self.rag.retriever:
             docs = self.rag.retriever.invoke(question)
             parts.append(self._format_docs(docs))
@@ -88,6 +94,30 @@ class DisciplinasAgent(BaseAgent):
             return ""
         return ("[FATOS DO GRAFO - disciplina (dados verificados; use SÓ estes)]\n"
                 + "\n".join(linhas))
+
+    def _kg_creditos(self, name: str) -> str:
+        """Créditos da disciplina por matriz curricular (arestas INCLUI do KG)."""
+        kg = self.knowledge_graph
+        if not kg or not name:
+            return ""
+        try:
+            nid = kg._find_node(name, "disciplina")
+        except Exception:
+            nid = None
+        if not nid:
+            return ""
+        linhas = []
+        for src, _, e in kg.graph.in_edges(nid, data=True):
+            if e.get("relacao") != "INCLUI" or not e.get("creditos"):
+                continue
+            matriz = kg.graph.nodes[src].get("nome", src)
+            termo = f", termo {e['termo']}" if e.get("termo") else ""
+            linhas.append(f"- {matriz}: {e['creditos']} créditos{termo}")
+        if not linhas:
+            return ""
+        nome = kg.graph.nodes[nid].get("nome", name)
+        return (f"[FATOS DO GRAFO - créditos de {nome} por matriz curricular]\n"
+                + "\n".join(sorted(set(linhas))))
 
     def _site_supplement(self, question: str) -> str:
         """Top seções do site do campus relevantes à pergunta, com link."""
