@@ -1,0 +1,7 @@
+# Dependências SÓ do ingestor de comunicados (gerar_email_ingest.py), que roda
+# no HOST (não no container). Instale com o mesmo python do LaunchAgent:
+#   /usr/bin/python3 -m pip install --user -r requirements-ingest.txt
+google-api-python-client>=2.0.0
+google-auth>=2.0.0
+google-auth-oauthlib>=1.0.0
+requests>=2.28.0

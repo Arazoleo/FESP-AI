@@ -18,6 +18,7 @@ services:
       - ./markdown_regimentos:/app/markdown_regimentos
       - ./markdown_docentes:/app/markdown_docentes
       - ./markdown_cursos:/app/markdown_cursos
+      - ./markdown_comunicados:/app/markdown_comunicados
       # JIT cache do numba (usado pelo PyReason) - persiste entre restarts
       # para evitar recompilação de kernels (~20s) a cada boot do container.
       - numba-cache:/app/.numba_cache

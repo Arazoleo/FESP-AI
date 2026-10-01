@@ -13,13 +13,15 @@ class Config:
     SOURCES = {
         "disciplinas": "./markdown_disciplinas",
         "regimentos": "./markdown_regimentos",
-        "cursos": "./markdown_cursos"
+        "cursos": "./markdown_cursos",
+        "comunicados": "./markdown_comunicados"
     }
-    
+
     DISCIPLINAS_DIR = "./markdown_disciplinas"
     REGIMENTOS_DIR = "./markdown_regimentos"
     DOCENTES_DIR = "./markdown_docentes"
     CURSOS_DIR = "./markdown_cursos"
+    COMUNICADOS_DIR = "./markdown_comunicados"
     
     CHUNK_SIZE = 1500
     CHUNK_OVERLAP = 150

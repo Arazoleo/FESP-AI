@@ -1358,6 +1358,19 @@ async def crawl_sjc_endpoint(max_pages: int = Query(400, ge=10, le=1000)):
     return {"paginas_rastreadas": len(pages)}
 
 
+@app.post("/reindex")
+async def reindex_endpoint():
+    """
+    Reindexa o corpus do RAG (sync incremental por md5: só (re)embeda arquivos
+    novos/alterados). Barato e idempotente. Usado pelo ingestor de comunicados
+    (gerar_email_ingest.py) após gravar novos .md, sem precisar reiniciar o backend.
+    """
+    if rag is None:
+        raise HTTPException(status_code=503, detail="RAG ainda não inicializado")
+    mudou = rag.sync()
+    return {"reindexado": bool(mudou)}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
