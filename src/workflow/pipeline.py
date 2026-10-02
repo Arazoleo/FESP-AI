@@ -45,9 +45,11 @@ from .router import (
     is_course_overview,
     is_regimento_domain,
     SYMBOLIC_DIRECT_INTENTS,
+    INTENT_TO_AGENT,
     AGENTIC_INTENTS,
 )
 from ..telemetry import incr as telemetry_incr
+from .. import comunicados as _comunicados
 
 _TERM_OPTIONAL_INTENTS: frozenset = frozenset({"listar_cursos", "critical_disciplines"})
 from .embedding_router import EmbeddingAgentRouter
@@ -258,15 +260,26 @@ def build_pipeline(rag_instance):
                 meio = partes[1:-1] if len(partes) >= 3 else partes[1:]
                 slug = "-".join(meio) if meio else nome
                 titulo = titulo or slug.replace("-", " ").strip().capitalize()
+            real = _comunicados.info_arquivo(src)
+            if real:
+                titulo, data = real["titulo"], real["data"].strftime("%d/%m/%Y")
             return {"titulo": titulo or "comunicado institucional",
-                    "data": data, "score": float(score)}
+                    "data": data, "score": float(score),
+                    "arquivo": src.rsplit("/", 1)[-1]}
         return None
 
-    def _resposta_clarify(state, opcoes, pergunta_label=""):
+    def _resposta_clarify(state, opcoes, pergunta_label="", pendente=None):
         """Monta a resposta de ESCLARECIMENTO: o agente pergunta de volta em vez de
-        chutar entre fontes. `opcoes` = lista de rótulos clicáveis (via suggestions)."""
+        chutar entre fontes. `opcoes` = lista de rótulos clicáveis (via suggestions).
+
+        `pendente` = {turno, pergunta, opcoes: {rótulo: ação}} fica na sessão para
+        o PRÓXIMO turno resolver a escolha — sem isso a resposta do aluno ("Comunicado:
+        X") disparava o mesmo gate de novo e o clarify entrava em loop."""
         corpo = pergunta_label or "Posso responder isso de mais de uma forma. Qual você quer?"
         telemetry_incr("route_clarify")
+        hs = state.get("historico")
+        if pendente and isinstance(hs, dict):
+            hs["clarify_pendente"] = pendente
         return {
             **state,
             "response": corpo,
@@ -279,6 +292,40 @@ def build_pipeline(rag_instance):
             "suggestions": opcoes[:3],
         }
 
+    def _escolha_clarify(msg, opcoes):
+        """Rótulo da opção que o aluno escolheu (clique = texto exato; ou '1'/'2',
+        'a primeira'; ou 'o comunicado'/'institucional'). None = não escolheu."""
+        rotulos = list(opcoes)
+        f = _comunicados._fold(msg).strip(" .!?")
+        for r in rotulos:
+            if _comunicados._fold(r).strip(" .!?") == f:
+                return r
+        for tok in re.findall(r"\w+", f):
+            j = {"1": 0, "primeira": 0, "primeiro": 0, "2": 1, "segunda": 1, "segundo": 1}.get(tok)
+            if j is not None and j < len(rotulos) and len(f) <= 20:
+                return rotulos[j]
+        if len(f) <= 40:
+            for r in rotulos:
+                tipo = opcoes[r].get("tipo")
+                if tipo == "comunicado" and re.search(r"\b(comunicado|email|e-mail|aviso)\b", f):
+                    return r
+                if tipo == "refazer" and re.search(r"\binstitucional\b", f):
+                    return r
+        return None
+
+    def _resposta_comunicados(state, com, intent):
+        telemetry_incr(intent)
+        return {
+            **state,
+            "response": com["texto"],
+            "intent": intent,
+            "term": "",
+            "confidence": 1.0,
+            "active_agent": "comunicados",
+            "context": com["texto"],
+            "sources": com["fontes"],
+        }
+
     def router_node(state: AgentState) -> AgentState:
         """Classifica a intent e decide qual agente chamar."""
         question = state.get("enhanced_question") or state.get("question", "")
@@ -287,6 +334,14 @@ def build_pipeline(rag_instance):
         forced = state.get("forced_agent")
         if forced and (forced in agents or forced == "fallback"):
             return {**state, "active_agent": forced}
+
+        # Turno da sessão: contexto de clarify/comunicados só vale p/ o turno
+        # SEGUINTE (senão uma escolha velha seria aplicada a pergunta nova).
+        _hs = state.get("historico") if isinstance(state.get("historico"), dict) else None
+        _turno = 0
+        if _hs is not None:
+            _turno = _hs["_turno"] = int(_hs.get("_turno", 0)) + 1
+        _sem_conflito = False
 
         meta_response = get_meta_capability_response(question_lower)
         if meta_response:
@@ -384,6 +439,55 @@ def build_pipeline(rag_instance):
 
         pergunta_bruta = state.get("question_original") or state.get("question") or question
 
+        # Resposta a um CLARIFY do turno anterior: aplica a escolha em vez de
+        # reavaliar a mensagem (que é só o rótulo da opção).
+        _pend = _hs.pop("clarify_pendente", None) if _hs is not None else None
+        if _pend and _pend.get("turno") == _turno - 1:
+            _esc = _escolha_clarify(pergunta_bruta, _pend.get("opcoes", {}))
+            if _esc:
+                telemetry_incr("clarify_resolvido")
+                _acao = _pend["opcoes"][_esc]
+                _orig = _pend.get("pergunta") or pergunta_bruta
+                if _acao.get("tipo") == "comunicado":
+                    _itens = comunicados.por_arquivos([_acao.get("arquivo", "")])
+                    _det = comunicados.detalhar(_orig, _itens, rag_instance.llm)
+                    if _det:
+                        _hs["comunicados_ctx"] = {"turno": _turno, "arquivos": [i["arquivo"] for i in _itens]}
+                        return _resposta_comunicados(state, _det, "comunicado_detalhe")
+                elif _acao.get("tipo") == "agente":
+                    _q = f"{_orig} {_acao['nota']}" if _acao.get("nota") else _orig
+                    return {**state, "question": _q, "question_original": _orig,
+                            "enhanced_question": _q, "active_agent": _acao["agente"]}
+                # "refazer" (ou comunicado que sumiu): roda a pergunta ORIGINAL
+                # pelo fluxo normal, sem o gate de conflito.
+                _sem_conflito = True
+                question = pergunta_bruta = _orig
+                question_lower = question.lower()
+                state = {**state, "question": _orig, "question_original": _orig,
+                         "enhanced_question": _orig}
+
+        # Follow-up dos comunicados mostrados no turno anterior ("detalhe mais",
+        # "e o segundo?", "qual o link"): detalha pelo texto completo.
+        _cctx = _hs.get("comunicados_ctx") if _hs is not None else None
+        if _cctx and _cctx.get("turno") == _turno - 1 and not _sem_conflito:
+            try:
+                _itens = comunicados.por_arquivos(_cctx.get("arquivos", []))
+                _fup = comunicados.eh_followup(pergunta_bruta, _itens)
+            except Exception:
+                _itens, _fup = [], False
+            if _fup:
+                _alvo = comunicados.escolher(pergunta_bruta, _itens) or _itens
+                _hs["comunicados_ctx"] = {"turno": _turno, "arquivos": _cctx["arquivos"]}
+                if len(_alvo) > 3:
+                    _rots = [f"{i['titulo']} ({i['data']:%d/%m})" for i in _alvo]
+                    _txt = ("Sobre qual deles você quer mais detalhes?\n\n"
+                            + "\n".join(f"{k}. {r}" for k, r in enumerate(_rots, 1)))
+                    return {**_resposta_comunicados(state, {"texto": _txt, "fontes": []}, "comunicado_qual"),
+                            "suggestions": [i["titulo"] for i in _alvo[:3]]}
+                _det = comunicados.detalhar(pergunta_bruta, _alvo, rag_instance.llm)
+                if _det:
+                    return _resposta_comunicados(state, _det, "comunicado_detalhe")
+
         # Comunicados por email ORIENTADOS A TEMPO ("o que tem no email hoje",
         # "tem estágio novo?"): lista do disco ordenada por data. Antes do gate
         # de conflito — pedido temporal quer a lista, não "qual fonte?".
@@ -392,24 +496,16 @@ def build_pipeline(rag_instance):
         except Exception:
             _com = None
         if _com:
-            telemetry_incr("comunicados_recentes")
-            return {
-                **state,
-                "response": _com["texto"],
-                "intent": "comunicados_recentes",
-                "term": "",
-                "confidence": 1.0,
-                "active_agent": "comunicados",
-                "context": _com["texto"],
-                "sources": _com["fontes"],
-            }
+            if _hs is not None:
+                _hs["comunicados_ctx"] = {"turno": _turno, "arquivos": [i["arquivo"] for i in _com["itens"]]}
+            return _resposta_comunicados(state, _com, "comunicados_recentes")
 
         # Desambiguação de FONTES (no topo, antes dos handlers simbólicos do KG):
         # se o KG reivindica a pergunta por entidade E um comunicado institucional
         # também casa forte, pergunta de volta em vez de chutar a fonte — igual ao
         # Claude. Fica aqui porque vários handlers (coordenação, docentes, etc.)
         # respondem pelo KG antes do bloco graph_rag lá embaixo.
-        if rag_instance.graph_rag:
+        if rag_instance.graph_rag and not _sem_conflito:
             try:
                 _ug, _di, _dt = rag_instance.graph_rag.should_use_graph(question)
             except Exception:
@@ -429,13 +525,22 @@ def build_pipeline(rag_instance):
                         f"\"{_conf['titulo']}\"{_data}.\n\n"
                         "Sobre qual você quer saber?"
                     )
+                    _op_inst = f"Informação institucional sobre {_alvo}"
+                    _op_com = f"Comunicado: {_conf['titulo']}"
                     return _resposta_clarify(
                         state,
-                        opcoes=[
-                            f"Comunicado: {_conf['titulo']}",
-                            f"Informação institucional sobre {_alvo}",
-                        ],
+                        opcoes=[_op_inst, _op_com],
                         pergunta_label=_msg,
+                        # "institucional": intent simbólica → refaz pelo KG sem o
+                        # gate; intent genérica (faqs, artigos) → direto ao agente
+                        # dono dela (refazer cairia em conversa/"você repetiu").
+                        pendente={"turno": _turno, "pergunta": pergunta_bruta, "opcoes": {
+                            _op_inst: ({"tipo": "refazer"} if _di in SYMBOLIC_DIRECT_INTENTS
+                                       else {"tipo": "agente",
+                                             "agente": INTENT_TO_AGENT.get(_di, "regimentos"),
+                                             "nota": "(fonte institucional: regimentos/site, não o comunicado por email)"}),
+                            _op_com: {"tipo": "comunicado", "arquivo": _conf.get("arquivo", "")},
+                        }},
                     )
 
         def _agentico(label: str, disciplina_hint: str = None):
@@ -1233,10 +1338,15 @@ def build_pipeline(rag_instance):
                         "Sua pergunta pode ser sobre mais de um tema. Você quer saber "
                         f"sobre {rotulo.get(a1, a1)} ou {rotulo.get(a2, a2)}?"
                     )
+                    _o1, _o2 = rotulo.get(a1, a1).capitalize(), rotulo.get(a2, a2).capitalize()
                     return _resposta_clarify(
                         state,
-                        opcoes=[rotulo.get(a1, a1).capitalize(), rotulo.get(a2, a2).capitalize()],
+                        opcoes=[_o1, _o2],
                         pergunta_label=msg,
+                        pendente={"turno": _turno, "pergunta": pergunta_bruta, "opcoes": {
+                            _o1: {"tipo": "agente", "agente": a1},
+                            _o2: {"tipo": "agente", "agente": a2},
+                        }},
                     )
                 active_agent = emb_agent
                 confidence = emb_conf

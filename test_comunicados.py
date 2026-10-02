@@ -77,5 +77,17 @@ with tempfile.TemporaryDirectory() as d:
     check("janela vazia → diz que não chegou e mostra os mais recentes",
           r and r["texto"].startswith("Não chegou nenhum comunicado") and "Acervo atualizado" in r["texto"])
 
+    print(f"\n{BOLD}── follow-up (sem embeddings) ──{RESET}")
+    lst = cm.carregar()
+    check("'o segundo' escolhe o 2º listado", cm.escolher("o segundo", lst) == [lst[1]])
+    check("'detalhe o primeiro' escolhe o 1º", cm.escolher("detalhe o primeiro", lst) == [lst[0]])
+    check("'o último' escolhe o último", cm.escolher("e o último?", lst) == [lst[-1]])
+    check("ordinal fora da lista → nenhum", cm.escolher("o quinto", lst) == [])
+    check("sem ordinal nem modelo → nenhum", cm.escolher("detalhe mais", lst) == [])
+    check("texto completo tira link de rastreamento",
+          "http" not in cm.texto_completo(lst[0]) or "t.rdsv2" not in cm.texto_completo(lst[0]))
+    check("detalhar sem LLM devolve o texto bruto com fonte",
+          (cm.detalhar("detalhe", [lst[0]], None) or {}).get("fontes", [""])[0].startswith("Comunicado:"))
+
 print(f"\n{BOLD}{_p} passed, {_f} failed{RESET}")
 sys.exit(1 if _f else 0)

@@ -76,6 +76,36 @@ OUTRO_EX = [
     "qual o email da secretaria",
 ]
 
+# Follow-up sobre comunicados JÁ LISTADOS no turno anterior ("detalhe mais",
+# "qual o link", "e o segundo?"). Contraste: pergunta NOVA de outro assunto.
+FOLLOW_EX = [
+    "detalhe mais",
+    "me fala mais sobre isso",
+    "explica melhor",
+    "quero saber mais",
+    "como acesso isso",
+    "qual o link",
+    "e o segundo?",
+    "abre o primeiro",
+    "o que diz esse comunicado",
+    "resume pra mim",
+    "como faço pra me inscrever",
+    "até quando vai",
+    "mais detalhes do primeiro",
+]
+NOVO_EX = [
+    "como faço para colar grau",
+    "qual a ementa de compiladores",
+    "quem é o coordenador do BCT",
+    "oi tudo bem",
+    "obrigado",
+    "o que chegou ontem no email",
+    "quais as notícias do campus",
+    "quem leciona banco de dados",
+    "quantas horas de atividades complementares preciso",
+    "qual o email do professor",
+]
+
 PISO = 0.60
 MARGEM = 0.06
 # Tema RELATIVO: quanto a pergunta casa com cada comunicado ALÉM do que uma
@@ -85,7 +115,7 @@ MARGEM = 0.06
 REF_GENERICA = ["o que chegou no email", "quais os comunicados recentes", "tem algum aviso novo"]
 TEMA_DELTA = 0.14
 
-_S = {"emb": None, "pos": None, "neg": None, "ref": None}
+_S = {"emb": None, "pos": None, "neg": None, "ref": None, "fup": None, "novo": None}
 _cache = {"chave": None, "itens": []}
 _vec = {}
 
@@ -114,6 +144,8 @@ def configurar(embeddings_model) -> None:
         _S["pos"] = _nr([embeddings_model.embed_query(e) for e in PEDIDO_EX])
         _S["neg"] = _nr([embeddings_model.embed_query(e) for e in OUTRO_EX])
         _S["ref"] = _nr([embeddings_model.embed_query(e) for e in REF_GENERICA])
+        _S["fup"] = _nr([embeddings_model.embed_query(e) for e in FOLLOW_EX])
+        _S["novo"] = _nr([embeddings_model.embed_query(e) for e in NOVO_EX])
         _S["emb"] = embeddings_model
     except Exception:
         _S["emb"] = None
@@ -372,3 +404,114 @@ def _rodape() -> str:
 def _fontes(itens: List[Dict]) -> List[str]:
     return [f"Comunicado: {i['titulo']} ({i['remetente'] or 'UNIFESP'}, {i['data']:%d/%m/%Y})"
             for i in itens]
+
+
+# ── follow-up sobre comunicados já mostrados ────────────────────────────
+_ORDINAIS = {
+    "primeiro": 0, "primeira": 0, "1": 0, "1o": 0, "1º": 0,
+    "segundo": 1, "segunda": 1, "2": 1, "2o": 1, "2º": 1,
+    "terceiro": 2, "terceira": 2, "3": 2, "3o": 2, "3º": 2,
+    "quarto": 3, "quarta": 3, "4": 3, "quinto": 4, "quinta": 4, "5": 4,
+    "ultimo": -1, "ultima": -1,
+}
+
+
+def por_arquivos(nomes: List[str]) -> List[Dict]:
+    idx = {i["arquivo"]: i for i in carregar()}
+    return [idx[n] for n in nomes if n in idx]
+
+
+def escolher(pergunta: str, itens: List[Dict]) -> List[Dict]:
+    """Itens que a pergunta aponta: ordinal ('o segundo') ou assunto que casa
+    com um deles bem mais que com os outros. [] = não aponta nenhum."""
+    if not itens:
+        return []
+    toks = re.findall(r"[\wº]+", _fold(pergunta))
+    for t in toks:
+        if t in _ORDINAIS:
+            j = _ORDINAIS[t]
+            if -len(itens) <= j < len(itens):
+                return [itens[j]]
+    if len(itens) > 1:
+        d = _deltas(pergunta, itens)
+        j = max(range(len(itens)), key=lambda k: d[k])
+        resto = [x for k, x in enumerate(d) if k != j]
+        if d[j] >= TEMA_DELTA and d[j] - max(resto, default=0.0) >= 0.08:
+            return [itens[j]]
+    return []
+
+
+def eh_followup(pergunta: str, itens: List[Dict]) -> bool:
+    """A pergunta continua o assunto dos comunicados mostrados no turno
+    anterior? Ordinal/assunto de um deles, ou follow-up genérico ('detalhe
+    mais') mais perto dos exemplos de continuação que de pergunta nova."""
+    if not itens:
+        return False
+    if escolher(pergunta, itens):
+        return True
+    if _S["emb"] is None or _S["fup"] is None:
+        return False
+    try:
+        q = _nr(_S["emb"].embed_query(pergunta))
+        f, n = float((_S["fup"] @ q).max()), float((_S["novo"] @ q).max())
+        return f >= 0.55 and f - n >= 0.05
+    except Exception:
+        return False
+
+
+_URL_LONGA = re.compile(r"<?https?://\S{90,}>?")
+
+
+def texto_completo(item: Dict, limite: int = 7000) -> str:
+    """Corpo do comunicado sem links de rastreamento enormes."""
+    try:
+        txt = (DIR / item["arquivo"]).read_text(encoding="utf-8")
+    except Exception:
+        return item.get("resumo", "")
+    corpo = txt.split("## Conteúdo", 1)[-1]
+    corpo = _URL_LONGA.sub("", corpo)
+    corpo = re.sub(r"\[image:[^\]]*\]", "", corpo)
+    corpo = re.sub(r"\n{3,}", "\n\n", corpo).strip()
+    return corpo[:limite]
+
+
+_PROMPT_DETALHE = """Você é o assistente da UNIFESP ICT (campus São José dos Campos). O aluno pediu
+mais detalhes sobre comunicado(s) institucional(is) recebido(s) por email.
+Responda em PORTUGUÊS BRASILEIRO, de forma direta, usando SOMENTE o texto abaixo.
+Destaque o que importa para o aluno (o que é, prazos/datas, como participar/acessar,
+links legíveis que aparecem no texto). Não invente nada. Não use emojis.
+
+{comunicados}
+
+Pergunta do aluno: {pergunta}
+
+Resposta:"""
+
+
+def detalhar(pergunta: str, itens: List[Dict], llm) -> Optional[Dict]:
+    """Resposta detalhada sobre os comunicados (LLM sobre o texto completo)."""
+    if not itens:
+        return None
+    blocos = []
+    for i in itens[:3]:
+        blocos.append(f"### {i['titulo']}\nRemetente: {i['remetente']} | Data: {i['data']:%d/%m/%Y %H:%M}\n\n"
+                      + texto_completo(i, 7000 // max(1, min(3, len(itens)))))
+    texto = None
+    if llm is not None:
+        try:
+            raw = llm.invoke(_PROMPT_DETALHE.format(comunicados="\n\n---\n\n".join(blocos), pergunta=pergunta))
+            texto = (getattr(raw, "content", raw) or "").strip()
+        except Exception:
+            texto = None
+    if not texto:
+        texto = "\n\n".join(f"**{i['titulo']}** — {i['remetente']}, {i['data']:%d/%m}\n\n"
+                             + texto_completo(i, 1500) for i in itens[:3])
+    cab = " / ".join(f"{i['titulo']} ({i['remetente'] or 'UNIFESP'}, {i['data']:%d/%m})" for i in itens[:3])
+    return {"texto": f"{texto}\n\n_Comunicado: {cab}._", "fontes": _fontes(itens[:3]), "itens": itens[:3]}
+
+
+def info_arquivo(source: str) -> Optional[Dict]:
+    """Título/data REAIS de um comunicado a partir do caminho do chunk (o slug
+    do nome do arquivo perde acento e caixa)."""
+    nome = (source or "").rsplit("/", 1)[-1]
+    return next((i for i in carregar() if i["arquivo"] == nome), None)
