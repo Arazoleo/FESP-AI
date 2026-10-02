@@ -93,6 +93,12 @@ class MultiAgentRAG:
             "color": "#f59e0b",
             "icon": "HelpCircle",
         },
+        "comunicados": {
+            "label": "Comunicados",
+            "description": "Avisos enviados por email às listas institucionais, por data",
+            "color": "#8b5cf6",
+            "icon": "Mail",
+        },
     }
 
     def __init__(self, config: Config = None):

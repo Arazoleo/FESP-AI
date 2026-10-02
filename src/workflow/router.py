@@ -51,12 +51,13 @@ SYMBOLIC_DIRECT_INTENTS: frozenset = frozenset({
     "disciplinas_by_area",
 })
 
-META_CAPABILITIES_RESPONSE = """Sim. Tenho acesso a informações da UNIFESP ICT sobre:
+META_CAPABILITIES_RESPONSE = """Tenho acesso a informações da UNIFESP ICT sobre:
 
 - **Disciplinas:** pré-requisitos, ementas, carga horária, docentes e bibliografia
 - **Docentes:** contato (email, sala), áreas de pesquisa e disciplinas que lecionam
 - **Cursos:** matriz curricular, disciplinas por termo, eletivas
 - **Regimentos e normas:** atividades complementares, trancamento, aprovação, FAQs
+- **Comunicados por email:** os avisos que a UNIFESP manda às listas institucionais de alunos, atualizados a cada 15 minutos (ex.: "o que chegou no email hoje?"). Não leio email pessoal.
 
 Pergunte sobre qualquer um desses temas em português."""
 

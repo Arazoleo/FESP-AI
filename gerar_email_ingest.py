@@ -52,6 +52,14 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 
     resumo = ingerir(dry_run=args.dry_run)
+    if not args.dry_run:
+        # carimbo da última verificação (o FESP-AI mostra "última verificação: …")
+        try:
+            from datetime import datetime
+            (Path(__file__).resolve().parent / "markdown_comunicados" / ".ultima_sync").write_text(
+                datetime.now().isoformat(timespec="minutes"))
+        except Exception:
+            pass
     print(
         f"Comunicados: novos={resumo['novos']} pulados={resumo['pulados']} "
         f"ignorados_privado={resumo['ignorados_privado']}"

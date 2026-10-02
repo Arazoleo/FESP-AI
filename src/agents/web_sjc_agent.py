@@ -154,27 +154,45 @@ class WebSjcAgent(BaseAgent):
                     best, best_len = data.get("nome", ""), len(cn)
         return best
 
-    def _documentos_institucionais(self, question: str, k: int = 2) -> str:
+    def _documentos_institucionais(self, question: str, k: int = 2):
         """
         Fusão site ↔ documentos institucionais: anexa os trechos mais
-        relevantes de regulamentos/manuais/PPCs do corpus, rotulados, para o
-        LLM compor com as páginas do site (item 9 do backlog).
+        relevantes de regulamentos/manuais/PPCs/comunicados do corpus,
+        rotulados, para o LLM compor com as páginas do site (item 9 do backlog).
+
+        Retorna (contexto, fontes): comunicados por email entram nas FONTES da
+        resposta (título + data), senão a lista citaria só páginas do site
+        mesmo quando a resposta veio do comunicado.
         """
         if not getattr(self, "db", None):
-            return ""
+            return "", []
         try:
             docs = self.db.similarity_search(
                 question, k=k, filter={"tipo_documento": "institucional"}
             )
         except Exception:
-            return ""
-        trechos = [d.page_content.strip() for d in docs if d.page_content.strip()]
+            return "", []
+        trechos, fontes = [], []
+        for d in docs:
+            txt = d.page_content.strip()
+            if not txt:
+                continue
+            src = (d.metadata or {}).get("source", "")
+            if "markdown_comunicados" in src:
+                titulo = ((d.metadata or {}).get("documento") or "").split(":", 1)[-1].strip()
+                m = re.match(r"(\d{4})-(\d{2})-(\d{2})", src.rsplit("/", 1)[-1])
+                data = f"{m.group(3)}/{m.group(2)}/{m.group(1)}" if m else ""
+                rotulo = f"Comunicado por email: {titulo}" + (f" ({data})" if data else "")
+                txt = f"[{rotulo}]\n{txt}"
+                if rotulo not in fontes:
+                    fontes.append(rotulo)
+            trechos.append(txt)
         if not trechos:
-            return ""
+            return "", []
         return (
-            "### [DOCUMENTOS INSTITUCIONAIS - regulamentos e manuais oficiais]\n\n"
+            "### [DOCUMENTOS INSTITUCIONAIS - regulamentos, manuais e comunicados oficiais]\n\n"
             + "\n---\n".join(trechos)
-        )
+        ), fontes
 
     def _kg_verified_facts(self, question: str) -> str:
         """
@@ -346,7 +364,7 @@ class WebSjcAgent(BaseAgent):
             kg_facts = self._kg_verified_facts(question)
             if kg_facts:
                 contexto = kg_facts + "\n\n### [PAGINAS DO SITE]\n\n" + contexto
-            docs_inst = self._documentos_institucionais(question)
+            docs_inst, fontes_com = self._documentos_institucionais(question)
             if docs_inst:
                 contexto = contexto + "\n\n" + docs_inst
             if student_context:
@@ -356,10 +374,17 @@ class WebSjcAgent(BaseAgent):
                 inputs["history"] = history
             resp = chain.invoke(inputs).strip()
             resp = fix_response_links(resp, contexto)
-            if not any(p["url"] in resp for p in top):
-                fontes = "\n".join(f"- [{p['titulo']}]({p['url']})" for p in top)
-                resp = f"{resp}\n\n*Fontes:*\n{fontes}"
+            # Comunicado usado na resposta vem PRIMEIRO nas fontes (é a fonte
+            # mais específica quando o LLM diz "com base nos comunicados").
+            usou_com = fontes_com and re.search(r"comunicad", resp, re.IGNORECASE)
+            if usou_com or not any(p["url"] in resp for p in top):
+                linhas = [f"- {f}" for f in (fontes_com if usou_com else [])]
+                if not any(p["url"] in resp for p in top):
+                    linhas += [f"- [{p['titulo']}]({p['url']})" for p in top]
+                resp = f"{resp}\n\n*Fontes:*\n" + "\n".join(linhas)
             result = self._result(resp, top)
+            if usou_com:
+                result["sources"] = list(fontes_com) + result["sources"]
             if kg_facts:
                 result["sources"] = ["Knowledge Graph"] + result["sources"]
             return result

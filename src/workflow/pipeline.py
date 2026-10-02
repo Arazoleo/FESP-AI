@@ -338,10 +338,12 @@ def build_pipeline(rag_instance):
         from .. import oferta_real
         from .. import contatos_docentes
         from .. import semantic_router
+        from .. import comunicados
         try:  # intenção por SIMILARIDADE semântica (não por lista de palavras)
             oferta_real.configurar_semantica(getattr(rag_instance, "embeddings", None))
             contatos_docentes.configurar(getattr(rag_instance, "embeddings", None))
             semantic_router.configurar(getattr(rag_instance, "embeddings", None))
+            comunicados.configurar(getattr(rag_instance, "embeddings", None))
         except Exception:
             pass
         from ..interdisciplinares import (
@@ -381,6 +383,26 @@ def build_pipeline(rag_instance):
             }
 
         pergunta_bruta = state.get("question_original") or state.get("question") or question
+
+        # Comunicados por email ORIENTADOS A TEMPO ("o que tem no email hoje",
+        # "tem estágio novo?"): lista do disco ordenada por data. Antes do gate
+        # de conflito — pedido temporal quer a lista, não "qual fonte?".
+        try:
+            _com = comunicados.responder(pergunta_bruta) if comunicados.eh_pedido(pergunta_bruta) else None
+        except Exception:
+            _com = None
+        if _com:
+            telemetry_incr("comunicados_recentes")
+            return {
+                **state,
+                "response": _com["texto"],
+                "intent": "comunicados_recentes",
+                "term": "",
+                "confidence": 1.0,
+                "active_agent": "comunicados",
+                "context": _com["texto"],
+                "sources": _com["fontes"],
+            }
 
         # Desambiguação de FONTES (no topo, antes dos handlers simbólicos do KG):
         # se o KG reivindica a pergunta por entidade E um comunicado institucional
@@ -1430,9 +1452,13 @@ def build_pipeline(rag_instance):
         """Pass-through: a pergunta de esclarecimento já foi montada no router_node."""
         return state
 
+    def comunicados_node(state: AgentState) -> AgentState:
+        """Pass-through: a lista de comunicados já foi montada no router_node."""
+        return state
+
     def select_agent(state: AgentState) -> str:
         agent = state.get("active_agent", "fallback")
-        if agent in ("meta", "symbolic_kg", "clarify"):
+        if agent in ("meta", "symbolic_kg", "clarify", "comunicados"):
             return agent
         if agent in agents:
             return agent
@@ -1453,6 +1479,7 @@ def build_pipeline(rag_instance):
     graph.add_node("meta", meta_node)
     graph.add_node("symbolic_kg", symbolic_kg_node)
     graph.add_node("clarify", clarify_node)
+    graph.add_node("comunicados", comunicados_node)
 
     graph.set_entry_point("router")
 
@@ -1472,10 +1499,11 @@ def build_pipeline(rag_instance):
             "meta": "meta",
             "symbolic_kg": "symbolic_kg",
             "clarify": "clarify",
+            "comunicados": "comunicados",
         },
     )
 
-    for agent_name in ["disciplinas", "docentes", "cursos", "regimentos", "conversa", "montar_grade", "noticias", "web_sjc", "fallback", "meta", "symbolic_kg", "clarify"]:
+    for agent_name in ["disciplinas", "docentes", "cursos", "regimentos", "conversa", "montar_grade", "noticias", "web_sjc", "fallback", "meta", "symbolic_kg", "clarify", "comunicados"]:
         graph.add_edge(agent_name, END)
 
     return graph.compile()
