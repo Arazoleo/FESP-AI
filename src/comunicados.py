@@ -50,6 +50,8 @@ PEDIDO_EX = [
     "tem algo novo da DAE",
     "algum comunicado sobre eventos",
     "o que a secretaria mandou de aviso",
+    "o que a unifesp mandou",
+    "o que mandaram essa semana",
 ]
 # Contraste: o que NÃO é pedido de comunicado (email de docente, notícias do
 # site, conteúdo acadêmico, conversa). Sem esta classe o detector seria de
@@ -74,6 +76,10 @@ OUTRO_EX = [
     "como funciona o estágio no BCT",
     "me manda um email",
     "qual o email da secretaria",
+    "quais cursos a unifesp oferece",
+    "quais os cursos do ICT",
+    "o que é a unifesp",
+    "quais cursos de pós-graduação existem",
 ]
 
 # Follow-up sobre comunicados JÁ LISTADOS no turno anterior ("detalhe mais",
@@ -107,7 +113,7 @@ NOVO_EX = [
 ]
 
 PISO = 0.60
-MARGEM = 0.06
+MARGEM = 0.05
 # Tema RELATIVO: quanto a pergunta casa com cada comunicado ALÉM do que uma
 # pergunta genérica ("o que chegou no email") casa. Subtrai o componente
 # "cara de email/aviso" e sobra o assunto. Calibrado (embeddinggemma):

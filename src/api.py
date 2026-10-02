@@ -323,7 +323,7 @@ async def health():
 
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+def chat(request: ChatRequest):
     if rag is None:
         raise HTTPException(status_code=503, detail="RAG nao inicializado")
 
@@ -469,7 +469,7 @@ async def chat(request: ChatRequest):
 
 
 @app.post("/chat_eval", response_model=ChatEvalResponse)
-async def chat_eval(request: ChatEvalRequest):
+def chat_eval(request: ChatEvalRequest):
     """
     Endpoint voltado para avaliação offline.
     Retorna (opcionalmente) contexto e fontes para permitir métricas de fidelidade/grounding.
@@ -495,7 +495,7 @@ async def chat_eval(request: ChatEvalRequest):
 
 
 @app.post("/llm_judge", response_model=JudgeResponse)
-async def llm_judge(request: JudgeRequest):
+def llm_judge(request: JudgeRequest):
     """Executa LLM-as-a-Judge (opcionalmente com um modelo cloud alternativo)."""
     if rag is None or rag.llm is None:
         raise HTTPException(status_code=503, detail="LLM nao inicializado")
@@ -539,7 +539,7 @@ class BaselineResponse(BaseModel):
 
 
 @app.post("/chat_baseline", response_model=BaselineResponse)
-async def chat_baseline(request: BaselineRequest):
+def chat_baseline(request: BaselineRequest):
     """
     Endpoint para avaliação dos baselines do benchmark.
     
@@ -650,7 +650,7 @@ class EnrichRequest(BaseModel):
 
 
 @app.post("/extract-relations")
-async def extract_relations(request: ExtractRequest):
+def extract_relations(request: ExtractRequest):
     """
     Extrai relações de um texto sem adicionar ao grafo.
     Útil para preview antes de enriquecer o Knowledge Graph.
@@ -673,7 +673,7 @@ async def extract_relations(request: ExtractRequest):
 
 
 @app.post("/enrich-graph")
-async def enrich_graph(request: EnrichRequest):
+def enrich_graph(request: EnrichRequest):
     """
     Extrai relações de um texto e adiciona ao Knowledge Graph.
     Requer maior confiança por padrão (0.7).
@@ -1096,7 +1096,7 @@ def _compute_highlights(kg, intent: str, term: str) -> Dict:
 
 
 @app.post("/chat_explain", response_model=ChatExplainResponse)
-async def chat_explain(request: ChatExplainRequest):
+def chat_explain(request: ChatExplainRequest):
     """
     Endpoint de demonstração: roda a query e devolve, além da resposta,
     os nós do KG que o GraphRAG puro tocaria (base) e os extras que o
@@ -1359,7 +1359,7 @@ async def crawl_sjc_endpoint(max_pages: int = Query(400, ge=10, le=1000)):
 
 
 @app.post("/reindex")
-async def reindex_endpoint():
+def reindex_endpoint():
     """
     Reindexa o corpus do RAG (sync incremental por md5: só (re)embeda arquivos
     novos/alterados). Barato e idempotente. Usado pelo ingestor de comunicados
