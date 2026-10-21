@@ -308,6 +308,20 @@ async def startup_event():
         except Exception as e:
             print(f"PyReason warmup falhou (não-fatal, fallback Python): {e}")
 
+        # Caches lazy do KGCompletion (vetores NOME+EMENTA de todas as
+        # disciplinas, usados por recommended_before/base_recomendada): sem
+        # isso a 1ª pergunta de pré-requisito após cada restart pagava ~50s
+        # de embeddings em lote. Roda o mesmo caminho de uma pergunta real.
+        try:
+            gr = getattr(rag, "graph_rag", None)
+            if gr is not None:
+                t0 = time.perf_counter()
+                gr.query_graph("prerequisite_chain", "Compiladores")
+                gr.query_graph("recommended_before", "Compiladores")
+                print(f"KG warmup: caches de recomendação prontos em {time.perf_counter() - t0:.1f}s")
+        except Exception as e:
+            print(f"KG warmup falhou (não-fatal): {e}")
+
     threading.Thread(target=warmup_pyreason, daemon=True).start()
 
 
