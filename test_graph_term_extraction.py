@@ -159,6 +159,16 @@ check(
     repr(engine._find_disciplines_in_text("BD é pré-requisito de Compiladores? so pra saber")),
 )
 
+print(f"\n{BOLD}── Grounding com numeral arábico × romano ──{RESET}")
+# Com o classificador acertando ementa_disciplina (gemma4), "algebra linear 2"
+# caía na busca no texto e virava "Álgebra Linear" (a I).
+check(
+    "'algebra linear 2' em ementa_disciplina aterra em Álgebra Linear II",
+    engine._ground_discipline_term(
+        "quantos creditos tem algebra linear 2?", "ementa_disciplina", "algebra linear 2"
+    ) == "Álgebra Linear II",
+)
+
 print(f"\n{BOLD}── Sigla → nome completo e sombreamento por nó fantasma ──{RESET}")
 check(
     "'sedo' expande para o nome completo da disciplina",

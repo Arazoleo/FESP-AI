@@ -396,6 +396,11 @@ class GraphRAGEngine:
                 return termo
         if self.kg._find_node(target.strip(), "disciplina"):
             return termo
+        # "algebra linear 2" → "Álgebra Linear II": sem isso a busca no texto
+        # casava o prefixo "Álgebra Linear" (outra disciplina).
+        grounded = self._disciplina_do_termo(target)
+        if grounded:
+            return f"{completed}:{grounded}" if completed else grounded
         grounded = self._find_discipline_in_text(question)
         if not grounded:
             return termo

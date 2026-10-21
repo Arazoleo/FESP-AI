@@ -228,30 +228,58 @@ async def startup_event():
     rag.sync()
     print("Multi-Agent RAG inicializado e pronto!")
     
-    def warmup_models():
+    def keep_warm_models():
+        """
+        Mantém os modelos quentes enquanto o backend estiver no ar.
+
+        O Ollama descarrega um modelo local após `keep_alive` sem uso (1h):
+        a primeira pergunta depois disso pagava a recarga do embedding e do
+        roteador (mediana 3s → 9s no interactions.jsonl). Uma chamada mínima
+        a cada FESPAI_KEEPWARM_S (default 240s; 0 = só o warmup inicial)
+        renova o keep_alive. FESPAI_KEEPWARM_CLOUD=0 tira o LLM de nuvem.
+        """
         import time
+        ollama_url = rag.config.OLLAMA_BASE_URL or "http://ollama:11434"
+        llm_url = (os.getenv("OLLAMA_LLM_BASE_URL") or "").strip() or ollama_url
+        api_key = (os.getenv("OLLAMA_API_KEY") or "").strip()
+        llm_headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+        intervalo = int(os.getenv("FESPAI_KEEPWARM_S", "240") or 0)
+
+        alvos = [("embed", ollama_url, rag.config.EMBEDDING_MODEL, {})]
+        router_model = os.getenv("FESPAI_ROUTER_MODEL", "").strip()
+        if router_model:
+            alvos.append(("generate", ollama_url, router_model, {}))
+        if os.getenv("FESPAI_KEEPWARM_CLOUD", "1") != "0":
+            alvos.append(("generate", llm_url, rag.config.MODEL_NAME, llm_headers))
+
+        def _ping(tipo, url, modelo, headers):
+            if tipo == "embed":
+                body = {"model": modelo, "input": "aquecimento", "keep_alive": "1h"}
+            else:
+                body = {"model": modelo, "prompt": "oi", "stream": False,
+                        "keep_alive": "1h", "options": {"num_predict": 1}}
+            t0 = time.perf_counter()
+            r = requests.post(f"{url}/api/{tipo}", json=body, headers=headers, timeout=60)
+            r.raise_for_status()
+            return time.perf_counter() - t0
+
         time.sleep(1)
-        print("Pre-carregando modelos (warmup)...")
-        try:
-            ollama_url = rag.config.OLLAMA_BASE_URL or "http://ollama:11434"
-            print(f"  - Carregando modelo LLM: {rag.config.MODEL_NAME}")
-            requests.post(f"{ollama_url}/api/generate", json={
-                "model": rag.config.MODEL_NAME,
-                "prompt": "teste",
-                "stream": False,
-                "keep_alive": "5m"
-            }, timeout=60)
-            print(f"  - Carregando modelo embeddings: {rag.config.EMBEDDING_MODEL}")
-            requests.post(f"{ollama_url}/api/embed", json={
-                "model": rag.config.EMBEDDING_MODEL,
-                "input": "teste",
-                "keep_alive": "5m"
-            }, timeout=60)
-            print("Modelos pre-carregados! Primeira query sera mais rapida.")
-        except Exception as e:
-            print(f"Warmup falhou: {e}")
-    
-    threading.Thread(target=warmup_models, daemon=True).start()
+        primeira = True
+        while True:
+            for tipo, url, modelo, headers in alvos:
+                try:
+                    dt = _ping(tipo, url, modelo, headers)
+                    # Ping lento = o modelo tinha esfriado (recarregou agora).
+                    if primeira or dt > 3:
+                        print(f"Keep-warm: {modelo} pronto em {dt:.1f}s")
+                except Exception as e:
+                    print(f"Keep-warm: {modelo} falhou: {e}")
+            primeira = False
+            if intervalo <= 0:
+                return
+            time.sleep(intervalo)
+
+    threading.Thread(target=keep_warm_models, daemon=True).start()
 
     def warmup_pyreason():
         """Pré-aquece o reasoner Datalog (PyReason) e seu JIT do numba.
