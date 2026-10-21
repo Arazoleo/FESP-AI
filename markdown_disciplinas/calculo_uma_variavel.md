@@ -9,7 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 1  
 **Turno:** N/A
-**Sigla:** CUV
+**Sigla:** CUV ou Cálculo 1 ou Cálculo I
 
 ## Docentes
 

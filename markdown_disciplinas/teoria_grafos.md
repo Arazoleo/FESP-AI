@@ -9,7 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 5  
 **Turno:** Integral
-**Sigla** TG
+**Sigla:** TG
 
 ## Docentes
 

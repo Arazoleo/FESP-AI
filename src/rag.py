@@ -511,7 +511,7 @@ Resposta:"""
             'discipline_docentes', 'docentes_by_area', 'docente_leciona_disciplina',
             'disciplinas_termo', 'todos_termos_curso', 'matriz_info', 'eletivas_curso',
             'listar_cursos', 'coordenador_curso',
-            'prerequisite_chain', 'dependents'
+            'prerequisite_chain', 'prerequisite_check', 'dependents'
         ]
         
         needs_rag_fallback = any(term in question_lower for term in [

@@ -9,7 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 2  
 **Turno:** Integral
-**Sigla:** AED 1 ou AED I
+**Sigla:** AED 1 ou AED I ou Algoritmos 1 ou Algoritmos I
 
 ## Docentes
 

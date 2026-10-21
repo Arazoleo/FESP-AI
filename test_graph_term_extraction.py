@@ -116,6 +116,49 @@ for question, expected_snippet in E2E:
         f"resposta: {(answer or '(None)').splitlines()[0]!r}",
     )
 
+print(f"\n{BOLD}── Verificação de par (\"A é pré-requisito de B?\") ──{RESET}")
+# Falha de produção: "Banco de Dados é pré-requisito de Compiladores, né?"
+# respondia a cadeia de Banco de Dados (outra pergunta).
+PAIR_CASES = [
+    ("Banco de Dados é pré-requisito de Compiladores, né?",
+     "Banco de Dados|Compiladores", "**Não.**"),
+    ("AED I é pré-requisito de Compiladores?",
+     "Algoritmos e Estruturas de Dados I|Compiladores", "**Não.**"),
+    ("LFA é pré-requisito de Compiladores?",
+     "Linguagens Formais e Autômatos|Compiladores",
+     "**Linguagens Formais e Autômatos** é pré-requisito **direto** de **Compiladores**"),
+    # Sentido invertido na pergunta: a resposta afirma o sentido real.
+    ("Compiladores é pré-requisito de LFA?",
+     "Compiladores|Linguagens Formais e Autômatos",
+     "o contrário não vale: Compiladores não é pré-requisito"),
+    ("Lógica de Programação é pré-requisito de Compiladores?",
+     "Lógica de Programação|Compiladores", "pré-requisito **indireto**"),
+]
+for question, exp_term, snippet in PAIR_CASES:
+    use, intent, term = engine.should_use_graph(question)
+    answer = engine.query_graph(intent, term) if use else None
+    check(
+        f"{question!r} → prerequisite_check com {snippet!r}",
+        intent == "prerequisite_check" and term == exp_term
+        and answer is not None and snippet in answer,
+        f"intent={intent!r} term={term!r} resposta={(answer or '')[:80]!r}",
+    )
+
+for question in [
+    "Quais os pré-requisitos de Compiladores e de Banco de Dados?",
+    "Quais os pré-requisitos de Banco de Dados?",
+]:
+    _, intent, _ = engine.should_use_graph(question)
+    check(f"{question!r} continua prerequisite_chain", intent == "prerequisite_chain",
+          f"obteve {intent!r}")
+
+check(
+    "sigla curta só casa escrita igual ('so pra saber' não vira SO)",
+    engine._find_disciplines_in_text("BD é pré-requisito de Compiladores? so pra saber")
+    == ["Banco de Dados", "Compiladores"],
+    repr(engine._find_disciplines_in_text("BD é pré-requisito de Compiladores? so pra saber")),
+)
+
 print(f"\n{BOLD}── Sigla → nome completo e sombreamento por nó fantasma ──{RESET}")
 check(
     "'sedo' expande para o nome completo da disciplina",

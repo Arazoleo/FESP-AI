@@ -170,6 +170,7 @@ class GraphRAGEngine:
                 termo = self._ground_discipline_term(question, intent, termo)
                 termo = self._ground_curso_term(question, intent, termo)
                 termo = self._ground_docente_term(question, intent, termo)
+                intent, termo = self._fix_prereq_pair(question, intent, termo)
                 return True, intent, termo
 
         use, intent, termo = self._regex_fallback(question)
@@ -179,6 +180,7 @@ class GraphRAGEngine:
             termo = self._ground_discipline_term(question, intent, termo)
             termo = self._ground_curso_term(question, intent, termo)
             termo = self._ground_docente_term(question, intent, termo)
+            intent, termo = self._fix_prereq_pair(question, intent, termo)
         return use, intent, termo
 
     # Intents cujo argumento é um CURSO. O classificador de intenção é de mundo
@@ -434,7 +436,157 @@ class GraphRAGEngine:
                 if chave_norm and len(chave_norm) > best_len and f" {chave_norm} " in text_norm:
                     best_nome, best_len = data.get("nome", ""), len(chave_norm)
         return best_nome
-    
+
+    def _find_disciplines_in_text(self, text: str) -> List[str]:
+        """
+        Todas as disciplinas do KG citadas no texto, na ordem em que aparecem.
+        Match mais longo primeiro e sem sobreposição ("Laboratório de SC:
+        Compiladores" não conta também "Compiladores"). Sigla de até 2 letras
+        só vale se escrita igual à do KG ("SO", não o "so" da frase).
+        """
+        text_norm = f" {self.kg._normalize_text(text)} "
+        candidatos = []
+        for _, data in self.kg.graph.nodes(data=True):
+            if data.get("tipo") != "disciplina":
+                continue
+            nome = data.get("nome", "")
+            # O campo sigla pode listar variantes ("AED 1 ou AED I").
+            siglas = [v.strip() for v in re.split(r"\s+ou\s+|[,/]", data.get("sigla") or "")]
+            for chave, eh_sigla in [(nome, False)] + [(v, True) for v in siglas if v]:
+                chave_norm = self.kg._normalize_text(chave)
+                if not chave_norm or f" {chave_norm} " not in text_norm:
+                    continue
+                if eh_sigla and len(chave) <= 2 and not re.search(
+                    rf"(?<!\w){re.escape(chave)}(?!\w)", text
+                ):
+                    continue
+                candidatos.append((len(chave_norm), chave_norm, nome))
+
+        ocupados: List[Tuple[int, int]] = []
+        achados: List[Tuple[int, str]] = []
+        for _, chave_norm, nome in sorted(candidatos, key=lambda c: -c[0]):
+            alvo = f" {chave_norm} "
+            pos = text_norm.find(alvo)
+            while pos != -1:
+                ini, fim = pos + 1, pos + len(alvo) - 1
+                if not any(ini < f and o < fim for o, f in ocupados):
+                    ocupados.append((ini, fim))
+                    achados.append((ini, nome))
+                    break
+                pos = text_norm.find(alvo, pos + 1)
+
+        nomes, vistos = [], set()
+        for _, nome in sorted(achados):
+            if nome and nome not in vistos:
+                vistos.add(nome)
+                nomes.append(nome)
+        return nomes
+
+    # Interrogativas abertas (classe gramatical fechada, não léxico de domínio):
+    # "quais os pré-requisitos de A e de B?" pede as cadeias, não um sim/não.
+    _PERGUNTA_ABERTA_RE = re.compile(
+        r"\b(?:qual|quais|quem|quando|onde|como|quanto|quantos|quantas|o que|oq)\b"
+    )
+    _PAIR_CHECK_INTENTS = {'prerequisite_chain', 'dependents'}
+
+    def _fix_prereq_pair(self, question: str, intent: str, termo: str):
+        """
+        Pergunta fechada (sim/não) sobre pré-requisito que cita DUAS disciplinas
+        do KG ("BD é pré-requisito de Compiladores, né?") é a verificação do
+        PAR, não a cadeia de uma delas: o classificador só extrai um termo e
+        respondia outra pergunta. Aterrado no KG, sem lista de frases.
+        """
+        if intent not in self._PAIR_CHECK_INTENTS:
+            return intent, termo
+        if self._PERGUNTA_ABERTA_RE.search(self.kg._normalize_text(question)):
+            return intent, termo
+        discs = self._find_disciplines_in_text(question)
+        if len(discs) != 2:
+            return intent, termo
+        from .telemetry import incr
+        incr("prereq_pair_check")
+        return 'prerequisite_check', f"{discs[0]}|{discs[1]}"
+
+    def _prereq_path(self, nome_de: str, nome_ate: str) -> List[str]:
+        """
+        Caminho de pré-requisitos de `nome_de` até `nome_ate` (nomes, na ordem
+        de quem se cursa primeiro), ou [] se `nome_de` não é ancestral.
+        """
+        id_de = self.kg._find_node(nome_de, "disciplina")
+        id_ate = self.kg._find_node(nome_ate, "disciplina")
+        if not id_de or not id_ate or id_de == id_ate:
+            return []
+        g = self.kg.graph
+        anterior = {id_ate: None}
+        fila = [id_ate]
+        while fila:
+            atual = fila.pop(0)
+            if atual == id_de:
+                caminho = []
+                while atual is not None:
+                    caminho.append(g.nodes[atual].get("nome", atual))
+                    atual = anterior[atual]
+                return caminho
+            for pred in g.predecessors(atual):
+                if pred in anterior:
+                    continue
+                if self.kg._has_edge_relation(g.get_edge_data(pred, atual), 'PREREQUISITO_DE'):
+                    anterior[pred] = atual
+                    fila.append(pred)
+        return []
+
+    def _responder_prereq_check(self, a: str, b: str) -> str:
+        """Relação de pré-requisito entre A e B, verificada nos dois sentidos."""
+        a, b = self._resolve_discipline_term(a), self._resolve_discipline_term(b)
+        faltando = [n for n in (a, b) if not self.kg._find_node(n, "disciplina")]
+        if faltando:
+            return (
+                f"Não encontrei a disciplina **{faltando[0]}** no sistema. "
+                "Pode me dizer o nome completo dela?"
+            )
+
+        def _cadeia(nome: str) -> str:
+            chain = self.kg.get_prerequisite_chain(nome)
+            if not chain:
+                return f"- **{nome}**: sem pré-requisitos"
+            return f"- **{nome}** ← " + " ← ".join(chain)
+
+        # A ordem em que o aluno citou não diz o sentido ("X é pré-req de Y?" ×
+        # "pra Y preciso de X?"): a resposta afirma a relação no sentido real.
+        for pre, pos in ((a, b), (b, a)):
+            caminho = self._prereq_path(pre, pos)
+            if not caminho:
+                continue
+            if len(caminho) == 2:
+                corpo = f"**{pre}** é pré-requisito **direto** de **{pos}**"
+            else:
+                corpo = (
+                    f"**{pre}** é pré-requisito **indireto** de **{pos}**, pela "
+                    "cadeia " + " → ".join(caminho)
+                )
+            corpo += f" (o contrário não vale: {pos} não é pré-requisito de {pre})."
+            return (
+                f"{corpo}\n\n**Cadeia completa:**\n{_cadeia(pos)}"
+                "\n\n---\n*Verificação neurossimbólica: `prereq_transitivity` "
+                "fecho transitivo de PREREQUISITO_DE no Knowledge Graph, nos dois sentidos*"
+            )
+
+        recs = [
+            f"- **{pre}** é recomendada antes de **{pos}** (ementas próximas, "
+            f"similaridade {sim:.0%}), mas não é obrigatória."
+            for pre, pos in ((a, b), (b, a))
+            for nome, sim in self._safe_recommended_before(pos)
+            if nome == pre
+        ]
+        secao_rec = ("\n\n" + "\n".join(recs)) if recs else ""
+        return (
+            f"**Não.** **{a}** e **{b}** não têm relação de pré-requisito: "
+            "nenhuma é pré-requisito da outra, nem direta nem indiretamente."
+            f"{secao_rec}\n\n**Pré-requisitos de cada uma:**\n{_cadeia(a)}\n{_cadeia(b)}"
+            "\n\n---\n*Verificação neurossimbólica: `prereq_transitivity` "
+            "fecho transitivo de PREREQUISITO_DE no Knowledge Graph, nos dois sentidos*"
+        )
+
     def _post_process_term(self, question: str, intent: str, term: str) -> str:
         """Pós-processamento do termo extraído para casos especiais."""
         question_lower = question.lower()
@@ -900,6 +1052,12 @@ class GraphRAGEngine:
         query_type, termo = self._normaliza_termo_query(query_type, termo)
         if query_type in ('prerequisite_chain', 'dependents', 'discipline_docentes', 'recommended_before'):
             termo = self._resolve_discipline_term(termo)
+
+        if query_type == 'prerequisite_check':
+            a, _, b = (termo or "").partition("|")
+            if not a or not b:
+                return None
+            return self._responder_prereq_check(a, b)
 
         if query_type == 'prerequisite_chain':
             chain = self.kg.get_prerequisite_chain(termo)

@@ -9,7 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 4  
 **Turno:** N/A
-**Sigla** AL II ou AL 2
+**Sigla:** AL II ou AL 2
 
 ## Docentes
 

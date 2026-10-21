@@ -40,6 +40,7 @@ SYMBOLIC_DIRECT_INTENTS: frozenset = frozenset({
     "eletivas_curso",
     "matriz_info",
     "prerequisite_chain",
+    "prerequisite_check",
     "dependents",
     "co_prerequisite",
     "critical_disciplines",

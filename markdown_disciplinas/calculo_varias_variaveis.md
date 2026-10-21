@@ -9,7 +9,7 @@
 **Oferta:** Semestral  
 **Termo:** 3  
 **Turno:** N/A
-**Sigla:** CVV
+**Sigla:** CVV ou Cálculo 2 ou Cálculo II
 
 ## Docentes
 
