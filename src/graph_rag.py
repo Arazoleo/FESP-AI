@@ -779,6 +779,15 @@ class GraphRAGEngine:
             "delas ajuda.*"
         )
 
+    def _nomes_da_cadeia(self, termo: str) -> set:
+        """A disciplina e todo o seu fecho de pré-requisitos (normalizados)."""
+        nomes = [termo]
+        try:
+            nomes += self.kg.get_prerequisite_chain(termo)
+        except Exception:
+            pass
+        return {self.kg._normalize_text(n) for n in nomes if n}
+
     def _recomendacoes_e_rodape(self, termo: str, chain_len: int) -> Tuple[str, str]:
         """
         Separa o que o aluno precisa ler do rastro técnico do motor.
@@ -794,8 +803,14 @@ class GraphRAGEngine:
                 f"{chain_len} aresta(s) do Knowledge Graph"
             )
 
+        # Recomendação nunca repete a cadeia formal: o que já é pré-requisito
+        # (direto ou indireto) não reaparece como "provável" com confiança.
+        formais = self._nomes_da_cadeia(termo)
         recomendacoes: Dict[str, List[str]] = {}
-        recs = self._safe_recommended_before(termo)
+        recs = [
+            (nome, sim) for nome, sim in self._safe_recommended_before(termo)
+            if self.kg._normalize_text(nome) not in formais
+        ]
         for nome, sim in recs:
             recomendacoes.setdefault(nome, []).append(
                 f"o conteúdo é próximo ao de {termo} (similaridade {sim:.0%})"
@@ -807,6 +822,7 @@ class GraphRAGEngine:
             base = self.kg.get_base_recomendada(termo)
         except Exception:
             base = []
+        base = [r for r in base if self.kg._normalize_text(r["nome"]) not in formais]
         for r in base:
             conceitos = ", ".join(r["conceitos"])
             recomendacoes.setdefault(r["nome"], []).append(
@@ -823,6 +839,10 @@ class GraphRAGEngine:
             learned = sugerir_prereqs(self.kg, termo, top_k=3)
         except Exception:
             learned = []
+        learned = [
+            s for s in learned
+            if self.kg._normalize_text(s["candidato"]) not in formais
+        ]
         for s in learned:
             recomendacoes.setdefault(s["candidato"], []).append(
                 f"pré-requisito provável por link prediction (confiança {s['crenca']:.0%})"
@@ -932,7 +952,11 @@ class GraphRAGEngine:
                         nomes.append(n)
                 nodes = [{"id": n, "nome": n} for n in nomes]
                 edges = self._direct_prereq_edges(nomes)
+                # Quem já está na cadeia formal não ganha aresta "inferida".
+                formais = self._nomes_da_cadeia(nome)
                 for rec_nome, sim in self._safe_recommended_before(nome):
+                    if self.kg._normalize_text(rec_nome) in formais:
+                        continue
                     if rec_nome not in vistos:
                         vistos.add(rec_nome)
                         nodes.append({
@@ -949,6 +973,8 @@ class GraphRAGEngine:
                 except Exception:
                     base = []
                 for r in base:
+                    if self.kg._normalize_text(r["nome"]) in formais:
+                        continue
                     if r["nome"] not in vistos:
                         vistos.add(r["nome"])
                         nodes.append({

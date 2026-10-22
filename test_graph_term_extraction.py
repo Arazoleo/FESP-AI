@@ -11,6 +11,7 @@ Cobre as falhas registradas nas transcrições do BACKLOG.md:
 Executa sem precisar de Ollama/LLM (usa apenas o fallback regex + KG).
 """
 
+import re
 import sys
 import importlib.util
 import types as _types
@@ -158,6 +159,36 @@ check(
     == ["Banco de Dados", "Compiladores"],
     repr(engine._find_disciplines_in_text("BD é pré-requisito de Compiladores? so pra saber")),
 )
+
+print(f"\n{BOLD}── Recomendação não repete a cadeia formal ──{RESET}")
+# "Pré-requisitos de Compiladores" listava Lógica de Programação na cadeia e de
+# novo em "Vale reforçar antes" (link prediction, confiança 23%).
+rm_mod = _import_module("rule_miner", "src/rule_miner.py")
+_conflitos, _com_cadeia = [], 0
+_nomes = sorted({d.get("nome") for _, d in kg.graph.nodes(data=True)
+                 if d.get("tipo") == "disciplina" and d.get("nome")})
+for _nome in _nomes:
+    _cadeia = {kg._normalize_text(n) for n in kg.get_prerequisite_chain(_nome)}
+    _deps = {kg._normalize_text(n) for n in kg.get_dependent_disciplines(_nome)}
+    if not _cadeia:
+        continue
+    _com_cadeia += 1
+    for _s in rm_mod.sugerir_prereqs(kg, _nome, top_k=3):
+        _c = kg._normalize_text(_s["candidato"])
+        if _c in _cadeia or _c in _deps:
+            _conflitos.append(f"{_nome} ← {_s['candidato']}")
+    _secao, _ = engine._recomendacoes_e_rodape(_nome, len(_cadeia))
+    for _linha in _secao.splitlines():
+        _m = re.match(r"- \*\*(.+?)\*\*:", _linha)
+        if _m and kg._normalize_text(_m.group(1)) in _cadeia:
+            _conflitos.append(f"{_nome}: seção repete {_m.group(1)}")
+check(
+    f"nenhuma sugestão repete a cadeia ou é dependente ({_com_cadeia} disciplinas)",
+    not _conflitos, "; ".join(_conflitos[:5]),
+)
+_secao, _ = engine._recomendacoes_e_rodape("Compiladores", 3)
+check("Compiladores: Lógica de Programação fora de 'Vale reforçar antes'",
+      "Lógica de Programação" not in _secao, _secao)
 
 print(f"\n{BOLD}── Grounding com numeral arábico × romano ──{RESET}")
 # Com o classificador acertando ementa_disciplina (gemma4), "algebra linear 2"

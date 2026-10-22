@@ -467,7 +467,25 @@ def sugerir_prereqs(kg, alvo_nome: str, top_k: int = 3,
     if not node:
         return []
     s = _sinais_prereq(kg)
-    curados = {a for (a, b) in s["prereq"] if b == node}
+    # Exclui o FECHO transitivo, não só os diretos: sugerir um ancestral
+    # indireto ("Lógica de Programação" p/ Compiladores) repetia a cadeia
+    # formal como "provável"; sugerir um dependente criaria ciclo.
+    pais: Dict[str, Set[str]] = {}
+    filhos: Dict[str, Set[str]] = {}
+    for a, b in s["prereq"]:
+        pais.setdefault(b, set()).add(a)
+        filhos.setdefault(a, set()).add(b)
+
+    def _fecho(inicio: str, adj: Dict[str, Set[str]]) -> Set[str]:
+        vistos, pilha = set(), [inicio]
+        while pilha:
+            for viz in adj.get(pilha.pop(), ()):
+                if viz not in vistos:
+                    vistos.add(viz)
+                    pilha.append(viz)
+        return vistos
+
+    curados = _fecho(node, pais) | _fecho(node, filhos)
     conc_b = s["req"].get(node, set()) | s["aborda"].get(node, set())
     if not conc_b:
         return []
