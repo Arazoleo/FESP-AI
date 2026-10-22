@@ -1198,7 +1198,7 @@ def build_pipeline(rag_instance):
                 "active_agent": "noticias",
             }
 
-        if is_web_sjc(question_lower):
+        if is_web_sjc(question_lower, rag_instance.graph_rag):
             return {
                 **state,
                 "intent": "web_sjc",

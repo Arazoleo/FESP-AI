@@ -255,12 +255,28 @@ _WEB_SJC_EXCLUDE = [
 ]
 
 
-def is_web_sjc(question_lower: str) -> bool:
+# Frases de LOCALIZAÇÃO ("como chego no campus?") são ambíguas com trajetória
+# curricular ("como chego em Compiladores?"): o KG desempata pelo tipo da entidade.
+_LOCALIZACAO_PHRASES = ("como chego", "onde fica")
+
+
+def is_web_sjc(question_lower: str, graph_rag=None) -> bool:
     """True se a pergunta é institucional sobre o campus (coberta pelo site)."""
     q = _strip_accents(question_lower)
     if _any_phrase([_strip_accents(e) for e in _WEB_SJC_EXCLUDE], q):
         return False
-    return _any_phrase(_WEB_SJC_PHRASES, q) or _is_hours_breakdown(q)
+    if _is_hours_breakdown(q):
+        return True
+    hits = {p for p in _WEB_SJC_PHRASES if _phrase_in(p, q)}
+    if not hits:
+        return False
+    if graph_rag is not None and hits <= set(_LOCALIZACAO_PHRASES):
+        try:
+            if graph_rag._find_discipline_in_text(question_lower):
+                return False
+        except Exception:
+            pass
+    return True
 
 
 _COURSE_OVERVIEW_PATTERNS = [

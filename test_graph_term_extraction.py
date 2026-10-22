@@ -190,6 +190,28 @@ _secao, _ = engine._recomendacoes_e_rodape("Compiladores", 3)
 check("Compiladores: Lógica de Programação fora de 'Vale reforçar antes'",
       "Lógica de Programação" not in _secao, _secao)
 
+print(f"\n{BOLD}── Trajetória: cursadas 'X e Y' separadas pelo KG ──{RESET}")
+_comp, _alvo, _nid = engine._resolve_trajectory_parts(
+    "lógica de programação e matemática discreta:compiladores"
+)
+check(
+    "'LP e MD' vira duas cursadas",
+    [kg._normalize_text(c) for c in _comp]
+    == [kg._normalize_text("Lógica de Programação"), kg._normalize_text("Matemática Discreta")],
+    repr(_comp),
+)
+_resp = engine.query_graph(
+    "trajectory_planning", "lógica de programação e matemática discreta:compiladores"
+) or ""
+check("caminho desconta as cursadas (começa em LFA)",
+      "Linguagens Formais e Autômatos" in _resp and "- Matemática Discreta" not in _resp,
+      _resp[:300])
+_comp, _, _ = engine._resolve_trajectory_parts(
+    "algoritmos e estruturas de dados i:compiladores"
+)
+check("'e' dentro do nome não parte a disciplina",
+      len(_comp) == 1, repr(_comp))
+
 print(f"\n{BOLD}── Grounding com numeral arábico × romano ──{RESET}")
 # Com o classificador acertando ementa_disciplina (gemma4), "algebra linear 2"
 # caía na busca no texto e virava "Álgebra Linear" (a I).

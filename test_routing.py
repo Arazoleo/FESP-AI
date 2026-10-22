@@ -96,6 +96,22 @@ check("'como você funciona?' (identidade) segue conversacional",
 check("'pré-reqs' abreviado força disciplinas no phrase_override",
       router.phrase_override("oi, quais os pré-reqs de ia?") == "disciplinas")
 
+print(f"\n{BOLD}── localização × trajetória: KG desempata ──{RESET}")
+
+
+class _GR:  # graph_rag mínimo: só o grounding de disciplina no texto
+    @staticmethod
+    def _find_discipline_in_text(text):
+        return "Compiladores" if "compiladores" in text.lower() else ""
+
+
+check("'como chego em compiladores?' NÃO vai pro site (é trajetória)",
+      not router.is_web_sjc("como chego em compiladores?", _GR()))
+check("'como chego no campus?' continua no site",
+      router.is_web_sjc("como chego no campus?", _GR()))
+check("'onde fica a secretaria?' continua no site (secretaria não é só localização)",
+      router.is_web_sjc("onde fica a secretaria?", _GR()))
+
 print(f"\n{BOLD}── conteúdo da DAE: colação, estágio, REMAT ──{RESET}")
 check("'como faço para colar grau?' → web_sjc",
       router.is_web_sjc("como faço para colar grau?"))

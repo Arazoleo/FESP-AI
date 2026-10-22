@@ -727,6 +727,17 @@ class GraphRAGEngine:
         if not target:
             return completed, target, None
 
+        # "lógica de programação e matemática discreta" é UMA string para o
+        # split por vírgula; o " e " não serve de separador (está dentro de
+        # "Algoritmos e Estruturas de Dados"). Separa pelas disciplinas do KG.
+        expandidas: List[str] = []
+        for c in completed:
+            if self.kg._find_node(c, "disciplina"):
+                expandidas.append(c)
+            else:
+                expandidas.extend(self._find_disciplines_in_text(c) or [c])
+        completed = expandidas
+
         node_id = self.kg._find_node(target, "disciplina")
         if node_id is None:
             grounded = self._find_discipline_in_text(target)
