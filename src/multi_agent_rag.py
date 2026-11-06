@@ -228,6 +228,22 @@ class MultiAgentRAG:
                 )
                 telemetry.incr("miss_registrado")
 
+            # Completude (Perceive/Evaluate do MetaKGRAG): entidade do KG citada
+            # na pergunta e ausente da resposta. Fase 1: só observa e registra.
+            cobertura = None
+            if final_response and not is_miss_response(final_response):
+                from .workflow.coverage import avaliar_cobertura
+                cobertura = avaliar_cobertura(
+                    self.knowledge_graph, original_question or question,
+                    final_response, active_agent,
+                )
+                if cobertura and cobertura["faltantes"]:
+                    telemetry.incr("cobertura_incompleta")
+                    print(f"[Cobertura] {active_agent} não cobriu: "
+                          f"{cobertura['faltantes']}")
+                elif cobertura and cobertura.get("ausencia_confessa"):
+                    telemetry.incr("ausencia_confessa")
+
             if final_response and not is_miss_response(final_response) and not _sub:
                 from .atividades_complementares import maybe_append_offer
                 offered = maybe_append_offer(
@@ -263,6 +279,7 @@ class MultiAgentRAG:
                 "ac_data": final_state.get("ac_data"),
                 "relatorio": final_state.get("relatorio"),
                 "suggestions": suggestions,
+                "cobertura": cobertura,
                 "agent_metadata": self.AGENT_METADATA.get(
                     active_agent, self.AGENT_METADATA["fallback"]
                 ),
@@ -307,6 +324,10 @@ class MultiAgentRAG:
                 )
             )
         combinado = combinar_respostas(subs, resultados)
+        from .workflow.coverage import combinar_coberturas
+        combinado["cobertura"] = combinar_coberturas(
+            [r.get("cobertura") for r in resultados]
+        )
         combinado["agent_metadata"] = self.AGENT_METADATA.get(
             combinado["active_agent"], self.AGENT_METADATA["fallback"]
         )

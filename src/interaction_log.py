@@ -40,11 +40,13 @@ SLOW_MS = int(os.getenv("FESPAI_SLOW_MS", "12000"))
 
 def log_turn(conversation_id: str, question: str, active_agent: str,
              intent: str, latency_ms: Optional[float], is_miss: bool,
-             answer: Optional[str] = None, path: Optional[str] = None) -> None:
+             answer: Optional[str] = None, path: Optional[str] = None,
+             cobertura_faltante: Optional[List[str]] = None) -> None:
     """Registra um turno. Silencioso em erro — telemetria nunca derruba o chat.
 
     `answer` (a resposta do assistente) só é gravada nos turnos SUSPEITOS —
-    miss confesso ou latência >= SLOW_MS — como campo `answer` truncado. Nos
+    miss confesso, latência >= SLOW_MS ou entidade da pergunta ausente da
+    resposta (`cobertura_faltante`) — como campo `answer` truncado. Nos
     demais turnos nada de resposta é persistido (captura híbrida)."""
     if os.getenv("FESPAI_INTERACTION_LOG", "1") == "0":
         return
@@ -64,7 +66,10 @@ def log_turn(conversation_id: str, question: str, active_agent: str,
             "miss": bool(is_miss),
         }
         # captura híbrida: grava a resposta só onde há atrito
-        suspeito = bool(is_miss) or (lat is not None and lat >= SLOW_MS)
+        if cobertura_faltante:
+            entry["cobertura_faltante"] = list(cobertura_faltante)
+        suspeito = (bool(is_miss) or bool(cobertura_faltante)
+                    or (lat is not None and lat >= SLOW_MS))
         if suspeito and answer:
             entry["answer"] = answer.strip()[:800]
             entry["suspeito"] = True

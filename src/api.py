@@ -495,10 +495,13 @@ def chat(request: ChatRequest):
     try:
         from .interaction_log import log_turn
         from .workflow.second_chance import is_miss_response
+        _cob = result.get("cobertura") or {}
         log_turn(conversation_id, request.message, active_agent, intent,
                  (_time.perf_counter() - _t0) * 1000.0,
-                 is_miss_response(response_text),
-                 answer=response_text)
+                 is_miss_response(response_text)
+                 or bool(_cob.get("ausencia_confessa")),
+                 answer=response_text,
+                 cobertura_faltante=_cob.get("faltantes"))
     except Exception:
         pass
 
