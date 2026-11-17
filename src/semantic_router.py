@@ -118,6 +118,28 @@ PRAZO_EX = [
 ]
 _PRAZO = {"emb": None, "prazo": None, "req": None}
 
+# "E SE" contrafactual (reprovar/adiar UC → quando me formo) vs perguntas sobre
+# a REGRA de reprovação (nota mínima, RER, exame, falta), que vão ao regimento.
+# Contrastivo NN com abstenção (piso + margem), como eh_prazo.
+E_SE_EX = [
+    "se eu reprovar em cálculo quanto eu atraso",
+    "e se eu reprovar em matemática discreta, atrasa minha formatura?",
+    "quanto tempo eu perco se repetir algoritmos",
+    "se eu não passar em física quando eu me formo",
+    "reprovar em banco de dados atrasa o curso?",
+    "se eu deixar compiladores pro ano que vem eu atraso a formatura?",
+    "caso eu reprove em estruturas de dados vou me formar depois?",
+]
+REGRA_REPROVACAO_EX = [
+    "o que acontece se eu reprovar por falta",
+    "posso fazer RER se reprovar numa matéria",
+    "qual a nota mínima para passar",
+    "quantas vezes posso reprovar na mesma disciplina",
+    "reprovei, tenho direito a exame?",
+    "reprovação por frequência entra no CR?",
+]
+_E_SE = {"emb": None, "sim": None, "nao": None}
+
 
 def _nr(vecs):
     import numpy as np
@@ -145,6 +167,28 @@ def eh_prazo(pergunta: str, piso: float = 0.45, margem: float = 0.08) -> bool:
         q = q / n
         s_prazo = float((_PRAZO["prazo"] @ q).max())
         return s_prazo >= piso and s_prazo - float((_PRAZO["req"] @ q).max()) >= margem
+    except Exception:
+        return False
+
+
+def eh_e_se(pergunta: str, piso: float = 0.60, margem: float = 0.05) -> bool:
+    """True se a pergunta é um "e se" de progressão (reprovar/adiar uma UC e
+    o efeito na formatura), não uma dúvida sobre a regra de reprovação.
+    Exige proximidade real (piso) e vitória clara (margem); o chamador ainda
+    exige uma disciplina aterrada no KG. Calibrado no embeddinggemma:
+    positivos ≥0.64 c/ margem ≥0.06; perguntas de conteúdo (ementa,
+    pré-requisitos) ≤0.53; regras de reprovação perdem na margem."""
+    if _E_SE["sim"] is None or not pergunta:
+        return False
+    try:
+        import numpy as np
+        q = np.array(_E_SE["emb"].embed_query(pergunta), dtype="float32")
+        n = np.linalg.norm(q)
+        if n == 0:
+            return False
+        q = q / n
+        s_sim = float((_E_SE["sim"] @ q).max())
+        return s_sim >= piso and s_sim - float((_E_SE["nao"] @ q).max()) >= margem
     except Exception:
         return False
 
@@ -198,6 +242,13 @@ def configurar(embeddings_model, limiar: float = 0.66) -> None:
                 FLOW_EXAMPLES["requisitos_curso"]))
         except Exception:
             _PRAZO["emb"] = None
+    if embeddings_model is not None and _E_SE["sim"] is None:
+        try:
+            _E_SE["emb"] = embeddings_model
+            _E_SE["sim"] = _nr(embeddings_model.embed_documents(E_SE_EX))
+            _E_SE["nao"] = _nr(embeddings_model.embed_documents(REGRA_REPROVACAO_EX))
+        except Exception:
+            _E_SE["emb"] = None
 
 
 def classificar(pergunta: str) -> Optional[Tuple[str, float]]:

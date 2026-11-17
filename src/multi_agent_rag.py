@@ -236,11 +236,16 @@ class MultiAgentRAG:
                 cobertura = avaliar_cobertura(
                     self.knowledge_graph, original_question or question,
                     final_response, active_agent,
+                    intent=final_state.get("intent", ""),
                 )
                 if cobertura and cobertura["faltantes"]:
                     telemetry.incr("cobertura_incompleta")
                     print(f"[Cobertura] {active_agent} não cobriu: "
                           f"{cobertura['faltantes']}")
+                if cobertura and cobertura.get("atributos_faltantes"):
+                    telemetry.incr("atributo_incompleto")
+                    print(f"[Cobertura] {active_agent} omitiu atributo: "
+                          f"{cobertura['atributos_faltantes']}")
                 elif cobertura and cobertura.get("ausencia_confessa"):
                     telemetry.incr("ausencia_confessa")
 

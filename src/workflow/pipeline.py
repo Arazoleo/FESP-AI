@@ -545,6 +545,28 @@ def build_pipeline(rag_instance):
                         }},
                     )
 
+        def _responder_e_se(pergunta: str, hist):
+            try:
+                if not semantic_router.eh_e_se(pergunta):
+                    return None
+                from ..normas.assistente import responder_e_se
+            except Exception:
+                return None
+            curso = None
+            if rag_instance.graph_rag:
+                try:
+                    curso = rag_instance.graph_rag._find_curso_in_text(pergunta)
+                except Exception:
+                    curso = None
+            if not curso and isinstance(hist, dict):
+                curso = historico_curso_sigla(hist.get("curso", "")) or None
+            try:
+                return responder_e_se(rag_instance.knowledge_graph, pergunta, curso,
+                                      hist if isinstance(hist, dict) else None)
+            except Exception as e:
+                print(f"[E-se] falha no planejamento: {e}")
+                return None
+
         def _agentico(label: str, disciplina_hint: str = None):
             hist = state.get("historico")
 
@@ -1049,6 +1071,18 @@ def build_pipeline(rag_instance):
                 "\n\n_Derivado da ponte aprendida conceito→área (`PERTENCE_A`, "
                 "ponderada por crença) — não é a lista oficial da matriz._",
                 "disciplinas_by_area", ["Ponte conceito→área (KG, aprendida)"],
+            )
+
+        # "E SE" contrafactual (reprovar em X → quando me formo): planejamento
+        # com prova no motor de normas. Gate semântico com abstenção + UC
+        # aterrada na matriz do curso; sem clingo/curso, segue o fluxo normal.
+        _ese = _responder_e_se(pergunta_bruta, state.get("historico"))
+        if _ese:
+            return _resposta_simbolica(
+                _ese["texto"], "e_se_reprovacao",
+                ["Res. CONSU 246/2023", "Matriz curricular (KG)"]
+                + (["Histórico Acadêmico (sessão)"] if _ese["personalizado"] else []),
+                **({"suggestions": _ese["opcoes"]} if _ese.get("opcoes") else {}),
             )
 
         if is_cr_request(question):

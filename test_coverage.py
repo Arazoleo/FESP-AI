@@ -139,6 +139,47 @@ check("agente clarify é isento",
 check("resposta vazia → None",
       cov.avaliar_cobertura(kg, "ementa de compiladores", "", "disciplinas") is None)
 
+print(f"\n{BOLD}── contrato de atributo (intent → valor no KG) ──{RESET}")
+r = cov.avaliar_cobertura(kg, "quais as áreas de pesquisa da Lilian?",
+                          "A Profa. Lilian Berton leciona Lógica de Programação.",
+                          "docentes", intent="docente_areas")
+check("cita a docente mas omite as áreas → atributo faltante",
+      r and r["faltantes"] == [] and
+      r["atributos_faltantes"] == [("Lilian Berton", "áreas de pesquisa")], r)
+r = cov.avaliar_cobertura(kg, "quais as áreas de pesquisa da Lilian?",
+                          "A Profa. Lilian pesquisa aprendizado de máquina e redes complexas.",
+                          "docentes", intent="docente_areas")
+check("uma área do KG presente cobre", r and r["atributos_faltantes"] == [], r)
+r = cov.avaliar_cobertura(kg, "como falo com a lilian?",
+                          "Fale com a Lilian pelo lberton@unifesp.br.", "docentes",
+                          intent="docente_info")
+check("contato: email cobre", r and r["atributos_faltantes"] == [], r)
+r = cov.avaliar_cobertura(kg, "quais os pré-requisitos de compiladores?",
+                          "Compiladores é do 6º termo e trata de análise léxica.",
+                          "symbolic_kg", intent="prerequisite_chain")
+check("pré-requisito omitido → faltante",
+      r and r["atributos_faltantes"] == [("Compiladores", "pré-requisitos")], r)
+r = cov.avaliar_cobertura(kg, "quais os pré-requisitos de compiladores?",
+                          "Para Compiladores você precisa de Linguagens Formais e Autômatos.",
+                          "symbolic_kg", intent="prerequisite_chain")
+check("pré-requisito citado cobre", r and r["atributos_faltantes"] == [], r)
+r = cov.avaliar_cobertura(kg, "qual a ementa de compiladores?",
+                          "Compiladores cobre análise léxica, análise sintática e geração de código.",
+                          "disciplinas", intent="ementa_disciplina")
+check("ementa: termos da ementa reaproveitados cobrem", r and r["atributos_faltantes"] == [], r)
+r = cov.avaliar_cobertura(kg, "qual a ementa de compiladores?",
+                          "Compiladores é ministrada pelo prof. Rodrigo no 6º termo.",
+                          "disciplinas", intent="ementa_disciplina")
+check("ementa omitida → faltante",
+      r and r["atributos_faltantes"] == [("Compiladores", "ementa")], r)
+r = cov.avaliar_cobertura(kg, "quem leciona compiladores?", "Compiladores é do 6º termo.",
+                          "disciplinas", intent="faqs")
+check("intent sem contrato não cobra atributo", r and r["atributos_faltantes"] == [], r)
+check("resumo_faltantes junta entidade e atributo",
+      cov.resumo_faltantes({"faltantes": ["Banco de Dados"],
+                            "atributos_faltantes": [("Lilian Berton", "áreas de pesquisa")]})
+      == ["Banco de Dados", "Lilian Berton (áreas de pesquisa)"])
+
 print(f"\n{BOLD}── combinar_coberturas (pergunta composta) ──{RESET}")
 c = cov.combinar_coberturas([
     {"entidades": ["Compiladores"], "faltantes": [], "cobertura": 1.0},
@@ -147,7 +188,8 @@ c = cov.combinar_coberturas([
 ])
 check("une entidades e faltantes das subperguntas",
       c == {"entidades": ["Compiladores", "Banco de Dados"],
-            "faltantes": ["Banco de Dados"], "cobertura": 0.5}, c)
+            "faltantes": ["Banco de Dados"], "atributos_faltantes": [],
+            "cobertura": 0.5}, c)
 check("nenhuma subpergunta aplicável → None", cov.combinar_coberturas([None, None]) is None)
 
 print(f"\n{BOLD}── interaction_log: cobertura incompleta é turno suspeito ──{RESET}")

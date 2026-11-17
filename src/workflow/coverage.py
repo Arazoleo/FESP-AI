@@ -97,8 +97,88 @@ def entidade_coberta(tipo: str, nome: str, resposta: str,
     return False
 
 
+# ------------------------------------------------- contrato de atributo
+#
+# Entidade citada não basta: "quais as áreas da Lilian?" respondido com "a
+# Lilian é docente de Lógica" cita a entidade e omite o que foi pedido. O
+# intent (já classificado pelo pipeline, sem regex nova) diz QUAL atributo a
+# resposta deve trazer; o KG diz o valor. Coberto = algum valor aparece.
+
+def _valores_docentes(kg, nome):
+    return [("docente", d) for d in kg.get_docentes_of_discipline(nome)]
+
+
+def _valores_disciplinas(kg, nomes):
+    return [("disciplina", d) for d in nomes if d]
+
+
+def _valores_areas(kg, nome):
+    return [("area", a) for a in kg.get_areas_of_docente(nome)]
+
+
+def _valores_contato(kg, nome):
+    info = kg.get_docente_info(nome) or {}
+    vals = [("literal", info[c]) for c in ("email", "sala") if info.get(c)]
+    return vals + _valores_areas(kg, nome)
+
+
+def _valores_ementa(kg, nome):
+    node = kg._find_node(nome, "disciplina")
+    ementa = kg.graph.nodes[node].get("ementa", "") if node else ""
+    return [("ementa", ementa)] if ementa and str(ementa).strip().lower() != "none" else []
+
+
+# intent -> (tipo da entidade, atributo, função que lista os valores no KG)
+CONTRATOS = {
+    "discipline_docentes": ("disciplina", "docentes", _valores_docentes),
+    "docente_disciplines": ("docente", "disciplinas lecionadas",
+                            lambda kg, n: _valores_disciplinas(kg, kg.get_disciplines_of_docente(n))),
+    "docente_areas": ("docente", "áreas de pesquisa", _valores_areas),
+    "docente_info": ("docente", "contato ou áreas", _valores_contato),
+    "prerequisite_chain": ("disciplina", "pré-requisitos",
+                           lambda kg, n: _valores_disciplinas(kg, kg.get_direct_prerequisites(n))),
+    "dependents": ("disciplina", "disciplinas que dependem dela",
+                   lambda kg, n: _valores_disciplinas(kg, kg.get_dependent_disciplines(n))),
+    "ementa_disciplina": ("disciplina", "ementa", _valores_ementa),
+}
+
+
+def _valor_presente(tipo: str, valor: str, resposta: str) -> bool:
+    if tipo == "literal":
+        return bool(_tokens(valor)) and " ".join(_tokens(valor)) in " ".join(_tokens(resposta))
+    if tipo == "ementa":
+        # ementa é texto livre: basta reaproveitar 3 termos de conteúdo dela
+        termos = {w for w in _tokens(valor) if len(w) >= 6}
+        return len(termos & set(_tokens(resposta))) >= min(3, len(termos))
+    if tipo == "area":
+        conteudo = _conteudo(valor)
+        return bool(conteudo) and all(w in set(_tokens(resposta)) for w in conteudo)
+    return entidade_coberta(tipo, valor, resposta)
+
+
+def atributos_faltantes(kg, intent: str, entidades: List[Tuple[str, str]],
+                        resposta: str) -> List[Tuple[str, str]]:
+    """[(entidade, atributo)] pedidos pelo intent e ausentes da resposta. Só
+    cobra o que o KG tem: sem valor no KG não há contrato (seria miss)."""
+    contrato = CONTRATOS.get(intent or "")
+    if not contrato:
+        return []
+    tipo, atributo, valores_de = contrato
+    falta = []
+    for t, nome in entidades:
+        if t != tipo:
+            continue
+        try:
+            valores = valores_de(kg, nome)
+        except Exception:
+            continue
+        if valores and not any(_valor_presente(vt, v, resposta) for vt, v in valores):
+            falta.append((nome, atributo))
+    return falta
+
+
 def avaliar_cobertura(kg, pergunta: str, resposta: str,
-                      agente: str = "") -> Optional[Dict]:
+                      agente: str = "", intent: str = "") -> Optional[Dict]:
     """Diagnóstico de completude da resposta, ou None quando não se aplica
     (agente isento, resposta vazia ou pergunta sem entidade do KG)."""
     if agente in AGENTES_ISENTOS or not (resposta or "").strip():
@@ -117,11 +197,21 @@ def avaliar_cobertura(kg, pergunta: str, resposta: str,
             _AUSENCIA.search(" ".join(_tokens(f))) for f in _frases(resposta)):
         return {"entidades": nomes, "faltantes": [], "cobertura": 0.0,
                 "ausencia_confessa": True}
+    cobertas = [(t, n) for t, n in entidades if n not in faltantes]
     return {
         "entidades": nomes,
         "faltantes": faltantes,
+        "atributos_faltantes": atributos_faltantes(kg, intent, cobertas, resposta),
         "cobertura": round(1 - len(faltantes) / len(entidades), 3),
     }
+
+
+def resumo_faltantes(cobertura: Optional[Dict]) -> List[str]:
+    """Entidades e atributos faltantes num formato só, para log/telemetria."""
+    if not cobertura:
+        return []
+    return list(cobertura.get("faltantes", [])) + [
+        f"{e} ({a})" for e, a in cobertura.get("atributos_faltantes", [])]
 
 
 def combinar_coberturas(coberturas: List[Optional[Dict]]) -> Optional[Dict]:
@@ -129,12 +219,14 @@ def combinar_coberturas(coberturas: List[Optional[Dict]]) -> Optional[Dict]:
     validas = [c for c in coberturas if c]
     if not validas:
         return None
-    entidades, faltantes = [], []
+    entidades, faltantes, atributos = [], [], []
     for c in validas:
         entidades += [e for e in c["entidades"] if e not in entidades]
         faltantes += [f for f in c["faltantes"] if f not in faltantes]
+        atributos += [a for a in c.get("atributos_faltantes", []) if a not in atributos]
     return {
         "entidades": entidades,
         "faltantes": faltantes,
+        "atributos_faltantes": atributos,
         "cobertura": round(1 - len(faltantes) / len(entidades), 3),
     }

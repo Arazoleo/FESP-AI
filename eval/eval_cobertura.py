@@ -126,6 +126,37 @@ _MODELOS = {
 }
 
 
+# pergunta de atributo: (tipo, modelo, intent, prefixo da linha de fatos que
+# a responde). Incompleta = mesmos fatos SEM essa linha.
+_ATRIBUTOS = [
+    ("docente", "quais as áreas de pesquisa de {x}?", "docente_areas", ("áreas de pesquisa",)),
+    ("docente", "qual o email de {x}?", "docente_info", ("email", "sala", "áreas de pesquisa")),
+    ("docente", "quais disciplinas {x} leciona?", "docente_disciplines", ("leciona",)),
+    ("disciplina", "quem leciona {x}?", "discipline_docentes", ("docentes",)),
+    ("disciplina", "quais os pré-requisitos de {x}?", "prerequisite_chain", ("pré-requisitos",)),
+    ("disciplina", "qual a ementa de {x}?", "ementa_disciplina", ("ementa",)),
+]
+
+
+def casos_atributo(kg, entidades, n, rng):
+    out, tentativas = [], 0
+    while len(out) < n and tentativas < n * 30:
+        tentativas += 1
+        tipo, nome = rng.choice(entidades)
+        opcoes = [a for a in _ATRIBUTOS if a[0] == tipo]
+        _, modelo, intent, prefixos = rng.choice(opcoes)
+        q = modelo.format(x=nome)
+        if cov.entidades_da_pergunta(kg, q) != [(tipo, nome)]:
+            continue
+        linhas = fatos(kg, tipo, nome).split("\n")
+        sem = [l for l in linhas if not l.startswith(prefixos)]
+        if len(sem) == len(linhas) or len(sem) < 2 or any(c["pergunta"] == q for c in out):
+            continue  # o KG não tem o atributo, ou sobraria só o nome
+        out.append({"pergunta": q, "intent": intent, "completo": "\n".join(linhas),
+                    "sem_atributo": "\n".join(sem)})
+    return out
+
+
 def sinteticas(kg, entidades, n, rng):
     """Compostas com pares de entidades reais (as citadas em produção)."""
     out, tentativas = [], 0
@@ -149,6 +180,7 @@ def main():
     ap.add_argument("--log", default=str(ROOT / "chroma_db_unifesp/interactions.jsonl"))
     ap.add_argument("--modelo", default="gemma4:31b-cloud")
     ap.add_argument("--n-sinteticas", type=int, default=30)
+    ap.add_argument("--n-atributos", type=int, default=40)
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--out", default=str(ROOT / "eval/cobertura_out"))
     ap.add_argument("--rescore", help="JSON de uma rodada anterior")
@@ -169,9 +201,7 @@ def main():
         args.modelo = anterior["modelo"]
         casos = anterior["casos"]
         for c in casos:
-            r = cov.avaliar_cobertura(kg, c["pergunta"], c["resposta"], "disciplinas")
-            c["faltantes"] = r["faltantes"] if r else []
-            c["alarme"] = bool(c["faltantes"])
+            pontuar(kg, c)
         relatorio(casos, args)
         return
 
@@ -197,6 +227,12 @@ def main():
                 casos.append({"origem": origem, "pergunta": q, "rotulo": "incompleta",
                               "blocos": todos[:1], "instr": _INSTR_INCOMPLETA,
                               "omitida": ents[1][1]})
+    for a in casos_atributo(kg, entidades, args.n_atributos, rng):
+        casos.append({"origem": "atributo", "pergunta": a["pergunta"], "intent": a["intent"],
+                      "rotulo": "completa", "blocos": [a["completo"]], "instr": _INSTR_COMPLETA})
+        casos.append({"origem": "atributo", "pergunta": a["pergunta"], "intent": a["intent"],
+                      "rotulo": "incompleta", "blocos": [a["sem_atributo"]],
+                      "instr": _INSTR_INCOMPLETA, "omitida": a["intent"]})
     print(f"{len(reais)} perguntas reais, {len(comp)} sintéticas → {len(casos)} respostas a gerar")
 
     def rodar(c):
@@ -205,15 +241,22 @@ def main():
         except Exception as e:
             c["erro"] = str(e)
             return c
-        r = cov.avaliar_cobertura(kg, c["pergunta"], c["resposta"], "disciplinas")
-        c["faltantes"] = r["faltantes"] if r else []
-        c["alarme"] = bool(c["faltantes"])
+        pontuar(kg, c)
         return c
 
     with ThreadPoolExecutor(max_workers=4) as ex:
         casos = list(ex.map(rodar, casos))
     casos = [c for c in casos if "erro" not in c]
     relatorio(casos, args)
+
+
+def pontuar(kg, c):
+    r = cov.avaliar_cobertura(kg, c["pergunta"], c["resposta"], "disciplinas",
+                              intent=c.get("intent", ""))
+    c["faltantes"] = r["faltantes"] if r else []
+    c["atributos_faltantes"] = r.get("atributos_faltantes", []) if r else []
+    c["ausencia_confessa"] = bool(r and r.get("ausencia_confessa"))
+    c["alarme"] = bool(c["faltantes"] or c["atributos_faltantes"])
 
 
 def relatorio(casos, args):
@@ -225,19 +268,25 @@ def relatorio(casos, args):
     recall = vp / (vp + fn) if vp + fn else 0.0
     # o alarme aponta a entidade certa?
     certa = sum(1 for c in casos if c["rotulo"] == "incompleta" and c["alarme"]
-                and c["omitida"] in c["faltantes"])
+                and (c["omitida"] in c["faltantes"] or c.get("intent") == c["omitida"]))
 
     print(f"\nVP={vp} FN={fn} FP={fp} VN={vn}")
     print(f"precisão={precisao:.3f} recall={recall:.3f} "
           f"entidade-certa={certa}/{vp}")
-    for orig in ("real", "sintetica"):
+    for orig in ("real", "sintetica", "atributo"):
         neg = [c for c in casos if c["origem"] == orig and c["rotulo"] == "completa"]
+        pos = [c for c in casos if c["origem"] == orig and c["rotulo"] == "incompleta"]
         if neg:
             print(f"  FP em completas {orig}: {sum(c['alarme'] for c in neg)}/{len(neg)}")
+        if pos:
+            conf = sum(c.get("ausencia_confessa", False) for c in pos)
+            print(f"  VP em incompletas {orig}: {sum(c['alarme'] for c in pos)}/{len(pos)}"
+                  f" (+{conf} viraram ausência confessa)")
     for c in casos:
         if (c["rotulo"] == "completa") == c["alarme"]:
             tag = "FP" if c["alarme"] else "FN"
-            print(f"\n[{tag}] {c['pergunta']}\n  faltantes={c['faltantes']}"
+            print(f"\n[{tag}] {c['pergunta']}\n  faltantes={c['faltantes']} "
+                  f"atributos={c.get('atributos_faltantes')}"
                   f"\n  resposta: {c['resposta'][:300]!r}")
 
     os.makedirs(args.out, exist_ok=True)

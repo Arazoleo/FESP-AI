@@ -90,10 +90,40 @@ def _workorders_de_conversa():
     return list(agreg.values())
 
 
+def _lacunas_kg():
+    """Falhas classificadas PELO KG (src/workflow/lacunas.py): código (a base
+    tem o valor) vira work order; dado (a base não tem) vai para a curadoria,
+    com proposta citada e verificada se FESPAI_LACUNAS_PROPOR=1. Best-effort:
+    sem KG ou sem log, segue sem elas."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import lacunas_kg
+        kg_mod, lac = lacunas_kg._carregar()
+        kg = lacunas_kg.construir_kg(kg_mod)
+        turnos = _load(os.path.join(DATA, "interactions.jsonl"))
+        llm = (lacunas_kg.llm_ollama(os.getenv("FESPAI_LACUNAS_MODELO", "gemma4:31b-cloud"))
+               if os.getenv("FESPAI_LACUNAS_PROPOR") == "1" else None)
+        return lacunas_kg.gerar(kg, lac, turnos, llm)
+    except Exception as e:
+        print(f"[lacunas_kg] ignorado: {e}")
+        return [], []
+
+
+def _curadoria_lacunas(itens):
+    """Acrescenta à fila de curadoria as lacunas de dado ainda não listadas."""
+    existentes = {c.get("representante") for c in _load(CURATION)}
+    novos = [i for i in itens if i["representante"] not in existentes]
+    with open(CURATION, "a", encoding="utf-8") as f:
+        for i in novos:
+            f.write(json.dumps(i, ensure_ascii=False) + "\n")
+    return novos
+
+
 def main():
     tickets = _load(TICKETS)
     conversa = _workorders_de_conversa()
-    if not tickets and not conversa:
+    lac_codigo, lac_dado = _lacunas_kg()
+    if not tickets and not conversa and not lac_codigo and not lac_dado:
         print("Sem tickets nem gargalos. Rode antes: python eval/triage_misses.py "
               "&& python eval/analisar_conversas.py")
         return
@@ -119,6 +149,9 @@ def main():
     # oráculo de miss não captura. Ranqueia por impacto: miss por frequência,
     # conversa por severidade × ocorrências.
     workorders.extend(conversa)
+    # + lacunas classificadas pelo KG: aqui o tipo NÃO é palpite (a base tem o
+    # valor → o defeito é de código)
+    workorders.extend(lac_codigo)
     workorders.sort(key=lambda w: (w.get("frequencia", 0)
                     * (w.get("severidade", 1) if w.get("origem") == "conversa" else 1)),
                     reverse=True)
@@ -126,16 +159,20 @@ def main():
     with open(WORKORDERS, "w", encoding="utf-8") as f:
         for w in workorders:
             f.write(json.dumps(w, ensure_ascii=False) + "\n")
-    # a fila de curadoria começa vazia; o fixer a alimenta ao classificar como dado
+    # a fila de curadoria é alimentada pelo fixer (ao classificar como dado) e
+    # pelas lacunas de dado do KG (com proposta citada, quando verificada)
     if not os.path.exists(CURATION):
         open(CURATION, "w").close()
+    novos_dado = _curadoria_lacunas(lac_dado)
     print(f"{len(workorders)} work orders ({len(tickets)} de miss + "
-          f"{len(conversa)} de conversa) → {WORKORDERS}")
+          f"{len(conversa)} de conversa + {len(lac_codigo)} lacunas de código do KG) "
+          f"→ {WORKORDERS}")
+    print(f"{len(novos_dado)} lacuna(s) de dado nova(s) na curadoria")
     print(f"fila de curadoria de dado (alimentada pelo fixer) → {CURATION}")
 
     print("\n== WORK ORDERS (ordem de impacto; tipo = palpite, fixer confirma) ==")
     for w in workorders[:12]:
-        marca = "💬" if w.get("origem") == "conversa" else "  "
+        marca = {"conversa": "💬", "lacuna_kg": "🧩"}.get(w.get("origem"), "  ")
         extra = f"sev{w.get('severidade')}" if w.get("origem") == "conversa" \
             else f"hint={w['tipo_hint'][:18]}"
         print(f"  {marca}[{w['frequencia']}x] {w['representante'][:46]:46} {extra}")
