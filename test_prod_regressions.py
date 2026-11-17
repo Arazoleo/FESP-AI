@@ -16,7 +16,7 @@ GREEN, RED, RESET = "\033[92m", "\033[91m", "\033[0m"
 _passed = _failed = 0
 
 # (pergunta, frequencia_em_producao)
-CASOS = [('quantos creditos tem algebra linear 2?', 7), ('quero trancar o semestre', 6), ('onde vejo minhas notas?', 6), ('Qual os professores de rpvmm?', 6), ('quanto tempo dura a graduação?', 5), ('Tem algum professor que trabalha com Redes Complexas?', 5), ('como me inscrevo nesse congresso', 5), ('qual o prazo maximo de integralizacao do BCC?', 4), ('Quais disciplinas o professor Sanderson leciona?', 3)]
+CASOS = [('quantos creditos tem algebra linear 2?', 7), ('quero trancar o semestre', 6), ('onde vejo minhas notas?', 6), ('Qual os professores de rpvmm?', 6), ('quanto tempo dura a graduação?', 5), ('Tem algum professor que trabalha com Redes Complexas?', 5), ('como me inscrevo nesse congresso', 5), ('qual o prazo maximo de integralizacao do BCC?', 4), ('Quais disciplinas o professor Sanderson leciona?', 3), ('Quem é Leonardo Arazo', 3)]
 
 
 def _perguntar(q):
@@ -43,7 +43,7 @@ for q, freq in CASOS:
 
 # Entidades sem dado em nenhuma base (eval/prod_sem_dado.json): o correto é o
 # miss honesto, não uma resposta "aterrada" inventada.
-SEM_DADO = [('Quem é Leonardo Arazo', 3)]
+SEM_DADO = []
 for q, freq in SEM_DADO:
     try:
         d = _perguntar(q)
