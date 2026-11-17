@@ -12,6 +12,10 @@ class KnowledgeGraph:
         self.graph = nx.MultiDiGraph()
         self._index_by_name: Dict[str, str] = {}
         self._index_by_sigla: Dict[str, str] = {}
+        # Sigla componente -> nós: "IHC UX" registra "ihc" e "ux". Só tokens em
+        # CAIXA ALTA no campo original (siglas por si só, não "Intro"/"Eng"),
+        # e só resolvem quando apontam para UMA disciplina (ver _find_node).
+        self._index_by_sigla_componente: Dict[str, Set[str]] = {}
         self._index_by_codigo: Dict[str, str] = {}
         self._authoritative_nodes: Set[str] = set()
         self._curso_name_to_sigla: Dict[str, str] = {}
@@ -77,6 +81,15 @@ class KnowledgeGraph:
 
         _set(self._index_by_name, nome)
         _set(self._index_by_sigla, sigla)
+        if sigla:
+            bruto = str(data.get('sigla') or '')
+            tokens = bruto.split()
+            if len(tokens) >= 2:
+                for tok in tokens:
+                    t = tok.strip('.,;()')
+                    if len(t) >= 2 and t.isalpha() and t.isupper() and not re.fullmatch(r'[IVX]+', t):
+                        self._index_by_sigla_componente.setdefault(
+                            self._normalize_text(t), set()).add(node_id)
         _set(self._index_by_codigo, codigo)
     
     def _get_edge_relation(self, edge_data: dict) -> Optional[str]:
@@ -98,23 +111,48 @@ class KnowledgeGraph:
 
     def build_from_directories(self, disciplinas_dir: str, regimentos_dir: str, docentes_dir: str = None, cursos_dir: str = None):
         """Constrói o grafo a partir de todos os diretórios."""
+        # Ordem FIXA: com glob cru o resultado dependia da listagem do sistema
+        # de arquivos (bind mount × imagem davam grafos diferentes).
         if cursos_dir:
             cursos_path = Path(cursos_dir)
-            for md_file in cursos_path.glob("*.md"):
+            for md_file in sorted(cursos_path.glob("*.md")):
                 self._process_matriz_curricular(md_file)
             self._build_curso_name_mapping()
 
         disciplinas_path = Path(disciplinas_dir)
-        for md_file in disciplinas_path.glob("*.md"):
+        fichas = sorted(disciplinas_path.glob("*.md"))
+        # Pré-indexa o título de TODAS as fichas antes de resolver qualquer
+        # pré-requisito: o nome tem de vencer o código. Duas fichas com o mesmo
+        # código (9394 em Lógica de Programação e em Algoritmos em
+        # Bioinformática) faziam "Lógica de Programação (Código: 9394)" cair na
+        # UC errada quando a ficha certa ainda não tinha sido lida.
+        por_codigo: Dict[str, Set[str]] = {}
+        for md_file in fichas:
+            try:
+                texto = md_file.read_text(encoding='utf-8')
+            except OSError:
+                continue
+            m = re.search(r'^# (.+)$', texto, re.MULTILINE)
+            if m:
+                nome = m.group(1).strip()
+                self._index_by_name.setdefault(self._normalize_text(nome), f"DISC:{nome}")
+                cod = self._extract_field(texto, 'Código')
+                if cod and re.fullmatch(r'\w+', str(cod).strip()):
+                    por_codigo.setdefault(self._normalize_text(str(cod)), set()).add(f"DISC:{nome}")
+        # Código só resolve quando é de UMA ficha (os repetidos ficam no lint).
+        for cod, ids in por_codigo.items():
+            if len(ids) == 1:
+                self._index_by_codigo.setdefault(cod, next(iter(ids)))
+        for md_file in fichas:
             self._process_discipline_file(md_file)
 
         regimentos_path = Path(regimentos_dir)
-        for md_file in regimentos_path.glob("*.md"):
+        for md_file in sorted(regimentos_path.glob("*.md")):
             self._process_regimento_file(md_file)
 
         if docentes_dir:
             docentes_path = Path(docentes_dir)
-            for md_file in docentes_path.glob("*.md"):
+            for md_file in sorted(docentes_path.glob("*.md")):
                 self._process_docentes_file(md_file)
         
         try:
@@ -490,6 +528,7 @@ class KnowledgeGraph:
             "ciclos_prereq": [],
             "disciplinas_sem_curso": [],
             "prereqs_pendurados": [],
+            "codigos_duplicados": [],
         }
 
         vistos: Dict[str, str] = {}
@@ -527,6 +566,14 @@ class KnowledgeGraph:
             if du.get("tipo") == "disciplina" and not du.get("codigo"):
                 pendurados.add(du.get("nome"))
         issues["prereqs_pendurados"] = sorted(pendurados)
+
+        por_codigo: Dict[str, List[str]] = {}
+        for _n, d in self.graph.nodes(data=True):
+            if (d.get("tipo") == "disciplina" and self._has_real_value(d.get("codigo"))
+                    and re.fullmatch(r"\w+", str(d["codigo"]).strip())):
+                por_codigo.setdefault(str(d["codigo"]).strip(), []).append(d.get("nome"))
+        issues["codigos_duplicados"] = sorted(
+            f"{c}: {' | '.join(sorted(set(ns)))}" for c, ns in por_codigo.items() if len(set(ns)) > 1)
 
         for n, d in self.graph.nodes(data=True):
             if (
@@ -608,7 +655,10 @@ class KnowledgeGraph:
                 or (self._index_by_codigo.get(self._normalize_text(prereq_codigo))
                     if prereq_codigo else None)
             )
-            if existing and self.graph.nodes.get(existing, {}).get('tipo') == 'disciplina':
+            # `existing` pode ser uma ficha pré-indexada ainda não processada
+            # (nó criado depois, no _process dela): o id dela vale mesmo assim.
+            if existing and (self.graph.nodes.get(existing, {}).get('tipo') == 'disciplina'
+                             or (existing.startswith("DISC:") and not self.graph.has_node(existing))):
                 prereq_id = existing
             else:
                 prereq_id = f"DISC:{prereq_nome}"
@@ -1091,6 +1141,12 @@ class KnowledgeGraph:
         if node_id:
             if tipo is None or self.graph.nodes.get(node_id, {}).get('tipo') == tipo:
                 return node_id
+
+        componentes = self._index_by_sigla_componente.get(termo_normalized, set())
+        if tipo:
+            componentes = {n for n in componentes if self.graph.nodes.get(n, {}).get('tipo') == tipo}
+        if len(componentes) == 1:
+            return next(iter(componentes))
         
         for node, data in self.graph.nodes(data=True):
             if tipo and data.get('tipo') != tipo:
