@@ -16,6 +16,7 @@ herança de `InferenceEngine` - PyReason não traz ganho ali e o overhead de
 re-inicialização do reasoner global tornaria queries dinâmicas inviáveis.
 """
 
+import threading
 from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
 import networkx as nx
@@ -24,6 +25,46 @@ from .neurosymbolic_validator import InferenceEngine
 
 if TYPE_CHECKING:
     from .knowledge_graph import KnowledgeGraph
+
+
+# O PyReason guarda o programa em estado GLOBAL do módulo: duas execuções
+# simultâneas (warmup, projeção temporal de uma pergunta, raciocinador NSAI)
+# corrompem uma à outra. Toda execução passa por este lock.
+PYREASON_LOCK = threading.RLock()
+
+
+def _rodar_pyreason(sg: nx.DiGraph, regras: Dict[str, str], timesteps: int):
+    """Único caminho de execução do PyReason (app e aquecimento do build).
+
+    O numba compila por ASSINATURA de tipos: settings e `infer_edges` mudam os
+    tipos dos argumentos do kernel. Se o aquecimento usar outra configuração,
+    o cache gravado na imagem não serve e o 1º `reason()` em produção
+    recompila tudo (~7 min de CPU no container). Por isso os dois passam aqui.
+    """
+    import pyreason as pr
+
+    with PYREASON_LOCK:
+        pr.reset()
+        pr.reset_rules()
+        pr.reset_settings()
+        pr.settings.verbose = False
+        pr.settings.atom_trace = False
+        pr.settings.memory_profile = False
+
+        pr.load_graph(sg)
+        for name, rule_str in regras.items():
+            pr.add_rule(pr.Rule(rule_str, name, infer_edges=True))
+        return pr.reason(timesteps=timesteps)
+
+
+def aquecer_jit() -> int:
+    """Compila os kernels do PyReason no build da imagem (Dockerfile.backend)."""
+    sg = nx.DiGraph()
+    for u, v in [("d0", "d1"), ("d1", "d2"), ("d2", "d3"), ("d4", "d2")]:
+        sg.add_edge(u, v, prereq=1)
+    _rodar_pyreason(sg, PyReasonEngine.RULES_DATALOG, 5)
+    print("PyReason JIT aquecido com as regras do app.")
+    return 0
 
 
 class PyReasonEngine(InferenceEngine):
@@ -105,19 +146,8 @@ class PyReasonEngine(InferenceEngine):
             return True
 
         try:
-            pr.reset()
-            pr.reset_rules()
-            pr.reset_settings()
-            pr.settings.verbose = False
-            pr.settings.atom_trace = False
-            pr.settings.memory_profile = False
-
-            pr.load_graph(sg)
-            for name, rule_str in self.RULES_DATALOG.items():
-                pr.add_rule(pr.Rule(rule_str, name, infer_edges=True))
-
             timesteps = self._max_chain_depth(sg) + 1
-            interp = pr.reason(timesteps=timesteps)
+            interp = _rodar_pyreason(sg, self.RULES_DATALOG, timesteps)
             self._extract_results(interp, sg)
             self._inferred = True
             return True

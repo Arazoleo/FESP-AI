@@ -570,6 +570,7 @@ class GraphRAGEngine:
                     "cadeia " + " → ".join(caminho)
                 )
             corpo += f" (o contrário não vale: {pos} não é pré-requisito de {pre})."
+            corpo += self._prova_nsai(pre, pos)
             return (
                 f"{corpo}\n\n**Cadeia completa:**\n{_cadeia(pos)}"
                 "\n\n---\n*Verificação neurossimbólica: `prereq_transitivity` "
@@ -583,6 +584,17 @@ class GraphRAGEngine:
             for nome, sim in self._safe_recommended_before(pos)
             if nome == pre
         ]
+        r = self._nsai()
+        for pre, pos in ((a, b), (b, a)):
+            crenca = r.crenca_dependencia(pre, pos) if r else None
+            if crenca and crenca < 1.0:
+                recs.append(
+                    f"- Pelo grafo aprendido, **{pre}** provavelmente ajuda antes de **{pos}** "
+                    f"(crença ≥ {crenca:.0%}, não é exigência formal)."
+                    + self._prova_nsai(pre, pos).replace("**Por quê (prova do PyReason):**",
+                                                         "  *Prova (PyReason):*")
+                )
+                break
         secao_rec = ("\n\n" + "\n".join(recs)) if recs else ""
         return (
             f"**Não.** **{a}** e **{b}** não têm relação de pré-requisito: "
@@ -798,6 +810,62 @@ class GraphRAGEngine:
         except Exception:
             pass
         return {self.kg._normalize_text(n) for n in nomes if n}
+
+    def _nsai(self):
+        """Raciocinador NSAI (PyReason) pronto para este KG, ou None."""
+        try:
+            from .nsai_reasoner import obter
+            return obter(self.kg)
+        except Exception:
+            return None
+
+    def _prova_nsai(self, pre: str, pos: str) -> str:
+        """Passos da prova de dep(pre, pos) lidos do rule trace do PyReason."""
+        r = self._nsai()
+        passos = r.explicar_dependencia(pre, pos) if r else []
+        if not passos:
+            return ""
+        return "\n\n**Por quê (prova do PyReason):**\n" + "\n".join(
+            f"{i}. {p}" for i, p in enumerate(passos, 1))
+
+    def _alertas_fontes(self, termo: str) -> str:
+        """Divergências entre fontes sobre a UC (oferta prevista × agenda real)."""
+        r = self._nsai()
+        if not r:
+            return ""
+        linhas = []
+        for inc in r.inconsistencias_de(termo):
+            if inc["tipo"] != "oferta":
+                continue
+            linhas.append(
+                f"⚠️ **Fontes divergem sobre a oferta de {inc['disciplinas'][0]}:** "
+                + "; ".join(inc["fontes"])
+                + ". Não escolhi uma das duas: confirme com a coordenação."
+            )
+        return ("\n\n" + "\n".join(linhas)) if linhas else ""
+
+    def _projecao_nsai(self, completed: List[str], target: str) -> str:
+        """Projeção semestre a semestre (PyReason temporal) para chegar ao alvo."""
+        r = self._nsai()
+        if not r:
+            return ""
+        try:
+            p = r.projetar(completed, target)
+        except Exception:
+            return ""
+        if not p or not p.get("semestres") or not p.get("alvo_concluido_em"):
+            return ""
+        linhas = [f"\n\n**Projeção semestral** *(a partir de {p['semestre_atual']})*"]
+        for sem in p["semestres"]:
+            extra = " ⚠️ acima de 24 créditos" if sem["acima_do_limite"] else ""
+            linhas.append(f"- **{sem['semestre']}**: {', '.join(sem['disciplinas'])}{extra}")
+        linhas.append(f"\nNo ritmo mais rápido possível, você conclui **{p['alvo']}** em "
+                      f"**{p['alvo_concluido_em']}**.")
+        if p.get("implicitas"):
+            linhas.append("*Considerei também como cursadas (são pré-requisitos do que você já fez): "
+                          + ", ".join(p["implicitas"]) + ".*")
+        linhas.append(f"*Premissas: {p['premissas']}.*")
+        return "\n".join(linhas)
 
     def _recomendacoes_e_rodape(self, termo: str, chain_len: int) -> Tuple[str, str]:
         """
@@ -1112,11 +1180,18 @@ class GraphRAGEngine:
 Para cursar **{termo}**, você precisa ter cursado anteriormente:
 {chr(10).join(f'- {d}' for d in chain)}
 
-Total: {len(chain)} pré-requisito(s) na cadeia.{secao}{rodape}"""
+Total: {len(chain)} pré-requisito(s) na cadeia.{secao}{self._alertas_fontes(termo)}{rodape}"""
+            elif not self.kg._find_node(termo, "disciplina"):
+                # Não achar a disciplina NÃO é o mesmo que ela não ter
+                # pré-requisito: negar o que existe é o pior erro do agente.
+                return (
+                    f"Não encontrei a disciplina **{termo}** no catálogo. "
+                    f"Pode escrever o nome completo dela?"
+                )
             else:
                 secao, rodape = self._recomendacoes_e_rodape(termo, 0)
                 return (
-                    f"**{termo}** não possui pré-requisitos ou não foi encontrada no sistema."
+                    f"**{termo}** não possui pré-requisitos cadastrados."
                     f"{secao}{rodape}"
                 )
 
@@ -1588,6 +1663,7 @@ O(A) professor(a) **{termo}** é especialista em {len(areas)} área(s)."""
                     f"\n\n*Confiança do caminho (bound inferior): {path_bound:.0%} - "
                     "alguns elos de pré-requisito têm confiança parcial no grafo.*"
                 )
+            resultado += self._projecao_nsai(completed, target)
             resultado += (
                 "\n\n*Regras aplicadas: `minimal_path` (BFS topológico) + "
                 "`unlock_condition` (verificação de pré-requisitos por fase)*"

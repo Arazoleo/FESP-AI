@@ -17,14 +17,22 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN python -c "from sentence_transformers import CrossEncoder; CrossEncoder('cross-encoder/mmarco-mMiniLMv2-L12-H384-v1', max_length=512)"
 
-# Pré-compilar kernels JIT do numba (usado pelo PyReason). Sem isso,
-# o primeiro `pr.reason()` paga ~20s no startup do container.
 ENV NUMBA_CACHE_DIR=/app/.numba_cache
-RUN mkdir -p /app/.numba_cache && \
-    python -c "import pyreason as pr; import networkx as nx; g = nx.DiGraph(); g.add_edge('a','b',p=1); pr.load_graph(g); pr.add_rule(pr.Rule('q(x,y) <-1 p(x,y)', 'warm')); pr.reason(timesteps=1); print('numba/pyreason JIT pré-compilado.')"
+RUN mkdir -p /app/.numba_cache
 
 # Copiar código da aplicação
 COPY src/ ./src/
+
+# Pré-compila os kernels do numba do PyReason com as MESMAS regras e settings
+# do app (src/pyreason_engine.py: _rodar_pyreason). O PyReason grava o cache
+# em site-packages/pyreason/cache, dentro da imagem: sem este passo, cada
+# container recriado recompilava tudo no 1º reason() (~7 min travando o chat).
+# O numba invalida o cache se o mtime do .py mudar; o export das camadas
+# trunca o mtime para segundos inteiros (1794946061.749 -> 1794946061.0), o que
+# invalidava o cache gravado aqui. Normaliza antes de compilar.
+RUN find /usr/local/lib/python3.9/site-packages/pyreason -name '*.py' \
+        -exec sh -c 'touch -d "@$(stat -c %Y "$1")" "$1"' _ {} \; && \
+    python -c "from src.pyreason_engine import aquecer_jit; aquecer_jit()"
 COPY graph_viewer.html .
 COPY planner.html .
 COPY markdown_disciplinas/ ./markdown_disciplinas/

@@ -29,6 +29,7 @@ from .planner import plan_curriculum, DEFAULT_MAX_CREDITOS
 from .context_resolver import context_resolver
 from .llm_judge import judge_answer
 from langchain_ollama import OllamaLLM
+from .llm_provider import provedor as provedor_llm, uso_snapshot
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -219,7 +220,8 @@ async def startup_event():
     try:
         ollama_url = rag.config.OLLAMA_BASE_URL or "http://ollama:11434"
         ensure_ollama_model(ollama_url, rag.config.EMBEDDING_MODEL)
-        ensure_ollama_model(ollama_url, rag.config.MODEL_NAME)
+        if provedor_llm() != "groq":
+            ensure_ollama_model(ollama_url, rag.config.MODEL_NAME)
     except Exception as e:
         raise RuntimeError(
             f"Falha ao garantir modelos no Ollama ({rag.config.OLLAMA_BASE_URL}). "
@@ -248,9 +250,10 @@ async def startup_event():
 
         alvos = [("embed", ollama_url, rag.config.EMBEDDING_MODEL, {})]
         router_model = os.getenv("FESPAI_ROUTER_MODEL", "").strip()
-        if router_model:
+        if router_model and provedor_llm() != "groq":
             alvos.append(("generate", ollama_url, router_model, {}))
-        if os.getenv("FESPAI_KEEPWARM_CLOUD", "1") != "0":
+        # No Groq não há o que aquecer (e cada ping gastaria cota do free tier).
+        if os.getenv("FESPAI_KEEPWARM_CLOUD", "1") != "0" and provedor_llm() != "groq":
             alvos.append(("generate", llm_url, rag.config.MODEL_NAME, llm_headers))
 
         def _ping(tipo, url, modelo, headers):
@@ -309,6 +312,16 @@ async def startup_event():
         except Exception as e:
             print(f"PyReason warmup falhou (não-fatal, fallback Python): {e}")
 
+        # Raciocinador NSAI (crença, regras calibradas, tempo, prova,
+        # inconsistências) - ~2 min de CPU, só no boot ou quando o KG muda.
+        try:
+            if os.getenv("FESPAI_NSAI", "1") != "0" and rag is not None and rag.knowledge_graph is not None:
+                from .nsai_reasoner import construir
+                r = construir(rag.knowledge_graph)
+                print(f"NSAI reasoner: {json.dumps(r.resumo(), ensure_ascii=False)}")
+        except Exception as e:
+            print(f"NSAI reasoner falhou (não-fatal): {e}")
+
         # Caches lazy do KGCompletion (vetores NOME+EMENTA de todas as
         # disciplinas, usados por recommended_before/base_recomendada): sem
         # isso a 1ª pergunta de pré-requisito após cada restart pagava ~50s
@@ -358,6 +371,60 @@ async def telemetry():
     return snapshot()
 
 
+@app.get("/llm_usage")
+async def llm_usage():
+    """Chamadas e tokens do LLM desde o boot (por papel: geracao, aux, roteador)."""
+    return {"provedor": provedor_llm(), **uso_snapshot()}
+
+
+def _nsai_ou_503():
+    from .nsai_reasoner import obter
+    r = obter(rag.knowledge_graph if rag else None)
+    if r is None:
+        raise HTTPException(status_code=503, detail="Raciocinador NSAI ainda construindo")
+    return r
+
+
+@app.get("/nsai")
+async def nsai_resumo():
+    """Estado do raciocinador NSAI e as regras aprendidas com a calibração no held-out."""
+    r = _nsai_ou_503()
+    regras = [{k: v for k, v in g.items() if k in (
+        "cabeca", "corpo", "confidence", "support", "confianca_calibrada", "precisao_holdout",
+        "recall_holdout", "previsoes_holdout", "ativa", "variacao")} for g in r.regras]
+    return {**r.resumo(), "regras": regras, "inferidas_amostra": r.inferidas[:20]}
+
+
+@app.get("/nsai/inconsistencias")
+async def nsai_inconsistencias():
+    """Divergências entre fontes detectadas pelo PyReason (e códigos repetidos, pelo lint)."""
+    r = _nsai_ou_503()
+    return {"total": len(r.inconsistencias), "itens": r.inconsistencias}
+
+
+@app.get("/nsai/explicar")
+async def nsai_explicar(antes: str = Query(...), depois: str = Query(...)):
+    """Prova (rule trace do PyReason) de que `antes` vem antes de `depois`."""
+    r = _nsai_ou_503()
+    return {"crenca": r.crenca_dependencia(antes, depois),
+            "passos": r.explicar_dependencia(antes, depois)}
+
+
+class ProjetarRequest(BaseModel):
+    concluidas: List[str] = []
+    alvo: str
+
+
+@app.post("/nsai/projetar")
+def nsai_projetar(req: ProjetarRequest):
+    """Projeção semestre a semestre (PyReason temporal) até concluir `alvo`."""
+    r = _nsai_ou_503()
+    p = r.projetar(req.concluidas, req.alvo)
+    if p is None:
+        raise HTTPException(status_code=404, detail=f"Disciplina não encontrada: {req.alvo}")
+    return p
+
+
 @app.get("/misses")
 async def misses(limit: int = Query(50, ge=1, le=50)):
     """
@@ -377,7 +444,7 @@ async def health():
         "status": "healthy",
         "rag_ready": rag.chain is not None,
         "multi_agent": rag._pipeline is not None,
-        "model": rag.config.MODEL_NAME,
+        "model": getattr(rag.llm, "model", None) or rag.config.MODEL_NAME,
     }
 
 
@@ -495,13 +562,14 @@ def chat(request: ChatRequest):
     try:
         from .interaction_log import log_turn
         from .workflow.second_chance import is_miss_response
+        from .workflow.coverage import resumo_faltantes
         _cob = result.get("cobertura") or {}
         log_turn(conversation_id, request.message, active_agent, intent,
                  (_time.perf_counter() - _t0) * 1000.0,
                  is_miss_response(response_text)
                  or bool(_cob.get("ausencia_confessa")),
                  answer=response_text,
-                 cobertura_faltante=_cob.get("faltantes"))
+                 cobertura_faltante=resumo_faltantes(_cob))
     except Exception:
         pass
 
