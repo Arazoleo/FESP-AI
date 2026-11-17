@@ -1,0 +1,27 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "avaliacao",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: <string>:18:41-44: error: syntax error, unexpected not, expecting )  →  linha: `( nota10(C,P,NF) ; (media10(C,P,M), not exame10(C,P,_), NF = M) ),`; <string>:26:17-18: error: syntax error, unexpected <  →  linha: `M >= 30, M =< 59,`"
+  ],
+  [
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida"
+  ],
+  [
+   "falha ao executar no cenário 0: grounding stopped because of errors: <string>:2:1-51: error: unsafe variables in:\n  freq_min_req(C,75):-[#inc_base];not #p_freq_minima_ppc(#b(C),#p).\n<string>:2:14-15: note: 'C' is unsafe\n<string>:2:1-51: error: unsafe variables in:\n  _why(\"freq_min_req\",freq_min_req(C,75),(nao(\"freq_minima_ppc(C,_)\"),)):-[#inc_base];not #p_freq_minima_ppc(#b(C),#p).\n<string>:2:14-15: note: 'C' is unsafe"
+  ]
+ ],
+ "segundos": 44.5
+}

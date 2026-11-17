@@ -2,6 +2,7 @@
 venv/
 env/
 .venv/
+.venv-normas/
 .env/
 
 # Python cache

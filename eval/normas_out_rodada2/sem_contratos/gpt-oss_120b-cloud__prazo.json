@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "prazo",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: <string>:21:50-52: error: syntax error, unexpected >=, expecting )  →  linha: `extra_ano_ingresso(0) :- ano_ingresso(A), not (A >= 2020, A <= 2022).`; <string>:25:25-26: error: syntax error, unexpected \",\"  →  linha: `(integral ; parcial),                     % garante que um dos regimes está definido`"
+  ],
+  [
+   "erro de sintaxe do clingo: <string>:21:46-47: error: syntax error, unexpected <, expecting )  →  linha: `extra_ano_ingresso(0) :- ano_ingresso(A), (A < 2020 ; A > 2022).`; <string>:26:16-17: error: syntax error, unexpected >  →  linha: `(integral -> Regime = integral ; Regime = parcial),`"
+  ],
+  [
+   "erro de sintaxe do clingo: <string>:17:50-52: error: syntax error, unexpected >=, expecting )  →  linha: `extra_ano_ingresso(0) :- ano_ingresso(A), not (A >= 2020, A <= 2022).`; <string>:22:25-26: error: syntax error, unexpected \",\"  →  linha: `(integral ; parcial),                % garante que um dos regimes está definido`"
+  ]
+ ],
+ "segundos": 40.7
+}

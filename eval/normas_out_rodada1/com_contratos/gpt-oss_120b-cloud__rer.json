@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "rer",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: <string>:24:73-74: error: syntax error, unexpected .  →  linha: `deve_cursar_presencial(C) :- pendente(C), (uc_pratica(C); rer_vedado(C)).`"
+  ],
+  [
+   "falha ao executar no cenário 0: grounding stopped because of errors: <string>:1:1-78: error: unsafe variables in:\n  one_grade_fail_in_period(P):-[#inc_base];N=1;N=#count{C:reprovado_nota(C,P)}.\n<string>:1:26-27: note: 'P' is unsafe\n<string>:1:1-78: error: unsafe variables in:\n  _why(\"aux_one_grade_fail_in_period\",one_grade_fail_in_period(P),()):-[#inc_base];N=1;N=#count{C:reprovado_nota(C,P)}.\n<string>:1:26-27: note: 'P' is unsafe\n<string>:1:1-52: error: unsafe variables in:\n  other_em_rer_in_period(C,P):-[#inc_base];em_rer(D,P);D!=C.\n<string>:1:24-25: note: 'C' is unsafe\n<string>:1:1-52: error: unsafe variables in:\n  _why(\"aux_other_em_rer_in_period\",other_em_rer_in_period(C,P),(em_rer(D,P),)):-[#inc_base];em_rer(D,P);D!=C.\n<string>:1:24-25: note: 'C' is unsafe"
+  ],
+  [
+   "o predicado period/1 é usado mas nunca é definido nem é de entrada (no ASP ele seria sempre falso)"
+  ]
+ ],
+ "segundos": 21.1
+}

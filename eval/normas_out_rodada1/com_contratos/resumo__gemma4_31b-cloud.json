@@ -1,0 +1,94 @@
+[
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "avaliacao",
+  "valida": true,
+  "tentativas": 3,
+  "segundos": 11.5,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "reprovado_frequencia/2": 1.0,
+   "reprovado_sem_exame/2": 0.79,
+   "deve_fazer_exame/2": 0.463,
+   "aprovado/2": 0.717,
+   "reprovado_nota/2": 0.827
+  },
+  "acordo_total": 0.759,
+  "taxa_violacao_contrato": 0.0
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "rer",
+  "valida": true,
+  "tentativas": 2,
+  "segundos": 8.7,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "pode_rer/1": 0.993,
+   "deve_cursar_presencial/1": 1.0
+  },
+  "acordo_total": 0.997,
+  "taxa_violacao_contrato": 0.007
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "trancamento",
+  "valida": true,
+  "tentativas": 1,
+  "segundos": 1.8,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "pode_trancar/0": 1.0
+  },
+  "acordo_total": 1.0,
+  "taxa_violacao_contrato": null
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "prazo",
+  "valida": true,
+  "tentativas": 1,
+  "segundos": 3.7,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "prazo_maximo/1": 0.727,
+   "semestres_restantes/1": 0.0,
+   "risco_cancelamento/1": 0.787
+  },
+  "acordo_total": 0.504,
+  "taxa_violacao_contrato": 0.0
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "cr",
+  "valida": true,
+  "tentativas": 3,
+  "segundos": 8.4,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "cr_x1000/1": 0.283
+  },
+  "acordo_total": 0.283,
+  "taxa_violacao_contrato": 0.0
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "integralizacao",
+  "valida": true,
+  "tentativas": 1,
+  "segundos": 2.5,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "falta/2": 0.807,
+   "apto_colar_grau/0": 1.0
+  },
+  "acordo_total": 0.903,
+  "taxa_violacao_contrato": 0.0
+ }
+]

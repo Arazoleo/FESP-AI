@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "trancamento",
+ "valida": true,
+ "tentativas": 1,
+ "erros_por_tentativa": [
+  []
+ ],
+ "segundos": 14.3,
+ "n": 300,
+ "falhas_execucao": 0,
+ "acordo": {
+  "pode_trancar/0": 1.0
+ },
+ "acordo_total": 1.0,
+ "divergencias": [],
+ "taxa_violacao_contrato": null
+}

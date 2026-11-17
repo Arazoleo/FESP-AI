@@ -1,0 +1,83 @@
+[
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "avaliacao",
+  "valida": false,
+  "tentativas": 3,
+  "segundos": 42.3
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "rer",
+  "valida": true,
+  "tentativas": 2,
+  "segundos": 86.1,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "pode_rer/1": 0.963,
+   "deve_cursar_presencial/1": 1.0
+  },
+  "acordo_total": 0.982,
+  "taxa_violacao_contrato": 0.037
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "trancamento",
+  "valida": true,
+  "tentativas": 1,
+  "segundos": 93.8,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "pode_trancar/0": 1.0
+  },
+  "acordo_total": 1.0,
+  "taxa_violacao_contrato": null
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "prazo",
+  "valida": true,
+  "tentativas": 2,
+  "segundos": 21.8,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "prazo_maximo/1": 0.593,
+   "semestres_restantes/1": 0.237,
+   "risco_cancelamento/1": 0.787
+  },
+  "acordo_total": 0.539,
+  "taxa_violacao_contrato": 0.0
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "cr",
+  "valida": true,
+  "tentativas": 1,
+  "segundos": 15.8,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "cr_x1000/1": 0.433
+  },
+  "acordo_total": 0.433,
+  "taxa_violacao_contrato": 0.0
+ },
+ {
+  "modelo": "gemma4:31b-cloud",
+  "grupo": "integralizacao",
+  "valida": true,
+  "tentativas": 1,
+  "segundos": 19.7,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "falta/2": 0.797,
+   "apto_colar_grau/0": 0.983
+  },
+  "acordo_total": 0.89,
+  "taxa_violacao_contrato": 0.0
+ }
+]

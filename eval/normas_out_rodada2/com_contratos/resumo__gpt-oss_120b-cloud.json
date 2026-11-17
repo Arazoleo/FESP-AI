@@ -1,0 +1,66 @@
+[
+ {
+  "modelo": "gpt-oss:120b-cloud",
+  "grupo": "avaliacao",
+  "valida": false,
+  "tentativas": 3,
+  "segundos": 41.9
+ },
+ {
+  "modelo": "gpt-oss:120b-cloud",
+  "grupo": "rer",
+  "valida": false,
+  "tentativas": 3,
+  "segundos": 193.4
+ },
+ {
+  "modelo": "gpt-oss:120b-cloud",
+  "grupo": "trancamento",
+  "valida": true,
+  "tentativas": 1,
+  "segundos": 14.3,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "pode_trancar/0": 1.0
+  },
+  "acordo_total": 1.0,
+  "taxa_violacao_contrato": null
+ },
+ {
+  "modelo": "gpt-oss:120b-cloud",
+  "grupo": "prazo",
+  "valida": false,
+  "tentativas": 3,
+  "segundos": 50.4
+ },
+ {
+  "modelo": "gpt-oss:120b-cloud",
+  "grupo": "cr",
+  "valida": true,
+  "tentativas": 3,
+  "segundos": 31.8,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "cr_x1000/1": 0.37
+  },
+  "acordo_total": 0.37,
+  "taxa_violacao_contrato": 0.0
+ },
+ {
+  "modelo": "gpt-oss:120b-cloud",
+  "grupo": "integralizacao",
+  "valida": true,
+  "tentativas": 1,
+  "segundos": 3.6,
+  "n": 300,
+  "falhas_execucao": 0,
+  "acordo": {
+   "falta/2": 0.797,
+   "apto_colar_grau/0": 1.0
+  },
+  "acordo_total": 0.898,
+  "taxa_violacao_contrato": 0.0
+ }
+]

@@ -1,0 +1,95 @@
+{
+ "modelo": "gemma4:31b-cloud",
+ "grupo": "rer",
+ "valida": true,
+ "tentativas": 2,
+ "erros_por_tentativa": [
+  [
+   "contrato violado: pode_rer e deve_cursar_presencial ao mesmo tempo (são complementares) — testemunha \"U5\". Fatos do cenário: ingresso(4049). ano_ingresso(2024). periodo_atual(4062). integral. duracao_minima(6). matricula(\"U2\",4052). carga(\"U2\",72). grupo(\"U2\",fixa). freq(\"U2\",4052,76). nota10(\"U2\",4052,29). matricula(\"U8\",4050). carga(\"U8\",36). grupo(\"U8\",fixa). freq(\"U8\",4050,100). media10(\"U8\",4050,60). matricula(\"U5\",4057). carga(\"U5\",108). grupo(\"U5\",interdisciplinar). freq(\"U5\",4057,100). media10(\"U5\",4057,29). exame10(\"U5\",4057,75). transferido_no_ano(2031). horas(fixas,468). horas(eletivas,262). horas(ac,100). exigido(fixas,468). exigido(eletivas,252). exigido(ac,144). prereq(\"U5\",\"U1\"). prereq(\"U1\",\"U4\"). prereq(\"U8\",\"U7\")"
+  ],
+  []
+ ],
+ "segundos": 8.7,
+ "n": 300,
+ "falhas_execucao": 0,
+ "acordo": {
+  "pode_rer/1": 0.993,
+  "deve_cursar_presencial/1": 1.0
+ },
+ "acordo_total": 0.997,
+ "divergencias": [
+  {
+   "cenario": 119,
+   "saida": "pode_rer/1",
+   "manual": [
+    "pode_rer(\"U7\")"
+   ],
+   "auto": [],
+   "fatos": [
+    "ingresso(4042)",
+    "ano_ingresso(2021)",
+    "periodo_atual(4045)",
+    "parcial",
+    "duracao_minima(10)",
+    "matricula(\"U7\",4045)",
+    "carga(\"U7\",72)",
+    "grupo(\"U7\",fixa)",
+    "freq(\"U7\",4045,90)",
+    "nota10(\"U7\",4045,29)",
+    "matricula(\"U9\",4043)",
+    "carga(\"U9\",36)",
+    "grupo(\"U9\",interdisciplinar)",
+    "freq(\"U9\",4043,76)",
+    "media10(\"U9\",4043,59)",
+    "exame10(\"U9\",4043,74)",
+    "matricula(\"U2\",4045)",
+    "carga(\"U2\",72)",
+    "grupo(\"U2\",eletiva)",
+    "freq(\"U2\",4045,30)",
+    "nota10(\"U2\",4045,60)",
+    "em_rer(\"U2\",4045)",
+    "horas(fixas,468)",
+    "horas(eletivas,392)",
+    "horas(ac,100)",
+    "exigido(fixas,468)",
+    "exigido(eletivas,432)",
+    "exigido(ac,144)"
+   ]
+  },
+  {
+   "cenario": 143,
+   "saida": "pode_rer/1",
+   "manual": [
+    "pode_rer(\"U10\")"
+   ],
+   "auto": [],
+   "fatos": [
+    "ingresso(4041)",
+    "ano_ingresso(2020)",
+    "periodo_atual(4042)",
+    "integral",
+    "duracao_minima(8)",
+    "matricula(\"U10\",4042)",
+    "carga(\"U10\",72)",
+    "grupo(\"U10\",interdisciplinar)",
+    "freq(\"U10\",4042,100)",
+    "nota10(\"U10\",4042,48)",
+    "matricula(\"U2\",4042)",
+    "carga(\"U2\",108)",
+    "grupo(\"U2\",eletiva)",
+    "freq(\"U2\",4042,76)",
+    "nota10(\"U2\",4042,100)",
+    "em_rer(\"U2\",4042)",
+    "trancamento(4041,especial)",
+    "trancamento(4042,regular)",
+    "horas(fixas,428)",
+    "horas(eletivas,432)",
+    "horas(ac,100)",
+    "exigido(fixas,468)",
+    "exigido(eletivas,432)",
+    "exigido(ac,144)"
+   ]
+  }
+ ],
+ "taxa_violacao_contrato": 0.007
+}

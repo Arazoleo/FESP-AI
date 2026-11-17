@@ -1,0 +1,129 @@
+{
+ "modelos": [
+  "gemma4:31b-cloud",
+  "gpt-oss:120b-cloud",
+  "gpt-oss:20b-cloud"
+ ],
+ "grupos": {
+  "avaliacao": {
+   "modelos_validos": [
+    "gemma4:31b-cloud",
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud"
+   ],
+   "faixas": {
+    "unanime": {
+     "n": 757,
+     "acerto": 0.945
+    },
+    "maioria": {
+     "n": 595,
+     "acerto": 0.187
+    },
+    "dividido": {
+     "n": 148,
+     "acerto": 0.0
+    }
+   },
+   "largura_media_intervalo": 0.0
+  },
+  "rer": {
+   "modelos_validos": [
+    "gemma4:31b-cloud",
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud"
+   ],
+   "faixas": {
+    "unanime": {
+     "n": 397,
+     "acerto": 0.841
+    },
+    "maioria": {
+     "n": 182,
+     "acerto": 0.604
+    },
+    "dividido": {
+     "n": 21,
+     "acerto": 0.571
+    }
+   },
+   "largura_media_intervalo": 0.0
+  },
+  "trancamento": {
+   "modelos_validos": [
+    "gemma4:31b-cloud",
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud"
+   ],
+   "faixas": {
+    "unanime": {
+     "n": 263,
+     "acerto": 1.0
+    },
+    "maioria": {
+     "n": 37,
+     "acerto": 1.0
+    }
+   },
+   "largura_media_intervalo": 0.0
+  },
+  "prazo": {
+   "modelos_validos": [
+    "gemma4:31b-cloud",
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud"
+   ],
+   "faixas": {
+    "unanime": {
+     "n": 530,
+     "acerto": 0.845
+    },
+    "maioria": {
+     "n": 336,
+     "acerto": 0.518
+    },
+    "dividido": {
+     "n": 34,
+     "acerto": 0.088
+    }
+   },
+   "largura_media_intervalo": 0.0
+  },
+  "cr": {
+   "modelos_validos": [
+    "gemma4:31b-cloud",
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud"
+   ],
+   "faixas": {
+    "dividido": {
+     "n": 233,
+     "acerto": 0.0
+    },
+    "unanime": {
+     "n": 33,
+     "acerto": 0.939
+    },
+    "maioria": {
+     "n": 34,
+     "acerto": 0.618
+    }
+   },
+   "largura_media_intervalo": 0.0
+  },
+  "integralizacao": {
+   "modelos_validos": [
+    "gemma4:31b-cloud",
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud"
+   ],
+   "faixas": {
+    "unanime": {
+     "n": 600,
+     "acerto": 0.902
+    }
+   },
+   "largura_media_intervalo": 0.0
+  }
+ }
+}

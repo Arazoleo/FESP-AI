@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "prazo",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: <string>:4:18-19: error: syntax error, unexpected >  →  linha: `(integral   -> Mult = 150 ; parcial -> Mult = 175),`; <string>:11:14-15: error: syntax error, unexpected /  →  linha: `Ano = P // 2,`"
+  ],
+  [
+   "erro de sintaxe do clingo: <string>:9:30-31: error: syntax error, unexpected >  →  linha: `(prograd_acrescimo(Inc) -> N = N0 + Inc ; N = N0).`; <string>:15:23-24: error: syntax error, unexpected <  →  linha: `Ano >= 2020, Ano =< 2022.`; <string>:37:26-29: error: syntax error, unexpected not, expecting )  →  linha: `not (matricula(C,P), not reprovado_frequencia(C,P)).`"
+  ],
+  [
+   "falha ao executar no cenário 0: grounding stopped because of errors: <string>:10:5-67: error: unsafe variables in:\n  N=#count{Pp:P0<=Pp,Pp<=Pa,not #p_trancamento(#b(Pp),#p)}\n<string>:10:18-20: note: 'Pp' is unsafe\n<string>:10:5-67: error: unsafe variables in:\n  N=#count{Pp:P0<=Pp,Pp<=Pa,not #p_trancamento(#b(Pp),#p)}\n<string>:10:18-20: note: 'Pp' is unsafe"
+  ]
+ ],
+ "segundos": 50.4
+}

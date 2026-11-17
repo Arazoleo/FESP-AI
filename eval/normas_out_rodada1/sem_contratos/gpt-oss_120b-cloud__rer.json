@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "rer",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: <string>:12:61-62: error: syntax error, unexpected .  →  linha: `cond_iv(C) :- pendente(C), ( uc_pratica(C) ; rer_vedado(C) ).`"
+  ],
+  [
+   "erro de sintaxe do clingo: <string>:35:36-38: error: syntax error, unexpected !=, expecting )  →  linha: `not ( em_rer(Outros,P), Outros != C ).`"
+  ],
+  [
+   "falha ao executar no cenário 0: grounding stopped because of errors: <string>:1:1-65: error: unsafe variables in:\n  single_fail_in_period(P):-[#inc_base];1=#count{U:reprovado_nota(U,P)}.\n<string>:1:23-24: note: 'P' is unsafe\n<string>:1:1-65: error: unsafe variables in:\n  _why(\"single_fail_in_period\",single_fail_in_period(P),()):-[#inc_base];1=#count{U:reprovado_nota(U,P)}.\n<string>:1:23-24: note: 'P' is unsafe\n<string>:1:1-42: error: unsafe variables in:\n  other_em_rer(C,P):-[#inc_base];em_rer(O,P);O!=C.\n<string>:1:14-15: note: 'C' is unsafe\n<string>:1:1-42: error: unsafe variables in:\n  _why(\"other_em_rer\",other_em_rer(C,P),(em_rer(O,P),)):-[#inc_base];em_rer(O,P);O!=C.\n<string>:1:14-15: note: 'C' is unsafe"
+  ]
+ ],
+ "segundos": 16.2
+}

@@ -1,0 +1,24 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "cr",
+ "valida": false,
+ "tentativas": 5,
+ "erros_por_tentativa": [
+  [
+   "falha ao executar no cenário 0: grounding stopped because of errors: <string>:1:1-49: error: unsafe variables in:\n  periodo_valido(P):-[#inc_base];periodo_atual(Pa);P<=Pa.\n<string>:1:16-17: note: 'P' is unsafe\n<string>:1:1-49: error: unsafe variables in:\n  _why(\"cr_periodo_valido\",periodo_valido(P),(periodo_atual(Pa),)):-[#inc_base];periodo_atual(Pa);P<=Pa.\n<string>:1:16-17: note: 'P' is unsafe\n<string>:2:1-34: error: unsafe variables in:\n  excluido(C,#Anon0):-[#inc_base];natureza(C,tcc).\n<string>:2:12-13: note: '#Anon0' is unsafe\n<string>:2:1-34: error: unsafe variables in:\n  _why(\"cr_excluido\",excluido(C,#Anon0),(natureza(C,tcc),)):-[#inc_base];natureza(C,tcc).\n<string>:2:12-13: note: '#Anon0' is unsafe\n<string>:3:1-38: error: unsafe variables in:\n  excluido(C,#Anon0):-[#inc_base];natureza(C,estagio).\n<string>:3:12-13: note: '#Anon0' is unsafe\n<string>:3:1-38: error: unsafe variables in:\n  _why(\"cr_excluido\",excluido(C,#Anon0),(natureza(C,estagio),)):-[#inc_base];natureza(C,estagio).\n<string>:3:12-13: note: '#Anon0' is unsafe\n<string>:4:1-33: error: unsafe variables in:\n  excluido(C,#Anon0):-[#inc_base];natureza(C,ac).\n<string>:4:12-13: note: '#Anon0' is unsafe\n<string>:4:1-33: error: unsafe variables in:\n  _why(\"cr_excluido\",excluido(C,#Anon0),(natureza(C,ac),)):-[#inc_base];natureza(C,ac).\n<string>:4:12-13: note: '#Anon0' is unsafe\n<string>:5:1-35: error: unsafe variables in:\n  excluido(#Anon0,P):-[#inc_base];trancamento(P,WHY_ANON_1).\n<string>:5:10-11: note: '#Anon0' is unsafe\n<string>:5:1-35: error: unsafe variables in:\n  _why(\"cr_excluido\",excluido(#Anon0,P),(trancamento(P,WHY_ANON_1),)):-[#inc_base];trancamento(P,WHY_ANON_1).\n<string>:5:10-11: note: '#Anon0' is unsafe"
+  ],
+  [
+   "operação aritmética indefinida (termo não numérico numa conta; o átomo é descartado em silêncio): <string>:4:9-22: info: operation undefined:\n  ((100*S)/T)"
+  ],
+  [
+   "operação aritmética indefinida (termo não numérico numa conta; o átomo é descartado em silêncio): <string>:4:9-18: info: operation undefined:\n  ((100*S)/T)"
+  ],
+  [
+   "operação aritmética indefinida (termo não numérico numa conta; o átomo é descartado em silêncio): <string>:4:9-14: info: operation undefined:\n  (P/T)"
+  ],
+  [
+   "operação aritmética indefinida (termo não numérico numa conta; o átomo é descartado em silêncio): <string>:4:9-14: info: operation undefined:\n  (N/T)"
+  ]
+ ],
+ "segundos": 39.3
+}

@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "cr",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: <string>:21:15-16: error: syntax error, unexpected [, expecting {  →  linha: `NH = #sum [C,P,Prod :`; <string>:29:17-18: error: syntax error, unexpected [, expecting {  →  linha: `Hsum = #sum [C,P,H : valid_uc(C,P), carga(C,H)=H].`"
+  ],
+  [
+   "falha ao executar no cenário 0: grounding stopped because of errors: <string>:3:1-34: error: unsafe variables in:\n  excluido(C,P):-[#inc_base];natureza(C,tcc).\n<string>:3:12-13: note: 'P' is unsafe\n<string>:3:1-34: error: unsafe variables in:\n  _why(\"uc_valid\",excluido(C,P),(natureza(C,tcc),)):-[#inc_base];natureza(C,tcc).\n<string>:3:12-13: note: 'P' is unsafe\n<string>:4:1-38: error: unsafe variables in:\n  excluido(C,P):-[#inc_base];natureza(C,estagio).\n<string>:4:12-13: note: 'P' is unsafe\n<string>:4:1-38: error: unsafe variables in:\n  _why(\"uc_valid\",excluido(C,P),(natureza(C,estagio),)):-[#inc_base];natureza(C,estagio).\n<string>:4:12-13: note: 'P' is unsafe\n<string>:5:1-33: error: unsafe variables in:\n  excluido(C,P):-[#inc_base];natureza(C,ac).\n<string>:5:12-13: note: 'P' is unsafe\n<string>:5:1-33: error: unsafe variables in:\n  _why(\"uc_valid\",excluido(C,P),(natureza(C,ac),)):-[#inc_base];natureza(C,ac).\n<string>:5:12-13: note: 'P' is unsafe\n<string>:6:1-35: error: unsafe variables in:\n  excluido(C,P):-[#inc_base];trancamento(P,WHY_ANON_1).\n<string>:6:10-11: note: 'C' is unsafe\n<string>:6:1-35: error: unsafe variables in:\n  _why(\"uc_valid\",excluido(C,P),(trancamento(P,WHY_ANON_1),)):-[#inc_base];trancamento(P,WHY_ANON_1).\n<string>:6:10-11: note: 'C' is unsafe"
+  ],
+  [
+   "operação aritmética indefinida (termo não numérico numa conta; o átomo é descartado em silêncio): <string>:4:9-23: info: operation undefined:\n  ((100*NH)/H)"
+  ]
+ ],
+ "segundos": 19.4
+}

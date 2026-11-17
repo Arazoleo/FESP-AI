@@ -1,0 +1,26 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "avaliacao",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: <string>:31:17-18: error: syntax error, unexpected <  →  linha: `M >= 30, M =< 59.`"
+  ],
+  [
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida",
+   "restrição de integridade (`:- ...`) não é permitida"
+  ],
+  [
+   "falha ao executar no cenário 0: grounding stopped because of errors: <string>:1:1-47: error: unsafe variables in:\n  freq_minima(C,75):-[#inc_base];not #p_freq_minima_ppc(#b(C),#p).\n<string>:1:13-14: note: 'C' is unsafe\n<string>:1:1-47: error: unsafe variables in:\n  _why(\"art109\",freq_minima(C,75),(nao(\"freq_minima_ppc(C,_)\"),)):-[#inc_base];not #p_freq_minima_ppc(#b(C),#p).\n<string>:1:13-14: note: 'C' is unsafe"
+  ]
+ ],
+ "segundos": 41.9
+}

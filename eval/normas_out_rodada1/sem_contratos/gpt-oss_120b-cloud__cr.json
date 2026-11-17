@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "cr",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: <string>:9:27-28: error: syntax error, unexpected =, expecting )  →  linha: `not (natureza(C,N), N = tcc),             % IV – TCC`"
+  ],
+  [
+   "erro de sintaxe do clingo: <string>:35:23-24: error: syntax error, unexpected \",\"  →  linha: `S = #sum { N*H : C,P,N,H,`; <string>:40:21-22: error: syntax error, unexpected \",\"  →  linha: `T = #sum { H : C,P,H,`"
+  ],
+  [
+   "erro de sintaxe do clingo: <string>:35:23-24: error: syntax error, unexpected \",\"  →  linha: `S = #sum { N*H : C,P,N,H,`; <string>:40:21-22: error: syntax error, unexpected \",\"  →  linha: `T = #sum { H : C,P,H,`"
+  ]
+ ],
+ "segundos": 20.0
+}

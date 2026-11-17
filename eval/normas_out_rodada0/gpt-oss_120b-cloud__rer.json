@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "rer",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "erro de sintaxe do clingo: syntax error"
+  ],
+  [
+   "erro de sintaxe do clingo: syntax error"
+  ],
+  [
+   "erro de sintaxe do clingo: syntax error"
+  ]
+ ],
+ "segundos": 18.8
+}

@@ -19,3 +19,4 @@ sentence-transformers
 pypdf
 python-multipart
 fpdf2==2.8.4
+clingo>=5.7

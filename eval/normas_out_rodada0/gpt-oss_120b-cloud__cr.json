@@ -1,0 +1,18 @@
+{
+ "modelo": "gpt-oss:120b-cloud",
+ "grupo": "cr",
+ "valida": false,
+ "tentativas": 3,
+ "erros_por_tentativa": [
+  [
+   "falha ao executar no cenário 0: grounding stopped because of errors: <string>:1:1-3:22: error: unsafe variables in:\n  uc_excluida(C,P):-[#inc_base];trancamento(P,WHY_ANON_1).\n<string>:1:13-14: note: 'C' is unsafe\n<string>:1:1-3:22: error: unsafe variables in:\n  _why(\"uc_excluida\",uc_excluida(C,P),(trancamento(P,WHY_ANON_1),)):-[#inc_base];trancamento(P,WHY_ANON_1).\n<string>:1:13-14: note: 'C' is unsafe\n<string>:13:1-18:12: error: unsafe variables in:\n  uc_excluida(C,P):-[#inc_base];N=ac;N=estagio;N=tcc;natureza(C,N).\n<string>:13:15-16: note: 'P' is unsafe\n<string>:13:1-18:12: error: unsafe variables in:\n  _why(\"uc_excluida\",uc_excluida(C,P),(natureza(C,N),)):-[#inc_base];N=ac;N=estagio;N=tcc;natureza(C,N).\n<string>:13:15-16: note: 'P' is unsafe"
+  ],
+  [
+   "erro de sintaxe do clingo: syntax error"
+  ],
+  [
+   "erro de sintaxe do clingo: syntax error"
+  ]
+ ],
+ "segundos": 17.7
+}
