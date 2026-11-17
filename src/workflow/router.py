@@ -632,6 +632,22 @@ _router_llm_singleton = {"key": None, "llm": None}
 
 def _get_router_llm():
     """Instância própria (lazy, cacheada) do modelo dedicado de roteamento."""
+    try:
+        from ..llm_provider import criar_llm, provedor
+    except ImportError:  # módulo carregado fora do pacote src (testes)
+        try:
+            from llm_provider import criar_llm, provedor
+        except ImportError:
+            criar_llm, provedor = None, (lambda: "ollama")
+
+    if provedor() == "groq":
+        if _router_llm_singleton["key"] != "groq":
+            _router_llm_singleton["key"] = "groq"
+            _router_llm_singleton["llm"] = criar_llm(
+                papel="roteador", temperature=0,
+                num_predict=_ROUTER_LLM_NUM_PREDICT, timeout=30)
+        return _router_llm_singleton["llm"]
+
     model = os.getenv("FESPAI_ROUTER_MODEL", "").strip()
     if not model:
         return None

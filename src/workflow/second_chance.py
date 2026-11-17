@@ -20,7 +20,9 @@ RETRY_LATENCY_BUDGET_S = 60.0
 
 _MISS_PATTERNS = [
     r"nao\s+encontrei",
-    r"nao\s+tenho\s+esse\s+dado",
+    # "não tenho esse dado" (gemma) / "não tenho nenhum dado sobre" /
+    # "não tenho informações sobre" (gpt-oss): até 2 palavras no meio
+    r"nao\s+tenho\s+(?:\w+\s+){0,2}(?:dados?|informac\w*)\b",
     r"nao\s+consegui\s+identificar",
 ]
 _MISS_RES = [re.compile(p) for p in _MISS_PATTERNS]

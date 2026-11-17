@@ -22,6 +22,7 @@ from langchain_core.documents import Document
 
 from .config import Config
 from .aux_llm import get_aux_llm
+from .llm_provider import criar_llm, provedor as provedor_llm
 from .parsers_md import parse_file
 from .hybrid_retriever import HybridRetriever, build_bm25_from_chroma
 from .task_embeddings import TaskPrefixEmbeddings, embedding_signature
@@ -112,7 +113,11 @@ class RAGUnifesp:
             llm_kwargs["client_kwargs"] = {
                 "headers": {"Authorization": f"Bearer {api_key}"}
             }
-        self.llm = OllamaLLM(**llm_kwargs)
+        if provedor_llm() == "groq":
+            self.llm = criar_llm(papel="geracao", temperature=0.1,
+                                 num_predict=2048, timeout=llm_timeout)
+        else:
+            self.llm = OllamaLLM(**llm_kwargs)
 
         embed_kwargs = dict(
             model=self.config.EMBEDDING_MODEL,

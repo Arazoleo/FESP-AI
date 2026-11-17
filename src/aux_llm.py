@@ -25,6 +25,23 @@ def get_aux_llm():
     Retorna None quando FESPAI_ROUTER_MODEL está vazio ou a construção falha -
     o chamador deve usar o LLM principal como fallback.
     """
+    try:
+        from .llm_provider import criar_llm, provedor
+    except ImportError:  # módulo carregado fora do pacote src (testes)
+        try:
+            from llm_provider import criar_llm, provedor
+        except ImportError:
+            criar_llm, provedor = None, (lambda: "ollama")
+
+    if provedor() == "groq":
+        # No Groq as chamadas curtas vão sempre para o modelo auxiliar
+        # (GROQ_AUX_MODEL): cota separada e mais rápido.
+        if _aux_llm_singleton["key"] != "groq":
+            _aux_llm_singleton["key"] = "groq"
+            _aux_llm_singleton["llm"] = criar_llm(
+                papel="aux", temperature=0, num_predict=_AUX_LLM_NUM_PREDICT, timeout=30)
+        return _aux_llm_singleton["llm"]
+
     model = os.getenv("FESPAI_ROUTER_MODEL", "").strip()
     if not model:
         return None
